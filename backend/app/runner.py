@@ -8,8 +8,9 @@ import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import date
+from typing import Any
 
-from app import store
+from app import replay, store
 from app.agents import catalog, decide, launch, negotiate, screen
 from app.agents import shortlist as sl
 from app.agents.context import RunContext, Sequencer
@@ -18,6 +19,7 @@ from app.constants import STAGE_META
 from app.data_loader import check_vendor
 from app.errors import (
     CategoryOSError,
+    NarrativeUnavailable,
     RunNotFound,
     StageLocked,
     StageNotReviewable,
@@ -43,10 +45,17 @@ class RunState:
     subscribers: list[asyncio.Queue[TraceEvent]] = field(default_factory=list)
     done: bool = False
     busy: bool = False
+    db: Any = store  # app.store, or the in-memory replay session store
+    golden: replay.GoldenRun | None = None  # set for replay sessions
 
 
 _states: dict[str, RunState] = {}
 _tasks: set[asyncio.Task] = set()
+
+
+def _db(run_id: str) -> Any:
+    """The persistence backend of a run: the in-memory store for replay sessions, SQLite otherwise."""
+    return replay.session_store if replay.has_session(run_id) else store
 
 
 def today() -> str:
@@ -59,6 +68,8 @@ def reset_state() -> None:
         task.cancel()
     _tasks.clear()
     _states.clear()
+    replay.reset_sessions()
+    replay.forget()
 
 
 # ---------- the pure generator ----------
@@ -130,37 +141,37 @@ async def run_stages(ctx: RunContext, stage_ids: tuple[str, ...], agent: MultiAg
 
 
 async def _persist_publish(state: RunState, event: TraceEvent) -> None:
-    await store.append_event(event)
+    await state.db.append_event(event)
     for queue in state.subscribers:
         queue.put_nowait(event)
 
 
 async def _drive_stage(state: RunState, stage_id: str, agent: Agent) -> StageResult:
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
-    await store.save_stage(state.run_id, StageResult(stage=stage_id, status="running", summary="Running"))
+    await state.db.save_stage(state.run_id, StageResult(stage=stage_id, status="running", summary="Running"))
     async for event in run_stage(ctx, stage_id, agent):
         await _persist_publish(state, event)
     result = ctx.result
     assert result is not None
-    await store.save_stage(state.run_id, result)
+    await state.db.save_stage(state.run_id, result)
     return result
 
 
 async def _drive_multi(state: RunState, stage_ids: tuple[str, ...], agent: MultiAgent) -> dict[str, StageResult]:
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
     for sid in stage_ids:
-        await store.save_stage(state.run_id, StageResult(stage=sid, status="running", summary="Running"))
+        await state.db.save_stage(state.run_id, StageResult(stage=sid, status="running", summary="Running"))
     async for event in run_stages(ctx, stage_ids, agent):
         await _persist_publish(state, event)
     for result in ctx.results.values():
-        await store.save_stage(state.run_id, result)
+        await state.db.save_stage(state.run_id, result)
     return ctx.results
 
 
 async def _mirror_shortlist(state: RunState, research: StageResult, *, done: bool, emit: bool = True) -> None:
     """The `shortlist` stage mirrors research's verdict table; it is done once research is approved."""
     result = sl.shortlist_stage(research, state.vendor_id, done=done)
-    await store.save_stage(state.run_id, result)
+    await state.db.save_stage(state.run_id, result)
     if emit:
         ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
         await _persist_publish(state, ctx.emit("stage_result", "shortlist", result.model_dump(mode="json")))
@@ -218,12 +229,61 @@ async def _finish(state: RunState, payload: dict | None = None) -> None:
     state.done = True
 
 
+# ---------- replay sessions ----------
+
+
+async def _play(state: RunState, events: list[TraceEvent], *, cap_s: float = replay.MAX_GAP_S) -> None:
+    """Re-emit recorded events on this session with the recorded gaps (each capped at ``cap_s``), updating the session's
+    stage results as stage_started / stage_result events go by. seq and t_rel_ms are re-stamped on the session clock."""
+    prev_ms: float | None = None
+    for src in events:
+        gap = 0.2 if prev_ms is None else max(src.t_rel_ms - prev_ms, 0.0) / 1000
+        prev_ms = src.t_rel_ms
+        await replay.sleep(min(gap, cap_s))
+        payload = src.payload
+        if src.type == "model_call" and "mode" in payload:
+            payload = {**payload, "mode": "replay"}
+        event = src.model_copy(
+            update={
+                "run_id": state.run_id,
+                "seq": state.sequencer.next(),
+                "t_rel_ms": state.sequencer.t_rel_ms(),
+                "payload": payload,
+            }
+        )
+        if event.type == "stage_started" and event.stage:
+            current = (await state.db.get_stages(state.run_id)).get(event.stage)
+            if current is None or current.status not in {"review", "done"}:
+                await state.db.save_stage(state.run_id, StageResult(stage=event.stage, status="running", summary="Running"))
+        elif event.type == "stage_result" and event.stage:
+            await state.db.save_stage(state.run_id, StageResult.model_validate(event.payload))
+        await _persist_publish(state, event)
+
+
+async def _replay_start(state: RunState) -> None:
+    assert state.golden is not None
+    try:
+        await _play(state, state.golden.phase_events("start"))
+    except Exception:
+        log.exception("replay %s crashed", state.run_id)
+    finally:
+        await _finish(state)
+
+
+def _replay_phase(phase: str) -> Callable[[RunState], Awaitable[None]]:
+    async def work(state: RunState) -> None:
+        assert state.golden is not None
+        await _play(state, state.golden.phase_events(phase))
+
+    return work
+
+
 async def _lock_downstream(state: RunState, first_failed: StageResult) -> None:
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
     reason = f"Screening failed: {first_failed.locked_reason or first_failed.summary}"
     for stage_id in STAGE_IDS[1:]:
         locked = StageResult(stage=stage_id, status="locked", summary="Locked", locked_reason=reason)
-        await store.save_stage(state.run_id, locked)
+        await state.db.save_stage(state.run_id, locked)
         await _persist_publish(state, ctx.emit("stage_result", stage_id, locked.model_dump(mode="json")))
 
 
@@ -245,10 +305,17 @@ async def _execute(state: RunState) -> None:
 async def create_run(vendor_id: str) -> str:
     check_vendor(vendor_id)
     run_id = f"run_{uuid.uuid4().hex[:10]}"
-    await store.create_run(run_id, vendor_id, settings.effective_mode)
-    state = RunState(run_id, vendor_id, Sequencer())
+    golden = replay.golden_for(vendor_id)
+    if golden is not None:  # replay mode: an ephemeral in-memory session, no database writes
+        await replay.session_store.create_run(run_id, vendor_id, "replay")
+        state = RunState(run_id, vendor_id, Sequencer(), db=replay.session_store, golden=golden)
+        work = _replay_start(state)
+    else:
+        await store.create_run(run_id, vendor_id, settings.effective_mode)
+        state = RunState(run_id, vendor_id, Sequencer())
+        work = _execute(state)
     _states[run_id] = state
-    task = asyncio.create_task(_execute(state))
+    task = asyncio.create_task(work)
     _tasks.add(task)
     task.add_done_callback(_tasks.discard)
     return run_id
@@ -259,6 +326,8 @@ async def get_state(run_id: str) -> RunState | None:
     state = _states.get(run_id)
     if state is not None:
         return state
+    if replay.pure_replay():
+        return None
     run = await store.get_run(run_id)
     if run is None:
         return None
@@ -268,8 +337,16 @@ async def get_state(run_id: str) -> RunState | None:
     return state
 
 
+async def latest_run(vendor_id: str) -> str | None:
+    if replay.pure_replay():
+        return await replay.session_store.latest_run(vendor_id)
+    return await store.latest_run(vendor_id) or await replay.session_store.latest_run(vendor_id)
+
+
 async def require_run(run_id: str) -> dict:
-    run = await store.get_run(run_id)
+    if not replay.has_session(run_id) and replay.pure_replay():
+        raise RunNotFound(run_id)  # replay mode never opens the database
+    run = await _db(run_id).get_run(run_id)
     if run is None:
         raise RunNotFound(run_id)
     return run
@@ -277,7 +354,7 @@ async def require_run(run_id: str) -> dict:
 
 async def get_run_view(run_id: str) -> dict:
     run = await require_run(run_id)
-    stored = await store.get_stages(run_id)
+    stored = await _db(run_id).get_stages(run_id)
     stages = {
         sid: (stored.get(sid) or StageResult(stage=sid, status="pending")).model_dump(mode="json") for sid in STAGE_IDS
     }
@@ -293,7 +370,7 @@ def check_stage(stage: str) -> str:
 async def get_stage(run_id: str, stage: str) -> StageResult:
     await require_run(run_id)
     check_stage(stage)
-    stored = await store.get_stages(run_id)
+    stored = await _db(run_id).get_stages(run_id)
     return stored.get(stage) or StageResult(stage=stage, status="pending")
 
 
@@ -310,13 +387,15 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
         raise StageLocked(cause=current.locked_reason or "the stage did not run")
     if current.status not in {"review", "done"}:
         raise StageNotReviewable(cause=f"research is {current.status}")
-    stages = await store.get_stages(run_id)
+    stages = await _db(run_id).get_stages(run_id)
     if (stages.get("negotiate") or StageResult(stage="negotiate", status="pending")).status != "pending":
         raise StageNotReviewable(cause="research is already approved and later stages have started")
     state = await get_state(run_id)
     assert state is not None
     if state.busy:
         raise StageNotReviewable(cause="a re-plan is already running for this run")
+    if state.golden is not None:
+        return await _replan_replay(state, offset, moq)
     state.busy = True
     try:
         async def agent(ctx: RunContext) -> StageResult:
@@ -327,6 +406,23 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
             await _mirror_shortlist(state, result, done=False)
         await _finish(state, {"replan": True})
         return result
+    finally:
+        state.busy = False
+
+
+async def _replan_replay(state: RunState, offset: float, moq: int) -> StageResult:
+    """Replay: serve the cached narrative for a lever preset (offset 0, +2, +4 at the vendor's default MOQ)."""
+    assert state.golden is not None
+    key = replay.preset_key(offset, moq, state.vendor_id)
+    cached = state.golden.replans.get(key) if key is not None else None
+    if cached is None:
+        raise NarrativeUnavailable()
+    state.busy = True
+    try:
+        await state.db.save_stage(state.run_id, StageResult(stage="research", status="running", summary="Running"))
+        await _play(state, [e for e in cached.events if e.type != "done"], cap_s=replay.REPLAN_GAP_S)
+        await _finish(state, {"replan": True})
+        return (await state.db.get_stages(state.run_id))["research"]
     finally:
         state.busy = False
 
@@ -345,16 +441,16 @@ async def approve(run_id: str, stage: str, metrics_hash: str) -> StageResult:
             )
         )
     approved = result.model_copy(update={"status": "done", "needs_approval": False})
-    await store.save_stage(run_id, approved)
-    await store.add_approval(run_id, stage, "approve", metrics_hash)
+    await _db(run_id).save_stage(run_id, approved)
+    await _db(run_id).add_approval(run_id, stage, "approve", metrics_hash)
     if result.status == "review":  # first approval only: a repeat approve never re-runs the next phase
         state = await get_state(run_id)
         assert state is not None
         if stage == "research" and not state.busy:
-            await store.save_stage(run_id, sl.shortlist_stage(approved, state.vendor_id, done=True))
-            _spawn(state, "execute", _phase_execute)
+            await _db(run_id).save_stage(run_id, sl.shortlist_stage(approved, state.vendor_id, done=True))
+            _spawn(state, "execute", _replay_phase("execute") if state.golden else _phase_execute)
         elif stage == "catalog" and not state.busy:
-            _spawn(state, "launch", _phase_launch)
+            _spawn(state, "launch", _replay_phase("launch") if state.golden else _phase_launch)
     return approved
 
 
@@ -372,8 +468,8 @@ async def override(run_id: str, stage: str, sku_code: str, verdict: str, note: s
     data["rationale_per_sku"] = rows
     data["overrides"] = {**data.get("overrides", {}), sku_code: {"verdict": verdict, "original_verdict": original, "note": note, "edited_by_human": True}}
     updated = result.model_copy(update={"data": data})
-    await store.save_stage(run_id, updated)
-    await store.add_override(run_id, stage, sku_code, verdict, note)
+    await _db(run_id).save_stage(run_id, updated)
+    await _db(run_id).add_override(run_id, stage, sku_code, verdict, note)
     return updated
 
 
@@ -389,13 +485,14 @@ async def reject(run_id: str, vendor_id: str, reason: str) -> dict:
         update={"status": "failed", "needs_approval": False, "summary": f"Rejected by the category manager: {reason}",
                 "data": {**current.data, "rejected": True, "reject_reason": reason}}
     )
-    await store.save_stage(run_id, rejected)
+    await _db(run_id).save_stage(run_id, rejected)
     for stage_id in STAGE_IDS[2:]:
-        await store.save_stage(run_id, StageResult(stage=stage_id, status="locked", summary="Locked", locked_reason=f"Vendor rejected: {reason}"))
-    await store.add_approval(run_id, "research", "reject", None, reason)
+        await _db(run_id).save_stage(run_id, StageResult(stage=stage_id, status="locked", summary="Locked", locked_reason=f"Vendor rejected: {reason}"))
+    await _db(run_id).add_approval(run_id, "research", "reject", None, reason)
     return {"run_id": run_id, "vendor_id": vendor_id, "status": "rejected", "reason": reason}
 
 
 async def reset() -> None:
     reset_state()
-    await store.reset()
+    if not replay.pure_replay():
+        await store.reset()

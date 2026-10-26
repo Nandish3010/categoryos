@@ -1,5 +1,7 @@
 # CategoryOS
 
+[![CI](https://github.com/Nandish3010/categoryos/actions/workflows/ci.yml/badge.svg)](https://github.com/Nandish3010/categoryos/actions/workflows/ci.yml)
+
 An agentic category manager that decides whether to bet ₹X on a new vendor — which SKUs, at what terms — and proves every number.
 
 **Live demo:** _coming Nov 1_
@@ -18,7 +20,10 @@ make demo
 
 Then open http://localhost:3000/vendors/V001.
 
-No API keys are needed. The default mode is mock/replay: model calls are served from recorded fixtures.
+`make demo` runs in **replay** mode: it plays back recorded runs of the full pipeline (screen, decide, negotiate, catalog,
+launch packet) with their original pacing. No API keys, no database, no network. Approve, override, reject and re-plan all
+work on your session. `make dev` runs the same app in **mock** mode (the pipeline actually executes against canned model
+fixtures, with a local SQLite database). Neither needs keys.
 
 ## What it does
 
@@ -66,9 +71,12 @@ The backend gateway (`app/llm.py`) switches between mock and live, tracks cost a
 
 | Mode | What it does | Keys needed | Cost |
 |---|---|---|---|
-| `mock` | Serves fixtures for every model call. Default for `make demo`. | None | Free |
-| `live` | Calls the Meta Model API and Baseten for the stages in `LIVE_STAGES`. | `MODEL_API_KEY`, `BASETEN_API_KEY` | Metered, capped by `MAX_SPEND_USD` |
-| `replay` | Serves recorded golden runs. Used by the public deploy; live calls need `X-Demo-Key`. | None (`DEMO_KEY` to allow live) | Free |
+| `mock` | Executes the pipeline against hand-written fixtures for every model call. Default for `make dev` and the tests. | None | Free |
+| `replay` | Plays back recorded golden runs (`backend/fixtures/golden/runs/`) as ephemeral in-memory sessions with their original pacing (gaps capped at 1.5 s). Re-plan serves cached narratives for the presets 0, +2, +4 at the default MOQ; other lever values return `narrative_unavailable`. The lever/metrics endpoint stays live. Default for `make demo` and the public deploy. A golden run that fails its checksum, schema or metrics-hash check is served from the mock fixtures and flagged `degraded` in `GET /api/mode`. | None | Free |
+| `live` | Calls the Meta Model API and Baseten for the stages in `LIVE_STAGES`; keyed routes need `X-Demo-Key`. | `MODEL_API_KEY`, `BASETEN_API_KEY` | Metered, capped by `MAX_SPEND_USD` |
+
+Golden runs are produced by `make record` (runs the mock pipeline end to end and captures every event; deterministic).
+To capture live runs later: `cd backend && MODEL_MODE=live RECORD=1 uv run python -m app.record --vendor V001`.
 
 ## Configuration
 
@@ -83,6 +91,11 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `MODEL_MODE` | `mock`, `live` or `replay` |
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
+
+## Deploy
+
+Backend on Modal (replay mode), frontend on Vercel. Step by step, including the Modal secret and the post-deploy smoke
+test (`make smoke URL=...`), in [scripts/deploy.md](scripts/deploy.md).
 
 ## Built during the hackathon
 
@@ -106,14 +119,18 @@ All code and data in this repository were created from October 26, 2026 onward, 
 backend/    FastAPI app, agents, metrics, verifier, fixtures, tests
 frontend/   Next.js app (vendors board, vendor workspace)
 data/       Synthetic data and generate.py (see data/README.md)
-Makefile    setup, demo, test, data and other targets
+scripts/    deploy.md and smoke_deployed.sh
+Makefile    setup, demo, test, lint, record, smoke, data and other targets
 ```
 
 ## Testing
 
 ```bash
-make test
+make test   # backend pytest + frontend vitest
+make lint   # ruff + eslint
 ```
+
+CI (`.github/workflows/ci.yml`) runs the backend (pytest, ruff), the frontend (eslint, tsc, vitest, build) and gitleaks on every push and PR.
 
 ## Troubleshooting
 

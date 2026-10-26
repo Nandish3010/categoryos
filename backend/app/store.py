@@ -9,6 +9,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from app import persist
 from app.config import settings
 from app.schemas import StageResult, TraceEvent
 
@@ -72,6 +73,7 @@ def _connect() -> sqlite3.Connection:
 def _exec(sql: str, params: tuple[Any, ...] = ()) -> None:
     with closing(_connect()) as conn, conn:
         conn.execute(sql, params)
+    persist.notify()
 
 
 def _rows(sql: str, params: tuple[Any, ...] = ()) -> list[tuple[Any, ...]]:
