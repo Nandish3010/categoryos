@@ -50,6 +50,13 @@ describe("ClaimRow", () => {
   it("does not show a diff for verified claims", () => {
     render(<ul><ClaimRow claim={{ ...rejected, status: "verified" }} /></ul>);
     expect(screen.queryByText(/Agent said/)).toBeNull();
+    expect(screen.getByText(/matches sheet cell/)).toBeInTheDocument();
+  });
+
+  it("labels verified engine claims as recomputed and formats ratios", () => {
+    const engine = { ...rejected, status: "verified" as const, origin: "engine" as const, unit: "ratio" as const, value: 0.8213 };
+    render(<ul><ClaimRow claim={engine} /></ul>);
+    expect(screen.getByText(/0\.82 · recomputed from/)).toBeInTheDocument();
   });
 });
 

@@ -64,9 +64,9 @@ def test_parse_pack(raw, fields, normalized):
 
 def test_map_columns_per_vendor():
     expected = {
-        "V001": {"code": "Code", "name": "Product Name", "pack": "Pack", "mrp": "MRP"},
+        "V001": {"code": "Code", "name": "Product Name", "pack": "Pack", "mrp": "MRP", "cost": "Cost to Us"},
         "V002": {"code": "Item Code", "name": "Item", "pack": "Size", "mrp": "M.R.P (INR)", "cost": "Our Cost"},
-        "V003": {"code": "Style No", "name": "SKU Desc", "pack": "Qty/Pack", "mrp": "Price"},
+        "V003": {"code": "Style No", "name": "SKU Desc", "pack": "Qty/Pack", "mrp": "Price", "cost": "Landed Cost (Rs)"},
         "V004": {"code": "SKU", "name": "Description", "pack": "Weight/Vol", "mrp": "MRP Rs", "description": "About"},
     }
     for vendor_id, want in expected.items():
@@ -142,7 +142,10 @@ def test_metrics_never_nan():
 
 def test_cost_sources():
     v1 = build_base("V001")
-    assert all(s.cost_source == "inferred" for s in v1.skus)
+    by_code = {s.code: s for s in v1.skus}
+    assert by_code["HP-D05"].cost_source == "inferred"  # blank cell in the sheet
+    assert all(s.cost_source == "sheet" for c, s in by_code.items() if c != "HP-D05")
+    assert by_code["HP-D01"].cost == 956.5 and by_code["HP-D04"].cost == 874  # "Rs. 956.50", "INR 874"
     v2 = {s.code: s for s in build_base("V002").skus}
     assert v2["MW-T01"].cost_source == "sheet" and v2["MW-T01"].cost == 148
     assert v2["MW-T03"].cost_source == "inferred"
@@ -248,7 +251,7 @@ def test_outcome_v003_majority_reject():
 
 
 def test_compute_metric():
-    assert compute_metric("V001", "margin_pct", "V001:HP-D01") == pytest.approx(0.3136, abs=1e-4)
+    assert compute_metric("V001", "margin_pct", "V001:HP-D01") == pytest.approx(0.3578, abs=1e-4)
     assert compute_metric("V001", "price_gap_pct", "HP-D01") == pytest.approx((1499 - 1549) / 1549, abs=1e-4)
     assert compute_metric("V002", "cost", "V002:MW-T01") == 148
     with pytest.raises(UnknownMetric):

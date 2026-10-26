@@ -265,11 +265,31 @@ def mrp_fmt(vid, mrp):
 
 # per-vendor sheet headers: (code, name, pack, mrp, desc, extra)
 SHEET_HDR = {
-    "V001": ["Code", "Product Name", "Pack", "MRP", "Ingredients / Claims", "Shelf Life (months)"],
+    "V001": ["Code", "Product Name", "Pack", "MRP", "Ingredients / Claims", "Shelf Life (months)", "Cost to Us"],
     "V002": ["Item Code", "Item", "Size", "M.R.P (INR)", "Details", "Our Cost"],
-    "V003": ["Style No", "SKU Desc", "Qty/Pack", "Price", "Remarks", "HSN"],
+    "V003": ["Style No", "SKU Desc", "Qty/Pack", "Price", "Remarks", "HSN", "Landed Cost (Rs)"],
     "V004": ["SKU", "Description", "Weight/Vol", "MRP Rs", "About", ""],
 }
+
+
+# Authored vendor-quoted unit costs (INR). Hard-coded rather than drawn from the main RNG so that no other
+# generated value shifts. Margins vs category target were tuned so V001's lever flips SKUs one at a time.
+# "" = left blank on the sheet (engine infers cost from the vendor's offered margin).
+# A (fmt, ...) tuple means a messy cell: ("rs_dec", 956.5) -> "Rs. 956.50", ("inr", 874) -> "INR 874".
+COSTS = {
+    "V001": {"HP-D01": ("rs_dec", 956.5), "HP-D02": 3150, "HP-D03": 1014, "HP-D04": ("inr", 874), "HP-D05": "",
+             "HP-D06": 3325, "HP-D07": 968, "HP-W01": 87, "HP-W02": 118, "HP-W03": 217, "HP-T01": 247, "HP-T02": 212},
+    "V003": {"ST-101": 122, "ST-102": 124, "ST-103": 223, "ST-104": 125, "ST-105": 146, "ST-201": 182,
+             "ST-202": 304, "ST-203": "", "ST-204": 176, "ST-205": 225},
+}
+
+
+def cost_cell(vid, code):
+    v = COSTS[vid][code]
+    if isinstance(v, tuple):
+        kind, amount = v
+        return f"Rs. {amount:,.2f}" if kind == "rs_dec" else f"INR {amount:g}"
+    return str(v)
 
 
 def gen_sheet(vid):
@@ -280,7 +300,7 @@ def gen_sheet(vid):
             extra = random.choice(["12", "18", "12", "9", ""]) if i != 3 else ""
             if i == 6:
                 m = ""
-            rows.append([code, name, p, m, d, extra])
+            rows.append([code, name, p, m, d, extra, cost_cell(vid, code)])
         elif vid == "V002":
             cost = f"{int(mrp * cost_ratio)}" if i % 3 != 2 else ""
             if i == 4:
@@ -290,7 +310,7 @@ def gen_sheet(vid):
             hsn = random.choice(["9503", "4201", "3926", ""])
             if i in (3, 8):
                 d = ""
-            rows.append([code, name.upper() if i % 4 == 0 else name, p, m, d, hsn])
+            rows.append([code, name.upper() if i % 4 == 0 else name, p, m, d, hsn, cost_cell(vid, code)])
         else:
             if i in (2, 6):
                 p = ""

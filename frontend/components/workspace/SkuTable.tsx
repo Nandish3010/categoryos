@@ -69,7 +69,12 @@ export function SkuTable({
     {
       key: "category",
       header: "Category",
-      render: (s) => <span className="text-text-dim">{s.subcategory || s.category}</span>,
+      render: (s) => (
+        <span className="text-text-dim" title={`${s.category} · ${s.subcategory}`}>
+          {s.category ? s.category.charAt(0).toUpperCase() + s.category.slice(1) : ""}
+          {s.subcategory ? ` · ${s.subcategory}` : ""}
+        </span>
+      ),
     },
     { key: "margin", header: "Margin", align: "right", render: (s) => pct(s.margin_pct) },
     { key: "target", header: "Target", align: "right", render: (s) => pct(s.target_pct) },

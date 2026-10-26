@@ -33,7 +33,7 @@ class StageResult(BaseModel):
 
 
 StageId = Literal["intake", "research", "shortlist", "negotiate", "catalog", "marketing", "jbp", "po"]
-Unit = Literal["pct", "inr", "units", "score"]
+Unit = Literal["pct", "inr", "units", "score", "ratio"]
 Verdict = Literal["list", "negotiate", "reject", "needs_data"]
 CostSource = Literal["sheet", "inferred", "missing"]
 ClaimOrigin = Literal["engine", "model_extraction", "injected_test"]

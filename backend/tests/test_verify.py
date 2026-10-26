@@ -2,7 +2,7 @@ import pytest
 
 from app.config import settings
 from app.constants import TOL
-from app.metrics import apply_levers, build_base
+from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.schemas import Claim, Evidence, SourceRef
 from app.util import fmt_inr
 from app.verify import (
@@ -48,14 +48,20 @@ def mrp_claim(value: float, **kw) -> Claim:
 
 
 def test_engine_claim_verified():
-    out = verify_claim(engine_claim(0.3136))
+    out = verify_claim(engine_claim(0.3578))
     assert out.status == "verified"
-    assert out.recomputed == pytest.approx(0.3136, abs=1e-4)
+    assert out.recomputed == pytest.approx(0.3578, abs=1e-4)
 
 
 @pytest.mark.parametrize(
     ("metric", "unit", "true", "tol"),
-    [("margin_pct", "pct", 0.3136, TOL["pct"]), ("cost", "inr", 148.0, TOL["inr"])],
+    [
+        ("margin_pct", "pct", 0.3578, TOL["pct"]),
+        ("cost", "inr", 148.0, TOL["inr"]),
+        ("demand_score", "ratio", compute_metric("V001", "demand_score", "V001:HP-D01"), TOL["ratio"]),
+        ("overlap", "ratio", compute_metric("V001", "overlap", "V001:HP-D01"), TOL["ratio"]),
+        ("fit_score", "score", compute_metric("V001", "fit_score", "V001:HP-D01"), TOL["score"]),
+    ],
 )
 def test_tolerance_per_unit(metric, unit, true, tol):
     sku = "V002:MW-T01" if metric == "cost" else "V001:HP-D01"
@@ -169,3 +175,41 @@ def test_fmt_inr_lakh_grouping(value, text):
 
 def test_data_dir_is_real():
     assert (settings.data_dir / SHEET).exists()
+
+
+@pytest.mark.parametrize("metric", ["demand_score", "overlap"])
+def test_ratio_metrics_reject_a_wrong_value_by_0_1(metric):
+    true = compute_metric("V001", metric, "V001:HP-D01")
+    assert METRIC_UNITS[metric] == "ratio" and TOL["ratio"] == 0.005
+    assert verify_claim(engine_claim(true, metric=metric, unit="ratio")).status == "verified"
+    out = verify_claim(engine_claim(true + 0.1, metric=metric, unit="ratio"))
+    assert out.status == "rejected" and "recomputed" in out.reason
+
+
+def test_fit_score_keeps_loose_0_100_tolerance():
+    assert METRIC_UNITS["fit_score"] == "score" and TOL["score"] == 0.5
+
+
+def test_inject_fault_can_flip_a_ratio_claim():
+    claims = engine_claims("V001", apply_levers(build_base("V001")))
+    injected = inject_fault(claims, metric="demand_score")
+    flipped = [c for c in injected if c.origin == "injected_test"]
+    assert len(flipped) == 1 and flipped[0].metric == "demand_score" and flipped[0].unit == "ratio"
+    assert verify_all(injected).rejected == 1
+    assert {c.unit for c in claims if c.metric in {"demand_score", "overlap"}} == {"ratio"}
+
+
+@pytest.mark.parametrize(("row", "sku", "raw", "value"), [(2, "HP-D01", "Rs. 956.50", 956.5), (5, "HP-D04", "INR 874", 874)])
+def test_model_extraction_verified_against_messy_cost_cell(row, sku, raw, value):
+    ev = Evidence(row=row, header="Cost to Us", raw_value="ignored", parser_version="1.0", sha256=file_sha256(SHEET))
+
+    def claim(v):
+        return Claim(
+            id="c", text=f"{sku} cost", value=v, metric="cost", unit="inr", sku_key=f"V001:{sku}",
+            source_ref=SourceRef(file=SHEET, key=f"V001:{sku}", column="Cost to Us"),
+            evidence=ev, origin="model_extraction",
+        )  # fmt: skip
+
+    ok = verify_claim(claim(value))
+    assert ok.status == "verified" and ok.recomputed == value, raw
+    assert verify_claim(claim(value + 50)).status == "rejected"

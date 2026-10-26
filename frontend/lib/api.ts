@@ -77,7 +77,7 @@ export type Claim = {
   text: string;
   value: number;
   metric: string;
-  unit: "pct" | "inr" | "units" | "score";
+  unit: "pct" | "inr" | "units" | "score" | "ratio";
   sku_key?: string | null;
   status: ClaimStatus;
   recomputed?: number | null;
@@ -104,7 +104,8 @@ export type ModeResponse = {
   mode: string;
   live_stages?: string[];
   spend_usd: number;
-  cap_usd: number;
+  max_spend_usd: number;
+  warn_spend_usd?: number;
 };
 
 export type ApiErrorBody = {

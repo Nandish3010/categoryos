@@ -224,17 +224,26 @@ def _transpose(value: float, unit: str) -> float:
     return round(new / 100, 4) if unit == "pct" else round(new, 2)
 
 
-def inject_fault(claims: list[Claim]) -> list[Claim]:
-    """Flip exactly one claim to a realistic wrong value (transposed digits)."""
+def inject_fault(claims: list[Claim], metric: str | None = None) -> list[Claim]:
+    """Flip exactly one claim to a realistic wrong value (transposed digits; 0-1 ratios shift by 0.17).
+
+    With ``metric`` set, the first eligible claim of that metric is flipped instead of the first overall."""
     out = list(claims)
     for i, claim in enumerate(out):
-        if claim.unit not in ("pct", "inr") or claim.origin != "engine":
+        if claim.unit not in ("pct", "inr", "ratio") or claim.origin != "engine":
             continue
-        wrong = _transpose(claim.value, claim.unit)
+        if metric is not None and claim.metric != metric:
+            continue
+        if claim.unit == "ratio":
+            wrong = claim.value + 0.17 if claim.value <= 0.8 else claim.value - 0.17
+        else:
+            wrong = _transpose(claim.value, claim.unit)
         if abs(wrong - claim.value) <= 2 * TOL[claim.unit]:
             wrong = claim.value + (0.07 if claim.unit == "pct" else 111.0)
         text = claim.text
-        if claim.unit == "pct":
+        if claim.unit == "ratio":
+            text = text.replace(f"{claim.value:.2f}", f"{wrong:.2f}")
+        elif claim.unit == "pct":
             text = text.replace(fmt_pct(claim.value), fmt_pct(wrong))
         elif claim.metric == "capital_at_risk_inr":
             text = text.replace(fmt_inr(claim.value), fmt_inr(wrong))
