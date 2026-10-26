@@ -98,6 +98,13 @@ def load_application(vendor_id: str) -> dict[str, Any]:
     return _json(f"{_root()}/vendors/{vendor_id}/application.json")
 
 
+def load_transcript(vendor_id: str) -> list[dict[str, Any]] | None:
+    """Canonical call transcript (speaker turns) for vendors that have one, else None."""
+    check_vendor(vendor_id)
+    path = Path(_root()) / "vendors" / vendor_id / "call_transcript.json"
+    return _json(str(path)) if path.exists() else None
+
+
 def load_benchmarks() -> dict[str, dict[str, Any]]:
     return _json(f"{_root()}/category_benchmarks.json")
 
