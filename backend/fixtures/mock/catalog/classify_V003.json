@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "classifications": [
+      {
+        "code": "ST-101",
+        "category": "toys",
+        "subcategory": "dog toys"
+      },
+      {
+        "code": "ST-201",
+        "category": "accessories",
+        "subcategory": "collars"
+      },
+      {
+        "code": "ST-202",
+        "category": "accessories",
+        "subcategory": "harness"
+      },
+      {
+        "code": "ST-204",
+        "category": "accessories",
+        "subcategory": "bowls"
+      }
+    ]
+  }
+}

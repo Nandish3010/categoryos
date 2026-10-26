@@ -48,6 +48,10 @@ tool output from `data/synthetic`), then returns `final`, validated against the 
 |---|---|---|
 | `mock/intake/screen_<VID>.json` | Screen, one per vendor V001..V004 | hand-written; V004 flags the injection line and fails |
 | `mock/research/decide_<VID>.json` | Decide, one per vendor | hand-written prose, every number taken from the engine and the real sheet cells |
+| `mock/negotiate/negotiate_V002.json` | Negotiate (`run_tools`), V002 only (the only canonical transcript) | quotes copied verbatim from `data/synthetic/vendors/V002/call_transcript.json` |
+| `mock/catalog/classify_<VID>.json` | Catalog classification (provider `baseten`) for V001..V003 | labels from the catalog taxonomy; V001 has two deliberate disagreements with the rules |
+| `mock/catalog/catalog_copy_<VID>.json` | Catalog copy for the shortlisted SKUs of V001..V003 | listing text from the real sheet rows; mrp and pack are the real cell values |
+| `mock/jbp/jbp_<VID>.json`, `mock/marketing/marketing_<VID>.json` | Launch packet, V001..V003 | numbers from the engine at default levers (V002 uses the negotiated terms) |
 
 Sku codes, rows, headers and cell values in these files are the real ones from `data/synthetic/vendors/*`.
 `decide_V004.json` is minimal on purpose: Screen locks V004, so Decide never runs for it in the normal flow.
@@ -61,3 +65,10 @@ Sku codes, rows, headers and cell values in these files are the real ones from `
 The verifier re-reads the cell, rejects the claim, and the sentence citing `₹965.50` is struck from the narrative.
 All other extractions in all four fixtures are correct. This is a hand-written stand-in: the headline demo claim is a
 real, unscripted catch from a live run. When one is recorded it replaces this file under `fixtures/golden/`.
+
+### Images
+
+Catalog and campaign images are not model fixtures. In mock and replay mode `app.media` draws labelled Pillow
+placeholders into `backend/fixtures/assets/<VID>/` (gitignored; generated on first use and on demand by
+`GET /api/assets/...`). A live run writes real images to the same names and records `live` in `manifest.json`;
+force-add those files when you want them in a replay deployment.

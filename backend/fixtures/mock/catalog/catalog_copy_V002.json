@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "items": [
+      {
+        "sku_code": "MW-T01",
+        "title": "Mewsli Tuna Creamy Lick Cat Treat, 4 x 15 g Pouches (60 g)",
+        "bullets": [
+          "Lickable tuna puree, 92% fish",
+          "Handy for bonding and giving tablets",
+          "Grain-free",
+          "Four single-serve 15 g sachets"
+        ],
+        "description": "A lickable tuna puree treat for cats, made with 92% fish and no grain, in four 15 g sachets.",
+        "attributes": {
+          "life_stage": "adult",
+          "protein": "tuna",
+          "grain_free": true,
+          "pack_g": 60,
+          "mrp": 199
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "MW-T02",
+        "title": "Mewsli Chicken Crunchy Cat Treats with Soft Centre, 60 g",
+        "bullets": [
+          "Crunchy outside, soft chicken centre",
+          "Taurine added",
+          "60 g resealable pack",
+          "A treat cats ask for"
+        ],
+        "description": "Cat treats with a crunchy shell and a soft chicken centre, with added taurine.",
+        "attributes": {
+          "life_stage": "adult",
+          "protein": "chicken",
+          "pack_g": 60,
+          "mrp": 179
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "MW-T03",
+        "title": "Mewsli Salmon Freeze-Dried Bites for Cats, Single Ingredient, 30 g",
+        "bullets": [
+          "100% wild salmon, freeze-dried",
+          "Single ingredient",
+          "Light and easy to portion",
+          "30 g pack"
+        ],
+        "description": "Freeze-dried wild salmon bites with one ingredient, for cats.",
+        "attributes": {
+          "life_stage": "adult",
+          "protein": "salmon",
+          "grain_free": true,
+          "pack_g": 30,
+          "mrp": 299
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "MW-L01",
+        "title": "Mewsli Tofu Cat Litter Green Tea, Plant-Based, Flushable, 6 L",
+        "bullets": [
+          "Plant-based tofu litter",
+          "Low dust and flushable",
+          "Clumps quickly",
+          "Light green tea scent"
+        ],
+        "description": "A plant-based tofu litter with a green tea scent that clumps quickly and is flushable.",
+        "attributes": {
+          "material": "tofu",
+          "scent": "green tea",
+          "pack_ml": 6000,
+          "mrp": 649
+        },
+        "compliance_flags": []
+      }
+    ]
+  }
+}

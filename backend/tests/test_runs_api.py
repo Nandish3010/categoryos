@@ -83,7 +83,8 @@ def test_get_run_has_all_eight_stages(client):
     assert research["status"] == "review" and research["needs_approval"] is True
     assert research["metrics_hash"] == research["narrative_hash"] == apply_levers(build_base("V001")).metrics_hash
     assert research["claims"] and research["data"]["headline"]
-    for sid in STAGE_IDS[2:]:
+    assert stages["shortlist"]["status"] == "review" and stages["shortlist"]["data"]["verdict_table"]
+    for sid in STAGE_IDS[3:]:
         assert stages[sid]["status"] == "pending" and stages[sid]["locked_reason"] is None
     assert client.get("/api/runs/run_nope").status_code == 404
 

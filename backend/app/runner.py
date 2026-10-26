@@ -10,7 +10,8 @@ from dataclasses import dataclass, field
 from datetime import date
 
 from app import store
-from app.agents import decide, screen
+from app.agents import catalog, decide, launch, negotiate, screen
+from app.agents import shortlist as sl
 from app.agents.context import RunContext, Sequencer
 from app.config import settings
 from app.constants import STAGE_META
@@ -30,6 +31,7 @@ log = logging.getLogger("categoryos.runner")
 
 STAGE_IDS = [s["id"] for s in STAGE_META]
 Agent = Callable[[RunContext], Awaitable[StageResult]]
+MultiAgent = Callable[[RunContext], Awaitable[dict[str, StageResult]]]
 _END = object()
 
 
@@ -62,29 +64,63 @@ def reset_state() -> None:
 # ---------- the pure generator ----------
 
 
-async def run_stage(ctx: RunContext, stage_id: str, agent: Agent) -> AsyncIterator[TraceEvent]:
-    """Yield the TraceEvents of one stage: stage_started, whatever the agent emits, stage_result.
-    The StageResult is also available as ``ctx.result`` after the generator is exhausted."""
-    ctx.emit("stage_started", stage_id, {"stage": stage_id})
-    task = asyncio.ensure_future(agent(ctx))
+async def _drain(ctx: RunContext, task: asyncio.Future) -> AsyncIterator[TraceEvent]:
+    """Yield what the agent emits until it returns."""
     task.add_done_callback(lambda _t: ctx.queue.put_nowait(_END))
     while True:
         item = await ctx.queue.get()
         if item is _END:
             break
         yield item
+
+
+def _crash_result(stage_id: str, exc: BaseException, ctx: RunContext) -> tuple[TraceEvent, StageResult]:
+    if isinstance(exc, CategoryOSError):
+        event = ctx.emit("error", stage_id, exc.to_dict(ctx.run_id))
+        return event, StageResult(stage=stage_id, status="failed", summary=exc.problem, data={"error": exc.to_dict(ctx.run_id)})
+    log.error("stage %s crashed", stage_id, exc_info=exc)
+    event = ctx.emit("error", stage_id, {"code": "internal_error", "problem": "The stage crashed", "cause": repr(exc)[:300]})
+    return event, StageResult(stage=stage_id, status="failed", summary="The stage crashed", data={"error": repr(exc)[:300]})
+
+
+async def run_stage(ctx: RunContext, stage_id: str, agent: Agent) -> AsyncIterator[TraceEvent]:
+    """Yield the TraceEvents of one stage: stage_started, whatever the agent emits, stage_result.
+    The StageResult is also available as ``ctx.result`` after the generator is exhausted."""
+    ctx.emit("stage_started", stage_id, {"stage": stage_id})
+    task = asyncio.ensure_future(agent(ctx))
+    async for item in _drain(ctx, task):
+        yield item
     try:
         result = task.result()
-    except CategoryOSError as exc:
-        yield ctx.emit("error", stage_id, exc.to_dict(ctx.run_id))
-        result = StageResult(stage=stage_id, status="failed", summary=exc.problem, data={"error": exc.to_dict(ctx.run_id)})
-    except Exception as exc:
-        log.exception("stage %s crashed", stage_id)
-        yield ctx.emit("error", stage_id, {"code": "internal_error", "problem": "The stage crashed", "cause": repr(exc)[:300]})
-        result = StageResult(stage=stage_id, status="failed", summary="The stage crashed", data={"error": repr(exc)[:300]})
+    except Exception as exc:  # noqa: BLE001
+        event, result = _crash_result(stage_id, exc, ctx)
+        yield event
     ctx.result = result
     yield ctx.emit("stage_result", stage_id, result.model_dump(mode="json"))
     while not ctx.queue.empty():  # events emitted after the agent returned (none today)
+        item = ctx.queue.get_nowait()
+        if item is not _END:
+            yield item
+
+
+async def run_stages(ctx: RunContext, stage_ids: tuple[str, ...], agent: MultiAgent) -> AsyncIterator[TraceEvent]:
+    """One agent, several stages (the Launch packet). ``ctx.results`` maps stage id -> StageResult afterwards."""
+    for sid in stage_ids:
+        ctx.emit("stage_started", sid, {"stage": sid})
+    task = asyncio.ensure_future(agent(ctx))
+    async for item in _drain(ctx, task):
+        yield item
+    results: dict[str, StageResult]
+    try:
+        results = task.result()
+    except Exception as exc:  # noqa: BLE001
+        event, failed = _crash_result(stage_ids[0], exc, ctx)
+        yield event
+        results = {sid: failed.model_copy(update={"stage": sid}) for sid in stage_ids}
+    ctx.results = results
+    for sid in stage_ids:
+        yield ctx.emit("stage_result", sid, results[sid].model_dump(mode="json"))
+    while not ctx.queue.empty():
         item = ctx.queue.get_nowait()
         if item is not _END:
             yield item
@@ -110,6 +146,71 @@ async def _drive_stage(state: RunState, stage_id: str, agent: Agent) -> StageRes
     return result
 
 
+async def _drive_multi(state: RunState, stage_ids: tuple[str, ...], agent: MultiAgent) -> dict[str, StageResult]:
+    ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
+    for sid in stage_ids:
+        await store.save_stage(state.run_id, StageResult(stage=sid, status="running", summary="Running"))
+    async for event in run_stages(ctx, stage_ids, agent):
+        await _persist_publish(state, event)
+    for result in ctx.results.values():
+        await store.save_stage(state.run_id, result)
+    return ctx.results
+
+
+async def _mirror_shortlist(state: RunState, research: StageResult, *, done: bool, emit: bool = True) -> None:
+    """The `shortlist` stage mirrors research's verdict table; it is done once research is approved."""
+    result = sl.shortlist_stage(research, state.vendor_id, done=done)
+    await store.save_stage(state.run_id, result)
+    if emit:
+        ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
+        await _persist_publish(state, ctx.emit("stage_result", "shortlist", result.model_dump(mode="json")))
+
+
+def _spawn(state: RunState, phase: str, work: Callable[[RunState], Awaitable[None]]) -> None:
+    """Run a post-approval phase in the background. It ends with a `done` event carrying {phase}."""
+    state.done = False
+    state.busy = True
+
+    async def go() -> None:
+        try:
+            await work(state)
+        except Exception:
+            log.exception("run %s phase %s crashed", state.run_id, phase)
+        finally:
+            state.busy = False
+            await _finish(state, {"phase": phase})
+
+    task = asyncio.create_task(go())
+    _tasks.add(task)
+    task.add_done_callback(_tasks.discard)
+
+
+async def _phase_execute(state: RunState) -> None:
+    """After research is approved: Negotiate, then Catalog."""
+    research = await get_stage(state.run_id, "research")
+    await _mirror_shortlist(state, research, done=True)
+
+    async def run_negotiate(ctx: RunContext) -> StageResult:
+        return await negotiate.run(ctx, research)
+
+    async def run_catalog(ctx: RunContext) -> StageResult:
+        return await catalog.run(ctx, research)
+
+    await _drive_stage(state, "negotiate", run_negotiate)
+    await _drive_stage(state, "catalog", run_catalog)
+
+
+async def _phase_launch(state: RunState) -> None:
+    """After the catalog is approved: the Launch packet (marketing, jbp, po)."""
+    research = await get_stage(state.run_id, "research")
+    neg = await get_stage(state.run_id, "negotiate")
+
+    async def run_launch(ctx: RunContext) -> dict[str, StageResult]:
+        return await launch.run(ctx, research, neg if neg.status == "done" else None)
+
+    await _drive_multi(state, launch.STAGES, run_launch)
+
+
 async def _finish(state: RunState, payload: dict | None = None) -> None:
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
     event = ctx.emit("done", None, payload or {})
@@ -132,7 +233,9 @@ async def _execute(state: RunState) -> None:
         if screened.status == "failed":
             await _lock_downstream(state, screened)
         else:
-            await _drive_stage(state, "research", decide.run)
+            research = await _drive_stage(state, "research", decide.run)
+            if research.status == "review":
+                await _mirror_shortlist(state, research, done=False)
     except Exception:
         log.exception("run %s crashed", state.run_id)
     finally:
@@ -207,6 +310,9 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
         raise StageLocked(cause=current.locked_reason or "the stage did not run")
     if current.status not in {"review", "done"}:
         raise StageNotReviewable(cause=f"research is {current.status}")
+    stages = await store.get_stages(run_id)
+    if (stages.get("negotiate") or StageResult(stage="negotiate", status="pending")).status != "pending":
+        raise StageNotReviewable(cause="research is already approved and later stages have started")
     state = await get_state(run_id)
     assert state is not None
     if state.busy:
@@ -217,6 +323,8 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
             return await decide.run(ctx, offset=offset, moq=moq, replan=True)
 
         result = await _drive_stage(state, "research", agent)
+        if result.status == "review":
+            await _mirror_shortlist(state, result, done=False)
         await _finish(state, {"replan": True})
         return result
     finally:
@@ -225,6 +333,8 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
 
 async def approve(run_id: str, stage: str, metrics_hash: str) -> StageResult:
     result = await get_stage(run_id, stage)
+    if result.status == "locked":
+        raise StageLocked(cause=result.locked_reason or f"{stage} is locked")
     if result.status not in {"review", "done"} or result.narrative_hash is None:
         raise StageNotReviewable(cause=f"{stage} is {result.status}" + ("" if result.narrative_hash else " and has no narrative to approve"))
     if metrics_hash != result.narrative_hash:
@@ -237,6 +347,14 @@ async def approve(run_id: str, stage: str, metrics_hash: str) -> StageResult:
     approved = result.model_copy(update={"status": "done", "needs_approval": False})
     await store.save_stage(run_id, approved)
     await store.add_approval(run_id, stage, "approve", metrics_hash)
+    if result.status == "review":  # first approval only: a repeat approve never re-runs the next phase
+        state = await get_state(run_id)
+        assert state is not None
+        if stage == "research" and not state.busy:
+            await store.save_stage(run_id, sl.shortlist_stage(approved, state.vendor_id, done=True))
+            _spawn(state, "execute", _phase_execute)
+        elif stage == "catalog" and not state.busy:
+            _spawn(state, "launch", _phase_launch)
     return approved
 
 

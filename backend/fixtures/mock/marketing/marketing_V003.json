@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "campaign_name": "SnapTail Walk-Ready Week",
+    "copy": "SnapTail's tug toy, adjustable collar, padded harness and steel bowl, ready for everyday walks and play. Launch week price is 5% off.",
+    "discount_ask": {
+      "brand_funded_pct": 5,
+      "our_pct": 0,
+      "rationale": "The vendor funds the full 5% launch discount; we add no platform-funded discount in the first 30 days."
+    }
+  }
+}

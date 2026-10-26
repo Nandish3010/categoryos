@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "items": [
+      {
+        "sku_code": "HP-D01",
+        "title": "Highland Paws Alpine Chicken & Sweet Potato Adult Dry Dog Food, Grain-Free, 1.5 kg",
+        "bullets": [
+          "Grain-free recipe with single-source chicken",
+          "32% protein for active adult dogs",
+          "No soy and no artificial colour",
+          "Omega 3 and 6 included for skin and coat"
+        ],
+        "description": "Small-batch adult dry food built on single-source chicken and sweet potato. Grain-free, with no soy and no artificial colour.",
+        "attributes": {
+          "life_stage": "adult",
+          "breed_size": "all breeds",
+          "protein": "chicken",
+          "protein_pct": 32,
+          "grain_free": true,
+          "pack_g": 1500,
+          "mrp": 1499
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-D02",
+        "title": "Highland Paws Alpine Chicken & Sweet Potato Adult Dry Dog Food, Grain-Free, 6 kg Value Pack",
+        "bullets": [
+          "Value pack of the grain-free chicken recipe",
+          "Single-source chicken protein",
+          "32% protein",
+          "Six kilos for multi-dog homes"
+        ],
+        "description": "The 6 kg value pack of our grain-free adult recipe, made with single-source chicken and sweet potato.",
+        "attributes": {
+          "life_stage": "adult",
+          "breed_size": "all breeds",
+          "protein": "chicken",
+          "grain_free": true,
+          "pack_g": 6000,
+          "mrp": 4999
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-D05",
+        "title": "Highland Paws Alpine Puppy Starter Chicken & Egg Dry Dog Food, 1.5 kg",
+        "bullets": [
+          "Chicken and egg recipe for puppies",
+          "DHA included",
+          "Small kibble for small mouths",
+          "34% protein"
+        ],
+        "description": "A starter diet for growing puppies with chicken and egg, DHA and a small kibble size.",
+        "attributes": {
+          "life_stage": "puppy",
+          "breed_size": "all breeds",
+          "protein": "chicken and egg",
+          "protein_pct": 34,
+          "grain_free": false,
+          "pack_g": 1500,
+          "mrp": 1599
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-D06",
+        "title": "Highland Paws Alpine Large Breed Adult Dry Dog Food, 6 kg",
+        "bullets": [
+          "Large kibble for large-breed jaws",
+          "28% protein",
+          "Contains chondroitin and glucosamine",
+          "Six kilo bag"
+        ],
+        "description": "Adult dry food in a large kibble for large breeds, with chondroitin and glucosamine added.",
+        "attributes": {
+          "life_stage": "adult",
+          "breed_size": "large",
+          "protein_pct": 28,
+          "grain_free": false,
+          "pack_g": 6000,
+          "mrp": 4799
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-D07",
+        "title": "Highland Paws Alpine Senior Joint Care Dry Dog Food, 1.5 kg",
+        "bullets": [
+          "Lower fat recipe for senior dogs",
+          "L-carnitine added",
+          "Soft and easy to chew",
+          "Includes joint-friendly ingredients"
+        ],
+        "description": "A lower-fat senior recipe with added L-carnitine, made easy to chew.",
+        "attributes": {
+          "life_stage": "senior",
+          "breed_size": "all breeds",
+          "grain_free": false,
+          "pack_g": 1500
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-W02",
+        "title": "Highland Paws Summit Lamb Pate Wet Dog Food Tray, 150 g",
+        "bullets": [
+          "Smooth lamb pate",
+          "High meat content",
+          "Vitamins added",
+          "Single-serve tray"
+        ],
+        "description": "A smooth lamb pate in a 150 g tray with a high meat content and added vitamins.",
+        "attributes": {
+          "life_stage": "adult",
+          "breed_size": "all breeds",
+          "protein": "lamb",
+          "grain_free": false,
+          "pack_g": 150,
+          "mrp": 179
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "HP-W03",
+        "title": "Highland Paws Summit Pumpkin & Turkey Stew Wet Dog Food, 400 g",
+        "bullets": [
+          "Turkey and pumpkin stew",
+          "Gentle on dogs with sensitive tummies",
+          "Stew texture dogs enjoy",
+          "400 g pack"
+        ],
+        "description": "A turkey and pumpkin stew with a soft texture, in a 400 g pack.",
+        "attributes": {
+          "life_stage": "adult",
+          "breed_size": "all breeds",
+          "protein": "turkey",
+          "grain_free": false,
+          "pack_g": 400,
+          "mrp": 349
+        },
+        "compliance_flags": [
+          {
+            "rule": "unsubstantiated_claim",
+            "text": "supports digestion and stool quality",
+            "severity": "low"
+          }
+        ]
+      }
+    ]
+  }
+}

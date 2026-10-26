@@ -32,6 +32,7 @@ class RunContext:
     sequencer: Sequencer
     queue: asyncio.Queue[Any] = field(default_factory=asyncio.Queue)
     result: StageResult | None = None  # set by runner.run_stage when the stage ends
+    results: dict[str, StageResult] = field(default_factory=dict)  # set by runner.run_stages (multi-stage agents)
 
     def emit(
         self,

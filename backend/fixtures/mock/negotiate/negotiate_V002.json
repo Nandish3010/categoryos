@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_transcript",
+        "args": {
+          "vendor_id": "V002"
+        }
+      },
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V002"
+        }
+      },
+      {
+        "tool": "get_metrics",
+        "args": {
+          "vendor_id": "V002",
+          "target_margin_pct_offset": 0
+        }
+      }
+    ],
+    "final": {
+      "commitments": [
+        {
+          "term": "margin_pct",
+          "offered": 21,
+          "turn": 4,
+          "transcript_quote": "If you take the full treats range, I can move to 21 percent."
+        },
+        {
+          "term": "payment_days",
+          "offered": 30,
+          "turn": 8,
+          "transcript_quote": "But I can do 30 days if the order is confirmed in writing this week."
+        },
+        {
+          "term": "moq",
+          "offered": 500,
+          "turn": 10,
+          "transcript_quote": "I can bring it down to 500 units in total for the first order, split across the SKUs you list."
+        },
+        {
+          "term": "marketing_inr",
+          "offered": 50000,
+          "turn": 12,
+          "transcript_quote": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling."
+        },
+        {
+          "term": "launch_discount_pct",
+          "offered": 5,
+          "turn": 14,
+          "transcript_quote": "I can give a 5 percent launch discount for the first 30 days."
+        },
+        {
+          "term": "returns",
+          "offered": 7,
+          "turn": 16,
+          "transcript_quote": "Defect returns within 7 days stay as they are."
+        }
+      ],
+      "refusals": [
+        {
+          "term": "margin_pct",
+          "turn": 6,
+          "transcript_quote": "No, 21 is my floor on the treats.",
+          "note": "Would not go to 24 percent on treats; litter margin to be revisited once there are sales."
+        },
+        {
+          "term": "sale_or_return",
+          "turn": 16,
+          "transcript_quote": "I am sorry, I cannot accept returns of unsold stock.",
+          "note": "Sale-or-return after 90 days refused: short shelf life, cannot resell."
+        }
+      ],
+      "counter_offer": {
+        "asks": [
+          "Move treats margin from 21% towards the 35% category target, or cut unit cost on MW-T01, MW-T02 and MW-T03 (see the required-cost table)",
+          "Cut the first-order MOQ below 500 units, or phase it in two deliveries",
+          "Revisit the cat litter margin (MW-L01) once the first month's sales are in",
+          "Written confirmation of 30 days payment, 50,000 rupees launch support and the 5 percent launch discount by Friday"
+        ],
+        "email_draft": "Hi Priya,\n\nThank you for the call. To confirm what we agreed: 21 percent margin on the treats range, 30 days payment against a written order, 500 units in total for the first order, 50,000 rupees of launch marketing support, a 5 percent launch discount for the first 30 days, and defect returns within 7 days.\n\nThe margin is still the gap for us: our treats category needs 35 percent. Could you look at a lower unit cost on the tuna, chicken and salmon treats, or a phased MOQ? We are happy to revisit the litter margin after the first month of sales.\n\nPlease send the written confirmation by Friday and we will move to the purchase order.\n\nBest,\nCategory team"
+      }
+    }
+  }
+}
