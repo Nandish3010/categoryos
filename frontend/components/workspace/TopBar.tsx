@@ -19,12 +19,17 @@ export function TopBar({
   mode,
   claims,
   onToggleDrawer,
+  phase = "Decide",
+  onPhase,
 }: {
   vendorId: string;
   brand: string | null;
   mode: ModeResponse | null;
   claims: ClaimsResponse | null;
   onToggleDrawer: () => void;
+  /** Phase of the stage whose view is showing. */
+  phase?: string;
+  onPhase?: (phase: (typeof PHASES)[number]) => void;
 }) {
   return (
     <header className="sticky top-0 z-40 flex h-12 items-center gap-3 border-b border-border bg-bg px-4">
@@ -45,14 +50,16 @@ export function TopBar({
       >
         {PHASES.map((p, i) => (
           <li key={p} className="flex items-center gap-1">
-            <span
-              aria-current={p === "Decide" ? "step" : undefined}
-              className={`rounded-chip px-2 py-1 ${
-                p === "Decide" ? "bg-accent/15 font-medium text-accent" : "text-text-dim"
+            <button
+              type="button"
+              onClick={() => onPhase?.(p)}
+              aria-current={p === phase ? "step" : undefined}
+              className={`rounded-chip px-2 py-1 hover:text-text ${
+                p === phase ? "bg-accent/15 font-medium text-accent" : "text-text-dim"
               }`}
             >
               {p}
-            </span>
+            </button>
             {i < PHASES.length - 1 ? (
               <ChevronRight size={16} className="text-border" aria-hidden="true" />
             ) : null}

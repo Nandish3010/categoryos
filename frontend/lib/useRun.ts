@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   eventsHeaders,
   eventsUrl,
   fetchLatestRun,
   fetchRun,
   isMissingEndpoint,
+  isRunActive,
   parseTraceEvent,
   startRun,
   type RunSnapshot,
@@ -28,6 +29,8 @@ export type RunState = {
   error: Error | null;
   start: () => Promise<void>;
   refresh: () => Promise<void>;
+  /** Re-open the event stream from the last seen event (a new phase started after an approve). */
+  resume: () => void;
 };
 
 export function useRun(vendorId: string): RunState {
@@ -40,6 +43,7 @@ export function useRun(vendorId: string): RunState {
   const [unavailable, setUnavailable] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [tick, setTick] = useState(0);
+  const lastSeq = useRef<number | null>(null);
 
   // Load the latest run for this vendor on mount.
   useEffect(() => {
@@ -73,6 +77,7 @@ export function useRun(vendorId: string): RunState {
         });
     load();
     streamSse({
+      lastEventId: lastSeq.current != null ? String(lastSeq.current) : null,
       url: eventsUrl(runId),
       headers: eventsHeaders(),
       signal: controller.signal,
@@ -84,12 +89,24 @@ export function useRun(vendorId: string): RunState {
         if (f.event !== "trace") return;
         const ev = parseTraceEvent(f.data);
         if (!ev) return;
+        lastSeq.current = Math.max(lastSeq.current ?? 0, ev.seq);
         setEvents((prev) => (prev.some((p) => p.seq === ev.seq) ? prev : [...prev, ev]));
         if (ev.type === "stage_result" || ev.type === "done") load();
       },
     });
     return () => controller.abort();
   }, [runId, tick]);
+
+  // A phase can still be running after the stream closed on its `done` (a reload mid-phase, or
+  // right after an approve): reconnect with Last-Event-ID until nothing is running any more.
+  const active = isRunActive(run);
+  useEffect(() => {
+    if (conn !== "done" || !active) return;
+    const t = setTimeout(() => setTick((n) => n + 1), 1000);
+    return () => clearTimeout(t);
+  }, [conn, active, tick]);
+
+  const resume = useCallback(() => setTick((n) => n + 1), []);
 
   const start = useCallback(async () => {
     setStarting(true);
@@ -98,6 +115,7 @@ export function useRun(vendorId: string): RunState {
       const { run_id } = await startRun(vendorId);
       setEvents([]);
       setRun(null);
+      lastSeq.current = null;
       setRunId(run_id);
       setTick((t) => t + 1);
     } catch (e) {
@@ -116,5 +134,5 @@ export function useRun(vendorId: string): RunState {
     }
   }, [runId]);
 
-  return { runId, run, events, conn, loading, starting, unavailable, error, start, refresh };
+  return { runId, run, events, conn, loading, starting, unavailable, error, start, refresh, resume };
 }

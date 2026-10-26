@@ -1,6 +1,6 @@
 import { CheckCircle2, CircleHelp, XCircle } from "lucide-react";
 import type { Claim } from "@/lib/api";
-import { inr } from "@/lib/format";
+import { inrExact } from "@/lib/format";
 import { Tag } from "./Chip";
 
 export function formatClaimValue(value: number | string | null | undefined, unit: Claim["unit"]): string {
@@ -8,7 +8,7 @@ export function formatClaimValue(value: number | string | null | undefined, unit
   if (typeof value === "string") return value;
   switch (unit) {
     case "inr":
-      return inr(value);
+      return inrExact(value);
     case "pct":
       // Backend may send fractions (0.31) or percent points (31.4); treat |v|<=1 as a fraction.
       return `${(Math.abs(value) <= 1 ? value * 100 : value).toFixed(1)}%`;
