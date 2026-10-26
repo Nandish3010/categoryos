@@ -7,6 +7,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
+from app import persist
 from app.config import settings
 from app.errors import SpendCapExceeded
 
@@ -78,6 +79,7 @@ def record(model: str, usage: dict[str, float]) -> float:
         tmp = path.with_suffix(path.suffix + ".tmp")
         tmp.write_text(json.dumps(data, indent=2))
         os.replace(tmp, path)
+    persist.notify()
     return cost
 
 
