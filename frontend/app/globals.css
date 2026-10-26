@@ -1,26 +1,73 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Dark only. Tokens are documented in /DESIGN.md. */
+@theme {
+  --color-bg: #0a0a0b;
+  --color-surface: #111114;
+  --color-surface-2: #17171b;
+  --color-border: #26262c;
+  --color-text: #ededf0;
+  --color-text-dim: #a1a1aa;
+  --color-accent: #6ea8fe;
+  --color-ok: #4ade80;
+  --color-warn: #fbbf24;
+  --color-bad: #f87171;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-card: 8px;
+  --radius-chip: 6px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@keyframes flash-amber {
+  0% {
+    background-color: rgb(251 191 36 / 0.35);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+.flash-amber {
+  animation: flash-amber 600ms ease-out;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.shimmer {
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flash-amber,
+  .shimmer {
+    animation: none;
+  }
+  * {
+    transition-duration: 0ms !important;
+  }
 }
