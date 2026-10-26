@@ -16,6 +16,6 @@ DEMAND_MIN = 0.4
 OVERLAP_MAX = 0.6
 MOQ_FACTOR = 2.0
 FREIGHT_PCT = 0.04
-TOL = {"pct": 0.01, "inr": 1.0, "units": 0.0, "score": 0.5}
+TOL = {"pct": 0.01, "inr": 1.0, "units": 0.0, "score": 0.5, "ratio": 0.005}
 ROUND_DP = 4
 ALLOWED_VENDORS = ("V001", "V002", "V003", "V004")
