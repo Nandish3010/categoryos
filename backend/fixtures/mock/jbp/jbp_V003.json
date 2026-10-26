@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "markdown": "# Joint Business Plan: SnapTail x our platform\n\n## Overview\nSnapTail launches 4 shortlisted SKUs on our platform. Terms below are from the application.\n\n## Targets\n| Metric | Target |\n|---|---|\n| Shortlisted SKUs | 4 |\n| Estimated monthly GMV | ₹14,445 |\n| Estimated monthly units | 46.3 |\n| Blended margin at current vendor costs | 31.6% |\n| First order | 400 units, ₹82,144 at vendor cost before GST |\n| Payment terms | 30 days |\n\n## Investments\n- Brand-funded launch marketing: ₹0\n- Launch discount: 5% for the first 30 days, funded by the brand\n\n## Promo calendar\n| Event | Start | End |\n|---|---|---|\n| Listings live | 2026-11-13 | 2026-11-13 |\n| Launch week: sponsored listings and sampling | 2026-11-13 | 2026-11-19 |\n| Launch-month discount window | 2026-11-13 | 2026-12-12 |\n| First sell-through review | 2026-12-13 | 2026-12-13 |\n\n## Commitments and next steps\n- Written order confirmation and PO acknowledgement from SnapTail\n- Revisit margin and MOQ at the first sell-through review on 2026-12-13\n"
+  }
+}

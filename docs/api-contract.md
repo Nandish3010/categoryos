@@ -11,7 +11,28 @@ Eight stage ids, in order: `intake`, `research`, `shortlist`, `negotiate`, `cata
 | Agent | Stage id it reports on | Notes |
 |---|---|---|
 | Screen | `intake` | deterministic document check, then a tool-calling model pass |
-| Decide | `research` | one engine run that covers research, shortlist and negotiate; `shortlist` and `negotiate` stay `pending` |
+| Decide | `research` | one engine run for the verdict table; its `shortlist` mirror is created with it |
+| (mirror) | `shortlist` | mirrors research's verdict table: `review` until research is approved, then `done` |
+| Negotiate | `negotiate` | runs after `approve(research)`; `done` (no approval) |
+| Catalog | `catalog` | runs after Negotiate; `review`, `needs_approval: true` |
+| Launch packet | `marketing`, `jbp`, `po` | ONE agent after `approve(catalog)`; `marketing` and `jbp` end `done`, `po` ends `review` with `needs_approval: true` |
+
+## Run flow
+
+```
+POST runs -> intake -> research (review) + shortlist (review)          ... `done` event
+approve(research, metrics_hash)  -> shortlist done; negotiate -> catalog (review)   ... `done` {phase:"execute"}
+approve(catalog, metrics_hash)   -> marketing, jbp, po (review)                       ... `done` {phase:"launch"}
+approve(po, metrics_hash)        -> po done
+```
+
+Approving returns immediately with the approved StageResult; the next phase runs in the background and ends with its own
+`done` TraceEvent whose payload is `{phase: "execute"|"launch"}`. The SSE stream closes after each `done`, so after an
+approve reconnect with `Last-Event-ID: <last seq>` (or poll `GET /api/runs/{id}`). Approving a stage that is already
+`done` is a no-op (it never re-runs the next phase). `approve` on a `locked` stage (for example V004, or after a reject)
+is `409 stage_locked`. Re-plan is refused (`409 stage_not_reviewable`) once negotiate has started.
+For `catalog` and `po`, `narrative_hash == metrics_hash ==` the approved research hash; a different hash is `409 stale_approval`.
+The Launch packet needs `catalog` to be approved with that hash.
 
 Status FSM: `pending` -> `running` -> `review` (needs a human) | `done` | `failed` | `locked`.
 A passed Screen ends `done` (it needs no approval). Decide ends `review` with `needs_approval: true`;
@@ -57,6 +78,87 @@ verification: {total, verified, rejected, unverifiable}, replanned: bool, mode}`
 - `verdict` is always the engine's verdict (a disagreeing model verdict is replaced and logged in
   `verdict_corrections`), unless a human override changed it (`edited_by_human: true`).
 
+### `shortlist` `data`
+
+`{verdict_table: [{code, name, verdict, engine_verdict, edited_by_human, margin_pct, target_pct, fit_score, est_gmv,
+alloc_units, reasons[]}], counts: {list, negotiate, reject, needs_data}, shortlisted, approved, source_stage: "research"}`.
+`verdict` includes human overrides.
+
+### `negotiate` `data`
+
+The canonical transcript JSON is the source of truth. If `vendors/<VID>/call.wav` exists and the negotiate stage is live,
+the call is also transcribed (`POST /v1/asr/transcribe`) and diffed against the canonical text; the ASR text is never trusted.
+
+```json
+{"gap_table": [{"term": "margin_pct|payment_days|moq|marketing_inr|launch_discount_pct|returns", "label", "unit": "pct|days|units|inr",
+   "direction": "higher|lower", "application": 17, "offered": 21, "required": 35, "gap": -14,
+   "status": "met|gap|not_stated", "turn": 4, "quote": "...", "claim_id": "...", "verification": "verified|rejected|..."}],
+ "application_terms": {}, "required": {"category", "margin_pct", "margin_min_pct", "payment_days", "moq", "marketing_inr", "launch_discount_pct", "returns"},
+ "commitments": [{"term", "offered", "transcript_quote", "turn", "claim_id", "status", "reason"}],
+ "refusals": [{"term", "transcript_quote", "turn", "note", "quote_verified"}],
+ "counter_offer": {"asks": [], "email_draft": ""},
+ "transcript": {"turns": [{"turn", "speaker", "text"}], "asr_text": null, "similarity_pct": null, "changes": [], "audio_hours": null} | null,
+ "transcript_source": "canonical|asr", "negotiated_skus": [], "verification": {"total", "verified", "rejected", "unverifiable"}, "mode"}
+```
+
+- `gap = offered - required`; `status` is judged in `direction` (for `moq` lower is better). `required` comes from the Decide
+  engine: the category target margin of the main negotiate category, the benchmark payment terms, `2 x` forecast monthly units
+  for MOQ, 10% of the first-order retail value for marketing, a 5% launch discount and a 7-day defect-return window.
+- Each commitment is a `model_extraction` claim (metrics `commit_margin_pct`, `commit_payment_days`, `commit_moq`,
+  `commit_marketing_inr`, `commit_launch_discount_pct`, `commit_returns`). The verifier checks that `transcript_quote` appears
+  verbatim in the canonical transcript at `turn` and states the committed number. A rejected commitment is kept in
+  `commitments`/`claims` but is not counted: its gap-table row becomes `not_stated`.
+- `transcript_source` is `"asr"` when a voice transcription was produced (shown next to the canonical text), else `"canonical"`.
+- No negotiate SKUs: `done`, summary `No negotiation needed`, `gap_table: []`. No call transcript on file (V003): a
+  deterministic gap table from the application terms, every row `not_stated`, `transcript: null`.
+
+### `catalog` `data`
+
+```json
+{"skus": [{"code", "name", "verdict", "raw_row": {"<header>": "<cell>"}, "normalized": {"mrp", "cost", "cost_source", "selling_price",
+   "pack", "pack_normalized", "pack_detail", "category", "subcategory", "flags"},
+   "classification": {"rules": {"category", "subcategory"}, "model": {"category", "subcategory", "valid"} | null,
+     "agreement": true|false|null, "note": null | "Classified by rules" | "Model label differs; kept the rules' classification"},
+   "copy": {"sku_code", "title" (<=80), "bullets" (3-5), "description", "attributes": {}, "compliance_flags": [{"rule", "text", "severity", "source": "model|rules"}], "generated_by": "model|rules"},
+   "attribute_checks": [{"claim_id", "status", "reason"}], "corrections": [{"attribute", "claimed", "sheet", "claim_id"}],
+   "images": {"packshot": "/api/assets/...", "cutout": "/api/assets/..." | "unavailable", "cutout_note"?, "lifestyle": url | null,
+     "image_source": "live|placeholder|mixed", "sources": {}, "errors"?: []},
+   "hero": false}],
+ "classifier_agreement_pct": 71.4 | null, "hero_skus": [], "image_mode": "live|placeholder", "verification": {}}
+```
+
+- Classification: the taxonomy rules are the truth. Baseten (`muse-spark-open`, prompted for JSON over the catalog label set) is
+  validated against it; disagreement keeps the rules' label. An unusable reply means `Classified by rules` and
+  `classifier_agreement_pct: null`.
+- Compliance rules: `medical_claim` (high), `unverifiable_superlative`, `unsubstantiated_claim`, `missing_label_info`
+  (shelf life, net quantity, ingredients, FSSAI licence for food).
+- `attributes.mrp` and the pack quantity (`pack_g`/`pack_ml`/`pack_pc`) are `model_extraction` claims (metrics `mrp`, `pack_qty`)
+  verified against the sheet cell; a rejected value is replaced by the sheet value and logged in `corrections`.
+- The three SKUs with the highest `est_gmv` are `hero` and get a `lifestyle` image. A failed or disabled SAM cutout is the
+  string `"unavailable"` (the UI shows the packshot with a "cutout unavailable" label). Mock and replay images are Pillow
+  placeholders labelled `image_source: "placeholder"`.
+
+### `marketing` `data`
+
+`{campaign_name, copy, discount_ask: {brand_funded_pct, our_pct, rationale}, image: {url, image_source}, corrections[],
+brand_funded_marketing_inr, mode}`. `brand_funded_pct` is always the committed launch discount (a differing model value is
+replaced and logged in `corrections`).
+
+### `jbp` `data`
+
+`{markdown, targets: {shortlisted_skus, est_monthly_gmv_inr, est_monthly_units, blended_margin_pct, first_order_units,
+first_order_cost_inr, payment_days}, investments: {brand_funded_marketing_inr, launch_discount_pct, launch_discount_days, source},
+promo_calendar: [{name, start, end}], mode}`.
+
+### `po` `data`
+
+`{po_number, vendor_id, date, lines: [{code, name, units, unit_cost, cost_source, line_total}], subtotal, gst_rate: 0.18, gst,
+grand_total, gst_note, payment_days, terms_source: {term: "negotiation"|"application"}, moq_source, approved_moq,
+timeline: [{step: "raised|confirmed|shipped|received", status, planned_date, expected_date, delay_days, alert?}], alerts[],
+status: "raised", verification}`. Units come from the engine allocation (at the vendor's verified MOQ commitment when there
+is one, else the approved MOQ). `claims` holds `po_total` (subtotal) and `po_grand_total`, both recomputed by the verifier.
+The timeline is simulated, with dates derived from the run's `demo_today` and one deterministic delay alert at `shipped`.
+
 ## TraceEvent
 
 ```json
@@ -85,7 +187,7 @@ started. Payloads:
 | `stage_result` | a full `StageResult` |
 | `degraded` | `{reason}` (replay fell back to a mock fixture) |
 | `error` | `{code, problem, cause, fix, run_id}` |
-| `done` | `{}` (or `{replan: true}` after a re-plan); always the last event of a stream |
+| `done` | `{}` (first phase), `{replan: true}` after a re-plan, `{phase: "execute"|"launch"}` after an approval phase; the stream closes after each |
 
 ## Routes
 
@@ -122,7 +224,8 @@ data: {TraceEvent JSON}
 - After a re-plan, its events (ending in another `done`) are appended to the same run's log.
 
 ### `POST /api/runs/{run_id}/stages/{stage}/approve`  body `{"metrics_hash": "..."}`
-`200` StageResult with `status: "done"`, `needs_approval: false`. `409`
+`200` StageResult with `status: "done"`, `needs_approval: false`. Approving `research` starts Negotiate + Catalog and approving
+`catalog` starts the Launch packet (see Run flow). `409 stage_locked` for a locked stage. `409`
 `{"code": "stale_approval", "problem", "cause", "fix"}` if `metrics_hash != narrative_hash`.
 `409 stage_not_reviewable` if the stage is not `review`/`done` or has no narrative (e.g. `intake`, locked stages).
 `404 unknown_stage|run_not_found`.
@@ -145,6 +248,11 @@ is running; `404 run_not_found` (also when the run belongs to another vendor).
 
 ### `POST /api/admin/reset`  (demo key, always)
 `200 {"ok": true}`. Empties the store and in-memory run state. Idempotent.
+
+### `GET /api/assets/{vendor}/{file}` -> `image/png`
+Cached catalog and campaign images. `file` is `<SKU code>-packshot|cutout|lifestyle.png` or `campaign.png`; anything else
+(traversal, other extensions, unknown vendor) is `404 asset_not_found`. In mock/replay a missing file for a real SKU is drawn
+as a labelled placeholder on demand. Open (no key).
 
 ## Other routes (unchanged)
 

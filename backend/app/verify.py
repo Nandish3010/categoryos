@@ -10,15 +10,25 @@ from pathlib import Path
 from pydantic import BaseModel
 
 from app.config import settings
-from app.constants import ALLOWED_VENDORS, TOL
-from app.data_loader import load_sheet
+from app.constants import ALLOWED_VENDORS, GST_RATE, TOL
+from app.data_loader import load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.parsing import PARSER_VERSION, map_columns, parse_pack, parse_price
 from app.schemas import Claim, Evidence, LeverResponse, SourceRef
 from app.util import fmt_inr, fmt_pct
 
-VENDOR_METRICS = {"capital_at_risk_inr": "inr"}
+VENDOR_METRICS = {"capital_at_risk_inr": "inr", "po_total": "inr", "po_grand_total": "inr"}
+COMMIT_METRICS = {
+    "commit_margin_pct": "pct",
+    "commit_payment_days": "units",
+    "commit_moq": "units",
+    "commit_marketing_inr": "inr",
+    "commit_launch_discount_pct": "pct",
+    "commit_returns": "units",
+}
+EXTRACTION_METRICS = {"pack_qty": "qty"}
+_TRANSCRIPT = re.compile(r"^vendors/(V00[1-4])/call_transcript\.json$")
 _VENDOR_SHEET = re.compile(r"^vendors/(V00[1-4])/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
@@ -48,6 +58,7 @@ def allowed_sources() -> frozenset[str]:
     for vid in ALLOWED_VENDORS:
         files.add(f"vendors/{vid}/sku_sheet.csv")
         files.add(f"vendors/{vid}/application.json")
+        files.add(f"vendors/{vid}/call_transcript.json")
     return frozenset(files)
 
 
@@ -84,6 +95,11 @@ def _parse_cell(raw: str, unit: str) -> float | None:
         return float(units) if isinstance(units, int | float) else parse_price(raw)
     if unit == "inr":
         return parse_price(raw)
+    if unit == "qty":
+        pack = parse_pack(raw)
+        for key in ("grams", "ml", "units"):
+            if isinstance(pack.get(key), int | float):
+                return float(pack[key])  # type: ignore[arg-type]
     return None
 
 
@@ -92,7 +108,12 @@ def _recompute_engine(claim: Claim) -> float:
         vendor, _, query = claim.source_ref.key.partition("?")
         params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
         moq = int(params["moq"]) if "moq" in params else None
-        return apply_levers(build_base(vendor), float(params.get("offset", 0)), moq).summary.capital_at_risk_inr
+        lever = apply_levers(build_base(vendor), float(params.get("offset", 0)), moq)
+        if claim.metric in {"po_total", "po_grand_total"}:
+            codes = [c for c in params.get("skus", "").split(",") if c]
+            subtotal = round(sum(s.alloc_units * (s.cost or 0.0) for s in lever.skus if s.code in codes), 2)
+            return subtotal if claim.metric == "po_total" else round(subtotal * (1 + GST_RATE), 2)
+        return lever.summary.capital_at_risk_inr
     sku_key = claim.sku_key or claim.source_ref.key
     return compute_metric(sku_key.split(":", 1)[0], claim.metric, sku_key)
 
@@ -119,14 +140,75 @@ def _verify_extraction(claim: Claim, rel_file: str) -> Claim:
     return _finish(claim, "rejected", f"sheet cell {raw!r} parses to {parsed:g}, claim says {claim.value:g}", parsed)
 
 
+_WORD_ONES = {w: i for i, w in enumerate(
+    ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+)}
+_WORD_TENS = {w: 10 * i for i, w in enumerate(["x", "x", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]) if w != "x"}
+_NUM_TOKEN = re.compile(r"\d[\d,]*(?:\.\d+)?|[a-z]+(?:-[a-z]+)?", re.IGNORECASE)
+
+
+def numbers_in(text: str) -> list[float]:
+    """Numbers stated in a quote: digits (commas allowed) and spelled-out 0-99 ('Twenty-one')."""
+    out: list[float] = []
+    for tok in _NUM_TOKEN.findall(text):
+        low = tok.lower()
+        if tok[0].isdigit():
+            out.append(float(tok.replace(",", "")))
+        elif low in _WORD_ONES:
+            out.append(float(_WORD_ONES[low]))
+        elif low in _WORD_TENS:
+            out.append(float(_WORD_TENS[low]))
+        elif "-" in low:
+            tens, _, ones = low.partition("-")
+            if tens in _WORD_TENS and ones in _WORD_ONES and 0 < _WORD_ONES[ones] < 10:
+                out.append(float(_WORD_TENS[tens] + _WORD_ONES[ones]))
+    return out
+
+
+def _squash(text: str) -> str:
+    return " ".join(text.split())
+
+
+def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
+    """A negotiation commitment: the quote must appear verbatim in the canonical transcript at the claimed turn,
+    and the claimed number must be one of the numbers stated in that quote."""
+    ev = claim.evidence
+    if ev is None or ev.row is None or not ev.raw_value:
+        return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
+    if file_sha256(rel_file) != ev.sha256:
+        return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")
+    vendor = _TRANSCRIPT.match(rel_file).group(1)  # type: ignore[union-attr]
+    turns = load_transcript(vendor) or []
+    turn = next((t for t in turns if t.get("turn") == ev.row), None)
+    if turn is None:
+        return _finish(claim, "rejected", f"the transcript has no turn {ev.row}")
+    quote = _squash(ev.raw_value)
+    if quote not in _squash(str(turn.get("text", ""))):
+        return _finish(claim, "rejected", f"the quote does not appear verbatim in turn {ev.row} of the canonical transcript")
+    stated = numbers_in(quote)
+    value = claim.value * 100 if claim.unit == "pct" else claim.value
+    tol = TOL["pct"] * 100 if claim.unit == "pct" else TOL.get(claim.unit, 0.0)
+    if not any(abs(n - value) <= max(tol, 1e-9) for n in stated):
+        shown = ", ".join(f"{n:g}" for n in stated) or "none"
+        return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
+    return _finish(claim, "verified", None, claim.value)
+
+
 def verify_claim(claim: Claim) -> Claim:
     rel_file = _normalize(claim.source_ref.file)
     if _resolve(claim.source_ref.file) is None:
         return _finish(claim, "rejected", f"unknown source: {rel_file!r} is not an allowlisted data file")
-    unit = METRIC_UNITS.get(claim.metric) or VENDOR_METRICS.get(claim.metric)
+    unit = (
+        METRIC_UNITS.get(claim.metric)
+        or VENDOR_METRICS.get(claim.metric)
+        or COMMIT_METRICS.get(claim.metric)
+        or EXTRACTION_METRICS.get(claim.metric)
+    )
     if unit is None:
         return _finish(claim, "unverifiable", f"unknown metric {claim.metric!r}")
     if claim.origin == "model_extraction":
+        if _TRANSCRIPT.match(rel_file):
+            return _verify_commitment(claim, rel_file)
         return _verify_extraction(claim, rel_file)
     if claim.evidence is not None and claim.evidence.sha256 != file_sha256(rel_file):
         return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")

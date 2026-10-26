@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "classifications": [
+      {
+        "code": "HP-D01",
+        "category": "dog dry food",
+        "subcategory": "adult"
+      },
+      {
+        "code": "HP-D02",
+        "category": "dog dry food",
+        "subcategory": "adult"
+      },
+      {
+        "code": "HP-D05",
+        "category": "dog dry food",
+        "subcategory": "adult"
+      },
+      {
+        "code": "HP-D06",
+        "category": "dog dry food",
+        "subcategory": "adult"
+      },
+      {
+        "code": "HP-D07",
+        "category": "dog dry food",
+        "subcategory": "senior"
+      },
+      {
+        "code": "HP-W02",
+        "category": "dog wet food",
+        "subcategory": "pate"
+      },
+      {
+        "code": "HP-W03",
+        "category": "dog wet food",
+        "subcategory": "chunks"
+      }
+    ]
+  }
+}

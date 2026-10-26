@@ -26,3 +26,6 @@ __pycache__/
 
 # Claude Code local state (agent worktrees, launch config)
 .claude/
+
+# Generated catalog images (placeholders in mock/replay). Force-add recorded live images when they exist.
+backend/fixtures/assets/

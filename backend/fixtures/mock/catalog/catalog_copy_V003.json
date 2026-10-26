@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "items": [
+      {
+        "sku_code": "ST-101",
+        "title": "SnapTail Cotton Rope Tug Toy for Dogs",
+        "bullets": [
+          "Durable cotton rope",
+          "Made for tug and chew games",
+          "Single toy",
+          "Easy to wash"
+        ],
+        "description": "A durable cotton rope tug toy for chewing and tug games.",
+        "attributes": {
+          "breed_size": "all breeds",
+          "material": "cotton rope",
+          "pack_pc": 1,
+          "mrp": 249
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "ST-201",
+        "title": "SnapTail Adjustable Nylon Dog Collar, Medium, Quick-Release Buckle",
+        "bullets": [
+          "Adjustable nylon strap",
+          "Quick-release buckle",
+          "Medium size",
+          "Single collar"
+        ],
+        "description": "An adjustable nylon collar with a quick-release buckle, in medium.",
+        "attributes": {
+          "breed_size": "medium",
+          "material": "nylon",
+          "pack_pc": 1,
+          "mrp": 349
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "ST-202",
+        "title": "SnapTail Adjustable Padded Dog Harness, Medium, Reflective Strips",
+        "bullets": [
+          "Padded mesh for comfort",
+          "Reflective strips for evening walks",
+          "Adjustable fit",
+          "Medium size"
+        ],
+        "description": "A padded, adjustable mesh harness with reflective strips, in medium.",
+        "attributes": {
+          "breed_size": "medium",
+          "material": "mesh",
+          "pack_pc": 1,
+          "mrp": 599
+        },
+        "compliance_flags": []
+      },
+      {
+        "sku_code": "ST-204",
+        "title": "SnapTail Stainless Steel Pet Bowl, 750 ml",
+        "bullets": [
+          "Stainless steel",
+          "750 ml capacity",
+          "Easy to clean",
+          "For dogs and cats"
+        ],
+        "description": "A stainless steel pet bowl with a 750 ml capacity.",
+        "attributes": {
+          "material": "stainless steel",
+          "pack_ml": 750,
+          "mrp": 299
+        },
+        "compliance_flags": []
+      }
+    ]
+  }
+}

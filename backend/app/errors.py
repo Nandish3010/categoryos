@@ -193,3 +193,11 @@ class StageLocked(CategoryOSError):
     problem = "This stage is locked"
     cause = "An earlier stage failed, so later stages cannot run"
     fix = "Resolve the failure in the earlier stage and start a new run"
+
+
+class AssetNotFound(CategoryOSError):
+    status = 404
+    code = "asset_not_found"
+    problem = "No such asset"
+    cause = "The file name is not a catalog image the pipeline produces, or it has not been generated yet"
+    fix = "Run the catalog stage for this vendor, then use an image url from data.skus[].images"

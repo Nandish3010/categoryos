@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "campaign_name": "Highland Paws: Grain-Free, Made in Small Batches",
+    "copy": "Meet Highland Paws, the small-batch grain-free dog food with single-source chicken and salmon that Bengaluru dogs already come back for. Launching with a 10% introductory price on the Alpine range.",
+    "discount_ask": {
+      "brand_funded_pct": 10,
+      "our_pct": 0,
+      "rationale": "The vendor funds the full 10% launch discount; we add no platform-funded discount in the first 30 days."
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "classifications": [
+      {
+        "code": "MW-T01",
+        "category": "treats",
+        "subcategory": "cat treats"
+      },
+      {
+        "code": "MW-T02",
+        "category": "treats",
+        "subcategory": "cat treats"
+      },
+      {
+        "code": "MW-T03",
+        "category": "treats",
+        "subcategory": "cat treats"
+      },
+      {
+        "code": "MW-L01",
+        "category": "cat litter",
+        "subcategory": "tofu"
+      }
+    ]
+  }
+}

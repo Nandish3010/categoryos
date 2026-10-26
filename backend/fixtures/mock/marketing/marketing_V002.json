@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "campaign_name": "Mewsli Lick-and-Purr Launch",
+    "copy": "Mewsli brings the Pune favourite lickable tuna treat and plant-based tofu litter to the platform. Launch month price is 5% off, sampling and sponsored placements included.",
+    "discount_ask": {
+      "brand_funded_pct": 5,
+      "our_pct": 0,
+      "rationale": "The vendor funds the full 5% launch discount; we add no platform-funded discount in the first 30 days."
+    }
+  }
+}
