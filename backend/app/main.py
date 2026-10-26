@@ -5,14 +5,14 @@ from typing import Any
 
 from fastapi import Depends, FastAPI, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
-from app import ledger, runner, store
+from app import ledger, media, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor, load_application
-from app.errors import CategoryOSError
+from app.errors import AssetNotFound, CategoryOSError
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
 from app.schemas import (
@@ -134,6 +134,28 @@ async def mode() -> dict[str, Any]:
 @app.get("/api/ledger", dependencies=[Depends(require_demo_key)])
 async def get_ledger() -> dict[str, Any]:
     return {**ledger.read(), "max_spend_usd": settings.max_spend_usd, "warn_spend_usd": settings.warn_spend_usd}
+
+
+# ---------- assets ----------
+
+
+@app.get("/api/assets/{vendor_id}/{file}")
+async def get_asset(vendor_id: str, file: str) -> FileResponse:
+    """A cached catalog or campaign image. Path-safe: known vendor, plain `<sku>-<kind>.png` / `campaign.png` names only.
+    A missing file is rendered as a labelled placeholder (mock and replay) when it names a real SKU."""
+    path = media.resolve_asset(vendor_id, file)
+    if path is None:
+        raise AssetNotFound(cause=f"{file!r} is not a valid asset name for {vendor_id}")
+    if not path.exists():
+        parsed = media.is_known_asset_name(file)
+        base = build_base(vendor_id)
+        sku = next((s for s in base.skus if parsed and s.code == parsed[0]), None)
+        if parsed is None or resolve_mode("catalog") == "live" or (sku is None and parsed[0] != "campaign"):
+            raise AssetNotFound()
+        title = sku.name if sku else f"{base.brand} launch campaign"
+        subtitle = (sku.pack or "") if sku else base.brand
+        media.ensure_placeholder(vendor_id, file, parsed[1], title, subtitle)
+    return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=300"})
 
 
 # ---------- runs ----------
