@@ -160,7 +160,7 @@ export function readScreen(stage: StageResult | undefined | null): ScreenData | 
     followup_questions: arr(d.followup_questions).filter((q): q is string => typeof q === "string"),
     decision: str(d.decision),
     reasons: arr(d.reasons).filter((q): q is string => typeof q === "string"),
-    documents: arr(d.documents).map((x) => {
+    documents: (isObj(d.documents) ? arr(d.documents.documents) : arr(d.documents)).map((x) => {
       if (typeof x === "string") return { label: x, status: null };
       if (isObj(x)) {
         const label = str(x.name) ?? str(x.type) ?? str(x.file) ?? str(x.title) ?? "document";
@@ -185,6 +185,7 @@ export function termText(t: unknown): string {
   if (typeof t === "string") return t;
   if (isObj(t)) {
     const text = str(t.text) ?? str(t.term) ?? str(t.label) ?? str(t.name);
+    if (text && t.ask != null) return `${text}: ask ${String(t.ask)}${t.fallback != null ? ` (fallback ${String(t.fallback)})` : ""}`;
     if (text && t.value != null) return `${text}: ${String(t.value)}`;
     if (text) return text;
   }
@@ -204,10 +205,13 @@ export function readResearch(stage: StageResult | undefined | null): ResearchDat
     email_draft: str(counter.email_draft),
     struck: arr(d.struck)
       .filter(isObj)
-      .map((s) => ({
-        code: str(s.code),
-        text: str(s.text) ?? "",
-        reason: str(s.reason) ?? "failed verification",
+      .map((x) => ({
+        code: str(x.sku_code) ?? str(x.code),
+        text:
+          str(x.sentence) ??
+          str(x.text) ??
+          `${str(x.field) ?? "value"}: claimed ${String(x.claimed_value ?? "?")}, sheet says ${String(x.sheet_value ?? "?")}`,
+        reason: str(x.reason) ?? "failed verification",
       })),
     replanned: d.replanned === true,
   };

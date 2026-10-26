@@ -79,8 +79,8 @@ export const researchData = {
     { code: "HP-D01", verdict: "list", why: "Healthy margin and strong demand" },
     { code: "HP-D02", verdict: "negotiate", why: "Margin short of target" },
   ],
-  counter_offer: { terms: ["Cost down 3%", { text: "MOQ", value: 150 }], email_draft: "Hi team, counter-offer attached." },
-  struck: [{ code: "HP-D01", text: "Cost of HP-D01 is Rs 412.", reason: "sheet says 421" }],
+  counter_offer: { terms: ["Cost down 3%", { term: "MOQ", ask: 150, rationale: "x" }], email_draft: "Hi team, counter-offer attached." },
+  struck: [{ claim_id: "c1", sku_code: "HP-D01", field: "cost", claimed_value: 412, sheet_value: 421, sentence: "Cost of HP-D01 is Rs 412.", reason: "sheet says 421" }],
 };
 
 export function traceEvent(seq: number, over: Partial<TraceEvent> = {}): TraceEvent {

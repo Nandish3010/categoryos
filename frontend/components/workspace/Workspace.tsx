@@ -233,7 +233,9 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     ? "Locked — screening failed"
     : stale
       ? "Re-plan to approve"
-      : null;
+      : researchStage?.status === "done"
+        ? "Already approved"
+        : null;
 
   const actionBar = (
     <ActionBar

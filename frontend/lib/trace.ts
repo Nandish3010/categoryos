@@ -27,13 +27,14 @@ export function describeEvent(ev: TraceEvent): { title: string; detail: string }
       return { title: `${stage} started`, detail: "" };
     case "tool_call": {
       const tool = String(p.tool ?? p.name ?? "tool");
-      return { title: `${stage} · ${tool}`, detail: argsSummary(p.args ?? p.arguments ?? p.input) };
+      return { title: `${stage} · ${tool}`, detail: [argsSummary(p.args ?? p.arguments ?? p.input), typeof p.result_summary === "string" ? `→ ${clip(p.result_summary, 60)}` : ""].filter(Boolean).join(" ") };
     }
     case "model_call":
-      return { title: `${stage} · model call`, detail: typeof p.purpose === "string" ? clip(p.purpose) : "" };
+      return { title: `${stage} · model call`, detail: typeof p.task === "string" ? p.task : typeof p.purpose === "string" ? clip(p.purpose) : "" };
     case "claim_checked": {
-      const status = typeof p.status === "string" ? p.status : "checked";
-      const text = typeof p.text === "string" ? p.text : typeof p.claim_id === "string" ? p.claim_id : "";
+      const c = (p.claim && typeof p.claim === "object" ? p.claim : p) as Record<string, unknown>;
+      const status = typeof c.status === "string" ? c.status : "checked";
+      const text = typeof c.text === "string" ? c.text : typeof c.id === "string" ? c.id : "";
       return { title: `${stage} · claim ${status}`, detail: clip(text) };
     }
     case "stage_result":

@@ -57,7 +57,7 @@ describe("readers", () => {
 
   it("reads research output defensively", () => {
     const r = readResearch(stage("research", { data: researchData }))!;
-    expect(r.terms).toEqual(["Cost down 3%", "MOQ: 150"]);
+    expect(r.terms).toEqual(["Cost down 3%", "MOQ: ask 150"]);
     expect(r.struck[0].reason).toBe("sheet says 421");
     expect(readResearch(stage("research", { data: null }))).toBeNull();
   });
