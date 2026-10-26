@@ -1,18 +1,137 @@
+"""Typed errors. Every error carries code, problem, cause and fix: the same text goes to the
+API response, the UI banner and the log line."""
+
+
 class CategoryOSError(Exception):
-    pass
+    status = 500
+    code = "internal_error"
+    problem = "Something went wrong"
+    cause = "An unexpected error occurred"
+    fix = "Check the backend log for the run id and retry"
+
+    def __init__(
+        self,
+        problem: str | None = None,
+        *,
+        cause: str | None = None,
+        fix: str | None = None,
+        code: str | None = None,
+    ) -> None:
+        self.problem = problem or self.problem
+        self.cause = cause or self.cause
+        self.fix = fix or self.fix
+        self.code = code or self.code
+        super().__init__(self.problem)
+
+    def to_dict(self, run_id: str | None = None) -> dict[str, str | None]:
+        return {
+            "code": self.code,
+            "problem": self.problem,
+            "cause": self.cause,
+            "fix": self.fix,
+            "run_id": run_id,
+        }
 
 
 class UnknownVendor(CategoryOSError):
+    status = 404
+    code = "unknown_vendor"
+    cause = "Only vendors V001 to V004 exist in the synthetic data"
+    fix = "Use one of V001, V002, V003, V004"
+
     def __init__(self, vendor_id: str) -> None:
         super().__init__(f"unknown vendor: {vendor_id!r}")
         self.vendor_id = vendor_id
 
 
 class UnknownMetric(CategoryOSError):
+    status = 422
+    code = "unknown_metric"
+    cause = "The metric is not in metrics.METRIC_UNITS"
+    fix = "Use a registered metric name, or add it to METRIC_UNITS in app/metrics.py"
+
     def __init__(self, metric: str) -> None:
         super().__init__(f"unknown metric: {metric!r}")
         self.metric = metric
 
 
+class UnknownSource(CategoryOSError):
+    status = 422
+    code = "unknown_source"
+    cause = "The source file is not on the verifier allowlist of real data files"
+    fix = "Point source_ref.file at a file under data/synthetic (see verify.allowed_sources)"
+
+    def __init__(self, source: str) -> None:
+        super().__init__(f"unknown source: {source!r}")
+        self.source = source
+
+
 class MissingInput(CategoryOSError):
-    pass
+    status = 422
+    code = "missing_input"
+    cause = "A value needed for the computation is absent from the data"
+    fix = "Check the vendor sheet for the SKU or field named in the problem"
+
+
+class SpendCapExceeded(CategoryOSError):
+    status = 429
+    code = "spend_cap_exceeded"
+    problem = "Live model calls are disabled: the spend cap was reached"
+    cause = "Recorded spend is at or above MAX_SPEND_USD"
+    fix = "Serve replay (MODEL_MODE=replay) or raise MAX_SPEND_USD and restart"
+
+
+class MissingKey(CategoryOSError):
+    status = 503
+    code = "missing_key"
+    problem = "Live mode needs an API key that is not set"
+    cause = "MODEL_API_KEY (Meta) or BASETEN_API_KEY (Baseten) is empty"
+    fix = "Set the key in the root .env, or run with MODEL_MODE=mock"
+
+
+class CreditsUnavailable(CategoryOSError):
+    status = 402
+    code = "credits_unavailable"
+    problem = "The model provider rejected the call (402/403)"
+    cause = "Credits have not landed, are exhausted, or the key lacks access to this model"
+    fix = "Check the provider dashboard, then retry; replay mode keeps the demo running"
+
+
+class LlmUnavailable(CategoryOSError):
+    status = 503
+    code = "llm_unavailable"
+    problem = "The model provider is unavailable"
+    cause = "Timeouts or rate limits persisted after retries"
+    fix = "Retry shortly, or switch to replay (MODEL_MODE=replay)"
+
+
+class LlmBadOutput(CategoryOSError):
+    status = 502
+    code = "llm_bad_output"
+    problem = "The model returned output that could not be used"
+    cause = "Empty, refused, or schema-invalid response after one repair attempt"
+    fix = "Retry, simplify the prompt, or re-record the fixture with make record"
+
+
+class FixtureMissing(CategoryOSError):
+    status = 500
+    code = "fixture_missing"
+    problem = "No fixture exists for this model call"
+    cause = "Mock and replay modes read canned responses from backend/fixtures"
+    fix = "Run make record (needs live credits) or add the fixture file named in the problem"
+
+
+class DemoKeyRequired(CategoryOSError):
+    status = 403
+    code = "demo_key_required"
+    problem = "This route needs the demo key"
+    cause = "The X-Demo-Key header is missing or wrong"
+    fix = "Send X-Demo-Key with the value of DEMO_KEY"
+
+
+class RateLimited(CategoryOSError):
+    status = 429
+    code = "rate_limited"
+    problem = "Too many requests from this address"
+    cause = "The per-IP limit for keyed routes was exceeded"
+    fix = "Wait a minute and retry"
