@@ -381,7 +381,7 @@ def apply_levers(base: VendorBase, target_offset_pp: float = 0, moq: int | None 
         {
             "vendor": base.vendor_id,
             "parser": base.parser_version,
-            "offset_pp": target_offset_pp,
+            "offset_pp": float(target_offset_pp),
             "moq": moq,
             "skus": [s.model_dump() for s in skus],
             "summary": summary.model_dump(),
