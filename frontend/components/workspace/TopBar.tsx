@@ -1,7 +1,7 @@
 import { ChevronRight, PanelRight } from "lucide-react";
 import Link from "next/link";
 import type { ClaimsResponse, ModeResponse } from "@/lib/api";
-import { Tag } from "../Chip";
+import { ModeChip } from "./ModeChip";
 
 const PHASES = ["Screen", "Decide", "Execute", "Launch"] as const;
 
@@ -61,9 +61,7 @@ export function TopBar({
       </ol>
 
       <div className="ml-auto flex items-center gap-2 min-[900px]:ml-0">
-        <Tag tone={mode ? "accent" : "neutral"}>
-          <span className="num">{modeLabel(mode, claims)}</span>
-        </Tag>
+        <ModeChip label={modeLabel(mode, claims)} known={!!mode} />
       </div>
       <button
         type="button"

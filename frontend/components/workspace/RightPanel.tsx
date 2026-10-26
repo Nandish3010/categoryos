@@ -6,7 +6,6 @@ import { ClaimRow } from "../ClaimRow";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
 import { Tag } from "../Chip";
-import { TraceItem } from "../TraceItem";
 
 export function VerifierCard({
   base,
@@ -101,15 +100,3 @@ export function VerifierCard({
   );
 }
 
-export function TracePanel() {
-  return (
-    <section aria-label="Agent trace" className="rounded-card border border-border bg-surface">
-      <PanelHeader title="Agent trace" />
-      <ul role="log" aria-live="off" className="min-h-16">
-        <TraceItem title="Run to see agent activity">
-          Model calls and claim checks stream here once a run starts.
-        </TraceItem>
-      </ul>
-    </section>
-  );
-}

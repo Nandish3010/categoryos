@@ -21,6 +21,8 @@ export function SkuTable({
   editing,
   overrides,
   onOverride,
+  whys,
+  dimmed,
 }: {
   skus: SkuMetrics[] | null;
   /** sku_key -> verdict it had before the last lever move */
@@ -28,6 +30,10 @@ export function SkuTable({
   editing: boolean;
   overrides: Record<string, Verdict>;
   onOverride: (skuKey: string, v: Verdict | null) => void;
+  /** Agent rationale by SKU code, from the run's research stage. */
+  whys?: Record<string, string>;
+  /** Locked (screening failed): table is shown but inert. */
+  dimmed?: boolean;
 }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
@@ -143,7 +149,11 @@ export function SkuTable({
   ];
 
   return (
-    <section aria-label="SKU verdicts" className="rounded-card border border-border bg-surface">
+    <section
+      aria-label="SKU verdicts"
+      data-locked={dimmed || undefined}
+      className={`rounded-card border border-border bg-surface ${dimmed ? "pointer-events-none opacity-50" : ""}`}
+    >
       <PanelHeader title="SKU verdicts" right={<span className="num">{skus.length} SKUs</span>} />
       <DataTable
         caption="SKU verdicts with margin, target, price gap, demand and overlap"
@@ -158,6 +168,7 @@ export function SkuTable({
         renderExpanded={(s) =>
           open[s.sku_key] ? (
             <ul className="list-disc pl-5 text-sm text-text-dim">
+              {whys?.[s.code] ? <li data-agent-why>Agent: {whys[s.code]}</li> : null}
               {s.reasons.length ? s.reasons.map((r) => <li key={r}>{r}</li>) : <li>No reasons recorded.</li>}
               {s.flags.length ? <li>Flags: {s.flags.join(", ")}</li> : null}
             </ul>
