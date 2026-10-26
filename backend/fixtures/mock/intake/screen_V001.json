@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V001"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V001"
+        }
+      }
+    ],
+    "final": {
+      "risk_flags": [
+        {
+          "type": "unsubstantiated_claim",
+          "quote": "vet-formulated",
+          "severity": "low"
+        },
+        {
+          "type": "unsubstantiated_claim",
+          "quote": "tested by a vet nutritionist",
+          "severity": "low"
+        },
+        {
+          "type": "missing_data",
+          "quote": "HP-D05: Cost to Us is blank",
+          "severity": "low"
+        },
+        {
+          "type": "missing_data",
+          "quote": "HP-D07: MRP is blank",
+          "severity": "low"
+        }
+      ],
+      "injection_detected": false,
+      "followup_questions": [
+        "Please send the cost for HP-D05 (Alpine Puppy Starter) and the MRP for HP-D07 (Alpine Senior Joint Care).",
+        "Can you share the vet nutritionist's formulation sign-off behind the 'vet-formulated' claim on HP-D03?"
+      ],
+      "decision": "pass",
+      "reasons": [
+        "GST, FSSAI, PAN, trademark and incorporation documents are all valid.",
+        "No medical or cure claims; the two soft claims need supporting evidence, not rejection.",
+        "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up."
+      ]
+    }
+  }
+}

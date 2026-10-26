@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V003"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V003"
+        }
+      }
+    ],
+    "final": {
+      "risk_flags": [
+        {
+          "type": "missing_data",
+          "quote": "ST-203: Landed Cost (Rs) is blank",
+          "severity": "low"
+        },
+        {
+          "type": "missing_data",
+          "quote": "ST-104, ST-203: HSN is blank",
+          "severity": "low"
+        },
+        {
+          "type": "no_food_licence",
+          "quote": "documents: GST, PAN, Trademark",
+          "severity": "low"
+        }
+      ],
+      "injection_detected": false,
+      "followup_questions": [
+        "Please send the landed cost for ST-203 (Retractable Leash 5m) and the HSN codes for ST-104 and ST-203."
+      ],
+      "decision": "pass",
+      "reasons": [
+        "GST, PAN and trademark are valid; no FSSAI is needed because the range is toys and accessories only.",
+        "No health or safety claims beyond 'non-toxic rubber'.",
+        "One cost and two HSN cells are blank."
+      ]
+    }
+  }
+}

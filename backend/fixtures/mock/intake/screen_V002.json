@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V002"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V002"
+        }
+      }
+    ],
+    "final": {
+      "risk_flags": [
+        {
+          "type": "unsubstantiated_claim",
+          "quote": "helps reduce tartar",
+          "severity": "medium"
+        },
+        {
+          "type": "unsubstantiated_claim",
+          "quote": "100% wild salmon freeze-dried",
+          "severity": "low"
+        },
+        {
+          "type": "missing_data",
+          "quote": "MW-T03, MW-L01, MW-L04: Our Cost is blank",
+          "severity": "low"
+        },
+        {
+          "type": "missing_data",
+          "quote": "MW-T05: Size is blank",
+          "severity": "low"
+        }
+      ],
+      "injection_detected": false,
+      "followup_questions": [
+        "Please send the cost for MW-T03, MW-L01 and MW-L04.",
+        "What is the pack size of MW-T05 (Malt Hairball Control Treats)?",
+        "Do you have evidence for the tartar-reduction claim on MW-T04?"
+      ],
+      "decision": "pass",
+      "reasons": [
+        "All compliance documents are valid, including FSSAI to November 2027.",
+        "One dental claim needs evidence but is not a cure claim.",
+        "Three cost cells and one pack size are blank; a call transcript exists to settle commercial terms."
+      ]
+    }
+  }
+}

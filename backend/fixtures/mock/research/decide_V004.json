@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_metrics",
+        "args": {
+          "vendor_id": "V004",
+          "target_margin_pct_offset": 0
+        }
+      },
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V004"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V004"
+        }
+      }
+    ],
+    "final": {
+      "headline": "Vendor V004 failed screening; this plan is informational only and cannot be approved.",
+      "rationale_per_sku": [
+        {
+          "code": "VT-01",
+          "verdict": "negotiate",
+          "why": "Margin 35.5% is below the 38% target. The sheet has no cost, so this cost is estimated from the vendor's offered margin and must be confirmed. Cost has to come down to ₹172.29 to reach target."
+        },
+        {
+          "code": "VT-02",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "VT-03",
+          "verdict": "reject",
+          "why": "Demand 0.10 below minimum 0.40."
+        },
+        {
+          "code": "VT-04",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "VT-05",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "VT-06",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "VT-07",
+          "verdict": "reject",
+          "why": "Demand 0.05 below minimum 0.40."
+        },
+        {
+          "code": "VT-08",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "VT-09",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        }
+      ],
+      "counter_offer": {
+        "terms": [],
+        "email_draft": "Vendor failed screening; no counter-offer is prepared."
+      },
+      "extractions": []
+    }
+  }
+}
