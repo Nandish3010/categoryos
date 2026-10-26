@@ -1,0 +1,28 @@
+[project]
+name = "categoryos-backend"
+version = "0.1.0"
+description = "CategoryOS FastAPI backend"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic>=2",
+    "pydantic-settings",
+    "httpx",
+    "openai",
+    "python-dotenv",
+    "modal",
+    "python-multipart",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "anyio",
+    "httpx",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

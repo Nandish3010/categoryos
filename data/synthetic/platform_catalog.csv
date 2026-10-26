@@ -1,0 +1,121 @@
+sku_id,brand,name,category,subcategory,pack_size,mrp,selling_price,cost_price,margin_pct,monthly_units,rating,review_count,in_stock
+PC-DDF-001,Woofwell,Woofwell Chicken & Rice Adult,dog dry food,adult,10 kg,2889,2739,2208,19.4,44,4.3,1221,Y
+PC-DDF-002,Woofwell,Woofwell Lamb & Rice Adult,dog dry food,adult,1 kg,369,319,261,18.2,84,3.8,1342,Y
+PC-DDF-003,Pawsome Pantry,Pawsome Pantry Senior Care,dog dry food,senior,3 kg,1159,929,681,26.7,40,4.1,581,Y
+PC-DDF-004,NutriTail,NutriTail Lamb & Rice Adult,dog dry food,adult,1 kg,389,359,264,26.5,41,4.3,1664,N
+PC-DDF-005,Pawsome Pantry,Pawsome Pantry Lamb & Rice Adult,dog dry food,adult,3 kg,969,889,655,26.3,14,4.3,1454,N
+PC-DDF-006,BarkBasics,BarkBasics Large Breed Adult,dog dry food,adult,1 kg,459,369,299,19.0,21,3.9,1313,Y
+PC-DDF-007,BarkBasics,BarkBasics Small Breed Adult,dog dry food,adult,3 kg,1019,939,704,25.0,37,4.4,1105,Y
+PC-DDF-008,BarkBasics,BarkBasics Chicken Grain-Free Adult,dog dry food,adult,3 kg,1169,989,743,24.9,33,3.9,676,Y
+PC-DDF-009,Woofwell,Woofwell Senior Care,dog dry food,senior,1 kg,449,399,316,20.8,68,4.7,656,Y
+PC-DDF-010,Pawsome Pantry,Pawsome Pantry Egg & Veg Adult,dog dry food,adult,10 kg,3079,2829,2280,19.4,55,4.5,1115,Y
+PC-DDF-011,Pawsome Pantry,Pawsome Pantry Egg & Veg Adult,dog dry food,adult,3 kg,1029,979,753,23.1,44,3.7,1297,Y
+PC-DDF-012,Pawsome Pantry,Pawsome Pantry Chicken Grain-Free Adult,dog dry food,adult,10 kg,3209,2819,2069,26.6,29,3.6,1488,Y
+PC-DDF-013,NutriTail,NutriTail Small Breed Adult,dog dry food,adult,1 kg,379,359,278,22.6,105,3.9,1037,Y
+PC-DDF-014,Woofwell,Woofwell Large Breed Adult,dog dry food,adult,10 kg,3129,2969,2389,19.5,19,4.5,1116,Y
+PC-DDF-015,Woofwell,Woofwell Small Breed Adult,dog dry food,adult,3 kg,949,869,636,26.8,49,3.7,1173,Y
+PC-DDF-016,Woofwell,Woofwell Chicken Grain-Free Adult,dog dry food,adult,1 kg,529,469,349,25.6,34,3.8,985,Y
+PC-DDF-017,BarkBasics,BarkBasics Large Breed Adult,dog dry food,adult,10 kg,3499,3149,2279,27.6,44,4.4,1472,Y
+PC-DDF-018,NutriTail,NutriTail Chicken Grain-Free Adult,dog dry food,adult,10 kg,3439,3269,2607,20.3,17,4.0,1216,Y
+PC-DWF-001,Pawsome Pantry,Pawsome Pantry Lamb Chunks in Jelly,dog wet food,chunks,100 g pouch,79,69,53,23.2,83,4.0,1064,Y
+PC-DWF-002,Pawsome Pantry,Pawsome Pantry Chicken & Rice Pate,dog wet food,pate,100 g pouch,99,79,54,31.6,75,4.3,980,Y
+PC-DWF-003,NutriTail,NutriTail Chicken & Rice Pate,dog wet food,pate,100 g pouch,79,69,51,26.1,41,4.5,1391,Y
+PC-DWF-004,Pawsome Pantry,Pawsome Pantry Chicken Gravy,dog wet food,gravy,100 g pouch,89,79,55,30.4,88,3.7,404,Y
+PC-DWF-005,NutriTail,NutriTail Lamb Chunks in Jelly,dog wet food,chunks,350 g can,179,159,120,24.5,80,4.6,1139,Y
+PC-DWF-006,Pawsome Pantry,Pawsome Pantry Turkey Stew,dog wet food,gravy,100 g pouch,109,89,62,30.3,53,3.8,1006,Y
+PC-DWF-007,NutriTail,NutriTail Chicken Gravy,dog wet food,gravy,100 g pouch,89,79,60,24.1,79,4.1,1508,Y
+PC-DWF-008,Woofwell,Woofwell Beef & Veg Pate,dog wet food,pate,100 g pouch,109,99,70,29.3,34,3.7,654,N
+PC-DWF-009,Pawsome Pantry,Pawsome Pantry Chicken & Rice Pate,dog wet food,pate,1.2 kg tray pack,509,449,343,23.6,46,3.8,1230,N
+PC-DWF-010,Woofwell,Woofwell Chicken & Rice Pate,dog wet food,pate,100 g pouch,109,99,75,24.2,63,4.3,1280,Y
+PC-DWF-011,Pawsome Pantry,Pawsome Pantry Turkey Stew,dog wet food,gravy,1.2 kg tray pack,449,409,311,24.0,37,4.1,1387,Y
+PC-DWF-012,NutriTail,NutriTail Beef & Veg Pate,dog wet food,pate,100 g pouch,79,69,47,31.9,50,4.8,162,Y
+PC-CDF-001,NutriTail,NutriTail Chicken & Tuna Adult,cat dry food,adult,1.2 kg,769,729,556,23.7,59,4.4,1264,Y
+PC-CDF-002,Purrfect Bowl,Purrfect Bowl Chicken Grain-Free Adult,cat dry food,adult,3 kg,1519,1289,1018,21.0,56,4.7,553,Y
+PC-CDF-003,MeowMunch,MeowMunch Kitten Starter,cat dry food,kitten,1.2 kg,709,599,459,23.4,28,4.2,526,Y
+PC-CDF-004,Purrfect Bowl,Purrfect Bowl Ocean Fish Adult,cat dry food,adult,3 kg,1419,1309,1041,20.5,8,4.0,279,Y
+PC-CDF-005,NutriTail,NutriTail Chicken & Tuna Adult,cat dry food,adult,3 kg,1419,1209,915,24.3,39,4.7,317,Y
+PC-CDF-006,NutriTail,NutriTail Sterilised Cat Formula,cat dry food,adult,3 kg,1279,1219,970,20.4,34,4.0,1642,Y
+PC-CDF-007,Purrfect Bowl,Purrfect Bowl Kitten Starter,cat dry food,kitten,400 g,319,269,212,21.2,67,4.1,1283,Y
+PC-CDF-008,MeowMunch,MeowMunch Chicken & Tuna Adult,cat dry food,adult,400 g,339,339,265,21.8,8,4.7,1614,Y
+PC-CDF-009,MeowMunch,MeowMunch Kitten Starter,cat dry food,kitten,400 g,329,329,251,23.7,79,3.8,954,Y
+PC-CDF-010,MeowMunch,MeowMunch Indoor Hairball Care,cat dry food,adult,1.2 kg,639,639,449,29.7,47,3.9,1325,Y
+PC-CDF-011,NutriTail,NutriTail Ocean Fish Adult,cat dry food,adult,400 g,339,309,242,21.7,73,3.7,901,Y
+PC-CDF-012,NutriTail,NutriTail Indoor Hairball Care,cat dry food,adult,3 kg,1679,1679,1279,23.8,27,4.3,533,N
+PC-CDF-013,Whiskerly,Whiskerly Ocean Fish Adult,cat dry food,adult,3 kg,1649,1449,1060,26.8,53,3.8,895,N
+PC-CDF-014,NutriTail,NutriTail Sterilised Cat Formula,cat dry food,adult,1.2 kg,719,719,523,27.3,29,4.0,645,Y
+PC-CWF-001,MeowMunch,MeowMunch Sardine & Shrimp Gravy,cat wet food,gravy,400 g can,209,199,147,26.1,62,4.5,368,Y
+PC-CWF-002,Purrfect Bowl,Purrfect Bowl Mackerel Mousse,cat wet food,mousse,85 g pouch,69,54,38,29.6,76,4.4,964,Y
+PC-CWF-003,Whiskerly,Whiskerly Chicken Flakes in Jelly,cat wet food,jelly,400 g can,219,179,123,31.3,67,4.4,1280,Y
+PC-CWF-004,Purrfect Bowl,Purrfect Bowl Chicken Flakes in Jelly,cat wet food,jelly,70 g pouch,49,44,29,34.1,84,4.3,1585,N
+PC-CWF-005,MeowMunch,MeowMunch Salmon Grain-Free Pate,cat wet food,pate,400 g can,229,189,136,28.0,65,4.4,1549,Y
+PC-CWF-006,Purrfect Bowl,Purrfect Bowl Sardine & Shrimp Gravy,cat wet food,gravy,70 g pouch,54,44,31,29.5,141,3.7,522,Y
+PC-CWF-007,Whiskerly,Whiskerly Kitten Chicken Pate,cat wet food,pate,85 g pouch,89,79,55,30.4,100,4.6,1134,Y
+PC-CWF-008,MeowMunch,MeowMunch Mackerel Mousse,cat wet food,mousse,70 g pouch,69,59,40,32.2,58,4.2,1295,Y
+PC-CWF-009,MeowMunch,MeowMunch Tuna in Gravy,cat wet food,gravy,400 g can,209,189,137,27.5,94,3.8,796,Y
+PC-CWF-010,Whiskerly,Whiskerly Chicken Flakes in Jelly,cat wet food,jelly,70 g pouch,54,49,35,28.6,108,4.1,435,Y
+PC-CWF-011,MeowMunch,MeowMunch Kitten Chicken Pate,cat wet food,pate,400 g can,189,149,105,29.5,8,4.0,810,Y
+PC-CWF-012,Whiskerly,Whiskerly Kitten Chicken Pate,cat wet food,pate,400 g can,249,219,162,26.0,90,4.1,71,Y
+PC-CWF-013,Whiskerly,Whiskerly Chicken Flakes in Jelly,cat wet food,jelly,85 g pouch,89,79,56,29.1,167,4.4,183,Y
+PC-CWF-014,MeowMunch,MeowMunch Chicken Flakes in Jelly,cat wet food,jelly,85 g pouch,79,59,40,32.2,82,3.9,1715,Y
+PC-TRT-001,BarkBasics,BarkBasics Training Bites,treats,dog treats,60 g,129,129,77,40.3,66,4.5,1346,N
+PC-TRT-002,BarkBasics,BarkBasics Dental Chew Sticks,treats,dental,60 g,129,109,76,30.3,174,3.8,1383,Y
+PC-TRT-003,Pawsome Pantry,Pawsome Pantry Training Bites,treats,dog treats,400 g,489,449,314,30.1,28,3.7,1689,Y
+PC-TRT-004,MeowMunch,MeowMunch Chicken Strips,treats,dog treats,400 g,449,409,266,35.0,38,4.7,780,Y
+PC-TRT-005,Pawsome Pantry,Pawsome Pantry Chicken Strips,treats,dog treats,400 g,569,479,331,30.9,59,4.4,1661,Y
+PC-TRT-006,BarkBasics,BarkBasics Peanut Butter Biscuits,treats,dog treats,400 g,519,479,341,28.8,43,4.4,37,Y
+PC-TRT-007,Whiskerly,Whiskerly Chicken Strips,treats,dog treats,150 g,279,239,147,38.5,64,3.8,1080,Y
+PC-TRT-008,MeowMunch,MeowMunch Tuna Cat Treats,treats,cat treats,400 g,579,519,347,33.1,70,4.5,561,Y
+PC-TRT-009,Pawsome Pantry,Pawsome Pantry Chicken Strips,treats,dog treats,150 g,279,269,169,37.2,32,4.0,1024,Y
+PC-TRT-010,Pawsome Pantry,Pawsome Pantry Training Bites,treats,dog treats,60 g,109,99,67,32.3,84,4.7,1448,Y
+PC-TRT-011,BarkBasics,BarkBasics Tuna Cat Treats,treats,cat treats,60 g,99,79,53,32.9,87,4.2,1469,Y
+PC-TRT-012,BarkBasics,BarkBasics Chicken Strips,treats,dog treats,150 g,219,189,131,30.7,83,4.4,767,Y
+PC-TRT-013,MeowMunch,MeowMunch Training Bites,treats,dog treats,400 g,549,509,324,36.3,63,3.7,406,Y
+PC-TRT-014,Pawsome Pantry,Pawsome Pantry Dental Chew Sticks,treats,dental,60 g,129,119,75,37.0,148,4.8,1086,Y
+PC-TRT-015,BarkBasics,BarkBasics Dental Chew Sticks,treats,dental,150 g,219,209,143,31.6,85,3.7,123,Y
+PC-TRT-016,Pawsome Pantry,Pawsome Pantry Creamy Lick Treat,treats,cat treats,150 g,209,209,136,34.9,70,4.2,914,Y
+PC-LIT-001,CleanPaws,CleanPaws Tofu Litter Original,cat litter,tofu,10 kg,659,659,534,19.0,47,3.7,317,Y
+PC-LIT-002,Whiskerly,Whiskerly Clumping Bentonite Unscented,cat litter,clumping,5 kg,379,299,242,19.1,51,4.3,1278,Y
+PC-LIT-003,MeowMunch,MeowMunch Activated Carbon Clumping,cat litter,clumping,10 kg,849,779,595,23.6,39,4.3,1260,Y
+PC-LIT-004,CleanPaws,CleanPaws Clumping Bentonite Lavender,cat litter,clumping,6 L,529,449,378,15.8,33,3.9,1142,N
+PC-LIT-005,CleanPaws,CleanPaws Activated Carbon Clumping,cat litter,clumping,10 kg,799,719,590,17.9,31,4.4,941,N
+PC-LIT-006,CleanPaws,CleanPaws Tofu Litter Original,cat litter,tofu,6 L,609,489,370,24.3,57,4.1,1127,Y
+PC-LIT-007,CleanPaws,CleanPaws Tofu Litter Original,cat litter,tofu,5 kg,369,349,269,22.9,11,4.7,911,Y
+PC-LIT-008,MeowMunch,MeowMunch Tofu Litter Original,cat litter,tofu,6 L,569,519,415,20.0,17,4.2,176,Y
+PC-LIT-009,Whiskerly,Whiskerly Tofu Litter Original,cat litter,tofu,6 L,539,539,446,17.3,19,4.3,54,Y
+PC-LIT-010,CleanPaws,CleanPaws Clumping Bentonite Lavender,cat litter,clumping,10 kg,759,679,515,24.2,8,3.8,1210,Y
+PC-GRM-001,Snugglepaw,Snugglepaw Anti-Tick Shampoo,grooming,shampoo,500 ml,459,419,273,34.8,37,4.1,1026,Y
+PC-GRM-002,Snugglepaw,Snugglepaw Ear Cleaner,grooming,hygiene,200 ml,259,239,158,33.9,44,3.7,1594,Y
+PC-GRM-003,BarkBasics,BarkBasics Anti-Tick Shampoo,grooming,shampoo,1 pc,239,219,140,36.1,45,4.5,1292,Y
+PC-GRM-004,CleanPaws,CleanPaws Oatmeal Conditioning Shampoo,grooming,shampoo,500 ml,489,449,285,36.5,42,4.4,260,N
+PC-GRM-005,BarkBasics,BarkBasics Ear Cleaner,grooming,hygiene,200 ml,289,269,166,38.3,29,4.8,244,Y
+PC-GRM-006,CleanPaws,CleanPaws Dry Bath Foam,grooming,shampoo,200 ml,269,229,150,34.5,36,4.4,862,Y
+PC-GRM-007,Snugglepaw,Snugglepaw Oatmeal Conditioning Shampoo,grooming,shampoo,500 ml,489,439,295,32.8,12,3.8,154,Y
+PC-GRM-008,Snugglepaw,Snugglepaw Deshedding Brush,grooming,tools,1 pc,199,199,131,34.2,22,4.0,1214,Y
+PC-GRM-009,BarkBasics,BarkBasics Nail Clipper,grooming,tools,200 ml,259,229,148,35.4,17,4.1,671,Y
+PC-GRM-010,BarkBasics,BarkBasics Oatmeal Conditioning Shampoo,grooming,shampoo,1 pc,209,169,99,41.4,35,3.7,1537,Y
+PC-GRM-011,Snugglepaw,Snugglepaw Nail Clipper,grooming,tools,1 pc,229,189,104,45.0,36,4.2,1220,Y
+PC-GRM-012,CleanPaws,CleanPaws Nail Clipper,grooming,tools,200 ml,269,239,167,30.1,38,3.8,1795,Y
+PC-TOY-001,TumbleTail,TumbleTail Rope Tug Toy,toys,dog toys,2 pc set,349,319,197,38.2,22,4.6,1757,Y
+PC-TOY-002,BarkBasics,BarkBasics Feather Wand Teaser,toys,cat toys,2 pc set,329,259,156,39.8,12,4.2,1276,N
+PC-TOY-003,BarkBasics,BarkBasics Treat Dispensing Ball,toys,dog toys,2 pc set,369,309,198,35.9,52,4.4,217,Y
+PC-TOY-004,BarkBasics,BarkBasics Plush Squeaky Toy,toys,dog toys,1 pc,159,129,83,35.7,36,4.0,894,Y
+PC-TOY-005,BarkBasics,BarkBasics Feather Wand Teaser,toys,cat toys,3 pc set,449,429,272,36.6,47,4.3,505,Y
+PC-TOY-006,BarkBasics,BarkBasics Squeaky Rubber Bone,toys,dog toys,1 pc,189,169,102,39.6,52,4.4,1659,Y
+PC-TOY-007,Snugglepaw,Snugglepaw Treat Dispensing Ball,toys,dog toys,3 pc set,379,339,188,44.5,39,4.8,1425,Y
+PC-TOY-008,Snugglepaw,Snugglepaw Squeaky Rubber Bone,toys,dog toys,2 pc set,359,359,225,37.3,27,4.3,1189,Y
+PC-TOY-009,TumbleTail,TumbleTail Catnip Mouse Set,toys,cat toys,3 pc set,469,469,262,44.1,24,4.7,1600,Y
+PC-TOY-010,BarkBasics,BarkBasics Squeaky Rubber Bone,toys,dog toys,3 pc set,389,309,179,42.1,8,4.4,1728,Y
+PC-TOY-011,TumbleTail,TumbleTail Treat Dispensing Ball,toys,dog toys,3 pc set,359,289,175,39.4,10,3.7,616,Y
+PC-TOY-012,Snugglepaw,Snugglepaw Squeaky Rubber Bone,toys,dog toys,1 pc,169,149,84,43.6,24,4.0,1039,Y
+PC-ACC-001,TumbleTail,TumbleTail Retractable Leash,accessories,leashes,Medium,429,389,224,42.4,22,4.8,300,Y
+PC-ACC-002,TumbleTail,TumbleTail Foldable Travel Bowl,accessories,bowls,Large,569,509,282,44.6,27,4.6,761,Y
+PC-ACC-003,Snugglepaw,Snugglepaw Nylon Collar,accessories,collars,Medium,379,339,208,38.6,26,4.1,1319,Y
+PC-ACC-004,TumbleTail,TumbleTail Foldable Travel Bowl,accessories,bowls,Small,269,239,134,43.9,19,4.3,1261,Y
+PC-ACC-005,TumbleTail,TumbleTail Foldable Travel Bowl,accessories,bowls,Medium,429,389,228,41.4,28,3.6,1020,Y
+PC-ACC-006,TumbleTail,TumbleTail Cat Scratching Pad,accessories,furniture,Small,259,239,139,41.8,33,4.5,1118,Y
+PC-ACC-007,CleanPaws,CleanPaws Foldable Travel Bowl,accessories,bowls,Small,299,249,159,36.1,16,4.7,79,Y
+PC-ACC-008,TumbleTail,TumbleTail Stainless Steel Bowl,accessories,bowls,Medium,429,339,208,38.6,27,4.8,764,Y
+PC-ACC-009,CleanPaws,CleanPaws Retractable Leash,accessories,leashes,Small,259,249,138,44.6,53,3.7,446,Y
+PC-ACC-010,CleanPaws,CleanPaws Nylon Collar,accessories,collars,Small,289,269,148,45.0,21,4.5,432,N
+PC-ACC-011,CleanPaws,CleanPaws Adjustable Harness,accessories,harness,Large,489,389,244,37.3,28,4.3,579,Y
+PC-ACC-012,TumbleTail,TumbleTail Adjustable Harness,accessories,harness,Large,489,459,293,36.2,8,4.6,281,N

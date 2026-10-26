@@ -1,0 +1,92 @@
+[
+  {
+    "turn": 1,
+    "speaker": "buyer",
+    "text": "Hi Priya, thanks for making time. I have gone through your application and the SKU sheet. We like the creamy lick treats, but the numbers need work before we can place an order."
+  },
+  {
+    "turn": 2,
+    "speaker": "vendor",
+    "text": "Thanks for having me. Happy to talk through it. What are you looking at first?"
+  },
+  {
+    "turn": 3,
+    "speaker": "buyer",
+    "text": "Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?"
+  },
+  {
+    "turn": 4,
+    "speaker": "vendor",
+    "text": "Seventeen is thin, I know. Our tuna and salmon costs went up this year. If you take the full treats range, I can move to 21 percent."
+  },
+  {
+    "turn": 5,
+    "speaker": "buyer",
+    "text": "Twenty-one is better but still short. Can you go to 24?"
+  },
+  {
+    "turn": 6,
+    "speaker": "vendor",
+    "text": "No, 21 is my floor on the treats. The litter I can look at again once we see sales, but not today."
+  },
+  {
+    "turn": 7,
+    "speaker": "buyer",
+    "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard."
+  },
+  {
+    "turn": 8,
+    "speaker": "vendor",
+    "text": "Fifteen is hard for us, we are a young company. But I can do 30 days if the order is confirmed in writing this week."
+  },
+  {
+    "turn": 9,
+    "speaker": "buyer",
+    "text": "Agreed, 30 days payment terms, order confirmed in writing. Now minimum order quantity. You have 800 units, and our forecast is far lower for a new brand."
+  },
+  {
+    "turn": 10,
+    "speaker": "vendor",
+    "text": "800 is what our production batch needs. I can bring it down to 500 units in total for the first order, split across the SKUs you list."
+  },
+  {
+    "turn": 11,
+    "speaker": "buyer",
+    "text": "Good, 500 units in total for the first order, split across the SKUs we list. What about launch marketing support? You listed 20,000 rupees."
+  },
+  {
+    "turn": 12,
+    "speaker": "vendor",
+    "text": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling."
+  },
+  {
+    "turn": 13,
+    "speaker": "buyer",
+    "text": "Thank you. And a launch discount for the first month? Your application has none."
+  },
+  {
+    "turn": 14,
+    "speaker": "vendor",
+    "text": "I can give a 5 percent launch discount for the first 30 days."
+  },
+  {
+    "turn": 15,
+    "speaker": "buyer",
+    "text": "That works. One more request: sale-or-return on unsold stock after 90 days, since this is a new brand for us."
+  },
+  {
+    "turn": 16,
+    "speaker": "vendor",
+    "text": "I am sorry, I cannot accept returns of unsold stock. Treats have a short shelf life and we cannot resell them. Defect returns within 7 days stay as they are."
+  },
+  {
+    "turn": 17,
+    "speaker": "buyer",
+    "text": "Fine, no sale-or-return. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only."
+  },
+  {
+    "turn": 18,
+    "speaker": "vendor",
+    "text": "That is correct. I will send the written confirmation by Friday."
+  }
+]

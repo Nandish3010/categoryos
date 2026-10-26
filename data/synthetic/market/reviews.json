@@ -1,0 +1,208 @@
+{
+  "Highland Paws": [
+    {
+      "source": "ZoomPets",
+      "rating": 5,
+      "theme": "palatability",
+      "text": "My fussy lab finishes the bowl in minutes. First kibble he has never left over."
+    },
+    {
+      "source": "TailMart",
+      "rating": 5,
+      "theme": "stool quality",
+      "text": "Stools firm and much less smell after two weeks on the salmon formula."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 5,
+      "theme": "coat",
+      "text": "Coat noticeably shinier in a month. Worth the extra money."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 4,
+      "theme": "price",
+      "text": "Great food but pricey. The 6kg pack makes it more reasonable."
+    },
+    {
+      "source": "TailMart",
+      "rating": 5,
+      "theme": "ingredients",
+      "text": "Love that it is grain-free with real chicken first. Vet recommended."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 3,
+      "theme": "packaging",
+      "text": "Food is great but the zip on the pack broke on arrival."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 4,
+      "theme": "palatability",
+      "text": "Puppy took to it quickly, kibble size is just right."
+    },
+    {
+      "source": "TailMart",
+      "rating": 2,
+      "theme": "smell",
+      "text": "Salmon variant smells quite strong, my pug was not impressed."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 5,
+      "theme": "digestion",
+      "text": "Switched from a big brand, no tummy upset at all."
+    }
+  ],
+  "Mewsli": [
+    {
+      "source": "ZoomPets",
+      "rating": 5,
+      "theme": "palatability",
+      "text": "My cat goes crazy for the tuna lick treat. Perfect for giving medicine."
+    },
+    {
+      "source": "TailMart",
+      "rating": 5,
+      "theme": "dust",
+      "text": "Tofu litter is nearly dust free and clumps well. Smell control is good."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 4,
+      "theme": "price",
+      "text": "Litter is a bit pricey but lasts longer than clay."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 3,
+      "theme": "packaging",
+      "text": "Treat pouch tore at the seal, some leaked in the box."
+    },
+    {
+      "source": "TailMart",
+      "rating": 4,
+      "theme": "palatability",
+      "text": "Both my cats like the chicken crunchy ones."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 2,
+      "theme": "smell",
+      "text": "Green tea scent is too strong, my cat refused to use it at first."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 5,
+      "theme": "texture",
+      "text": "Silica crystals did not track at all, very clean."
+    },
+    {
+      "source": "TailMart",
+      "rating": 3,
+      "theme": "clumping",
+      "text": "Bentonite litter clumps fine but is a bit dusty."
+    }
+  ],
+  "SnapTail": [
+    {
+      "source": "ZoomPets",
+      "rating": 3,
+      "theme": "durability",
+      "text": "Rope toy frayed within a week with my beagle."
+    },
+    {
+      "source": "TailMart",
+      "rating": 2,
+      "theme": "quality",
+      "text": "Squeaker stopped working in two days. Cheap quality."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 4,
+      "theme": "price",
+      "text": "Decent value for the price, the harness fits well."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 2,
+      "theme": "packaging",
+      "text": "Collar buckle felt flimsy, packaging was just a polybag."
+    },
+    {
+      "source": "TailMart",
+      "rating": 4,
+      "theme": "cat toys",
+      "text": "Cat loves the feather wand, the bell is a bit loud."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 1,
+      "theme": "smell",
+      "text": "Rubber bone has a strong chemical smell, returned it."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 3,
+      "theme": "durability",
+      "text": "Leash lock jammed after a month."
+    },
+    {
+      "source": "TailMart",
+      "rating": 4,
+      "theme": "price",
+      "text": "Bowl is solid and anti-skid works. Cheaper than most."
+    }
+  ],
+  "Verdant Tails": [
+    {
+      "source": "ZoomPets",
+      "rating": 5,
+      "theme": "ingredients",
+      "text": "Neem shampoo worked great against ticks, smells natural."
+    },
+    {
+      "source": "TailMart",
+      "rating": 4,
+      "theme": "smell",
+      "text": "Paw balm smells lovely and my dog does not lick it off."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 2,
+      "theme": "packaging",
+      "text": "Bottle leaked in transit, cap does not seal properly."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 3,
+      "theme": "price",
+      "text": "A bit expensive for the quantity."
+    },
+    {
+      "source": "TailMart",
+      "rating": 2,
+      "theme": "claims",
+      "text": "Turmeric chews did not help my old dog's joints in a month despite the claims."
+    },
+    {
+      "source": "FurBazaar",
+      "rating": 4,
+      "theme": "palatability",
+      "text": "Oat honey biscuits disappear in seconds."
+    },
+    {
+      "source": "ZoomPets",
+      "rating": 1,
+      "theme": "irritation",
+      "text": "Shampoo made my dog's skin itchier. Stopped using it."
+    },
+    {
+      "source": "TailMart",
+      "rating": 3,
+      "theme": "expiry",
+      "text": "No batch or expiry date printed clearly on the probiotic pack."
+    }
+  ]
+}

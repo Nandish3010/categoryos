@@ -1,0 +1,261 @@
+{
+  "dog dry food": {
+    "target_margin_pct": 27,
+    "min_margin_pct": 20,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 43.2,
+    "sku_count": 18,
+    "top_price_bands": [
+      {
+        "band": "₹0-500",
+        "share_of_skus_pct": 33.3,
+        "share_of_units_pct": 45.4
+      },
+      {
+        "band": "₹500-1500",
+        "share_of_skus_pct": 33.3,
+        "share_of_units_pct": 27.9
+      },
+      {
+        "band": "₹1500-3500",
+        "share_of_skus_pct": 33.3,
+        "share_of_units_pct": 26.7
+      },
+      {
+        "band": "₹3500-8000",
+        "share_of_skus_pct": 0.0,
+        "share_of_units_pct": 0.0
+      }
+    ],
+    "gaps": [
+      "Premium grain-free / high-protein dog food above ₹1,500 per 3 kg is underserved",
+      "Few salmon or novel-protein adult formulas",
+      "Senior and joint-care formulas thin"
+    ]
+  },
+  "dog wet food": {
+    "target_margin_pct": 28,
+    "min_margin_pct": 22,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 60.8,
+    "sku_count": 12,
+    "top_price_bands": [
+      {
+        "band": "₹0-120",
+        "share_of_skus_pct": 75.0,
+        "share_of_units_pct": 77.6
+      },
+      {
+        "band": "₹250-600",
+        "share_of_skus_pct": 16.7,
+        "share_of_units_pct": 11.4
+      },
+      {
+        "band": "₹120-250",
+        "share_of_skus_pct": 8.3,
+        "share_of_units_pct": 11.0
+      }
+    ],
+    "gaps": [
+      "Natural / high-meat-content wet food in 350 g cans is underserved",
+      "Single-protein options for sensitive dogs missing"
+    ]
+  },
+  "cat dry food": {
+    "target_margin_pct": 26,
+    "min_margin_pct": 19,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 43.4,
+    "sku_count": 14,
+    "top_price_bands": [
+      {
+        "band": "₹0-400",
+        "share_of_skus_pct": 28.6,
+        "share_of_units_pct": 37.4
+      },
+      {
+        "band": "₹900-2000",
+        "share_of_skus_pct": 42.9,
+        "share_of_units_pct": 35.7
+      },
+      {
+        "band": "₹400-900",
+        "share_of_skus_pct": 28.6,
+        "share_of_units_pct": 26.9
+      }
+    ],
+    "gaps": [
+      "Indoor / sterilised cat formulas in 3 kg+ packs are underserved",
+      "Kitten range has only 2 brands"
+    ]
+  },
+  "cat wet food": {
+    "target_margin_pct": 30,
+    "min_margin_pct": 23,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 85.9,
+    "sku_count": 14,
+    "top_price_bands": [
+      {
+        "band": "₹0-100",
+        "share_of_skus_pct": 57.1,
+        "share_of_units_pct": 67.9
+      },
+      {
+        "band": "₹100-200",
+        "share_of_skus_pct": 35.7,
+        "share_of_units_pct": 24.6
+      },
+      {
+        "band": "₹200-500",
+        "share_of_skus_pct": 7.1,
+        "share_of_units_pct": 7.5
+      }
+    ],
+    "gaps": [
+      "Grain-free cat wet food under ₹100 is underserved",
+      "Mousse and pate textures for kittens are thin"
+    ]
+  },
+  "treats": {
+    "target_margin_pct": 35,
+    "min_margin_pct": 28,
+    "typical_payment_terms_days": 21,
+    "avg_monthly_units_per_sku": 74.6,
+    "sku_count": 16,
+    "top_price_bands": [
+      {
+        "band": "₹0-150",
+        "share_of_skus_pct": 31.2,
+        "share_of_units_pct": 46.8
+      },
+      {
+        "band": "₹150-300",
+        "share_of_skus_pct": 31.2,
+        "share_of_units_pct": 28.0
+      },
+      {
+        "band": "₹300-600",
+        "share_of_skus_pct": 37.5,
+        "share_of_units_pct": 25.2
+      }
+    ],
+    "gaps": [
+      "Functional cat treats (hairball, dental, creamy lick) are underserved",
+      "Freeze-dried single-ingredient treats missing",
+      "Dog dental chews saturated"
+    ]
+  },
+  "cat litter": {
+    "target_margin_pct": 22,
+    "min_margin_pct": 17,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 31.3,
+    "sku_count": 10,
+    "top_price_bands": [
+      {
+        "band": "₹450-700",
+        "share_of_skus_pct": 50.0,
+        "share_of_units_pct": 47.3
+      },
+      {
+        "band": "₹0-450",
+        "share_of_skus_pct": 30.0,
+        "share_of_units_pct": 30.4
+      },
+      {
+        "band": "₹700-1200",
+        "share_of_skus_pct": 20.0,
+        "share_of_units_pct": 22.4
+      }
+    ],
+    "gaps": [
+      "Tofu / plant-based low-dust litter has only 1 SKU",
+      "Premium lavender / carbon clumping litter above ₹700 is underserved"
+    ]
+  },
+  "grooming": {
+    "target_margin_pct": 38,
+    "min_margin_pct": 30,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 32.8,
+    "sku_count": 12,
+    "top_price_bands": [
+      {
+        "band": "₹0-250",
+        "share_of_skus_pct": 66.7,
+        "share_of_units_pct": 69.5
+      },
+      {
+        "band": "₹250-450",
+        "share_of_skus_pct": 33.3,
+        "share_of_units_pct": 30.5
+      },
+      {
+        "band": "₹450-800",
+        "share_of_skus_pct": 0.0,
+        "share_of_units_pct": 0.0
+      }
+    ],
+    "gaps": [
+      "Herbal and natural shampoos with credible claims are underserved",
+      "Paw and coat care (balms, serums) is almost absent"
+    ]
+  },
+  "toys": {
+    "target_margin_pct": 40,
+    "min_margin_pct": 32,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 29.4,
+    "sku_count": 12,
+    "top_price_bands": [
+      {
+        "band": "₹200-350",
+        "share_of_skus_pct": 50.0,
+        "share_of_units_pct": 40.5
+      },
+      {
+        "band": "₹0-200",
+        "share_of_skus_pct": 25.0,
+        "share_of_units_pct": 31.7
+      },
+      {
+        "band": "₹350-700",
+        "share_of_skus_pct": 25.0,
+        "share_of_units_pct": 27.8
+      }
+    ],
+    "gaps": [
+      "Range is saturated: rope, squeaky and plush toys have many near-identical SKUs",
+      "Interactive / treat-dispensing toys are the only real gap"
+    ]
+  },
+  "accessories": {
+    "target_margin_pct": 40,
+    "min_margin_pct": 32,
+    "typical_payment_terms_days": 30,
+    "avg_monthly_units_per_sku": 25.7,
+    "sku_count": 12,
+    "top_price_bands": [
+      {
+        "band": "₹0-300",
+        "share_of_skus_pct": 41.7,
+        "share_of_units_pct": 46.1
+      },
+      {
+        "band": "₹300-450",
+        "share_of_skus_pct": 41.7,
+        "share_of_units_pct": 42.5
+      },
+      {
+        "band": "₹450-800",
+        "share_of_skus_pct": 16.7,
+        "share_of_units_pct": 11.4
+      }
+    ],
+    "gaps": [
+      "Collars, leashes and bowls are saturated",
+      "Cat furniture and travel accessories underserved"
+    ]
+  }
+}
