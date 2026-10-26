@@ -1,70 +1,100 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { BackendBanner } from "@/components/BackendBanner";
+import { Chip, Tag } from "@/components/Chip";
+import { Skeleton } from "@/components/Skeleton";
+import { fetchVendors, type Verdict, type VendorListItem } from "@/lib/api";
+import { inrCompact } from "@/lib/format";
+import { useAsync } from "@/lib/useAsync";
 
-type Stage = {
-  id: string;
-  name: string;
-  description: string;
-  status: string;
-};
+function outcome(v: VendorListItem): Verdict {
+  const c = v.summary.counts;
+  if ((c.list ?? 0) > 0) return "list";
+  if ((c.negotiate ?? 0) > 0) return "negotiate";
+  if ((c.needs_data ?? 0) > 0) return "needs_data";
+  return "reject";
+}
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8001";
+function VendorCard({ v, primary }: { v: VendorListItem; primary: boolean }) {
+  const c = v.summary.counts;
+  return (
+    <Link
+      href={`/vendors/${v.id}`}
+      className={`flex min-h-44 flex-col justify-between rounded-card border bg-surface p-5 transition-colors hover:bg-surface-2 ${
+        primary ? "border-accent md:col-span-2" : "border-border"
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="font-mono text-xs text-text-dim">{v.id}</div>
+          <h2 className={`font-semibold ${primary ? "text-[28px] leading-9" : "text-xl"}`}>
+            {v.brand}
+          </h2>
+          <div className="text-sm text-text-dim">{v.categories.join(" · ")}</div>
+        </div>
+        <Chip verdict={outcome(v)} />
+      </div>
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="text-xs text-text-dim">Capital at risk</div>
+          <div className={`num font-semibold ${primary ? "text-[36px] leading-10" : "text-[28px] leading-9"}`}>
+            {inrCompact(v.summary.capital_at_risk_inr)}
+          </div>
+          <div className="num text-xs text-text-dim">
+            {c.list ?? 0} list {"·"} {c.negotiate ?? 0} negotiate {"·"} {c.reject ?? 0} reject
+            {(c.needs_data ?? 0) > 0 ? ` · ${c.needs_data} needs data` : ""} {"·"} {v.sku_count} SKUs
+          </div>
+        </div>
+        {primary ? (
+          <span className="inline-flex h-11 items-center gap-1 rounded-card bg-accent px-4 text-sm font-semibold text-bg">
+            Start here <ArrowRight size={16} aria-hidden="true" />
+          </span>
+        ) : (
+          <Tag>Open</Tag>
+        )}
+      </div>
+    </Link>
+  );
+}
 
-export default function Home() {
-  const [stages, setStages] = useState<Stage[]>([]);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
+function SkeletonCard({ primary }: { primary: boolean }) {
+  return (
+    <div
+      className={`min-h-44 rounded-card border border-border bg-surface p-5 ${primary ? "md:col-span-2" : ""}`}
+    >
+      <Skeleton className="h-3 w-12" />
+      <Skeleton className="mt-2 h-7 w-48" />
+      <Skeleton className="mt-2 h-4 w-64" />
+      <Skeleton className="mt-8 h-9 w-32" />
+    </div>
+  );
+}
 
-  useEffect(() => {
-    fetch(`${BACKEND_URL}/api/stages`)
-      .then((res) => {
-        if (!res.ok) throw new Error(String(res.status));
-        return res.json();
-      })
-      .then(setStages)
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, []);
+export default function VendorsBoard() {
+  const { data, error, loading } = useAsync(fetchVendors, "vendors", { retryMs: 3000 });
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-6 py-16 text-zinc-100">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-5xl font-bold tracking-tight">CategoryOS</h1>
-        <p className="mt-3 text-lg text-zinc-400">
-          From vendor request to warehouse — run by agents
+    <main className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6">
+      <header className="mb-6">
+        <div className="text-xl font-semibold tracking-tight">CategoryOS</div>
+        <p className="mt-1 text-sm text-text-dim">
+          Vendor applications waiting for a decision. Open one to see the recommendation, move the
+          levers and check every number.
         </p>
+      </header>
 
-        {loading && <p className="mt-12 text-zinc-500">Loading stages…</p>}
-
-        {error && (
-          <div className="mt-12 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4 text-amber-200">
-            Couldn&apos;t reach the backend at {BACKEND_URL}. Start it with{" "}
-            <code className="rounded bg-zinc-900 px-1">
-              make dev
-            </code>{" "}
-            and refresh.
-          </div>
-        )}
-
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {stages.map((stage, i) => (
-            <div
-              key={stage.id}
-              className="rounded-xl border border-zinc-800 bg-zinc-900 p-5"
-            >
-              <div className="flex items-center justify-between text-sm text-zinc-500">
-                <span>Stage {i + 1}</span>
-                <span className="rounded-full bg-zinc-800 px-2 py-0.5 text-xs">
-                  {stage.status}
-                </span>
-              </div>
-              <h2 className="mt-3 font-semibold">{stage.name}</h2>
-              <p className="mt-1 text-sm text-zinc-400">{stage.description}</p>
-            </div>
-          ))}
+      {error ? (
+        <div className="mb-4">
+          <BackendBanner error={error} cached={data != null} retrying />
         </div>
+      ) : null}
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2" aria-busy={loading}>
+        {data
+          ? data.map((v) => <VendorCard key={v.id} v={v} primary={v.id === "V001"} />)
+          : [0, 1, 2, 3].map((i) => <SkeletonCard key={i} primary={i === 0} />)}
       </div>
     </main>
   );
