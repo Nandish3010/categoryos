@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     max_spend_usd: float = 120
     record: bool = False
     ledger_path: Path = BACKEND_DIR / ".ledger.json"
+    db_path: Path = BACKEND_DIR / ".categoryos.db"
+    sse_heartbeat_s: float = 15.0
+    demo_today: str | None = None  # ISO date; freezes the clock used by check_documents
     rate_limit_per_min: int = 20
     warn_spend_usd: float = 100
 

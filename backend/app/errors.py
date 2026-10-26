@@ -135,3 +135,61 @@ class RateLimited(CategoryOSError):
     problem = "Too many requests from this address"
     cause = "The per-IP limit for keyed routes was exceeded"
     fix = "Wait a minute and retry"
+
+
+class RunNotFound(CategoryOSError):
+    status = 404
+    code = "run_not_found"
+    problem = "No run with this id"
+    cause = "The run id is unknown, or the store was reset"
+    fix = "Start a run with POST /api/vendors/{id}/runs, or read the id from runs/latest"
+
+    def __init__(self, run_id: str) -> None:
+        super().__init__(f"unknown run: {run_id!r}")
+        self.run_id = run_id
+
+
+class UnknownStage(CategoryOSError):
+    status = 404
+    code = "unknown_stage"
+    cause = "The stage id is not one of the eight pipeline stages"
+    fix = "Use one of intake, research, shortlist, negotiate, catalog, marketing, jbp, po"
+
+    def __init__(self, stage: str) -> None:
+        super().__init__(f"unknown stage: {stage!r}")
+        self.stage = stage
+
+
+class UnknownSku(CategoryOSError):
+    status = 404
+    code = "unknown_sku"
+    cause = "The SKU code is not part of this stage's narrative"
+    fix = "Use a code from data.rationale_per_sku of the stage result"
+
+    def __init__(self, sku_code: str) -> None:
+        super().__init__(f"unknown sku: {sku_code!r}")
+        self.sku_code = sku_code
+
+
+class StaleApproval(CategoryOSError):
+    status = 409
+    code = "stale_approval"
+    problem = "The approval was for different numbers than the narrative describes"
+    cause = "The metrics hash sent with the approval differs from the hash the narrative was generated for"
+    fix = "Click Re-plan with agent so the narrative matches the current levers, then approve again"
+
+
+class StageNotReviewable(CategoryOSError):
+    status = 409
+    code = "stage_not_reviewable"
+    problem = "This stage cannot be approved, overridden or re-planned right now"
+    cause = "The stage is not in review or done state"
+    fix = "Wait for the stage to finish, or start a new run"
+
+
+class StageLocked(CategoryOSError):
+    status = 409
+    code = "stage_locked"
+    problem = "This stage is locked"
+    cause = "An earlier stage failed, so later stages cannot run"
+    fix = "Resolve the failure in the earlier stage and start a new run"

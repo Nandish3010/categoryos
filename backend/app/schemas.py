@@ -24,14 +24,6 @@ class SKU(BaseModel):
     image_urls: list[str] = Field(default_factory=list)
 
 
-class StageResult(BaseModel):
-    stage: str
-    status: str
-    summary: str
-    data: dict[str, Any] = Field(default_factory=dict)
-    needs_approval: bool = False
-
-
 StageId = Literal["intake", "research", "shortlist", "negotiate", "catalog", "marketing", "jbp", "po"]
 Unit = Literal["pct", "inr", "units", "score", "ratio"]
 Verdict = Literal["list", "negotiate", "reject", "needs_data"]
@@ -140,3 +132,107 @@ class LeverResponse(BaseModel):
     summary: DecideSummary
     metrics_hash: str
     computed_ms: float
+
+
+class StageResult(BaseModel):
+    stage: str
+    status: StageStatus
+    summary: str = ""
+    data: dict[str, Any] = Field(default_factory=dict)
+    needs_approval: bool = False
+    locked_reason: str | None = None
+    claims: list[Claim] = Field(default_factory=list)
+    metrics_hash: str | None = None
+    narrative_hash: str | None = None
+
+
+TraceType = Literal[
+    "stage_started", "tool_call", "model_call", "claim_checked", "stage_result", "degraded", "error", "done"
+]
+
+
+class TraceEvent(BaseModel):
+    seq: int
+    run_id: str
+    t_rel_ms: float
+    type: TraceType
+    stage: str | None = None
+    model: str | None = None
+    latency_ms: float | None = None
+    cost_usd: float | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+# ---------- agent outputs (the "final" of a tool-calling run) ----------
+
+
+class RiskFlag(BaseModel):
+    type: str
+    quote: str
+    severity: Literal["low", "medium", "high"]
+
+
+class ScreenFinal(BaseModel):
+    risk_flags: list[RiskFlag] = Field(default_factory=list)
+    injection_detected: bool
+    followup_questions: list[str] = Field(default_factory=list)
+    decision: Literal["pass", "fail"]
+    reasons: list[str] = Field(default_factory=list)
+
+
+class SkuRationale(BaseModel):
+    code: str
+    verdict: Verdict
+    why: str
+
+
+class CounterTerm(BaseModel):
+    model_config = {"extra": "allow"}
+
+    term: str
+    ask: str | float | int | None = None
+    rationale: str = ""
+
+
+class CounterOffer(BaseModel):
+    terms: list[CounterTerm] = Field(default_factory=list)
+    email_draft: str = ""
+
+
+class Extraction(BaseModel):
+    sku_code: str
+    field: Literal["cost", "mrp"]
+    value: float
+    row: int
+    header: str
+
+
+class DecideFinal(BaseModel):
+    headline: str
+    rationale_per_sku: list[SkuRationale]
+    counter_offer: CounterOffer
+    extractions: list[Extraction] = Field(default_factory=list)
+
+
+# ---------- request bodies ----------
+
+
+class ApproveBody(BaseModel):
+    metrics_hash: str
+
+
+class OverrideBody(BaseModel):
+    sku_code: str
+    verdict: Verdict
+    note: str | None = None
+
+
+class ReplanBody(BaseModel):
+    run_id: str
+    target_margin_pct_offset: float = Field(ge=-20, le=20)
+    moq: int = Field(ge=0, le=20000)
+
+
+class RejectBody(BaseModel):
+    run_id: str
+    reason: str

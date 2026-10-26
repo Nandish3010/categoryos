@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_metrics",
+        "args": {
+          "vendor_id": "V002",
+          "target_margin_pct_offset": 0
+        }
+      },
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V002"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V002"
+        }
+      },
+      {
+        "tool": "get_overlap",
+        "args": {
+          "sku_key": "V002:MW-L02"
+        }
+      },
+      {
+        "tool": "get_benchmarks",
+        "args": {
+          "category": "treats"
+        }
+      }
+    ],
+    "final": {
+      "headline": "0 of 10 Mewsli SKUs list as proposed, 4 need a price negotiation and 6 are rejected; capital at risk is ₹1,88,588 at MOQ 800.",
+      "rationale_per_sku": [
+        {
+          "code": "MW-T01",
+          "verdict": "negotiate",
+          "why": "Margin 20.7% is below the 35% target. Cost has to come down to ₹121.25 to reach target. The sheet gives cost as ₹148 on a ₹199 MRP."
+        },
+        {
+          "code": "MW-T02",
+          "verdict": "negotiate",
+          "why": "Margin 18.1% is below the 35% target. Cost has to come down to ₹105.63 to reach target. Demand of 0.93 is strong for a treat, which makes this a SKU worth fighting for. Sheet cost is ₹133."
+        },
+        {
+          "code": "MW-T03",
+          "verdict": "negotiate",
+          "why": "Margin 13.7% is below the 35% target. The sheet has no cost, so this cost is estimated from the vendor's offered margin and must be confirmed. Cost has to come down to ₹174.38 to reach target."
+        },
+        {
+          "code": "MW-T04",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40."
+        },
+        {
+          "code": "MW-T05",
+          "verdict": "reject",
+          "why": "Demand 0.17 below minimum 0.40."
+        },
+        {
+          "code": "MW-L01",
+          "verdict": "negotiate",
+          "why": "Margin 13.7% is below the 22% target. The sheet has no cost, so this cost is estimated from the vendor's offered margin and must be confirmed. Cost has to come down to ₹479.25 to reach target."
+        },
+        {
+          "code": "MW-L02",
+          "verdict": "reject",
+          "why": "Overlap 0.80 at or above maximum 0.60. Sheet cost is ₹447, but the catalog already carries a near-identical tofu litter."
+        },
+        {
+          "code": "MW-L03",
+          "verdict": "reject",
+          "why": "Overlap 0.80 at or above maximum 0.60."
+        },
+        {
+          "code": "MW-L04",
+          "verdict": "reject",
+          "why": "Overlap 0.80 at or above maximum 0.60."
+        },
+        {
+          "code": "MW-L05",
+          "verdict": "reject",
+          "why": "Demand 0.20 below minimum 0.40."
+        }
+      ],
+      "counter_offer": {
+        "terms": [
+          {
+            "term": "cost_price",
+            "sku_code": "MW-T01",
+            "current": "₹148",
+            "ask": "₹121.25",
+            "fallback": null,
+            "rationale": "At ₹121.25 MW-T01 reaches the 35% treats target."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "MW-T02",
+            "current": "₹133",
+            "ask": "₹105.63",
+            "fallback": null,
+            "rationale": "MW-T02 has strong demand (0.93); a cost of ₹105.63 reaches target."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "MW-T03",
+            "current": "₹231.57 (estimated)",
+            "ask": "₹174.38",
+            "fallback": null,
+            "rationale": "The sheet has no cost for MW-T03. Confirm the real cost before agreeing a number."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "MW-L01",
+            "current": "₹530.37 (estimated)",
+            "ask": "₹479.25",
+            "fallback": null,
+            "rationale": "Cost is blank in the sheet. Tofu litter has a lower 22% target, so the gap is smaller."
+          },
+          {
+            "term": "margin_pct",
+            "current": "17%",
+            "ask": "35% on treats, 22% on litter",
+            "fallback": "21% (the vendor's stated floor on the call)",
+            "rationale": "On the call the vendor said 21% is the floor on treats. That still leaves treats short of target, so the cost asks above are the real lever."
+          },
+          {
+            "term": "payment_terms_days",
+            "current": "15",
+            "ask": "45",
+            "fallback": "30",
+            "rationale": "The vendor already conceded 30 days on the call, subject to written order confirmation. We pay on 45 as standard; hold 30 as the floor."
+          },
+          {
+            "term": "moq_units",
+            "current": "800",
+            "ask": "500",
+            "fallback": null,
+            "rationale": "At MOQ 800 the shortlist carries 176 days of cover. The vendor agreed to 500 in total on the call; hold that."
+          },
+          {
+            "term": "marketing_support_inr",
+            "current": "20,000",
+            "ask": "50,000",
+            "fallback": null,
+            "rationale": "Agreed on the call for the launch month, to be spent on sponsored listings and sampling."
+          },
+          {
+            "term": "launch_discount_pct",
+            "current": "0",
+            "ask": "5 (first 30 days)",
+            "fallback": null,
+            "rationale": "Agreed on the call."
+          },
+          {
+            "term": "returns",
+            "current": "defects within 7 days only",
+            "ask": "unchanged",
+            "fallback": null,
+            "rationale": "We asked for sale-or-return after 90 days and the vendor declined because treats have short shelf life. Accept; no concession needed from us."
+          }
+        ],
+        "email_draft": "Hi Priya, thank you for the call. To close: we can work with 30-day payment terms, a first order of 500 units, Rs 50,000 launch marketing and a 5% launch discount for 30 days, as discussed. The open item is unit cost. To reach our margin target we need MW-T01 at ₹121.25 and MW-T02 at ₹105.63, and we need you to send the actual cost for MW-T03, MW-L01 and MW-L04, which are blank in your sheet. If 21% is truly your floor on treats, tell us which SKUs you can move and we will prioritise those. Please confirm in writing this week. Regards, Category Team."
+      },
+      "extractions": [
+        {
+          "sku_code": "MW-T01",
+          "field": "cost",
+          "value": 148,
+          "row": 2,
+          "header": "Our Cost"
+        },
+        {
+          "sku_code": "MW-T02",
+          "field": "cost",
+          "value": 133,
+          "row": 3,
+          "header": "Our Cost"
+        },
+        {
+          "sku_code": "MW-T01",
+          "field": "mrp",
+          "value": 199,
+          "row": 2,
+          "header": "M.R.P (INR)"
+        },
+        {
+          "sku_code": "MW-L02",
+          "field": "cost",
+          "value": 447,
+          "row": 8,
+          "header": "Our Cost"
+        }
+      ]
+    }
+  }
+}

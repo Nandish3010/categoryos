@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_metrics",
+        "args": {
+          "vendor_id": "V003",
+          "target_margin_pct_offset": 0
+        }
+      },
+      {
+        "tool": "get_application",
+        "args": {
+          "vendor_id": "V003"
+        }
+      },
+      {
+        "tool": "get_sku_rows",
+        "args": {
+          "vendor_id": "V003"
+        }
+      },
+      {
+        "tool": "get_overlap",
+        "args": {
+          "sku_key": "V003:ST-102"
+        }
+      },
+      {
+        "tool": "get_benchmarks",
+        "args": {
+          "category": "toys"
+        }
+      }
+    ],
+    "final": {
+      "headline": "0 of 10 SnapTail SKUs list as proposed, 4 need a price negotiation and 6 are rejected; capital at risk is ₹85,430 at MOQ 400.",
+      "rationale_per_sku": [
+        {
+          "code": "ST-101",
+          "verdict": "negotiate",
+          "why": "Margin 32.9% is below the 40% target. Cost has to come down to ₹109.04 to reach target. Sheet landed cost is ₹122."
+        },
+        {
+          "code": "ST-102",
+          "verdict": "reject",
+          "why": "Overlap 1.00 at or above maximum 0.60. The catalog already carries an identical squeaky rubber bone."
+        },
+        {
+          "code": "ST-103",
+          "verdict": "reject",
+          "why": "Overlap 0.60 at or above maximum 0.60."
+        },
+        {
+          "code": "ST-104",
+          "verdict": "reject",
+          "why": "Demand 0.15 below minimum 0.40."
+        },
+        {
+          "code": "ST-105",
+          "verdict": "reject",
+          "why": "Demand 0.25 below minimum 0.40."
+        },
+        {
+          "code": "ST-201",
+          "verdict": "negotiate",
+          "why": "Margin 26.9% is below the 40% target. Cost has to come down to ₹149.42 to reach target."
+        },
+        {
+          "code": "ST-202",
+          "verdict": "negotiate",
+          "why": "Margin 36.0% is below the 40% target. Cost has to come down to ₹285 to reach target. The harness is the closest to target: sheet cost ₹304 against a required ₹285."
+        },
+        {
+          "code": "ST-203",
+          "verdict": "reject",
+          "why": "Overlap 0.67 at or above maximum 0.60."
+        },
+        {
+          "code": "ST-204",
+          "verdict": "negotiate",
+          "why": "Margin 21.8% is below the 40% target. Cost has to come down to ₹135 to reach target."
+        },
+        {
+          "code": "ST-205",
+          "verdict": "reject",
+          "why": "Demand 0.00 below minimum 0.40; Overlap 0.75 at or above maximum 0.60."
+        }
+      ],
+      "counter_offer": {
+        "terms": [
+          {
+            "term": "cost_price",
+            "sku_code": "ST-101",
+            "current": "₹122",
+            "ask": "₹109.04",
+            "fallback": null,
+            "rationale": "Margin 32.9% versus the 40% target."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "ST-201",
+            "current": "₹182",
+            "ask": "₹149.42",
+            "fallback": null,
+            "rationale": "Margin 26.9% versus the 40% target."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "ST-202",
+            "current": "₹304",
+            "ask": "₹285",
+            "fallback": null,
+            "rationale": "Margin 36.0% versus the 40% target."
+          },
+          {
+            "term": "cost_price",
+            "sku_code": "ST-204",
+            "current": "₹176",
+            "ask": "₹135",
+            "fallback": null,
+            "rationale": "Margin 21.8% versus the 40% target."
+          },
+          {
+            "term": "moq_units",
+            "current": "400",
+            "ask": "200",
+            "fallback": "300",
+            "rationale": "At MOQ 400 the four negotiable SKUs carry 259 days of cover; the forecast does not justify it."
+          },
+          {
+            "term": "marketing_support_inr",
+            "current": "0",
+            "ask": "25,000",
+            "fallback": null,
+            "rationale": "The vendor offers none, and they are new to this platform."
+          }
+        ],
+        "email_draft": "Hello, thank you for SnapTail's application. Four SKUs are of interest (ST-101, ST-201, ST-202, ST-204) but each is below our 40% margin target. We would need ST-101 at ₹109.04, ST-201 at ₹149.42, ST-202 at ₹285.00 and ST-204 at ₹135.00, a lower first order of 200 to 300 units, and launch marketing support. Please let us know what is possible. Regards, Category Team."
+      },
+      "extractions": [
+        {
+          "sku_code": "ST-101",
+          "field": "cost",
+          "value": 122,
+          "row": 2,
+          "header": "Landed Cost (Rs)"
+        },
+        {
+          "sku_code": "ST-202",
+          "field": "cost",
+          "value": 304,
+          "row": 8,
+          "header": "Landed Cost (Rs)"
+        },
+        {
+          "sku_code": "ST-204",
+          "field": "cost",
+          "value": 176,
+          "row": 10,
+          "header": "Landed Cost (Rs)"
+        },
+        {
+          "sku_code": "ST-201",
+          "field": "cost",
+          "value": 182,
+          "row": 7,
+          "header": "Landed Cost (Rs)"
+        }
+      ]
+    }
+  }
+}
