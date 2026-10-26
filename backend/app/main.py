@@ -1,16 +1,20 @@
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, Query, Request
+from fastapi import Depends, FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from app import ledger
+from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor, load_application
-from app.errors import MissingInput, UnknownMetric, UnknownVendor
+from app.errors import CategoryOSError
+from app.llm import resolve_mode
 from app.metrics import apply_levers, build_base
 from app.schemas import LeverResponse
+from app.verify import VerifySummary, engine_claims, inject_fault, verify_all
 
 
 @asynccontextmanager
@@ -34,15 +38,10 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(UnknownVendor)
-async def unknown_vendor_handler(_: Request, exc: UnknownVendor) -> JSONResponse:
-    return JSONResponse(status_code=404, content={"detail": str(exc)})
-
-
-@app.exception_handler(UnknownMetric)
-@app.exception_handler(MissingInput)
-async def bad_input_handler(_: Request, exc: Exception) -> JSONResponse:
-    return JSONResponse(status_code=422, content={"detail": str(exc)})
+@app.exception_handler(CategoryOSError)
+async def categoryos_error_handler(request: Request, exc: CategoryOSError) -> JSONResponse:
+    run_id = request.headers.get("X-Run-Id")
+    return JSONResponse(status_code=exc.status, content=exc.to_dict(run_id))
 
 
 @app.get("/health")
@@ -91,3 +90,36 @@ async def decide_metrics(
 ) -> LeverResponse:
     check_vendor(vendor_id)
     return apply_levers(build_base(vendor_id), target_margin_pct_offset, moq)
+
+
+@app.get("/api/vendors/{vendor_id}/claims", response_model=VerifySummary)
+async def vendor_claims(
+    vendor_id: str,
+    target_margin_pct_offset: float = Query(0, ge=-20, le=20),
+    moq: int | None = Query(None, ge=0, le=20000),
+    inject: int = Query(0, ge=0, le=1),
+) -> VerifySummary:
+    check_vendor(vendor_id)
+    lever = apply_levers(build_base(vendor_id), target_margin_pct_offset, moq)
+    claims = engine_claims(vendor_id, lever)
+    if inject:
+        claims = inject_fault(claims)
+    return verify_all(claims)
+
+
+@app.get("/api/mode")
+async def mode() -> dict[str, Any]:
+    return {
+        "mode": settings.effective_mode,
+        "configured_mode": settings.model_mode,
+        "live_stages": [s.strip() for s in settings.live_stages.split(",") if s.strip()],
+        "stage_modes": {stage["id"]: resolve_mode(stage["id"]) for stage in STAGE_META},
+        "spend_usd": round(ledger.total_usd(), 4),
+        "max_spend_usd": settings.max_spend_usd,
+        "warn_spend_usd": settings.warn_spend_usd,
+    }
+
+
+@app.get("/api/ledger", dependencies=[Depends(require_demo_key)])
+async def get_ledger() -> dict[str, Any]:
+    return {**ledger.read(), "max_spend_usd": settings.max_spend_usd, "warn_spend_usd": settings.warn_spend_usd}

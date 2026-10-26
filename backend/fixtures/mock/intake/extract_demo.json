@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "mock",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {"vendor": "V001", "sku_count": 3, "note": "mock fixture used by tests"}
+}

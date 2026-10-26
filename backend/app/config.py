@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     model_mode: Literal["mock", "live", "replay"] = "mock"
     live_stages: str = ""
     max_spend_usd: float = 120
+    record: bool = False
+    ledger_path: Path = BACKEND_DIR / ".ledger.json"
+    rate_limit_per_min: int = 20
     warn_spend_usd: float = 100
 
     model_text: str = "muse-spark-1.3"
