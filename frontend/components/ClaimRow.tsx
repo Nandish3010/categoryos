@@ -14,6 +14,8 @@ export function formatClaimValue(value: number | string | null | undefined, unit
       return `${(Math.abs(value) <= 1 ? value * 100 : value).toFixed(1)}%`;
     case "units":
       return `${Math.round(value)} units`;
+    case "ratio":
+      return value.toFixed(2); // 0-1 scores (demand, overlap), shown as the backend sees them
     default:
       return String(Math.round(value * 100) / 100);
   }
@@ -54,7 +56,11 @@ export function ClaimRow({ claim }: { claim: Claim }) {
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="num text-xs text-text-dim">
               {formatClaimValue(claim.value, claim.unit)}
-              {claim.status === "verified" && sheetValue != null ? " = source cell" : ""}
+              {claim.status === "verified"
+                ? claim.origin === "model_extraction"
+                  ? " · matches sheet cell"
+                  : " · recomputed from"
+                : ""}
             </span>
             <span className="rounded-chip border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-text-dim">
               {sourceLabel(claim)}

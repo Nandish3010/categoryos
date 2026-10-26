@@ -77,7 +77,7 @@ export type Claim = {
   text: string;
   value: number;
   metric: string;
-  unit: "pct" | "inr" | "units" | "score";
+  unit: "pct" | "inr" | "units" | "score" | "ratio";
   sku_key?: string | null;
   status: ClaimStatus;
   recomputed?: number | null;
