@@ -1,0 +1,24 @@
+# Node
+node_modules/
+.next/
+out/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Data / Modal
+*.db
+.modal/
+.modal*
+
+.DS_Store
