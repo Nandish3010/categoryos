@@ -10,6 +10,21 @@ fixtures/golden/<stage>/<task>.json   recorded from a real live run (make record
 Replay falls back to the mock fixture (and marks the result `degraded`) when no golden file exists.
 A missing mock fixture raises `FixtureMissing` with the path to create.
 
+## Golden runs (replay mode)
+
+```
+fixtures/golden/runs/<VID>.json         a whole recorded run: meta, events (all phases), final stages, approvals, re-plan presets
+fixtures/golden/runs/<VID>.json.sha256  checksum of the file bytes
+```
+
+`meta` is `{schema_version, parser_version, recorded_at, source: "mock"|"live", metrics_hash}`. `make record` (or
+`uv run python -m app.record --vendor V001|all`) executes the mock pipeline end to end (run, approve research, approve
+catalog, approve the launch packet at default levers; plus re-plans at offsets 0, 2, 4 at the default MOQ) and writes
+these files; mock recordings get synthetic, deterministic timings and re-recording unchanged content is a no-op. With
+`MODEL_MODE=live RECORD=1` it records a live run instead (real timings, costs credits). On startup in replay mode the
+checksum, `schema_version`, `parser_version`, models and `metrics_hash` are verified; a failure serves that vendor from
+`fixtures/mock/` flagged `degraded`. The tests fail when a golden run no longer matches the code: run `make record`.
+
 ## File schema
 
 ```json

@@ -7,7 +7,7 @@ from fastapi import Depends, FastAPI, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
-from app import ledger, media, runner, store
+from app import ledger, media, persist, replay, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
@@ -29,10 +29,14 @@ from app.verify import VerifySummary, engine_claims, inject_fault, verify_all
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    await store.init()
+    if settings.model_mode == "replay":
+        replay.load_all()  # problems are logged; affected vendors fall back to the mock fixtures, degraded
+    if not replay.pure_replay():
+        await store.init()
     for vendor_id in ALLOWED_VENDORS:
         apply_levers(build_base(vendor_id))
     yield
+    persist.flush()
 
 
 app = FastAPI(title="CategoryOS", lifespan=lifespan)
@@ -120,8 +124,11 @@ async def vendor_claims(
 
 @app.get("/api/mode")
 async def mode() -> dict[str, Any]:
+    problems = replay.problems()
     return {
         "mode": settings.effective_mode,
+        "degraded": bool(problems),
+        **({"replay": replay.status()} if settings.model_mode == "replay" else {}),
         "configured_mode": settings.model_mode,
         "live_stages": [s.strip() for s in settings.live_stages.split(",") if s.strip()],
         "stage_modes": {stage["id"]: resolve_mode(stage["id"]) for stage in STAGE_META},
@@ -176,7 +183,7 @@ async def start_run(vendor_id: str) -> dict[str, str]:
 @app.get("/api/vendors/{vendor_id}/runs/latest")
 async def latest_run(vendor_id: str) -> dict[str, str | None]:
     check_vendor(vendor_id)
-    return {"run_id": await store.latest_run(vendor_id)}
+    return {"run_id": await runner.latest_run(vendor_id)}
 
 
 @app.get("/api/runs/{run_id}")
@@ -195,7 +202,7 @@ async def _event_stream(run_id: str, last_id: int) -> AsyncIterator[str]:
     state.subscribers.append(queue)  # subscribe first so nothing falls between replay and live
     try:
         seen = last_id
-        for event in await store.events_after(run_id, last_id):
+        for event in await state.db.events_after(run_id, last_id):
             seen = event.seq
             yield _sse(event)
             if event.type == "done":

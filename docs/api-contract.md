@@ -258,3 +258,17 @@ as a labelled placeholder on demand. Open (no key).
 
 `GET /health`, `/api/stages`, `/api/mode`, `/api/vendors`, `/api/vendors/{id}`,
 `/api/vendors/{id}/decide/metrics`, `/api/vendors/{id}/claims`, `/api/ledger` (demo key).
+
+## Replay mode (`MODEL_MODE=replay`)
+
+`POST /api/vendors/{id}/runs` creates an ephemeral in-memory session (no database writes) that re-emits the recorded
+golden run (`backend/fixtures/golden/runs/<VID>.json`) over SSE, re-stamping `seq` / `t_rel_ms` on the session clock and
+capping recorded gaps at 1.5 s; `model_call` payloads report `mode: "replay"`. Approve, override, reject and re-plan act on
+the session only. Re-plan returns the recorded narrative for the presets `target_margin_pct_offset` in {0, 2, 4} at the
+vendor's default MOQ; anything else is `422 {"code": "narrative_unavailable", "problem": "Narrative available in live mode",
+"fix": "Use a preset (0, +2, +4) or run live"}`. `GET .../decide/metrics` stays live and deterministic. Sessions live in
+process memory (capped at 200) and vanish on restart: `GET /api/runs/{id}` is then `404 run_not_found`.
+
+`GET /api/mode` also returns `degraded: bool` and, in replay, `replay.vendors: {id: "ok" | <reason>}`. On startup each
+golden run is checked (sha256 sidecar, `schema_version`, `parser_version`, pydantic models, `meta.metrics_hash` against the
+current engine); a vendor that fails is served from the mock fixtures through the normal pipeline and flagged degraded.

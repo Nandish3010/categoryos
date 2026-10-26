@@ -201,3 +201,11 @@ class AssetNotFound(CategoryOSError):
     problem = "No such asset"
     cause = "The file name is not a catalog image the pipeline produces, or it has not been generated yet"
     fix = "Run the catalog stage for this vendor, then use an image url from data.skus[].images"
+
+
+class NarrativeUnavailable(CategoryOSError):
+    status = 422
+    code = "narrative_unavailable"
+    problem = "Narrative available in live mode"
+    cause = "Replay mode only holds recorded narratives for the preset margin offsets (0, +2, +4) at the vendor's default MOQ"
+    fix = "Use a preset (0, +2, +4) or run live"
