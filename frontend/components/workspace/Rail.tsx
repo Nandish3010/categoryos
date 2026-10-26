@@ -47,7 +47,16 @@ const FROM_RUN: Record<RunStageStatus, Label> = {
   degraded: "Degraded",
 };
 
-export function Rail({ stages }: { stages?: RunSnapshot["stages"] | null }) {
+export function Rail({
+  stages,
+  selected,
+  onSelect,
+}: {
+  stages?: RunSnapshot["stages"] | null;
+  /** Stage whose view is showing in the centre panel. */
+  selected?: StageId;
+  onSelect?: (stage: StageId) => void;
+}) {
   const phases = Array.from(new Set(STAGES.map((s) => s.phase)));
   return (
     <nav aria-label="Stages" className="border-r border-border bg-surface max-[899px]:hidden">
@@ -61,17 +70,19 @@ export function Rail({ stages }: { stages?: RunSnapshot["stages"] | null }) {
               {STAGES.filter((s) => s.phase === phase).map((s) => {
                 const result = stages?.[s.id];
                 const status: Label = result ? FROM_RUN[result.status] : s.status;
-                const active = status === "Active" || status === "Running" || status === "Review";
+                const isSelected = selected === s.id;
                 const reason = status === "Locked" ? result?.locked_reason : null;
                 return (
                   <li key={s.id}>
-                    <div
+                    <button
+                      type="button"
+                      onClick={() => onSelect?.(s.id)}
                       title={reason ? `${s.name} · Locked: ${reason}` : `${s.name} · ${status}`}
                       data-stage={s.id}
                       data-status={status}
-                      aria-current={active ? "step" : undefined}
-                      className={`flex min-h-10 items-center gap-2 rounded-card px-2 text-sm max-[1279px]:justify-center ${
-                        active ? "bg-surface-2 text-text" : "text-text-dim"
+                      aria-current={isSelected ? "step" : undefined}
+                      className={`flex min-h-10 w-full items-center gap-2 rounded-card px-2 text-left text-sm hover:bg-surface-2 max-[1279px]:justify-center ${
+                        isSelected ? "bg-surface-2 text-text ring-1 ring-accent/40" : "text-text-dim"
                       } ${status === "Locked" ? "opacity-60" : ""}`}
                     >
                       {status === "Locked" ? (
@@ -87,7 +98,7 @@ export function Rail({ stages }: { stages?: RunSnapshot["stages"] | null }) {
                         {status}
                         {reason ? `: ${reason}` : ""}
                       </span>
-                    </div>
+                    </button>
                   </li>
                 );
               })}

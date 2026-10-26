@@ -1,8 +1,8 @@
 "use client";
 
-import { Check, ChevronDown, ChevronRight, Copy, Loader2, Play, RefreshCw, ShieldAlert } from "lucide-react";
+import { Check, Copy, Loader2, Play, RefreshCw } from "lucide-react";
 import { useState } from "react";
-import type { ResearchData, ScreenData } from "@/lib/runs";
+import type { ResearchData } from "@/lib/runs";
 import { Tag } from "../Chip";
 import { PanelHeader } from "../PanelHeader";
 
@@ -48,87 +48,6 @@ export function RunBar({
   );
 }
 
-export function ScreenCard({ screen }: { screen: ScreenData }) {
-  const [open, setOpen] = useState(true);
-  return (
-    <section aria-label="Screen" className="rounded-card border border-border bg-surface">
-      <PanelHeader
-        title="Screen"
-        right={
-          <button
-            type="button"
-            aria-expanded={open}
-            onClick={() => setOpen((o) => !o)}
-            className="inline-flex min-h-8 items-center gap-1 hover:text-text"
-          >
-            {open ? <ChevronDown size={16} aria-hidden="true" /> : <ChevronRight size={16} aria-hidden="true" />}
-            {open ? "Collapse" : "Expand"}
-          </button>
-        }
-      />
-      <div className="flex flex-wrap items-center gap-2 px-4 pt-3">
-        {screen.injection_detected ? (
-          <Tag tone="bad">
-            <ShieldAlert size={16} aria-hidden="true" />
-            Prompt injection detected — ignored
-          </Tag>
-        ) : null}
-        {screen.decision ? <Tag tone="neutral">Decision: {screen.decision}</Tag> : null}
-      </div>
-      {open ? (
-        <div className="flex flex-col gap-3 p-4 text-sm">
-          <div>
-            <h3 className="mb-1 text-xs font-medium uppercase tracking-wide text-text-dim">Documents</h3>
-            {screen.documents.length ? (
-              <ul className="flex flex-col gap-1">
-                {screen.documents.map((d) => (
-                  <li key={d.label} className="flex items-center justify-between gap-2">
-                    <span>{d.label}</span>
-                    {d.status ? <Tag tone={/miss|absent|fail/i.test(d.status) ? "bad" : "ok"}>{d.status}</Tag> : null}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-text-dim">No documents listed.</p>
-            )}
-          </div>
-          <div>
-            <h3 className="mb-1 text-xs font-medium uppercase tracking-wide text-text-dim">Risk flags</h3>
-            {screen.risk_flags.length ? (
-              <ul className="flex flex-col gap-2">
-                {screen.risk_flags.map((f, i) => (
-                  <li key={`${f.type}-${i}`}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{f.type}</span>
-                      <Tag tone={/high|critical/i.test(f.severity) ? "bad" : "warn"}>{f.severity}</Tag>
-                    </div>
-                    {f.quote ? (
-                      <blockquote className="mt-1 border-l-2 border-border pl-3 text-text-dim">
-                        “{f.quote}”
-                      </blockquote>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-text-dim">No risk flags.</p>
-            )}
-          </div>
-          {screen.followup_questions.length ? (
-            <div>
-              <h3 className="mb-1 text-xs font-medium uppercase tracking-wide text-text-dim">Follow-up questions</h3>
-              <ul className="list-disc pl-5 text-text-dim">
-                {screen.followup_questions.map((q) => (
-                  <li key={q}>{q}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-    </section>
-  );
-}
 
 export function NarrativeCard({
   research,

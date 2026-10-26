@@ -164,7 +164,7 @@ export function readScreen(stage: StageResult | undefined | null): ScreenData | 
       if (typeof x === "string") return { label: x, status: null };
       if (isObj(x)) {
         const label = str(x.name) ?? str(x.type) ?? str(x.file) ?? str(x.title) ?? "document";
-        const status = str(x.status) ?? (typeof x.present === "boolean" ? (x.present ? "present" : "missing") : null);
+        const status = str(x.status) ?? str(x.state) ?? (typeof x.present === "boolean" ? (x.present ? "present" : "missing") : null);
         return { label, status };
       }
       return { label: String(x), status: null };

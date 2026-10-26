@@ -2,7 +2,7 @@
 
 import { ArrowRight, Lock } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   fetchClaims,
@@ -14,7 +14,6 @@ import {
 } from "@/lib/api";
 import { days, inr, inrCompact, inrDelta } from "@/lib/format";
 import {
-  approvableStage,
   approveStage,
   isNarrativeStale,
   isRunActive,
@@ -25,7 +24,18 @@ import {
   rejectVendor,
   replanVendor,
   screeningFailure,
+  type StageId,
 } from "@/lib/runs";
+import { leverFromRun } from "@/lib/screen";
+import {
+  PHASE_STAGE,
+  approvalHash,
+  defaultStage,
+  isStageId,
+  phaseOfStage,
+  progressOf,
+  viewForStage,
+} from "@/lib/stages";
 import { useAsync } from "@/lib/useAsync";
 import { useLever } from "@/lib/useLever";
 import { useRun } from "@/lib/useRun";
@@ -36,12 +46,16 @@ import { Skeleton } from "../Skeleton";
 import { Stat } from "../Stat";
 import { Tween } from "../Tween";
 import { ActionBar } from "./ActionBar";
+import { CatalogStudio } from "./CatalogStudio";
+import { LaunchPacket } from "./LaunchPacket";
 import { LeverCard } from "./LeverCard";
+import { NegotiateView } from "./NegotiateView";
 import { Rail } from "./Rail";
+import { VerifierCard } from "./RightPanel";
+import { NarrativeCard, RunBar } from "./RunPanels";
+import { ScreenCard } from "./ScreenCard";
 import { SkuTable } from "./SkuTable";
 import { TopBar } from "./TopBar";
-import { VerifierCard } from "./RightPanel";
-import { NarrativeCard, RunBar, ScreenCard } from "./RunPanels";
 import { TracePanel } from "./TracePanel";
 
 type Delta = { from: number; to: number; capital: number };
@@ -62,6 +76,45 @@ export function recommendation(data: LeverResponse): { title: string; sub: strin
     (c.needs_data ?? 0) > 0 ? ` · ${c.needs_data} needs data` : ""
   }`;
   return { title, sub };
+}
+
+/** Write (or clear) `?stage=` without a navigation; Next syncs native history calls. */
+function writeStageParam(stage: StageId | null) {
+  if (typeof window === "undefined") return;
+  try {
+    const url = new URL(window.location.href);
+    if (stage) url.searchParams.set("stage", stage);
+    else url.searchParams.delete("stage");
+    window.history.replaceState(window.history.state, "", url);
+  } catch {
+    /* history unavailable (sandboxed iframe): the view still switches */
+  }
+}
+
+function DecideTabs({ stage, onSelect }: { stage: StageId; onSelect: (s: StageId) => void }) {
+  const tabs: { id: StageId; label: string }[] = [
+    { id: "research", label: "Decision" },
+    { id: "negotiate", label: "Negotiate" },
+  ];
+  const current = stage === "negotiate" ? "negotiate" : "research";
+  return (
+    <div role="tablist" aria-label="Decide view" className="flex gap-1 border-b border-border">
+      {tabs.map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          role="tab"
+          aria-selected={current === t.id}
+          onClick={() => onSelect(t.id)}
+          className={`-mb-px min-h-11 border-b-2 px-3 text-sm ${
+            current === t.id ? "border-accent font-medium text-text" : "border-transparent text-text-dim hover:text-text"
+          }`}
+        >
+          {t.label}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 export function Workspace({ vendorId }: { vendorId: string }) {
@@ -132,7 +185,6 @@ export function Workspace({ vendorId }: { vendorId: string }) {
   const screenFail = screeningFailure(run);
   const researchStage = run?.stages.research ?? null;
   const research = useMemo(() => readResearch(researchStage), [researchStage]);
-  const stale = isNarrativeStale(run, data?.metrics_hash);
   const running = runState.starting || isRunActive(run);
   const mergedClaims = useMemo(() => mergeClaims(claims.data, run), [claims.data, run]);
   const mergedInjected = useMemo(
@@ -143,6 +195,35 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     () => Object.fromEntries((research?.rationale ?? []).map((r) => [r.code, r.why])),
     [research],
   );
+
+  // Start the sliders where the run's narrative was written, so a reload does not look stale.
+  // Needs the default MOQ first (an MOQ equal to it means "no override").
+  const [leverInitFor, setLeverInitFor] = useState<string | null>(null);
+  const runLever = leverFromRun(run);
+  if (run && runLever && defaultMoq != null && leverInitFor !== run.run_id) {
+    setLeverInitFor(run.run_id);
+    setOffset(runLever.offset);
+    setMoq(runLever.moq === defaultMoq ? null : runLever.moq);
+  }
+  const leverPending = !!run && !!runLever && leverInitFor !== run.run_id;
+  const stale = isNarrativeStale(run, data?.metrics_hash) && !lever.updating && !leverPending;
+
+  // ---- Stage navigation: explicit pick (rail / stepper / ?stage=) or follow the run ----
+  const [picked, setPicked] = useState<StageId | null>(null);
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("stage");
+    // One-time read of the URL after hydration (cannot be an initial state value: SSR has no URL).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isStageId(q)) setPicked(q);
+  }, []);
+  const stage: StageId = picked ?? defaultStage(run);
+  const view = viewForStage(stage);
+  const selectStage = useCallback((s: StageId | null) => {
+    setPicked(s);
+    writeStageParam(s);
+  }, []);
+
+  const progress = progressOf(run);
 
   const [replanning, setReplanning] = useState(false);
   const [replanError, setReplanError] = useState<string | null>(null);
@@ -171,17 +252,26 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     }
   };
 
+  // Approve targets the stage waiting on a human: research, then catalog, then po.
   const approve = async () => {
-    if (!runId || !data) {
+    const target = progress.kind === "review" ? progress.stage : "research";
+    if (!runId || (target === "research" && !data)) {
       setToast("Run the agents first, then approve their plan.");
+      return;
+    }
+    const hash = approvalHash(run, target, data?.metrics_hash ?? null);
+    if (!hash) {
+      setToast("Nothing to approve yet.");
       return;
     }
     setApproving(true);
     setApproveError(null);
     try {
-      await approveStage(runId, approvableStage(run), data.metrics_hash);
+      await approveStage(runId, target, hash);
       setToast("Approved.");
+      selectStage(null); // follow the run into Negotiate / Catalog / Launch as results arrive
       await runState.refresh();
+      runState.resume(); // the next phase streams under a new `done`: reconnect with Last-Event-ID
     } catch (e) {
       setApproveError(errorBody(e));
     } finally {
@@ -229,13 +319,19 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     ? `${recommendation(data).title}. Capital at risk ${inrCompact(data.summary.capital_at_risk_inr)}.`
     : "";
 
+  // Only the research approval depends on the sliders (its hash is the lever's metrics hash).
+  const researchTarget = progress.kind !== "review" || progress.stage === "research";
   const approveLocked = screenFail
     ? "Locked — screening failed"
-    : stale
-      ? "Re-plan to approve"
-      : researchStage?.status === "done"
-        ? "Already approved"
-        : null;
+    : !researchTarget
+      ? null
+      : leverPending
+        ? "Loading levers…"
+        : lever.updating && data && research
+          ? "Updating levers…"
+          : stale
+            ? "Re-plan to approve"
+            : null;
 
   const actionBar = (
     <ActionBar
@@ -243,11 +339,15 @@ export function Workspace({ vendorId }: { vendorId: string }) {
       disabled={!data}
       approving={approving}
       approveLockedReason={approveLocked}
+      progress={progress}
       onApprove={approve}
       onToggleEdit={() => setEditing((e) => !e)}
       onReject={reject}
     />
   );
+
+  const catalogApproveLocked = progress.kind === "review" && progress.stage === "catalog" ? null : "Not ready to approve";
+  const poApproveLocked = progress.kind === "review" && progress.stage === "po" ? null : "Not ready to approve";
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -257,15 +357,17 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         mode={mode.data}
         claims={mergedClaims}
         onToggleDrawer={() => setDrawer((d) => !d)}
+        phase={phaseOfStage(stage)}
+        onPhase={(p) => selectStage(PHASE_STAGE[p])}
       />
 
       <div
         className="grid flex-1 grid-cols-1 min-[900px]:grid-cols-[56px_minmax(0,1fr)] min-[1280px]:grid-cols-[240px_minmax(0,1fr)_320px]"
       >
-        <Rail stages={run?.stages ?? null} />
+        <Rail stages={run?.stages ?? null} selected={stage} onSelect={(s) => selectStage(s)} />
 
         <main className="min-w-0 px-4 py-4 pb-28 min-[900px]:pb-4 min-[1280px]:px-6">
-          <div className="mx-auto flex max-w-[880px] flex-col gap-4">
+          <div className="mx-auto flex max-w-[880px] flex-col gap-4" data-view={view} data-stage={stage}>
             <div aria-live="polite" role="status" className="sr-only">
               {announce}
             </div>
@@ -284,7 +386,10 @@ export function Workspace({ vendorId }: { vendorId: string }) {
               running={running}
               hasRun={!!run}
               unavailable={runState.unavailable}
-              onRun={() => void runState.start()}
+              onRun={() => {
+                selectStage(null);
+                void runState.start();
+              }}
             />
             {runState.error && !runState.unavailable ? (
               <Banner tone="warn" title="Agent run problem">
@@ -306,133 +411,169 @@ export function Workspace({ vendorId }: { vendorId: string }) {
               </Banner>
             ) : null}
 
-            {screening ? <ScreenCard screen={screening} /> : null}
-
-            {/* Verdict banner */}
-            <section aria-label="Recommendation" className="rounded-card border border-border bg-surface p-4">
-              {rec ? (
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <h1 className="text-xl font-semibold tracking-tight">{rec.title}</h1>
-                    <p className="num text-sm text-text-dim">{rec.sub}</p>
-                  </div>
-                  {delta ? (
-                    <Tag tone="warn">
-                      <span className="num inline-flex items-center gap-1">
-                        {delta.from} <ArrowRight size={16} aria-hidden="true" /> {delta.to} SKUs{" "}
-                        {"·"} {"₹"} at risk{" "}
-                        {delta.capital === 0 ? "unchanged" : inrDelta(delta.capital)}
-                      </span>
-                    </Tag>
-                  ) : null}
-                </div>
+            {view === "screen" ? (
+              screening ? (
+                <ScreenCard screen={screening} forceOpen />
               ) : (
-                <div aria-hidden="true">
-                  <Skeleton className="h-6 w-80" />
-                  <Skeleton className="mt-2 h-4 w-56" />
-                </div>
-              )}
-              {overrideCount > 0 ? (
-                <p className="mt-2 text-xs text-text-dim">{overrideCount} verdict(s) edited by human.</p>
-              ) : null}
-            </section>
+                <section aria-label="Screen" className="rounded-card border border-border bg-surface p-4 text-sm text-text-dim">
+                  {running ? "Screening documents…" : "No screening result yet. Run the agents to screen this vendor."}
+                </section>
+              )
+            ) : null}
 
-            {/* Capital strip */}
-            <section
-              aria-label="Capital"
-              className="grid grid-cols-2 gap-4 rounded-card border border-border bg-surface p-4 md:grid-cols-4"
-            >
-              {summary ? (
-                <>
-                  <div className="col-span-2 md:col-span-1">
-                    <Stat
-                      size="lg"
-                      label="Capital at risk"
-                      value={<Tween value={summary.capital_at_risk_inr} format={inrCompact} />}
-                      hint={inr(summary.capital_at_risk_inr)}
-                    />
-                  </div>
-                  <Stat
-                    label="Days of cover"
-                    value={summary.days_of_cover == null ? "—" : <Tween value={summary.days_of_cover} format={days} />}
-                    hint={summary.moq_flag ? <Tag tone="warn">MOQ flag</Tag> : undefined}
-                  />
-                  <Stat
-                    label="Est. monthly GMV"
-                    value={<Tween value={summary.est_monthly_gmv} format={inrCompact} />}
-                  />
-                  <Stat
-                    label="SKUs listed"
-                    value={
-                      <>
-                        <Tween value={summary.counts.list ?? 0} format={(n) => String(Math.round(n))} /> of{" "}
-                        {data!.skus.length}
-                      </>
-                    }
-                  />
-                </>
-              ) : (
-                <div className="col-span-full flex gap-6" aria-hidden="true">
-                  <Skeleton className="h-14 w-40" />
-                  <Skeleton className="h-14 w-24" />
-                  <Skeleton className="h-14 w-24" />
-                  <Skeleton className="h-14 w-24" />
-                </div>
-              )}
-            </section>
-
-            {research ? (
-              <NarrativeCard
-                research={research}
-                stale={stale}
-                replanning={replanning}
-                replanError={replanError}
-                onReplan={() => void replan()}
+            {view === "catalog" ? (
+              <CatalogStudio
+                stage={run?.stages.catalog}
+                onApprove={() => void approve()}
+                approving={approving}
+                approveLockedReason={catalogApproveLocked}
               />
             ) : null}
 
-            <div className="relative flex flex-col gap-4">
-              {screenFail ? (
-                <div
-                  role="status"
-                  className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 py-2 text-sm font-medium text-bad"
-                >
-                  <Lock size={16} aria-hidden="true" />
-                  Locked — screening failed
-                </div>
-              ) : null}
-              <div
-                aria-disabled={screenFail ? true : undefined}
-                className={screenFail ? "pointer-events-none opacity-40" : ""}
-                inert={screenFail ? true : undefined}
-              >
-                <LeverCard
-                  offset={offset}
-                  moq={moq}
-                  defaultMoq={defaultMoq}
-                  updating={lever.updating}
-                  failed={!!lever.error && !!data}
-                  onOffset={setOffset}
-                  onMoq={setMoq}
-                  onResetAll={() => {
-                    setOffset(0);
-                    setMoq(null);
-                  }}
-                />
-              </div>
+            {view === "launch" ? (
+              <LaunchPacket
+                run={run}
+                onApprovePo={() => void approve()}
+                approving={approving}
+                approveLockedReason={poApproveLocked}
+              />
+            ) : null}
 
-              <div inert={screenFail ? true : undefined}>
-                <SkuTable
-                  skus={data?.skus ?? null}
-                  changed={changed}
-                  editing={editing}
-                  overrides={overrides}
-                  onOverride={(k, v) => void override(k, v)}
-                  whys={whys}
-                  dimmed={!!screenFail}
-                />
-              </div>
-            </div>
+            {view === "decide" ? <DecideTabs stage={stage} onSelect={selectStage} /> : null}
+
+            {view === "decide" && stage === "negotiate" ? <NegotiateView stage={run?.stages.negotiate} /> : null}
+
+            {view === "decide" && stage !== "negotiate" ? (
+              <>
+                {screening ? <ScreenCard screen={screening} /> : null}
+
+                {/* Verdict banner */}
+                <section aria-label="Recommendation" className="rounded-card border border-border bg-surface p-4">
+                  {rec ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <h1 className="text-xl font-semibold tracking-tight">{rec.title}</h1>
+                        <p className="num text-sm text-text-dim">{rec.sub}</p>
+                      </div>
+                      {delta ? (
+                        <Tag tone="warn">
+                          <span className="num inline-flex items-center gap-1">
+                            {delta.from} <ArrowRight size={16} aria-hidden="true" /> {delta.to} SKUs{" "}
+                            {"·"} {"₹"} at risk{" "}
+                            {delta.capital === 0 ? "unchanged" : inrDelta(delta.capital)}
+                          </span>
+                        </Tag>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <div aria-hidden="true">
+                      <Skeleton className="h-6 w-80" />
+                      <Skeleton className="mt-2 h-4 w-56" />
+                    </div>
+                  )}
+                  {overrideCount > 0 ? (
+                    <p className="mt-2 text-xs text-text-dim">{overrideCount} verdict(s) edited by human.</p>
+                  ) : null}
+                </section>
+
+                {/* Capital strip */}
+                <section
+                  aria-label="Capital"
+                  className="grid grid-cols-2 gap-4 rounded-card border border-border bg-surface p-4 md:grid-cols-4"
+                >
+                  {summary ? (
+                    <>
+                      <div className="col-span-2 md:col-span-1">
+                        <Stat
+                          size="lg"
+                          label="Capital at risk"
+                          value={<Tween value={summary.capital_at_risk_inr} format={inrCompact} />}
+                          hint={inr(summary.capital_at_risk_inr)}
+                        />
+                      </div>
+                      <Stat
+                        label="Days of cover"
+                        value={summary.days_of_cover == null ? "—" : <Tween value={summary.days_of_cover} format={days} />}
+                        hint={summary.moq_flag ? <Tag tone="warn">MOQ flag</Tag> : undefined}
+                      />
+                      <Stat
+                        label="Est. monthly GMV"
+                        value={<Tween value={summary.est_monthly_gmv} format={inrCompact} />}
+                      />
+                      <Stat
+                        label="SKUs listed"
+                        value={
+                          <>
+                            <Tween value={summary.counts.list ?? 0} format={(n) => String(Math.round(n))} /> of{" "}
+                            {data!.skus.length}
+                          </>
+                        }
+                      />
+                    </>
+                  ) : (
+                    <div className="col-span-full flex gap-6" aria-hidden="true">
+                      <Skeleton className="h-14 w-40" />
+                      <Skeleton className="h-14 w-24" />
+                      <Skeleton className="h-14 w-24" />
+                      <Skeleton className="h-14 w-24" />
+                    </div>
+                  )}
+                </section>
+
+                {research ? (
+                  <NarrativeCard
+                    research={research}
+                    stale={stale}
+                    replanning={replanning}
+                    replanError={replanError}
+                    onReplan={() => void replan()}
+                  />
+                ) : null}
+
+                <div className="relative flex flex-col gap-4">
+                  {screenFail ? (
+                    <div
+                      role="status"
+                      className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 py-2 text-sm font-medium text-bad"
+                    >
+                      <Lock size={16} aria-hidden="true" />
+                      Locked — screening failed
+                    </div>
+                  ) : null}
+                  <div
+                    aria-disabled={screenFail ? true : undefined}
+                    className={screenFail ? "pointer-events-none opacity-40" : ""}
+                    inert={screenFail ? true : undefined}
+                  >
+                    <LeverCard
+                      offset={offset}
+                      moq={moq}
+                      defaultMoq={defaultMoq}
+                      updating={lever.updating}
+                      failed={!!lever.error && !!data}
+                      onOffset={setOffset}
+                      onMoq={setMoq}
+                      onResetAll={() => {
+                        setOffset(0);
+                        setMoq(null);
+                      }}
+                    />
+                  </div>
+
+                  <div inert={screenFail ? true : undefined}>
+                    <SkuTable
+                      skus={data?.skus ?? null}
+                      changed={changed}
+                      editing={editing}
+                      overrides={overrides}
+                      onOverride={(k, v) => void override(k, v)}
+                      whys={whys}
+                      dimmed={!!screenFail}
+                    />
+                  </div>
+                </div>
+              </>
+            ) : null}
 
             {/* <1280: right-panel content flows below, or lives in the drawer at 900-1279 */}
           </div>
@@ -443,9 +584,11 @@ export function Workspace({ vendorId }: { vendorId: string }) {
           className={`flex flex-col border-l border-border bg-bg
             max-[899px]:border-l-0 max-[899px]:px-4 max-[899px]:pb-28
             min-[900px]:max-[1279px]:fixed min-[900px]:max-[1279px]:inset-y-12 min-[900px]:max-[1279px]:right-0 min-[900px]:max-[1279px]:z-30 min-[900px]:max-[1279px]:w-80 min-[900px]:max-[1279px]:shadow-2xl
+            min-[1280px]:sticky min-[1280px]:top-12 min-[1280px]:h-[calc(100vh-48px)] min-[1280px]:self-start
             ${drawer ? "" : "min-[900px]:max-[1279px]:hidden"}`}
         >
-          <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 max-[899px]:p-0 min-[1280px]:sticky min-[1280px]:top-12 min-[1280px]:max-h-[calc(100vh-48px-148px)] min-[900px]:max-[1279px]:max-h-full">
+          {/* Scroll area (verifier + trace) and a footer that never overlaps it. */}
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 max-[899px]:overflow-visible max-[899px]:p-0">
             <VerifierCard
               base={mergedClaims}
               baseLoading={claims.loading}
@@ -462,7 +605,10 @@ export function Workspace({ vendorId }: { vendorId: string }) {
               hasRun={!!runId}
             />
           </div>
-          <div className="border-t border-border p-4 max-[899px]:hidden min-[1280px]:sticky min-[1280px]:bottom-0 min-[1280px]:bg-bg">
+          <div
+            data-testid="right-footer"
+            className="shrink-0 border-t border-border bg-bg p-4 max-[899px]:hidden"
+          >
             <div className="mb-2 text-xs text-text-dim">
               {mode.data
                 ? `${mode.data.mode} mode · $${mode.data.spend_usd.toFixed(2)} of $${mode.data.max_spend_usd.toFixed(2)} spent`

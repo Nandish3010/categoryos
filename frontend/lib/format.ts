@@ -16,6 +16,19 @@ export function inr(n: number | null | undefined): string {
   return `${sign}₹${groupIndian(n)}`;
 }
 
+/**
+ * Rupee amount that never hides paise: whole rupees print like `inr`, anything else
+ * keeps two decimals (₹965.50 vs ₹956.50 must stay distinguishable).
+ */
+export function inrExact(n: number | null | undefined): string {
+  if (n == null || Number.isNaN(n)) return "—";
+  const cents = Math.round(Math.abs(n) * 100);
+  if (cents % 100 === 0) return inr(n);
+  const sign = n < 0 ? MINUS : "";
+  const whole = Math.floor(cents / 100);
+  return `${sign}₹${groupIndian(whole)}.${String(cents % 100).padStart(2, "0")}`;
+}
+
 /** Compact rupee amount: "₹1.99L", "₹2.4Cr", below a lakh falls back to full grouping. */
 export function inrCompact(n: number | null | undefined): string {
   if (n == null || Number.isNaN(n)) return "—";

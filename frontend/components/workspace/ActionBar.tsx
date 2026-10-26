@@ -1,6 +1,10 @@
 "use client";
 
+import { Check, Loader2 } from "lucide-react";
 import { useState } from "react";
+import type { Progress } from "@/lib/stages";
+
+const APPROVE_LABEL = { research: "Approve and continue", catalog: "Approve catalog", po: "Approve PO" } as const;
 
 export function ActionBar({
   editing,
@@ -10,6 +14,7 @@ export function ActionBar({
   disabled,
   approveLockedReason,
   approving,
+  progress,
 }: {
   editing: boolean;
   onApprove: () => void;
@@ -19,8 +24,30 @@ export function ActionBar({
   /** When set, Approve is disabled and this is shown as its tooltip. */
   approveLockedReason?: string | null;
   approving?: boolean;
+  /** Where the run is: which stage Approve targets, or what is running after an approval. */
+  progress?: Progress;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const stageLabel = progress?.kind === "review" ? APPROVE_LABEL[progress.stage] : APPROVE_LABEL.research;
+
+  // After an approval: no button, just what happened and what is running next.
+  if (progress && (progress.kind === "running" || progress.kind === "approved") && (progress.kind === "approved" || progress.approved)) {
+    return (
+      <div className="flex flex-col gap-1" role="status" aria-live="polite" data-testid="approved-state">
+        <div className="flex items-center gap-2 text-sm font-semibold text-ok">
+          <Check size={16} aria-hidden="true" />
+          {progress.kind === "approved" ? `${progress.label} ✓` : "Approved ✓"}
+        </div>
+        {progress.kind === "running" ? (
+          <div className="flex items-center gap-2 text-sm text-text-dim">
+            <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+            {progress.label}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-2">
       {confirming ? (
@@ -54,7 +81,7 @@ export function ActionBar({
         onClick={onApprove}
         className="h-11 rounded-card bg-accent px-4 text-sm font-semibold text-bg disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {approving ? "Approving…" : "Approve and continue"}
+        {approving ? "Approving…" : stageLabel}
       </button>
       <div className="flex gap-2">
         <button

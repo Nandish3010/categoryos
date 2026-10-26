@@ -50,3 +50,10 @@ The banner delta chip clears after 4 s. `prefers-reduced-motion` makes everythin
 ## Focus and accessibility
 2 px accent focus ring with 2 px offset. Range inputs carry `aria-valuetext`; arrows move one step,
 Shift+arrow moves five. An `aria-live` region announces lever results.
+
+## Stage views
+The left rail and phase stepper switch the centre panel; the URL carries `?stage=<id>`. Intake shows the Screen card;
+Research, Shortlist and Negotiate share the Decide view (Decision / Negotiate tabs); Catalog shows the catalog studio;
+Marketing, JBP and PO show one Launch packet. Without an explicit pick the view follows the furthest stage in
+review or running. Rupee values from claims keep paise when non-integer (₹965.50, never rounded to ₹966).
+The right panel is a flex column: a scrolling verifier and trace area above a footer that never overlaps it.
