@@ -8,12 +8,17 @@ export function ActionBar({
   onToggleEdit,
   onReject,
   disabled,
+  approveLockedReason,
+  approving,
 }: {
   editing: boolean;
   onApprove: () => void;
   onToggleEdit: () => void;
   onReject: () => void;
   disabled?: boolean;
+  /** When set, Approve is disabled and this is shown as its tooltip. */
+  approveLockedReason?: string | null;
+  approving?: boolean;
 }) {
   const [confirming, setConfirming] = useState(false);
   return (
@@ -44,11 +49,12 @@ export function ActionBar({
       ) : null}
       <button
         type="button"
-        disabled={disabled}
+        disabled={disabled || !!approveLockedReason || approving}
+        title={approveLockedReason ?? undefined}
         onClick={onApprove}
         className="h-11 rounded-card bg-accent px-4 text-sm font-semibold text-bg disabled:cursor-not-allowed disabled:opacity-50"
       >
-        Approve and continue
+        {approving ? "Approving…" : "Approve and continue"}
       </button>
       <div className="flex gap-2">
         <button

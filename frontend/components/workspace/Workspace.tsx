@@ -1,19 +1,34 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Lock } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ApiError,
   fetchClaims,
   fetchMode,
   fetchVendor,
+  type ApiErrorBody,
   type LeverResponse,
   type Verdict,
 } from "@/lib/api";
 import { days, inr, inrCompact, inrDelta } from "@/lib/format";
+import {
+  approvableStage,
+  approveStage,
+  isNarrativeStale,
+  isRunActive,
+  mergeClaims,
+  overrideSku,
+  readResearch,
+  readScreen,
+  rejectVendor,
+  replanVendor,
+  screeningFailure,
+} from "@/lib/runs";
 import { useAsync } from "@/lib/useAsync";
 import { useLever } from "@/lib/useLever";
+import { useRun } from "@/lib/useRun";
 import { BackendBanner } from "../BackendBanner";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
@@ -25,7 +40,9 @@ import { LeverCard } from "./LeverCard";
 import { Rail } from "./Rail";
 import { SkuTable } from "./SkuTable";
 import { TopBar } from "./TopBar";
-import { TracePanel, VerifierCard } from "./RightPanel";
+import { VerifierCard } from "./RightPanel";
+import { NarrativeCard, RunBar, ScreenCard } from "./RunPanels";
+import { TracePanel } from "./TracePanel";
 
 type Delta = { from: number; to: number; capital: number };
 
@@ -108,6 +125,100 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     return () => clearTimeout(t);
   }, [toast]);
 
+  // ---- Agent run ----
+  const runState = useRun(vendorId);
+  const { run, runId } = runState;
+  const screening = useMemo(() => readScreen(run?.stages.intake), [run]);
+  const screenFail = screeningFailure(run);
+  const researchStage = run?.stages.research ?? null;
+  const research = useMemo(() => readResearch(researchStage), [researchStage]);
+  const stale = isNarrativeStale(run, data?.metrics_hash);
+  const running = runState.starting || isRunActive(run);
+  const mergedClaims = useMemo(() => mergeClaims(claims.data, run), [claims.data, run]);
+  const mergedInjected = useMemo(
+    () => (injected.data ? mergeClaims(injected.data, run) : null),
+    [injected.data, run],
+  );
+  const whys = useMemo(
+    () => Object.fromEntries((research?.rationale ?? []).map((r) => [r.code, r.why])),
+    [research],
+  );
+
+  const [replanning, setReplanning] = useState(false);
+  const [replanError, setReplanError] = useState<string | null>(null);
+  const [approving, setApproving] = useState(false);
+  const [approveError, setApproveError] = useState<ApiErrorBody | null>(null);
+
+  const errorBody = (e: unknown): ApiErrorBody =>
+    e instanceof ApiError ? e.body : { code: "error", problem: e instanceof Error ? e.message : String(e) };
+
+  const replan = async () => {
+    if (!runId || !data) return;
+    setReplanning(true);
+    setReplanError(null);
+    setApproveError(null);
+    try {
+      await replanVendor(vendorId, {
+        run_id: runId,
+        target_margin_pct_offset: offset,
+        moq: moq ?? defaultMoq ?? data.summary.moq,
+      });
+      await runState.refresh();
+    } catch (e) {
+      setReplanError(errorBody(e).problem);
+    } finally {
+      setReplanning(false);
+    }
+  };
+
+  const approve = async () => {
+    if (!runId || !data) {
+      setToast("Run the agents first, then approve their plan.");
+      return;
+    }
+    setApproving(true);
+    setApproveError(null);
+    try {
+      await approveStage(runId, approvableStage(run), data.metrics_hash);
+      setToast("Approved.");
+      await runState.refresh();
+    } catch (e) {
+      setApproveError(errorBody(e));
+    } finally {
+      setApproving(false);
+    }
+  };
+
+  const reject = async () => {
+    if (!runId) {
+      setToast("Run the agents first, then reject with their plan on record.");
+      return;
+    }
+    try {
+      await rejectVendor(vendorId, { run_id: runId, reason: "Rejected by reviewer" });
+      setToast("Vendor rejected.");
+      await runState.refresh();
+    } catch (e) {
+      setToast(`Couldn't reject: ${errorBody(e).problem}`);
+    }
+  };
+
+  const override = async (skuKey: string, v: Verdict | null) => {
+    setOverrides((o) => {
+      const next = { ...o };
+      if (v) next[skuKey] = v;
+      else delete next[skuKey];
+      return next;
+    });
+    const sku = data?.skus.find((s) => s.sku_key === skuKey);
+    if (!runId || !sku) return;
+    try {
+      await overrideSku(runId, "research", { sku_code: sku.code, verdict: v ?? sku.verdict });
+    } catch (e) {
+      setToast(`Couldn't save edit: ${errorBody(e).problem}`);
+    }
+  };
+
   const brand = vendor.data?.brand_name ?? null;
   const notFound = lever.error instanceof ApiError && lever.error.status === 404 && !data;
   const rec = data ? recommendation(data) : null;
@@ -118,13 +229,21 @@ export function Workspace({ vendorId }: { vendorId: string }) {
     ? `${recommendation(data).title}. Capital at risk ${inrCompact(data.summary.capital_at_risk_inr)}.`
     : "";
 
+  const approveLocked = screenFail
+    ? "Locked — screening failed"
+    : stale
+      ? "Re-plan to approve"
+      : null;
+
   const actionBar = (
     <ActionBar
       editing={editing}
       disabled={!data}
-      onApprove={() => setToast("Approved. Execute stages ship in the next release, so nothing was sent.")}
+      approving={approving}
+      approveLockedReason={approveLocked}
+      onApprove={approve}
       onToggleEdit={() => setEditing((e) => !e)}
-      onReject={() => setToast("Vendor rejected (demo: no action taken).")}
+      onReject={reject}
     />
   );
 
@@ -134,14 +253,14 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         vendorId={vendorId}
         brand={brand}
         mode={mode.data}
-        claims={claims.data}
+        claims={mergedClaims}
         onToggleDrawer={() => setDrawer((d) => !d)}
       />
 
       <div
         className="grid flex-1 grid-cols-1 min-[900px]:grid-cols-[56px_minmax(0,1fr)] min-[1280px]:grid-cols-[240px_minmax(0,1fr)_320px]"
       >
-        <Rail />
+        <Rail stages={run?.stages ?? null} />
 
         <main className="min-w-0 px-4 py-4 pb-28 min-[900px]:pb-4 min-[1280px]:px-6">
           <div className="mx-auto flex max-w-[880px] flex-col gap-4">
@@ -158,6 +277,34 @@ export function Workspace({ vendorId }: { vendorId: string }) {
             ) : lever.error ? (
               <BackendBanner error={lever.error} cached={data != null} />
             ) : null}
+
+            <RunBar
+              running={running}
+              hasRun={!!run}
+              unavailable={runState.unavailable}
+              onRun={() => void runState.start()}
+            />
+            {runState.error && !runState.unavailable ? (
+              <Banner tone="warn" title="Agent run problem">
+                {runState.error instanceof ApiError
+                  ? [runState.error.body.problem, runState.error.body.fix].filter(Boolean).join(" ")
+                  : runState.error.message}
+              </Banner>
+            ) : null}
+
+            {screenFail ? (
+              <Banner tone="bad" title={`Screening failed: ${screenFail.join("; ")}`}>
+                Stages after Intake are locked for this vendor.
+              </Banner>
+            ) : null}
+
+            {approveError ? (
+              <Banner tone="bad" title={approveError.problem}>
+                {[approveError.cause, approveError.fix].filter(Boolean).join(" ")}
+              </Banner>
+            ) : null}
+
+            {screening ? <ScreenCard screen={screening} /> : null}
 
             {/* Verdict banner */}
             <section aria-label="Recommendation" className="rounded-card border border-border bg-surface p-4">
@@ -232,34 +379,58 @@ export function Workspace({ vendorId }: { vendorId: string }) {
               )}
             </section>
 
-            <LeverCard
-              offset={offset}
-              moq={moq}
-              defaultMoq={defaultMoq}
-              updating={lever.updating}
-              failed={!!lever.error && !!data}
-              onOffset={setOffset}
-              onMoq={setMoq}
-              onResetAll={() => {
-                setOffset(0);
-                setMoq(null);
-              }}
-            />
+            {research ? (
+              <NarrativeCard
+                research={research}
+                stale={stale}
+                replanning={replanning}
+                replanError={replanError}
+                onReplan={() => void replan()}
+              />
+            ) : null}
 
-            <SkuTable
-              skus={data?.skus ?? null}
-              changed={changed}
-              editing={editing}
-              overrides={overrides}
-              onOverride={(k, v) =>
-                setOverrides((o) => {
-                  const next = { ...o };
-                  if (v) next[k] = v;
-                  else delete next[k];
-                  return next;
-                })
-              }
-            />
+            <div className="relative flex flex-col gap-4">
+              {screenFail ? (
+                <div
+                  role="status"
+                  className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-2 py-2 text-sm font-medium text-bad"
+                >
+                  <Lock size={16} aria-hidden="true" />
+                  Locked — screening failed
+                </div>
+              ) : null}
+              <div
+                aria-disabled={screenFail ? true : undefined}
+                className={screenFail ? "pointer-events-none opacity-40" : ""}
+                inert={screenFail ? true : undefined}
+              >
+                <LeverCard
+                  offset={offset}
+                  moq={moq}
+                  defaultMoq={defaultMoq}
+                  updating={lever.updating}
+                  failed={!!lever.error && !!data}
+                  onOffset={setOffset}
+                  onMoq={setMoq}
+                  onResetAll={() => {
+                    setOffset(0);
+                    setMoq(null);
+                  }}
+                />
+              </div>
+
+              <div inert={screenFail ? true : undefined}>
+                <SkuTable
+                  skus={data?.skus ?? null}
+                  changed={changed}
+                  editing={editing}
+                  overrides={overrides}
+                  onOverride={(k, v) => void override(k, v)}
+                  whys={whys}
+                  dimmed={!!screenFail}
+                />
+              </div>
+            </div>
 
             {/* <1280: right-panel content flows below, or lives in the drawer at 900-1279 */}
           </div>
@@ -274,15 +445,20 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         >
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-4 max-[899px]:p-0 min-[1280px]:sticky min-[1280px]:top-12 min-[1280px]:max-h-[calc(100vh-48px-148px)] min-[900px]:max-[1279px]:max-h-full">
             <VerifierCard
-              base={claims.data}
+              base={mergedClaims}
               baseLoading={claims.loading}
-              baseError={claims.error}
-              injected={injected.data}
+              baseError={mergedClaims ? null : claims.error}
+              injected={mergedInjected}
               injectedLoading={injected.loading}
               injectOn={injectOn}
               onToggleInject={() => setInjectOn((v) => !v)}
             />
-            <TracePanel />
+            <TracePanel
+              events={runState.events}
+              conn={runState.conn}
+              running={running}
+              hasRun={!!runId}
+            />
           </div>
           <div className="border-t border-border p-4 max-[899px]:hidden min-[1280px]:sticky min-[1280px]:bottom-0 min-[1280px]:bg-bg">
             <div className="mb-2 text-xs text-text-dim">
@@ -296,14 +472,14 @@ export function Workspace({ vendorId }: { vendorId: string }) {
       </div>
 
       {/* Pinned verifier summary for 900-1279 (drawer closed) */}
-      {claims.data && !drawer ? (
+      {mergedClaims && !drawer ? (
         <button
           type="button"
           onClick={() => setDrawer(true)}
           className="fixed bottom-4 right-4 z-20 hidden h-11 items-center gap-2 rounded-card border border-border bg-surface px-3 text-sm min-[900px]:max-[1279px]:inline-flex"
         >
           <span className="num">
-            {claims.data.verified}/{claims.data.total} verified
+            {mergedClaims.verified}/{mergedClaims.total} verified
           </span>
         </button>
       ) : null}
