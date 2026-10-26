@@ -1,24 +1,35 @@
+import asyncio
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import Depends, FastAPI, Query, Request
+from fastapi import Depends, FastAPI, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
-from app import ledger
+from app import ledger, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor, load_application
 from app.errors import CategoryOSError
-from app.llm import resolve_mode
+from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
-from app.schemas import LeverResponse
+from app.schemas import (
+    ApproveBody,
+    LeverResponse,
+    OverrideBody,
+    RejectBody,
+    ReplanBody,
+    StageResult,
+    TraceEvent,
+)
 from app.verify import VerifySummary, engine_claims, inject_fault, verify_all
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
+    await store.init()
     for vendor_id in ALLOWED_VENDORS:
         apply_levers(build_base(vendor_id))
     yield
@@ -123,3 +134,106 @@ async def mode() -> dict[str, Any]:
 @app.get("/api/ledger", dependencies=[Depends(require_demo_key)])
 async def get_ledger() -> dict[str, Any]:
     return {**ledger.read(), "max_spend_usd": settings.max_spend_usd, "warn_spend_usd": settings.warn_spend_usd}
+
+
+# ---------- runs ----------
+
+
+async def require_demo_key_if_live(request: Request, x_demo_key: str | None = Header(default=None)) -> None:
+    """Routes that can spend model credits need the demo key only when some stage would run live."""
+    if any_live():
+        await require_demo_key(request, x_demo_key)
+
+
+@app.post("/api/vendors/{vendor_id}/runs", status_code=202, dependencies=[Depends(require_demo_key_if_live)])
+async def start_run(vendor_id: str) -> dict[str, str]:
+    check_vendor(vendor_id)
+    return {"run_id": await runner.create_run(vendor_id)}
+
+
+@app.get("/api/vendors/{vendor_id}/runs/latest")
+async def latest_run(vendor_id: str) -> dict[str, str | None]:
+    check_vendor(vendor_id)
+    return {"run_id": await store.latest_run(vendor_id)}
+
+
+@app.get("/api/runs/{run_id}")
+async def get_run(run_id: str) -> dict[str, Any]:
+    return await runner.get_run_view(run_id)
+
+
+def _sse(event: TraceEvent) -> str:
+    return f"id: {event.seq}\nevent: trace\ndata: {event.model_dump_json()}\n\n"
+
+
+async def _event_stream(run_id: str, last_id: int) -> AsyncIterator[str]:
+    state = await runner.get_state(run_id)
+    assert state is not None
+    queue: asyncio.Queue[TraceEvent] = asyncio.Queue()
+    state.subscribers.append(queue)  # subscribe first so nothing falls between replay and live
+    try:
+        seen = last_id
+        for event in await store.events_after(run_id, last_id):
+            seen = event.seq
+            yield _sse(event)
+            if event.type == "done":
+                return
+        if state.done:  # stored history ended without a done event (interrupted run)
+            tail = TraceEvent(seq=seen + 1, run_id=run_id, t_rel_ms=0, type="done", payload={"interrupted": True})
+            yield _sse(tail)
+            return
+        while True:
+            try:
+                event = await asyncio.wait_for(queue.get(), timeout=settings.sse_heartbeat_s)
+            except TimeoutError:
+                yield ": ping\n\n"
+                continue
+            if event.seq <= seen:
+                continue
+            seen = event.seq
+            yield _sse(event)
+            if event.type == "done":
+                return
+    finally:
+        state.subscribers.remove(queue)
+
+
+@app.get("/api/runs/{run_id}/events")
+async def run_events(run_id: str, last_event_id: str | None = Header(default=None)) -> StreamingResponse:
+    await runner.require_run(run_id)
+    try:
+        last_id = max(int(last_event_id), 0) if last_event_id else 0
+    except ValueError:
+        last_id = 0
+    return StreamingResponse(
+        _event_stream(run_id, last_id),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
+    )
+
+
+@app.post("/api/runs/{run_id}/stages/{stage}/approve")
+async def approve_stage(run_id: str, stage: str, body: ApproveBody) -> StageResult:
+    return await runner.approve(run_id, runner.check_stage(stage), body.metrics_hash)
+
+
+@app.post("/api/runs/{run_id}/stages/{stage}/override")
+async def override_stage(run_id: str, stage: str, body: OverrideBody) -> StageResult:
+    return await runner.override(run_id, runner.check_stage(stage), body.sku_code, body.verdict, body.note)
+
+
+@app.post("/api/vendors/{vendor_id}/decide/replan", dependencies=[Depends(require_demo_key_if_live)])
+async def replan(vendor_id: str, body: ReplanBody) -> StageResult:
+    check_vendor(vendor_id)
+    return await runner.replan(body.run_id, vendor_id, body.target_margin_pct_offset, body.moq)
+
+
+@app.post("/api/vendors/{vendor_id}/reject")
+async def reject_vendor(vendor_id: str, body: RejectBody) -> dict[str, Any]:
+    return await runner.reject(body.run_id, vendor_id, body.reason)
+
+
+@app.post("/api/admin/reset", dependencies=[Depends(require_demo_key)])
+async def admin_reset() -> dict[str, bool]:
+    await runner.reset()
+    return {"ok": True}
