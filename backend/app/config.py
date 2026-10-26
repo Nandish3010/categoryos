@@ -1,0 +1,47 @@
+from pathlib import Path
+from typing import Literal
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BACKEND_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = BACKEND_DIR.parent
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=(REPO_DIR / ".env", BACKEND_DIR / ".env"),
+        extra="ignore",
+    )
+
+    model_api_key: str | None = None
+    model_api_base_url: str = "https://api.meta.ai/v1"
+    baseten_api_key: str | None = None
+    baseten_base_url: str = "https://inference.baseten.co/v1"
+    demo_key: str | None = None
+
+    model_mode: Literal["mock", "live", "replay"] = "mock"
+    live_stages: str = ""
+    max_spend_usd: float = 120
+    warn_spend_usd: float = 100
+
+    model_text: str = "muse-spark-1.3"
+    model_text_dev: str = "muse-spark-1.3-contributor"
+    model_image: str = "muse-image-1.0"
+    model_seg: str = "sam-3.1"
+    model_voice: str = "muse-voice-transcribe-1.0"
+    baseten_model: str = "meta-models/muse-spark-open"
+
+    data_dir: Path = REPO_DIR / "data" / "synthetic"
+    fixtures_dir: Path = BACKEND_DIR / "fixtures"
+
+    backend_port: int = 8001
+    frontend_origin: str | None = None
+
+    @property
+    def effective_mode(self) -> str:
+        if self.model_mode == "live" and not self.model_api_key:
+            return "mock"
+        return self.model_mode
+
+
+settings = Settings()
