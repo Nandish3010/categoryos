@@ -31,6 +31,7 @@ def test_tool_outputs_are_json_serialisable():
     calls = {
         "get_application": {"vendor_id": "V002"},
         "get_sku_rows": {"vendor_id": "V001"},
+        "get_transcript": {"vendor_id": "V002"},
         "get_competitors": {"sku_key": "V001:HP-D01"},
         "get_demand": {"sku_key": "V001:HP-D01"},
         "get_overlap": {"sku_key": "V002:MW-L02"},

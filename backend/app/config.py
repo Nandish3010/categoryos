@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     model_voice: str = "muse-voice-transcribe-1.0"
     baseten_model: str = "meta-models/muse-spark-open"
 
+    assets_dir: Path = BACKEND_DIR / "fixtures" / "assets"
+    sam_enabled: bool = True  # SAM go/no-go: False -> cutouts are "unavailable" and the packshot is shown
+
     data_dir: Path = REPO_DIR / "data" / "synthetic"
     fixtures_dir: Path = BACKEND_DIR / "fixtures"
 

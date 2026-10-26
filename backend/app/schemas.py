@@ -25,7 +25,7 @@ class SKU(BaseModel):
 
 
 StageId = Literal["intake", "research", "shortlist", "negotiate", "catalog", "marketing", "jbp", "po"]
-Unit = Literal["pct", "inr", "units", "score", "ratio"]
+Unit = Literal["pct", "inr", "units", "score", "ratio", "qty"]
 Verdict = Literal["list", "negotiate", "reject", "needs_data"]
 CostSource = Literal["sheet", "inferred", "missing"]
 ClaimOrigin = Literal["engine", "model_extraction", "injected_test"]
@@ -236,3 +236,80 @@ class ReplanBody(BaseModel):
 class RejectBody(BaseModel):
     run_id: str
     reason: str
+
+
+# ---------- Negotiate / Catalog / Launch model outputs ----------
+
+CommitTerm = Literal["margin_pct", "payment_days", "moq", "marketing_inr", "launch_discount_pct", "returns"]
+
+
+class Commitment(BaseModel):
+    term: CommitTerm
+    offered: float
+    transcript_quote: str
+    turn: int
+
+
+class Refusal(BaseModel):
+    term: str
+    transcript_quote: str = ""
+    turn: int | None = None
+    note: str = ""
+
+
+class NegotiateCounter(BaseModel):
+    asks: list[str] = Field(default_factory=list)
+    email_draft: str = ""
+
+
+class NegotiateFinal(BaseModel):
+    commitments: list[Commitment] = Field(default_factory=list)
+    refusals: list[Refusal] = Field(default_factory=list)
+    counter_offer: NegotiateCounter = Field(default_factory=NegotiateCounter)
+
+
+class ClassifyItem(BaseModel):
+    code: str
+    category: str
+    subcategory: str
+
+
+class ClassifyFinal(BaseModel):
+    classifications: list[ClassifyItem]
+
+
+class ComplianceFlag(BaseModel):
+    rule: str
+    text: str
+    severity: Literal["low", "medium", "high"] = "medium"
+
+
+class CatalogCopy(BaseModel):
+    sku_code: str
+    title: str
+    bullets: list[str] = Field(default_factory=list)
+    description: str = ""
+    attributes: dict[str, Any] = Field(default_factory=dict)
+    compliance_flags: list[ComplianceFlag] = Field(default_factory=list)
+
+
+class CatalogCopyFinal(BaseModel):
+    items: list[CatalogCopy]
+
+
+class JbpFinal(BaseModel):
+    markdown: str
+
+
+class DiscountAsk(BaseModel):
+    brand_funded_pct: float
+    our_pct: float
+    rationale: str = ""
+
+
+class MarketingFinal(BaseModel):
+    model_config = {"populate_by_name": True}
+
+    campaign_name: str
+    copy_text: str = Field(alias="copy")
+    discount_ask: DiscountAsk
