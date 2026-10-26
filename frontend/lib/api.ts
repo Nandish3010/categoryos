@@ -1,3 +1,5 @@
+import { getDemoKey } from "./demoKey";
+
 export const BACKEND_URL = (
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8001"
 ).replace(/\/$/, "");
@@ -151,10 +153,27 @@ export function parseErrorBody(status: number, raw: unknown): ApiErrorBody {
   return { code: `http_${status}`, problem: `Request failed (${status})` };
 }
 
-async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
+export async function request<T>(
+  method: "GET" | "POST",
+  path: string,
+  opts: { body?: unknown; signal?: AbortSignal } = {},
+): Promise<T> {
+  const { signal } = opts;
+  const headers: Record<string, string> = {};
+  if (opts.body !== undefined) headers["Content-Type"] = "application/json";
+  if (method === "POST") {
+    const key = getDemoKey();
+    if (key) headers["X-Demo-Key"] = key;
+  }
   let res: Response;
   try {
-    res = await fetch(`${BACKEND_URL}${path}`, { signal, cache: "no-store" });
+    res = await fetch(`${BACKEND_URL}${path}`, {
+      method,
+      headers,
+      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      signal,
+      cache: "no-store",
+    });
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") throw e;
     throw new ApiError(0, {
@@ -173,8 +192,16 @@ async function get<T>(path: string, signal?: AbortSignal): Promise<T> {
     }
     throw new ApiError(res.status, parseErrorBody(res.status, raw));
   }
-  return (await res.json()) as T;
+  try {
+    return (await res.json()) as T;
+  } catch {
+    return undefined as T; // empty 200/202 body
+  }
 }
+
+const get = <T>(path: string, signal?: AbortSignal) => request<T>("GET", path, { signal });
+export const post = <T>(path: string, body: unknown, signal?: AbortSignal) =>
+  request<T>("POST", path, { body, signal });
 
 export const fetchVendors = (signal?: AbortSignal) => get<VendorListItem[]>("/api/vendors", signal);
 
