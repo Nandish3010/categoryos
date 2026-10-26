@@ -1,0 +1,48 @@
+{
+  "vendor_id": "V002",
+  "company_name": "Mewsli Cat Care LLP",
+  "brand_name": "Mewsli",
+  "contact_name": "Priya Nair",
+  "contact_email": "priya.nair@example.com",
+  "city": "Pune",
+  "years_in_business": 3,
+  "categories": [
+    "treats",
+    "cat litter"
+  ],
+  "documents": [
+    {
+      "type": "GST",
+      "number": "GST-DEMO-0002",
+      "valid_until": "2030-03-31",
+      "status": "valid"
+    },
+    {
+      "type": "FSSAI",
+      "number": "FSSAI-DEMO-0002",
+      "valid_until": "2027-11-30",
+      "status": "valid"
+    },
+    {
+      "type": "PAN",
+      "number": "PAN-DEMO-0002",
+      "valid_until": "2099-12-31",
+      "status": "valid"
+    },
+    {
+      "type": "Trademark",
+      "number": "TM-DEMO-0002",
+      "valid_until": "2031-01-20",
+      "status": "valid"
+    }
+  ],
+  "proposed_terms": {
+    "margin_offered_pct": 17,
+    "payment_terms_days": 15,
+    "moq_units": 800,
+    "marketing_support_inr": 20000,
+    "launch_discount_pct": 0,
+    "returns_policy": "No returns except manufacturing defects reported within 7 days"
+  },
+  "pitch": "Mewsli makes cat treats and tofu litter that cat parents rave about; our creamy lick treats are a Pune bestseller. Raw material costs are high so we can only offer a thin margin, but volumes will make up for it. We need quick payment terms as we are a young company."
+}

@@ -1,0 +1,55 @@
+{
+  "vendor_id": "V001",
+  "company_name": "Highland Paws Nutrition Pvt Ltd",
+  "brand_name": "Highland Paws",
+  "contact_name": "Aarav Menon",
+  "contact_email": "aarav.menon@example.com",
+  "city": "Bengaluru",
+  "years_in_business": 7,
+  "categories": [
+    "dog dry food",
+    "dog wet food",
+    "treats"
+  ],
+  "documents": [
+    {
+      "type": "GST",
+      "number": "GST-DEMO-0001",
+      "valid_until": "2030-03-31",
+      "status": "valid"
+    },
+    {
+      "type": "FSSAI",
+      "number": "FSSAI-DEMO-0001",
+      "valid_until": "2027-08-15",
+      "status": "valid"
+    },
+    {
+      "type": "PAN",
+      "number": "PAN-DEMO-0001",
+      "valid_until": "2099-12-31",
+      "status": "valid"
+    },
+    {
+      "type": "Trademark",
+      "number": "TM-DEMO-0001",
+      "valid_until": "2032-05-10",
+      "status": "valid"
+    },
+    {
+      "type": "Certificate of Incorporation",
+      "number": "CIN-DEMO-0001",
+      "valid_until": "2099-12-31",
+      "status": "valid"
+    }
+  ],
+  "proposed_terms": {
+    "margin_offered_pct": 34,
+    "payment_terms_days": 45,
+    "moq_units": 150,
+    "marketing_support_inr": 250000,
+    "launch_discount_pct": 10,
+    "returns_policy": "Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window"
+  },
+  "pitch": "We make small-batch, high-protein grain-free dog food with single-source chicken and salmon, tested by a vet nutritionist. Our Bengaluru repeat rate is 62% and we want to bring our range to a platform with national reach. We are happy to fund launch marketing and trade at a healthy margin."
+}

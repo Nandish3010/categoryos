@@ -1,0 +1,117 @@
+vendor_sku_ref,marketplace,title,price,rating,review_count,est_monthly_sales
+V001:HP-D01,ZoomPets,Pet Pantry Co Grain-Free Chicken Adult Dog Dry Food 1.5kg,1549,4.5,2339,310
+V001:HP-D01,FurBazaar,Furry Feast Grain-Free Chicken Adult Dog Dry Food 1.5kg,1519,3.7,2613,171
+V001:HP-D01,TailMart,PurrPlus Grain-Free Chicken Adult Dog Dry Food 1.5kg,1609,4.0,1416,333
+V001:HP-D02,TailMart,Canine Crest Grain-Free Chicken Adult Dog Dry Food 6kg,4999,3.7,3110,293
+V001:HP-D02,FurBazaar,Meow Mate Grain-Free Chicken Adult Dog Dry Food 6kg,5019,4.0,2506,179
+V001:HP-D03,TailMart,PurrPlus Salmon Adult Dog Dry Food 1.5kg,1529,3.6,2797,142
+V001:HP-D03,FurBazaar,Canine Crest Salmon Adult Dog Dry Food 1.5kg,1729,3.8,2474,57
+V001:HP-D03,ZoomPets,Doggo Delights Salmon Adult Dog Dry Food 1.5kg,1509,3.9,885,233
+V001:HP-D04,TailMart,PurrPlus Lamb & Rice Adult Dog Dry Food 1.5kg,1229,4.1,962,218
+V001:HP-D04,FurBazaar,Meow Mate Lamb & Rice Adult Dog Dry Food 1.5kg,1369,4.5,315,151
+V001:HP-D05,FurBazaar,PurrPlus Puppy Starter Dog Dry Food 1.5kg,1549,4.2,2926,304
+V001:HP-D05,ZoomPets,Kitty Kingdom Puppy Starter Dog Dry Food 1.5kg,1609,3.6,105,264
+V001:HP-D05,TailMart,Bark & Bowl Puppy Starter Dog Dry Food 1.5kg,1719,4.5,1502,345
+V001:HP-D06,TailMart,ZenPaws Large Breed Adult Dog Dry Food 6kg,4789,3.6,1290,455
+V001:HP-D06,ZoomPets,Furry Feast Large Breed Adult Dog Dry Food 6kg,4939,4.1,487,253
+V001:HP-D07,FurBazaar,Meow Mate Senior Joint Care Dog Dry Food 1.5kg,1639,4.5,987,408
+V001:HP-D07,ZoomPets,Pet Pantry Co Senior Joint Care Dog Dry Food 1.5kg,1439,4.4,2704,217
+V001:HP-D07,TailMart,Meow Mate Senior Joint Care Dog Dry Food 1.5kg,1429,4.1,3110,287
+V001:HP-D07,TailMart,HappyHound Senior Joint Care Dog Dry Food 1.5kg,1589,4.3,2578,73
+V001:HP-W01,FurBazaar,Bark & Bowl Chicken Gravy Dog Wet Food 100g,129,4.3,3281,114
+V001:HP-W01,TailMart,Kitty Kingdom Chicken Gravy Dog Wet Food 100g,139,4.1,174,280
+V001:HP-W01,ZoomPets,Kitty Kingdom Chicken Gravy Dog Wet Food 100g,129,3.6,389,217
+V001:HP-W02,FurBazaar,Bark & Bowl Lamb Pate Dog Wet Food 150g,179,4.6,2361,229
+V001:HP-W02,TailMart,Nature's Nibble Lamb Pate Dog Wet Food 150g,179,4.2,2073,15
+V001:HP-W02,ZoomPets,Nature's Nibble Lamb Pate Dog Wet Food 150g,159,4.7,365,218
+V001:HP-W02,FurBazaar,Pet Pantry Co Lamb Pate Dog Wet Food 150g,179,3.5,2918,195
+V001:HP-W03,TailMart,Meow Mate Turkey & Pumpkin Dog Wet Food 400g,369,4.2,3252,61
+V001:HP-W03,ZoomPets,Nature's Nibble Turkey & Pumpkin Dog Wet Food 400g,349,3.6,407,280
+V001:HP-W03,FurBazaar,Meow Mate Turkey & Pumpkin Dog Wet Food 400g,349,4.7,2488,128
+V001:HP-T01,TailMart,Meow Mate Freeze Dried Chicken Dog Treats 60g,419,4.3,1625,399
+V001:HP-T01,ZoomPets,ZenPaws Freeze Dried Chicken Dog Treats 60g,409,4.0,3262,302
+V001:HP-T02,ZoomPets,Nature's Nibble Sweet Potato Chews Dog Treats 200g,329,3.9,897,254
+V001:HP-T02,FurBazaar,Pet Pantry Co Sweet Potato Chews Dog Treats 200g,329,3.7,1231,330
+V001:HP-T02,TailMart,Furry Feast Sweet Potato Chews Dog Treats 200g,369,4.1,2230,216
+V002:MW-T01,FurBazaar,PetNest Tuna Creamy Lick Cat Treat 60g,179,4.4,3333,251
+V002:MW-T01,ZoomPets,PetNest Tuna Creamy Lick Cat Treat 60g,199,4.0,1702,386
+V002:MW-T01,TailMart,HappyHound Tuna Creamy Lick Cat Treat 60g,189,3.8,3086,239
+V002:MW-T01,FurBazaar,Doggo Delights Tuna Creamy Lick Cat Treat 60g,199,4.1,1287,15
+V002:MW-T02,ZoomPets,PurrPlus Chicken Crunchy Cat Treats 60g,179,4.7,3365,353
+V002:MW-T02,TailMart,HappyHound Chicken Crunchy Cat Treats 60g,169,3.7,1044,133
+V002:MW-T02,FurBazaar,Furry Feast Chicken Crunchy Cat Treats 60g,159,4.4,2133,167
+V002:MW-T03,TailMart,ZenPaws Freeze Dried Salmon Cat Treats 30g,289,3.7,1811,338
+V002:MW-T03,ZoomPets,Nature's Nibble Freeze Dried Salmon Cat Treats 30g,269,4.6,1719,569
+V002:MW-T04,TailMart,Nature's Nibble Catnip Dental Cat Treats 70g,239,3.8,1325,162
+V002:MW-T04,FurBazaar,Pet Pantry Co Catnip Dental Cat Treats 70g,229,3.7,1195,443
+V002:MW-T05,FurBazaar,Furry Feast Hairball Control Cat Treats 80g,239,3.5,903,123
+V002:MW-T05,ZoomPets,ZenPaws Hairball Control Cat Treats 80g,249,4.0,3199,74
+V002:MW-T05,TailMart,Kitty Kingdom Hairball Control Cat Treats 80g,229,3.6,996,242
+V002:MW-L01,FurBazaar,Meow Mate Tofu Cat Litter Green Tea 6L,649,4.1,1010,98
+V002:MW-L01,TailMart,Kitty Kingdom Tofu Cat Litter Green Tea 6L,639,4.0,2538,260
+V002:MW-L01,ZoomPets,Meow Mate Tofu Cat Litter Green Tea 6L,609,3.6,1497,184
+V002:MW-L02,FurBazaar,PurrPlus Tofu Cat Litter Original 6L,539,4.7,1058,224
+V002:MW-L02,ZoomPets,Doggo Delights Tofu Cat Litter Original 6L,599,4.4,2593,229
+V002:MW-L03,FurBazaar,Nature's Nibble Clumping Bentonite Cat Litter Lavender 10kg,759,4.5,737,298
+V002:MW-L03,TailMart,Bark & Bowl Clumping Bentonite Cat Litter Lavender 10kg,809,4.3,3343,114
+V002:MW-L04,ZoomPets,Doggo Delights Clumping Bentonite Cat Litter 5kg,419,4.6,1312,15
+V002:MW-L04,TailMart,ZenPaws Clumping Bentonite Cat Litter 5kg,459,4.1,169,15
+V002:MW-L05,ZoomPets,Nature's Nibble Silica Crystal Cat Litter 3.8L,709,3.8,3294,222
+V002:MW-L05,TailMart,PurrPlus Silica Crystal Cat Litter 3.8L,659,3.9,785,424
+V002:MW-L05,FurBazaar,Bark & Bowl Silica Crystal Cat Litter 3.8L,669,3.9,3285,122
+V002:MW-L05,ZoomPets,Furry Feast Silica Crystal Cat Litter 3.8L,679,4.0,3388,326
+V003:ST-101,FurBazaar,Meow Mate Cotton Rope Tug Dog Toy,169,3.9,1846,65
+V003:ST-101,TailMart,Nature's Nibble Cotton Rope Tug Dog Toy,209,4.0,2997,88
+V003:ST-102,FurBazaar,Canine Crest Squeaky Rubber Bone Dog Toy,189,3.6,2631,375
+V003:ST-102,TailMart,Pet Pantry Co Squeaky Rubber Bone Dog Toy,159,4.6,604,47
+V003:ST-102,ZoomPets,Meow Mate Squeaky Rubber Bone Dog Toy,179,4.4,162,260
+V003:ST-103,ZoomPets,Meow Mate Plush Squeaky Dog Toy Set of 3,309,4.0,1539,105
+V003:ST-103,FurBazaar,Furry Feast Plush Squeaky Dog Toy Set of 3,309,4.2,2188,201
+V003:ST-104,TailMart,ZenPaws Feather Wand Cat Teaser Toy,189,4.0,2320,368
+V003:ST-104,FurBazaar,Kitty Kingdom Feather Wand Cat Teaser Toy,139,4.3,898,294
+V003:ST-104,ZoomPets,Bark & Bowl Feather Wand Cat Teaser Toy,189,3.7,575,210
+V003:ST-105,TailMart,Nature's Nibble Catnip Mouse Cat Toy Set,219,4.3,2926,584
+V003:ST-105,ZoomPets,Pet Pantry Co Catnip Mouse Cat Toy Set,169,4.4,2888,15
+V003:ST-201,ZoomPets,Pet Pantry Co Nylon Dog Collar Medium,329,3.8,2043,144
+V003:ST-201,TailMart,ZenPaws Nylon Dog Collar Medium,239,3.7,373,109
+V003:ST-201,FurBazaar,PurrPlus Nylon Dog Collar Medium,239,4.7,2964,168
+V003:ST-201,ZoomPets,HappyHound Nylon Dog Collar Medium,279,3.6,1318,113
+V003:ST-202,ZoomPets,Pet Pantry Co Adjustable Dog Harness Medium,489,4.6,3215,254
+V003:ST-202,TailMart,Pet Pantry Co Adjustable Dog Harness Medium,499,4.0,246,54
+V003:ST-202,FurBazaar,ZenPaws Adjustable Dog Harness Medium,539,3.7,694,110
+V003:ST-202,FurBazaar,ZenPaws Adjustable Dog Harness Medium,429,4.6,3484,265
+V003:ST-203,TailMart,HappyHound Retractable Dog Leash 5m,469,4.1,2078,171
+V003:ST-203,ZoomPets,Pet Pantry Co Retractable Dog Leash 5m,469,4.3,2971,89
+V003:ST-204,TailMart,Meow Mate Stainless Steel Pet Bowl 750ml,209,4.4,1104,128
+V003:ST-204,ZoomPets,Meow Mate Stainless Steel Pet Bowl 750ml,259,3.5,2588,211
+V003:ST-204,FurBazaar,Meow Mate Stainless Steel Pet Bowl 750ml,249,4.6,1998,96
+V003:ST-204,ZoomPets,Bark & Bowl Stainless Steel Pet Bowl 750ml,219,3.6,265,235
+V003:ST-205,TailMart,HappyHound Cat Scratching Pad Lounge,329,3.7,2962,104
+V003:ST-205,FurBazaar,PurrPlus Cat Scratching Pad Lounge,339,3.7,1537,291
+V004:VT-01,FurBazaar,Kitty Kingdom Neem Anti-Tick Dog Shampoo 250ml,279,4.0,597,144
+V004:VT-01,ZoomPets,HappyHound Neem Anti-Tick Dog Shampoo 250ml,259,4.0,674,131
+V004:VT-01,TailMart,HappyHound Neem Anti-Tick Dog Shampoo 250ml,299,4.4,797,221
+V004:VT-01,ZoomPets,Bark & Bowl Neem Anti-Tick Dog Shampoo 250ml,299,4.6,2057,59
+V004:VT-02,ZoomPets,Nature's Nibble Aloe Oatmeal Dog Shampoo 250ml,289,3.6,1172,150
+V004:VT-02,TailMart,Bark & Bowl Aloe Oatmeal Dog Shampoo 250ml,309,3.8,53,230
+V004:VT-03,TailMart,PurrPlus Herbal Paw Balm 50g,229,3.9,1660,76
+V004:VT-03,ZoomPets,Kitty Kingdom Herbal Paw Balm 50g,209,3.6,2085,84
+V004:VT-04,FurBazaar,PurrPlus Coconut Coat Serum for Dogs 100ml,359,3.9,1408,123
+V004:VT-04,TailMart,HappyHound Coconut Coat Serum for Dogs 100ml,339,4.1,2068,122
+V004:VT-04,ZoomPets,Canine Crest Coconut Coat Serum for Dogs 100ml,299,3.7,1384,181
+V004:VT-05,FurBazaar,Nature's Nibble Turmeric Joint Supplement Chews Dogs 120g,459,3.7,2545,556
+V004:VT-05,TailMart,Kitty Kingdom Turmeric Joint Supplement Chews Dogs 120g,449,4.2,2097,605
+V004:VT-05,ZoomPets,Kitty Kingdom Turmeric Joint Supplement Chews Dogs 120g,459,4.1,88,73
+V004:VT-06,TailMart,PetNest Probiotic Digestive Powder Pets 100g,359,4.5,2597,269
+V004:VT-06,ZoomPets,HappyHound Probiotic Digestive Powder Pets 100g,339,4.2,2974,15
+V004:VT-06,FurBazaar,Bark & Bowl Probiotic Digestive Powder Pets 100g,339,3.7,2596,386
+V004:VT-07,FurBazaar,Doggo Delights Herbal Ear Cleaner Dogs 60ml,209,3.5,1304,45
+V004:VT-07,TailMart,PurrPlus Herbal Ear Cleaner Dogs 60ml,209,4.3,1700,98
+V004:VT-07,ZoomPets,PetNest Herbal Ear Cleaner Dogs 60ml,219,4.4,2910,85
+V004:VT-07,FurBazaar,Doggo Delights Herbal Ear Cleaner Dogs 60ml,199,4.2,2732,95
+V004:VT-08,FurBazaar,Meow Mate Oat Honey Dog Biscuits 250g,259,4.4,2972,123
+V004:VT-08,TailMart,PetNest Oat Honey Dog Biscuits 250g,279,3.8,2003,278
+V004:VT-08,ZoomPets,Doggo Delights Oat Honey Dog Biscuits 250g,249,4.6,1239,324
+V004:VT-09,FurBazaar,ZenPaws Multivitamin Drops Pets 30ml,329,4.6,3277,524
+V004:VT-09,ZoomPets,ZenPaws Multivitamin Drops Pets 30ml,349,4.0,1636,270
+V004:VT-09,TailMart,Pet Pantry Co Multivitamin Drops Pets 30ml,349,3.8,1198,523

@@ -1,0 +1,42 @@
+{
+  "vendor_id": "V003",
+  "company_name": "SnapTail Accessories Pvt Ltd",
+  "brand_name": "SnapTail",
+  "contact_name": "Rohan Kapoor",
+  "contact_email": "rohan.kapoor@example.com",
+  "city": "Delhi",
+  "years_in_business": 5,
+  "categories": [
+    "toys",
+    "accessories"
+  ],
+  "documents": [
+    {
+      "type": "GST",
+      "number": "GST-DEMO-0003",
+      "valid_until": "2030-03-31",
+      "status": "valid"
+    },
+    {
+      "type": "PAN",
+      "number": "PAN-DEMO-0003",
+      "valid_until": "2099-12-31",
+      "status": "valid"
+    },
+    {
+      "type": "Trademark",
+      "number": "TM-DEMO-0003",
+      "valid_until": "2029-09-01",
+      "status": "valid"
+    }
+  ],
+  "proposed_terms": {
+    "margin_offered_pct": 22,
+    "payment_terms_days": 30,
+    "moq_units": 400,
+    "marketing_support_inr": 0,
+    "launch_discount_pct": 5,
+    "returns_policy": "Exchange only for defective items within 15 days"
+  },
+  "pitch": "SnapTail offers a full range of dog and cat toys, collars, harnesses and bowls at competitive prices. We are already on several marketplaces and can supply large quantities quickly. Let us add our range to your store."
+}
