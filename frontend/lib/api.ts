@@ -104,7 +104,8 @@ export type ModeResponse = {
   mode: string;
   live_stages?: string[];
   spend_usd: number;
-  cap_usd: number;
+  max_spend_usd: number;
+  warn_spend_usd?: number;
 };
 
 export type ApiErrorBody = {

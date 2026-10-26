@@ -23,3 +23,6 @@ __pycache__/
 
 .DS_Store
 .ledger.json
+
+# Claude Code local state (agent worktrees, launch config)
+.claude/

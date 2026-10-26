@@ -287,7 +287,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
           <div className="border-t border-border p-4 max-[899px]:hidden min-[1280px]:sticky min-[1280px]:bottom-0 min-[1280px]:bg-bg">
             <div className="mb-2 text-xs text-text-dim">
               {mode.data
-                ? `${mode.data.mode} mode · $${mode.data.spend_usd.toFixed(2)} of $${mode.data.cap_usd.toFixed(2)} spent`
+                ? `${mode.data.mode} mode · $${mode.data.spend_usd.toFixed(2)} of $${mode.data.max_spend_usd.toFixed(2)} spent`
                 : "Mode unavailable"}
             </div>
             {actionBar}
