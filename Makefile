@@ -19,6 +19,7 @@ demo:
 
 test:
 	cd backend && uv run pytest -q
+	cd frontend && npm test -- --run
 
 data:
 	python3 data/generate.py
