@@ -121,9 +121,14 @@ export default function VendorsBoard() {
       <header className="mb-6">
         <div className="flex items-center justify-between gap-3">
           <div className="text-xl font-semibold tracking-tight">CategoryOS</div>
-          <Link href="/rules" className="inline-flex min-h-11 items-center rounded-card border border-border px-3 text-sm text-text-dim hover:bg-surface-2 hover:text-text">
-            Playbook
-          </Link>
+          <div className="flex gap-2">
+            <Link href="/try" className="inline-flex min-h-11 items-center rounded-card border border-accent/40 px-3 text-sm text-accent hover:bg-surface-2">
+              Try your own vendor
+            </Link>
+            <Link href="/rules" className="inline-flex min-h-11 items-center rounded-card border border-border px-3 text-sm text-text-dim hover:bg-surface-2 hover:text-text">
+              Playbook
+            </Link>
+          </div>
         </div>
         <p className="mt-1 text-sm text-text-dim">
           Vendor applications waiting for a decision. Open one to see the recommendation, move the

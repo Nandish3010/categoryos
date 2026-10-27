@@ -28,7 +28,26 @@ export type VendorListItem = {
   metrics_hash: string;
 };
 
+export type SandboxInfo = {
+  id: string;
+  starter: string;
+  starter_label: string;
+  /** rules_only: no model calls at all; mock: canned stand-in; live: real models. */
+  llm_mode: "rules_only" | "mock" | "live";
+  mode_label: string;
+  source: string;
+  expires_at: number;
+  ttl_remaining_s: number;
+  application_provided: boolean;
+  market_stubs: boolean;
+  sku_count: number;
+  warnings: string[];
+  documents: { name: string; kind: string; title: string; status: "read" | "not_read"; reason: string | null }[];
+  skus_without_market_data?: number;
+};
+
 export type VendorDetail = {
+  sandbox?: SandboxInfo;
   id: string;
   vendor_id: string;
   company_name: string;
@@ -97,7 +116,7 @@ export type Claim = {
   text: string;
   value: number;
   metric: string;
-  unit: "pct" | "inr" | "units" | "score" | "ratio" | "qty";
+  unit: "pct" | "inr" | "units" | "score" | "ratio" | "qty" | "pts";
   sku_key?: string | null;
   status: ClaimStatus;
   recomputed?: number | null;
@@ -186,10 +205,10 @@ export function parseErrorBody(status: number, raw: unknown): ApiErrorBody {
 export async function request<T>(
   method: "GET" | "POST" | "PUT",
   path: string,
-  opts: { body?: unknown; signal?: AbortSignal } = {},
+  opts: { body?: unknown; signal?: AbortSignal; headers?: Record<string, string> } = {},
 ): Promise<T> {
   const { signal } = opts;
-  const headers: Record<string, string> = {};
+  const headers: Record<string, string> = { ...opts.headers };
   if (opts.body !== undefined) headers["Content-Type"] = "application/json";
   if (method !== "GET") {
     const key = getDemoKey();
@@ -259,3 +278,49 @@ export const fetchClaims = (id: string, inject: boolean, signal?: AbortSignal) =
   );
 
 export const fetchMode = (signal?: AbortSignal) => get<ModeResponse>("/api/mode", signal);
+
+export type UploadStarter = {
+  id: string;
+  label: string;
+  vertical: string;
+  vendor_types: Record<string, string>;
+  required_documents: string[];
+  document_kinds: { kind: string; label: string }[];
+  has_sample: boolean;
+  has_market_data: boolean;
+};
+
+export type UploadOptions = {
+  starters: UploadStarter[];
+  limits: { sheet_mb: number; rows: number; documents: number; document_mb: number; ttl_hours: number };
+  llm_mode: SandboxInfo["llm_mode"];
+  mode_label: string;
+  live_budget_usd: number;
+};
+
+export const fetchUploadOptions = (signal?: AbortSignal) => {
+  const key = getDemoKey();
+  return request<UploadOptions>("GET", "/api/uploads/options", { signal, headers: key ? { "X-Demo-Key": key } : undefined });
+};
+
+/** multipart POST /api/uploads; the browser sets the boundary, so no Content-Type here. */
+export async function createUpload(form: FormData, signal?: AbortSignal): Promise<SandboxInfo> {
+  const headers: Record<string, string> = {};
+  const key = getDemoKey();
+  if (key) headers["X-Demo-Key"] = key;
+  let res: Response;
+  try {
+    res = await fetch(`${BACKEND_URL}/api/uploads`, { method: "POST", body: form, headers, signal, cache: "no-store" });
+  } catch (e) {
+    if (e instanceof DOMException && e.name === "AbortError") throw e;
+    throw new ApiError(0, { code: "unreachable", problem: `Cannot reach the backend at ${BACKEND_URL}`, cause: e instanceof Error ? e.message : undefined, fix: "Run `make dev` from the repo root." });
+  }
+  let raw: unknown = null;
+  try {
+    raw = await res.json();
+  } catch {
+    /* non-JSON body */
+  }
+  if (!res.ok) throw new ApiError(res.status, parseErrorBody(res.status, raw));
+  return raw as SandboxInfo;
+}

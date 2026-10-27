@@ -304,3 +304,70 @@ class UnknownOpsMetric(CategoryOSError):
     def __init__(self, metric: str) -> None:
         super().__init__(f"unknown ops metric: {metric!r}")
         self.metric = metric
+
+class CallNotFound(CategoryOSError):
+    status = 404
+    code = "call_not_found"
+    problem = "No call with this id"
+    cause = "The call id is unknown, the call is for another vendor, or the backend restarted (calls live in memory)"
+    fix = "Start a call with POST /api/vendors/{id}/call"
+
+    def __init__(self, call_id: str) -> None:
+        super().__init__(f"unknown call: {call_id!r}")
+        self.call_id = call_id
+
+
+class CallEnded(CategoryOSError):
+    status = 409
+    code = "call_ended"
+    problem = "This call has ended"
+    cause = "Turns and audio are only accepted while a call is running"
+    fix = "Start a new call"
+
+
+class LiveCallUnavailable(CategoryOSError):
+    status = 409
+    code = "live_call_unavailable"
+    problem = "A live microphone call needs live mode"
+    cause = "The Negotiate stage is not running live (MODEL_MODE=live with a MODEL_API_KEY), so there is no voice model to listen with"
+    fix = "Use Simulate call, which streams the recorded call through the same pipeline at no cost, or run the backend live with the demo key"
+
+
+class NoCallScript(CategoryOSError):
+    status = 422
+    code = "no_call_script"
+    problem = "There is no recorded call to simulate for this vendor"
+    cause = "Only vendors with a canonical call transcript (V002) can be simulated"
+    fix = "Pick a vendor with a call transcript, or start a live call"
+
+
+class CallBudgetExceeded(CategoryOSError):
+    status = 429
+    code = "call_budget_exceeded"
+    problem = "This call reached its spend budget"
+    cause = "Transcription and extraction for this call cost as much as CALL_BUDGET_USD allows"
+    fix = "End the call and review it, or raise CALL_BUDGET_USD and restart the backend"
+
+
+class ChunkTooLarge(CategoryOSError):
+    status = 413
+    code = "chunk_too_large"
+    problem = "The audio chunk is too large"
+    cause = "Chunks are short push-to-talk clips of about six seconds"
+    fix = "Send smaller chunks (16 kHz mono WAV)"
+
+
+class UnsupportedAudio(CategoryOSError):
+    status = 415
+    code = "unsupported_audio"
+    problem = "The audio chunk is not a WAV file"
+    cause = "muse-voice-transcribe-1.0 takes WAV audio; the chunk has no RIFF/WAVE header"
+    fix = "Encode the chunk as 16 kHz mono 16-bit PCM WAV before uploading"
+
+
+class CallNotAccepting(CategoryOSError):
+    status = 409
+    code = "call_not_accepting_input"
+    problem = "This call does not take typed or recorded turns"
+    cause = "A simulated call plays its own recorded script"
+    fix = "Start a live call to speak into the pipeline"

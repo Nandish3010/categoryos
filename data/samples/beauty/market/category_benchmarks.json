@@ -1,0 +1,5 @@
+{
+  "skincare": {"avg_monthly_units_per_sku": 140.0, "sku_count": 40, "top_price_bands": [], "gaps": ["Stub benchmark for the sandbox sample: replace with your own category data"]},
+  "haircare": {"avg_monthly_units_per_sku": 110.0, "sku_count": 25, "top_price_bands": [], "gaps": ["Stub benchmark for the sandbox sample"]},
+  "makeup": {"avg_monthly_units_per_sku": 90.0, "sku_count": 30, "top_price_bands": [], "gaps": ["Stub benchmark for the sandbox sample"]}
+}

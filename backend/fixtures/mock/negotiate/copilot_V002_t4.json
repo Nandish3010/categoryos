@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [
+      {
+        "term": "margin_pct",
+        "offered": 21,
+        "turn": 4,
+        "transcript_quote": "If you take the full treats range, I can move to 21 percent."
+      }
+    ],
+    "refusals": [],
+    "deal_terms": []
+  }
+}

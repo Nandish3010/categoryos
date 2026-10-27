@@ -1,0 +1,26 @@
+{
+  "company_name": "Voltaic Tech Distribution Pvt Ltd",
+  "brand_name": "Voltaic",
+  "contact_name": "Rohan Mehta",
+  "contact_email": "rohan.mehta@example.com",
+  "city": "Noida",
+  "years_in_business": 6,
+  "categories": ["audio", "mobile accessories", "computing accessories", "smart home"],
+  "vendor_type": "importer",
+  "documents": [
+    {"type": "GST", "number": "GST-SAMPLE-E001", "valid_until": "2030-03-31", "status": "valid"},
+    {"type": "PAN", "number": "PAN-SAMPLE-E001", "valid_until": "2099-12-31", "status": "valid"},
+    {"type": "BIS registration", "number": "BIS-SAMPLE-E001", "valid_until": "2028-02-28", "status": "valid"},
+    {"type": "LMPC", "number": "LMPC-SAMPLE-E001", "valid_until": "2027-12-31", "status": "valid"},
+    {"type": "Brand authorisation letter", "number": "BAL-SAMPLE-E001", "valid_until": "2027-09-30", "status": "valid"}
+  ],
+  "proposed_terms": {
+    "margin_offered_pct": 38,
+    "payment_terms_days": 30,
+    "moq_units": 800,
+    "marketing_support_inr": 200000,
+    "launch_discount_pct": 5,
+    "returns_policy": "Replacement for dead-on-arrival units within 10 days; 12 month warranty handled by the vendor"
+  },
+  "pitch": "We import and distribute a focused range of audio, charging and desk accessories with 12 month warranty and local service. We want a marketplace partner for national reach. Sample data for the CategoryOS sandbox."
+}

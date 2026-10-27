@@ -12,7 +12,7 @@ from typing import Any
 
 from app import policy
 from app.config import settings
-from app.constants import ALLOWED_VENDORS
+from app.constants import VENDOR_ID_PATTERN
 from app.data_loader import (
     check_vendor,
     load_application,
@@ -29,7 +29,7 @@ from app.parsing import map_columns
 from app.schemas import SkuMetrics
 from app.verify import file_sha256
 
-_SKU_KEY = re.compile(r"^(" + "|".join(ALLOWED_VENDORS) + r"):(.+)$")
+_SKU_KEY = re.compile(r"^(" + VENDOR_ID_PATTERN + r"):(.+)$")
 
 
 @dataclass(frozen=True)
@@ -50,7 +50,7 @@ def _schema(properties: dict[str, Any], required: list[str]) -> dict[str, Any]:
     return {"type": "object", "properties": properties, "required": required, "additionalProperties": False}
 
 
-_VENDOR = {"type": "string", "enum": list(ALLOWED_VENDORS), "description": "Vendor id, V001 to V004"}
+_VENDOR = {"type": "string", "pattern": f"^({VENDOR_ID_PATTERN})$", "description": "Vendor id, for example V001 or U-ab12cd34"}
 _SKU = {"type": "string", "description": "SKU key as vendor id and code, for example V001:HP-D01"}
 
 

@@ -15,7 +15,7 @@ from typing import Any, Literal
 import openai
 from pydantic import BaseModel, ValidationError
 
-from app import ledger
+from app import ledger, sandbox_mock, scope
 from app.config import settings
 from app.constants import STAGE_META
 from app.errors import (
@@ -65,6 +65,10 @@ def _checksum(content: str) -> str:
 
 
 def _load_fixture(kind: Literal["mock", "golden"], stage: str, task: str) -> dict[str, Any]:
+    if kind == "mock":
+        generic = sandbox_mock.fixture(stage, task)  # sandbox vendors have no recorded fixtures: build the generic one
+        if generic is not None:
+            return generic
     path = fixture_path(kind, stage, task)
     if not path.exists():
         raise FixtureMissing(
@@ -307,6 +311,9 @@ def _record_golden(stage: str, task: str, model: str, content: str, meter: _Mete
 
 
 def resolve_mode(stage: str) -> str:
+    sc = scope.current()
+    if sc is not None:  # a sandbox vendor: rules-only and mock use the generic mock, live only when it was cleared at upload/run
+        return "live" if sc.llm_mode == "live" else "mock"
     mode = settings.effective_mode
     if mode == "live" and settings.live_stages.strip():
         live = {s.strip() for s in settings.live_stages.split(",") if s.strip()}

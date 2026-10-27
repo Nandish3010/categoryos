@@ -138,6 +138,61 @@ the call is also transcribed (`POST /v1/asr/transcribe`) and diffed against the 
 - `transcript_source` is `"asr"` when a voice transcription was produced (shown next to the canonical text), else `"canonical"`.
 - No negotiate SKUs: `done`, summary `No negotiation needed`, `gap_table: []`. No call transcript on file (V003): a
   deterministic gap table from the application terms, every row `not_stated`, `transcript: null`.
+- A conditional or tiered offer ("X% if you sell Y units in N days") is not a commitment; it is valued by the deal
+  evaluator below, in `data.deals`.
+
+#### `data.deals` (deal evaluator)
+
+Present when the call transcript or `application.proposed_terms.additional_terms` holds something to read (V002's
+contingent litter offer, V001's tiered back margin); absent otherwise. The model (`muse-spark`, task `deals_<VID>`) only
+copies offers into `DealTerm`s: `{id, kind: base|conditional|tiered|rebate|free_goods|exclusivity|payment_for_discount|
+moq_for_discount|sell_or_return|price_protection, term: margin_pct|back_margin_pct|discount_pct|marketing_pct|marketing_inr|
+free_goods_pct|returnable_pct|exclusivity_months|price_protection_days, value, unit, condition?: {metric: units|gmv_inr|
+sell_through_pct, threshold, window_days, scope[]}, tiers?: [{threshold, value}], scope[], base_of?, days?, units?, quote,
+turn, source: transcript|application}`. For an application term, `turn` is the 1-based index into `additional_terms`.
+Every number of a term (value, threshold, window, tier values, days, units) is a `model_extraction` Claim
+(`deal_term_<field>`): its quote must appear verbatim in that turn / additional term and state the number, or the whole
+term is sent back to the agent first (self-correction, `verifier.max_self_corrections`, task `deals_<VID>__fix<n>`) and, if still wrong, dropped into `rejected_terms` and never valued. `app/deals.py` then values the verified terms in Python:
+
+```json
+{"decision": "reject_structure|accept|needs_human|not_assessable|none", "headline": "...",
+ "assessments": [{"term_id", "kind", "term", "label", "source", "turn", "quote",
+   "decision": "accept|reject_structure|needs_human|not_assessable", "call": "plain-English verdict",
+   "reasoning": [], "base_pts", "face_pts", "expected_bonus_pts", "counted_bonus_pts", "expected_pts", "guaranteed_pts",
+   "counted_pts", "required_pts", "shortfall_pts", "probability": 0.0, "net_pts": null,
+   "tiers": [{"threshold", "bonus_pts", "incremental_pts", "probability", "counted"}],
+   "distribution": {"metric", "window_days", "mean", "p10", "p50", "p90", "threshold", "bins": [33 edges], "density": [32]},
+   "counters": [{"kind": "threshold|window|scope|convert_to_base", "text", "threshold?", "window_days?", "scope?",
+     "probability?", "required_base_pts?", "uplift_pts?", "fair_conversion_pts?", "counted_pts_after", "meets_requirement"}],
+   "recommended_counter": 0, "base_term_id": "t1", "base_assumed": false}],
+ "base_terms": [DealTerm], "rejected_terms": [{"id", "label", "reasons": []}],
+ "assumptions": {"min_probability", "value_basis", "ramp_by_month", "cv", "cv_by_category", "sku_correlation", "mc_draws",
+   "seed", "cost_of_capital_pct_annual", "inventory_carrying_pct_monthly"},
+ "talk": {"talk_track", "email_paragraph", "source": "model|rules", "struck": []} | null,
+ "claim_status": {"<claim id>": "verified|rejected|unverifiable"}, "verification": {"total", "verified", "rejected", "unverifiable"}, "mode"}
+```
+
+- Demand: per SKU, the Decide engine's `est_monthly_units` x the new-listing ramp (`negotiation.forecast.ramp_by_month`),
+  lognormal noise (`forecast.cv`, optionally per category), a shared factor (`forecast.sku_correlation`) and a fixed-seed
+  Monte Carlo (`forecast.mc_draws`, `forecast.seed`): `probability` is P(metric >= threshold) and `p10/p50/p90` are quantiles
+  of the metric over the window. Tiers each carry their own probability.
+- Value, in margin points: `expected = base + sum(p_i x bonus_i)`, `guaranteed = base`. `counted` replaces each bonus by 0
+  when `p_i < negotiation.contingent.min_probability` (or all of them under `value_basis: guaranteed_only`). `required_pts`
+  is the target margin of the SKUs involved. Marketing in rupees converts to points over the first-order GMV; discounts
+  and free goods convert by landed cost / price. Payment-for-discount trades subtract `cost_of_capital_pct_annual` x days
+  brought forward; MOQ-for-discount trades subtract carrying cost (`inventory_carrying_pct_monthly`) and dead-stock risk;
+  exclusivity is `needs_human` with an opportunity-cost note and is never auto-accepted.
+- Decision: `accept` when `counted_pts >= required_pts`, else `reject_structure` with `counters`, in this order:
+  `threshold` (largest target with P >= min_probability, rounded down), `window` (shortest window that makes the vendor's
+  own target likely), `scope` (sell-through only) and `convert_to_base` (guaranteed uplift = required - base, with the
+  risk-adjusted bonus as the fair anchor). `recommended_counter` is the first that meets the requirement.
+- Claims (`origin: engine`, recomputed by the verifier from a self-contained `source_ref.key`
+  `<VID>?offset=..&moq=..#<json of terms and context>`): `deal_probability` (`column: tier:<i>`), `deal_percentile`
+  (`p10|p50|p90`), `deal_pts` (`base|expected|counted|required|net`), `deal_counter` (`threshold:<i>`, `uplift:<i>`).
+  `Claim.unit` gains `pts` (tolerance `verifier.tolerances.pts`).
+- `talk` is the agent's call and email paragraph written from the figures only; a sentence stating a number the evaluator
+  did not produce is removed and listed in `struck`. `null` when every offer is acceptable. Recommended counters are also
+  appended to `counter_offer.asks`.
 
 ### `catalog` `data`
 
@@ -329,6 +384,34 @@ Cached catalog and campaign images. `file` is `<SKU code>-packshot|cutout|lifest
 (traversal, other extensions, unknown vendor) is `404 asset_not_found`. In mock/replay a missing file for a real SKU is drawn
 as a labelled placeholder on demand. Open (no key).
 
+## Bring your own vendor (sandbox)
+
+Sandbox vendors are `U-` plus 8 lowercase alphanumerics (`^(V00[1-9]|U-[a-z0-9]{8})$` is the id pattern). They live under `STATE_DIR` for
+`UPLOAD_TTL_HOURS` (24), never in the repo, and then read as `404 unknown_vendor`. Every existing vendor route works for them
+(`/api/vendors/{id}`, `decide/metrics`, `claims`, `runs`, `replan`, `docs`); runs cover Screen and Decide, approving research locks the
+later stages. Each vendor uses the playbook of its chosen starter (`pet` = the effective playbook, `beauty`, `electronics` = `config/examples`).
+
+### `GET /api/uploads/options`
+Starters (`id, label, vertical, vendor_types, required_documents, document_kinds, has_sample, has_market_data`), `limits`
+(`sheet_mb, rows, documents, document_mb, ttl_hours`), and the `llm_mode` / `mode_label` a new upload would get.
+
+### `POST /api/uploads` (multipart) -> `201 SandboxInfo`
+Fields: `starter` (pet|beauty|electronics), `sample` (beauty|electronics: use the bundled sample instead of a sheet), `sheet` (csv/xlsx),
+`application` (json file) or the form fields `company_name, brand_name, vendor_type, categories, margin_offered_pct, payment_terms_days,
+moq_units, marketing_support_inr, launch_discount_pct, returns_policy, pitch`, and parallel lists `documents` / `doc_kinds` / `doc_declares`.
+Content is sniffed, not trusted by name. Errors use the usual `{code, problem, cause, fix}`: `upload_invalid` 422, `upload_too_large` 413,
+`upload_wrong_type` 415, `rate_limited` 429, `sandbox_full` 503, `unknown_sample` 404.
+`SandboxInfo`: `id, starter, llm_mode (rules_only|mock|live), mode_label, expires_at, ttl_remaining_s, application_provided, market_stubs,
+sku_count, warnings[], documents[{name, kind, title, status (read|not_read), reason}], url`. `GET /api/vendors/{id}` returns the same under
+`sandbox` (plus `skus_without_market_data`).
+
+Model stages: `rules_only` means no model call at all (free, always available); `mock` is the server's canned stand-in; `live` needs a valid
+`X-Demo-Key` or the caller's per-IP daily budget (`UPLOAD_LIVE_BUDGET_USD_PER_IP`, default 0.50), and the global `MAX_SPEND_USD` cap always applies.
+SKUs whose category has no benchmark (or a vendor with no search-demand rows) get verdict `needs_data` with an explanation instead of a guess.
+
+### `GET /api/uploads/samples/{name}/sku_sheet.csv`, `GET /api/vendors/{id}/export.csv`
+The sample sheet, and the verdict table as CSV with every text cell neutralised against spreadsheet formulas.
+
 ## Scanned documents
 
 Playbook section `documents` decides which document kinds are read (`kinds`, each read in `intake` or `catalog`), which fields
@@ -371,6 +454,34 @@ the pipeline off or the vendor filed nothing of that stage):
 Trace: `tool_call` `read_documents` and `cross_check_documents` (deterministic), `model_call` with `task` `doc_extract`,
 `segment_panel`, `doc_reread_panel` or `doc_reread_fields` (and `document`), then `claim_checked` per vision claim.
 
+## Live call (negotiation copilot)
+
+A call is a session in process memory (like replay sessions: gone on restart, at most 50). One pipeline serves every call:
+audio chunk (live) or canonical turn (simulate) -> transcription -> a turn -> incremental extraction on a vendor turn
+(`muse-spark`, task `copilot_<VID>_t<n>`, output `TurnExtraction {commitments, refusals, deal_terms}`) -> every quote verified
+verbatim against the call's own turns -> gap table and deal evaluator recomputed -> next ask -> SSE.
+
+| Route | Notes |
+|---|---|
+| `POST /api/vendors/{id}/call` body `{mode: "simulate"\|"live", speed?: 0.25..20}` -> `202 {call_id, mode}` | `simulate` streams the canonical transcript (V002; others `422 no_call_script`) with realistic pacing through the same pipeline from the mock fixtures, free in mock and replay (demo key only when some stage is live). `live` needs live mode (`409 live_call_unavailable` otherwise) and ALWAYS the demo key. |
+| `POST /api/vendors/{id}/call/chunks` multipart `call_id`, `speaker: buyer\|vendor\|auto`, `audio` (16 kHz mono 16-bit WAV, about 6 s) -> `{turn, state}` | live calls only (`409 call_not_accepting_input` on a simulation). `415 unsupported_audio` without a RIFF/WAVE header, `413 chunk_too_large` above `CALL_CHUNK_MAX_BYTES`. Transcribes with `muse-voice-transcribe-1.0` (`POST {base}/asr/transcribe`, existing `media.transcribe`). |
+| `POST /api/vendors/{id}/call/turns` `{call_id, speaker, text}` -> `{turn, state}` | a typed line through the same pipeline (live calls) |
+| `POST /api/vendors/{id}/call/end` `{call_id}` -> snapshot | ends the call. A live call's transcript becomes the canonical transcript for the vendor (in process), so Negotiate verifies commitments against it. |
+| `GET /api/vendors/{id}/call/{call_id}` | `{call_id, vendor_id, mode, ended, turns, state, last_seq, spend_usd}` |
+| `GET /api/vendors/{id}/call/{call_id}/events` | SSE, `event: call`, `id` = seq, `Last-Event-ID` resumes; closes after `ended` |
+
+Errors keep the typed shape: `call_not_found` 404, `call_ended` 409, `call_budget_exceeded` 429 (the per-call spend budget,
+config `CALL_BUDGET_USD`, default 2.00; it is config, not playbook), plus the codes above.
+
+SSE event `{seq, call_id, type, t_ms, payload}`: `started {mode, state, budget_usd}`, `turn {turn: {turn, speaker, text, source: simulated|asr|typed}}`,
+`extraction {turn, model, mode, cost_usd, latency_ms}`, `state {state, changed: {gap_terms[], deal_ids[]}, turn}`, `error {code, problem, cause, fix, turn?}`,
+`ended {turns, canonical, spend_usd, state}`. `state` is shaped like the Negotiate stage's `data` (`gap_table`, `commitments`, `refusals`, `required`,
+`application_terms`, `transcript.turns`, `deals` as in `data.deals` without a talk track, `verification`) plus
+`next_ask: {kind: reject_conditional|hold|gap|ask_term|done|listen, line, reason, term, deal_id?}` and `spend_usd`.
+`next_ask` comes from the playbook rules and the engine's numbers (no model): a conditional offer that fails the deal evaluator
+comes first ("Don't accept: <0.1% chance"), then the gap with the largest shortfall (for margin, trading the vendor's wish for
+faster payment when the application asks for it, priced at `negotiation.cost_of_capital_pct_annual`).
+
 ## Other routes (unchanged)
 
 `GET /health`, `/api/stages`, `/api/mode`, `/api/vendors`, `/api/vendors/{id}`,
@@ -387,7 +498,7 @@ holds beauty and electronics playbooks. Replay mode ignores local overrides and 
 | Route | Notes |
 |---|---|
 | `GET /api/policy` | The full shape below. Always open. |
-| `PUT /api/policy` | Body is a NESTED PARTIAL playbook. Dicts merge key by key; lists and scalars replace; a `null` value for a key of a dict-table (`margins.categories`, `margins.brands`, `onboarding.vendor_types`, `catalog.required_attributes`, `catalog.image_prompts.segmentation`, `po.gst_rate_by_category`) deletes that key. Returns the full GET shape. |
+| `PUT /api/policy` | Body is a NESTED PARTIAL playbook. Dicts merge key by key; lists and scalars replace; a `null` value for a key of a dict-table (`margins.categories`, `margins.brands`, `onboarding.vendor_types`, `catalog.required_attributes`, `catalog.image_prompts.segmentation`, `po.gst_rate_by_category`, `negotiation.forecast.cv_by_category`) deletes that key. Returns the full GET shape. |
 | `POST /api/policy/reset` | Body `{section?: string}`; `section` is a top-level section (`research`) or any dotted path (`research.demand_min`). No body or `{}` resets everything. Returns the full GET shape. |
 
 Writes: `403 {code: "policy_read_only"}` in replay mode; otherwise they need `X-Demo-Key` only when `DEMO_KEY` is

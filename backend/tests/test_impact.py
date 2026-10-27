@@ -177,7 +177,7 @@ def test_each_module_reports_whether_it_is_shipped_and_what_it_covers():
     out = impact.rollup([])
     status = {m["key"]: m["status"] for m in out["modules"]}
     assert status["new_vendor_onboarding"] == "shipped" and status["weekly_review_mis"] == "not_built"
-    assert [m["key"] for m in out["modules"] if m["status"] == "shipped"] == ["new_vendor_onboarding"]
+    assert [m["key"] for m in out["modules"] if m["status"] == "shipped"] == ["new_vendor_onboarding", "conditional_offer_evaluator", "live_negotiation_copilot"]
     assert module(out, "weekly_review_mis")["saved_pct"] == 7.6  # the report's rank 1, team pts 7.6
     assert module(out, "price_increase_evaluator")["saved_pct"] == 2.3
     tasks = {t["task"] for t in module(out, "new_vendor_onboarding")["tasks"]}

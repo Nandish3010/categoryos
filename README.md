@@ -42,7 +42,11 @@ These features carry the product:
 - **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell. When the agent read a number wrong, it is told what the source says and tries again (up to `verifier.max_self_corrections`, default 2); the UI shows "Caught → corrected" with the attempts. A claim that never gets right is removed before it reaches the page.
 - **The impact meter.** The app records how long a person actually spends reviewing each stage (from "ready for review" to approve) and counts their edits, then compares that with the playbook's by-hand baselines (`impact`: research estimates, not measured, until you replace them with your own time diary). The vendor workspace has a per-vendor drawer; the vendors board has a team projection that shows the share of the team's week in scope of the shipped modules, the share saved, and every module as shipped or not yet built, labelled estimate or measured.
 
+- **Deal evaluator for conditional offers.** A vendor says "15% base margin, plus 20% marketing support if you sell 2,000 units in 90 days". The agent reads the structure; Python simulates demand (ramped new listing, fixed-seed Monte Carlo), gives the probability of hitting the target, prices the offer risk-adjusted in margin points, and rejects the structure with concrete counters (a target we can reach, a guaranteed base) when the chance is poor. Every number is a claim the verifier recomputes, and every assumption lives in the playbook (`negotiation.forecast`, `negotiation.contingent`).
+
 - **Document vision.** Vendor documents arrive as scans and photos. muse-spark-1.3 reads the licence certificates, label photos and price-list PDF with bounding boxes; SAM 3.1 segments a label's nutrition and claims panel and the crop is read a second time; the verifier binds every reading to the page pixels and to that second read (new claim origin `vision_extraction`, evidence `{doc, page, bbox, crop_sha256}`); cross-document checks compare certificate vs application, label vs SKU sheet vs listing copy, and price list vs sheet. Screen treats the scanned certificate as ground truth over the declared status. Which documents, fields, pairs and tolerances: the playbook `documents` section. The synthetic scans (all marked SAMPLE) come from `data/generate_docs.py` (`make data-docs`).
+
+- **Live negotiation copilot.** In Negotiate, "Live call" transcribes the call as it happens (push-to-talk buttons for who is speaking), reads what the vendor commits to, updates the gap table row by row, prices any conditional offer the moment it is said ("Don't accept: <0.1% chance") and suggests the buyer's next line with the reason. "Simulate call" streams the recorded call through the same pipeline from fixtures, so the public demo shows it at no cost; a microphone call needs live mode and the demo key and has a per-call spend budget (`CALL_BUDGET_USD`).
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
@@ -135,6 +139,7 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `MODEL_MODE` | `mock`, `live` or `replay` |
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
+| `CALL_BUDGET_USD` | Most one live copilot call may spend on transcription and extraction (default 2.00) |
 
 ## Configure the playbook
 
@@ -153,6 +158,16 @@ it everywhere, and the model prompts are rendered from it, so no rule exists onl
   engine is vertical-agnostic. Copy one over `config/policy.local.yaml` to try it; the demo data stays pet.
 * Market facts (units per SKU, price bands) stay in `data/synthetic/category_benchmarks.json`; ops settings (spend caps,
   rate limits, timeouts) stay in env.
+
+## Bring your own vendor
+
+`/try` lets anyone upload a SKU sheet (CSV or XLSX, up to 2 MB and 200 rows), optionally an application and up to 5 documents, pick a starter playbook
+(pet, beauty, electronics) and get the same screening, verdict table, levers and verifier. One-click samples for beauty and electronics ship in
+`data/samples/` with small market-data stubs; a category without market data reports **Needs data** with the reason rather than a guess.
+The rules engine always runs and costs nothing ("Rules-only (no model calls)"). Model stages run only when allowed: a valid demo key, or the
+caller's per-IP budget (`UPLOAD_LIVE_BUDGET_USD_PER_IP`), always under the global `MAX_SPEND_USD` cap; in mock mode a clearly labelled generic mock stands in.
+Sandbox vendors are stored under `STATE_DIR` (a Volume path on Modal), expire after `UPLOAD_TTL_HOURS` (24) and are swept by a cleanup job.
+Ops limits: `UPLOAD_MAX_ROWS`, `UPLOAD_MAX_SHEET_BYTES`, `UPLOAD_MAX_DOCS`, `UPLOAD_MAX_DOC_BYTES`, `UPLOAD_RATE_PER_HOUR`, `UPLOAD_MAX_ACTIVE`, `TRUST_FORWARDED_FOR`.
 
 ## Deploy
 

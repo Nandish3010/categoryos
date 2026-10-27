@@ -10,10 +10,9 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app import docparse, policy
-from app.config import settings
-from app.constants import ALLOWED_VENDORS
-from app.data_loader import doc_files, load_sheet, load_transcript
+from app import deals, docparse, policy, registry
+from app.constants import ALLOWED_VENDORS, VENDOR_ID_PATTERN
+from app.data_loader import doc_files, load_application, load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.parsing import PARSER_VERSION, map_columns, parse_pack, parse_price
@@ -30,8 +29,12 @@ COMMIT_METRICS = {
     "commit_returns": "units",
 }
 EXTRACTION_METRICS = {"pack_qty": "qty"}
-_VENDOR_ALT = "|".join(ALLOWED_VENDORS)
+DEAL_TERM_PREFIX = "deal_term_"  # model-extracted numbers of a vendor's conditional offer, quote-checked like commitments
+DEAL_TERM_UNITS = ("pct", "inr", "units")
+DEAL_ENGINE_UNITS = ("ratio", "pts", "units", "inr", "pct")
+_VENDOR_ALT = VENDOR_ID_PATTERN  # built-in vendors and sandbox ids; existence is checked in _resolve
 _TRANSCRIPT = re.compile(rf"^vendors/({_VENDOR_ALT})/call_transcript\.json$")
+_APPLICATION = re.compile(rf"^vendors/({_VENDOR_ALT})/application\.json$")
 _VENDOR_SHEET = re.compile(rf"^vendors/({_VENDOR_ALT})/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 _VENDOR_DOC = re.compile(rf"^vendors/({_VENDOR_ALT})/docs/([^/]+)$")
@@ -68,15 +71,23 @@ def allowed_sources() -> frozenset[str]:
     return frozenset(files)
 
 
+_SANDBOX_FILE = re.compile(r"^vendors/(U-[a-z0-9]{8})/(.+)$")
+
+
 def _normalize(file: str) -> str:
     return posixpath.normpath(file.replace("\\", "/"))
 
 
 def _resolve(file: str) -> Path | None:
     norm = _normalize(file)
+    sandbox = _SANDBOX_FILE.match(norm)
+    if sandbox:  # a sandbox vendor's own files: only the fixed names and the documents its manifest lists
+        vid, rest = sandbox.group(1), sandbox.group(2)
+        ok = registry.exists(vid) and (rest in registry.VENDOR_FILES or (rest.startswith("docs/") and rest[5:] in doc_files(vid)))
+        return registry.resolve_data_file(norm) if ok else None
     if norm not in allowed_sources():
         return None
-    return Path(settings.data_dir) / norm
+    return registry.resolve_data_file(norm)
 
 
 def file_sha256(file: str) -> str:
@@ -110,6 +121,8 @@ def _parse_cell(raw: str, unit: str) -> float | None:
 
 
 def _recompute_engine(claim: Claim) -> float:
+    if claim.metric in deals.DEAL_METRICS:
+        return deals.recompute(claim)
     if claim.metric in VENDOR_METRICS:
         vendor, _, query = claim.source_ref.key.partition("?")
         params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
@@ -176,22 +189,28 @@ def _squash(text: str) -> str:
     return " ".join(text.split())
 
 
-def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
-    """A negotiation commitment: the quote must appear verbatim in the canonical transcript at the claimed turn,
-    and the claimed number must be one of the numbers stated in that quote."""
+def _quote_text(rel_file: str, row: int) -> tuple[str, str] | str:
+    """(vendor, text) of the transcript turn / application additional term a quote claims to come from, or an error."""
+    match = _TRANSCRIPT.match(rel_file)
+    if match:
+        turn = next((t for t in load_transcript(match.group(1)) or [] if t.get("turn") == row), None)
+        return (match.group(1), str(turn.get("text", ""))) if turn else f"the transcript has no turn {row}"
+    match = _APPLICATION.match(rel_file)
+    assert match is not None
+    extra = load_application(match.group(1)).get("proposed_terms", {}).get("additional_terms") or []
+    if not 1 <= row <= len(extra):
+        return f"the application has no additional term {row}"
+    return match.group(1), str(extra[row - 1])
+
+
+def check_quote_claim(claim: Claim, text: str, where: str) -> Claim:
+    """The quote must appear verbatim in ``text`` (a transcript turn or application term), and the claimed number must be
+    one of the numbers stated in the quote. ``where`` names the source in the rejection reason."""
     ev = claim.evidence
-    if ev is None or ev.row is None or not ev.raw_value:
-        return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
-    if file_sha256(rel_file) != ev.sha256:
-        return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")
-    vendor = _TRANSCRIPT.match(rel_file).group(1)  # type: ignore[union-attr]
-    turns = load_transcript(vendor) or []
-    turn = next((t for t in turns if t.get("turn") == ev.row), None)
-    if turn is None:
-        return _finish(claim, "rejected", f"the transcript has no turn {ev.row}")
+    assert ev is not None and ev.raw_value
     quote = _squash(ev.raw_value)
-    if quote not in _squash(str(turn.get("text", ""))):
-        return _finish(claim, "rejected", f"the quote does not appear verbatim in turn {ev.row} of the canonical transcript")
+    if quote not in _squash(text):
+        return _finish(claim, "rejected", f"the quote does not appear verbatim in {where}")
     stated = numbers_in(quote)
     value = claim.value * 100 if claim.unit == "pct" else claim.value
     tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
@@ -199,6 +218,35 @@ def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
         shown = ", ".join(f"{n:g}" for n in stated) or "none"
         return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
     return _finish(claim, "verified", None, claim.value)
+
+
+def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
+    """A negotiation commitment (or a number of a conditional offer): the quote must appear verbatim in the canonical
+    transcript turn (or application term) it claims, and the claimed number must be one of the numbers stated in the quote."""
+    ev = claim.evidence
+    if ev is None or ev.row is None or not ev.raw_value:
+        return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
+    if file_sha256(rel_file) != ev.sha256:
+        return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")
+    found = _quote_text(rel_file, ev.row)
+    if isinstance(found, str):
+        return _finish(claim, "rejected", found)
+    is_call = bool(_TRANSCRIPT.match(rel_file))
+    return check_quote_claim(claim, found[1], f"{'turn' if is_call else 'term'} {ev.row} of the {'canonical transcript' if is_call else 'application'}")
+
+
+def verify_against_turns(claim: Claim, turns: list[dict]) -> Claim:
+    """Live call: check a transcript quote against the call's own turns so far (the file only exists after the call).
+    Anything that is not a transcript quote goes through the normal verifier."""
+    ev = claim.evidence
+    if claim.origin != "model_extraction" or not _TRANSCRIPT.match(_normalize(claim.source_ref.file)):
+        return verify_claim(claim)
+    if ev is None or ev.row is None or not ev.raw_value:
+        return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
+    turn = next((t for t in turns if t.get("turn") == ev.row), None)
+    if turn is None:
+        return _finish(claim, "rejected", f"the call has no turn {ev.row} yet")
+    return check_quote_claim(claim, str(turn.get("text", "")), f"turn {ev.row} of the call")
 
 
 def check_row_owner(claim: Claim, code: str | None, expected_row: int | None) -> Claim:
@@ -235,7 +283,7 @@ def _verify_vision(claim: Claim, rel_file: str) -> Claim:
     if not docparse.valid_bbox(ev.bbox):
         return _finish(claim, "rejected", f"the bounding box {ev.bbox} does not lie on the page")
     try:
-        page = (Path(settings.data_dir) / rel_file).read_bytes()
+        page = (_resolve(rel_file) or Path()).read_bytes()
         digest = docparse.region_digest(page, ev.bbox)
     except (OSError, ValueError) as exc:
         return _finish(claim, "rejected", f"the scan cannot be opened: {exc}")
@@ -282,10 +330,14 @@ def verify_claim(claim: Claim) -> Claim:
         or COMMIT_METRICS.get(claim.metric)
         or EXTRACTION_METRICS.get(claim.metric)
     )
+    if claim.metric.startswith(DEAL_TERM_PREFIX) and claim.unit in DEAL_TERM_UNITS:
+        unit = claim.unit
+    elif claim.metric in deals.DEAL_METRICS and claim.unit in DEAL_ENGINE_UNITS:
+        unit = deals.DEAL_METRICS[claim.metric] or claim.unit  # percentiles and counters carry the metric's own unit
     if unit is None:
         return _finish(claim, "unverifiable", f"unknown metric {claim.metric!r}")
     if claim.origin == "model_extraction":
-        if _TRANSCRIPT.match(rel_file):
+        if _TRANSCRIPT.match(rel_file) or (_APPLICATION.match(rel_file) and claim.metric.startswith(DEAL_TERM_PREFIX)):
             return _verify_commitment(claim, rel_file)
         return _verify_extraction(claim, rel_file)
     if claim.evidence is not None and claim.evidence.sha256 != file_sha256(rel_file):

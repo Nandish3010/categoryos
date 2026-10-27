@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [
+      {
+        "term": "moq",
+        "offered": 500,
+        "turn": 10,
+        "transcript_quote": "I can bring it down to 500 units in total for the first order, split across the SKUs you list."
+      }
+    ],
+    "refusals": [],
+    "deal_terms": []
+  }
+}

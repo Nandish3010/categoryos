@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [
+      {
+        "term": "marketing_inr",
+        "offered": 50000,
+        "turn": 12,
+        "transcript_quote": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling."
+      }
+    ],
+    "refusals": [],
+    "deal_terms": []
+  }
+}

@@ -5,7 +5,7 @@ import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 
-from app import policy
+from app import policy, scope
 from app.data_loader import load_catalog
 
 
@@ -21,8 +21,8 @@ def _rx(patterns: tuple[str, ...]) -> re.Pattern[str]:
     return re.compile("|".join(patterns), re.IGNORECASE)
 
 
-@lru_cache(maxsize=1)
-def _catalog_subcategories() -> dict[str, frozenset[str]]:
+@lru_cache(maxsize=16)
+def _catalog_subcategories(_market: str | None = None) -> dict[str, frozenset[str]]:
     subs: dict[str, set[str]] = {}
     for sku in load_catalog():
         subs.setdefault(sku.category, set()).add(sku.subcategory)
@@ -30,7 +30,8 @@ def _catalog_subcategories() -> dict[str, frozenset[str]]:
 
 
 def catalog_subcategories() -> dict[str, frozenset[str]]:
-    return _catalog_subcategories()
+    sc = scope.current()
+    return _catalog_subcategories(sc.market_dir if sc is not None else None)
 
 
 def categories() -> tuple[str, ...]:
