@@ -91,8 +91,11 @@ def test_a_tighter_tolerance_in_the_playbook_raises_recall(world):
 def test_mock_agent_eval_is_labelled_mock_and_reports_no_cost_or_latency(world):
     out = asyncio.run(agent_eval.run(world, "mock", seed=42, n_tasks=100))
     assert out["mode"] == "mock" and "not measurements" in out["note"]
-    assert [m["key"] for m in out["models"]] == ["muse-spark-1.3", "muse-spark-open"]
+    assert out["stand_in"] is True
+    assert [m["label"] for m in out["models"]] == ["scripted stand-in A", "scripted stand-in B"]
+    assert "muse" not in json.dumps(out).lower()  # no model ids in a mock result
     for m in out["models"]:
+        assert m["stand_in"] is True and m["provider"] is None
         assert m["cost_usd"] is None and m["latency_ms_per_task"] is None and "profile" in m
         assert m["corrected"] + m["unresolved"] == m["caught_by_verifier"]
         assert m["final_accuracy"] >= m["first_pass_accuracy"]
@@ -138,8 +141,10 @@ def test_live_path_goes_through_the_gateway_and_reports_cost(world, monkeypatch)
 
     monkeypatch.setattr(llm, "call", fake_call)
     out = asyncio.run(agent_eval.run(world, "live", n_tasks=6))
-    assert out["mode"] == "live"
+    assert out["mode"] == "live" and out["stand_in"] is False
+    assert [m["key"] for m in out["models"]] == ["muse-spark-1.3", "muse-spark-open"]
     for m in out["models"]:
+        assert m["stand_in"] is False
         assert m["caught_by_verifier"] == 1 and m["corrected"] == 1 and m["final_accuracy"] == 1.0
         assert m["cost_usd"] == pytest.approx(0.02) and m["latency_ms_per_task"] == pytest.approx(400 / 6, abs=0.1)
         assert "profile" not in m
@@ -184,9 +189,14 @@ def test_the_table_says_mock_when_the_run_was_mock(world):
         "injection": asyncio.run(injection_eval.run("mock")),
     }
     text = report.render(with_all)
-    assert "**Mode: mock.**" in text and "NOT measurements" in text and "n/a (mock)" in text and "not run (mock)" in text
-    live = {**with_all, "meta": {"mode": "live", "seed": 1, "generated_at": "x"}}
-    assert "**Mode: live.**" in report.render(live) and "NOT measurements" not in report.render(live)
+    assert "**Mode: mock.**" in text and "not run (mock)" in text
+    assert "Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run" in text
+    assert "Extraction agent" not in text and "scripted" not in text and "muse-spark-1.3 (model A)" not in text
+    assert "The model layer is measured in the live run." in text
+    live_agent = asyncio.run(agent_eval.run(world, "mock", n_tasks=20)) | {"stand_in": False, "mode": "live"}
+    live_agent["models"] = [m | {"cost_usd": 0.1, "latency_ms_per_task": 5.0} for m in live_agent["models"]]
+    live = {**with_all, "agent": live_agent, "meta": {"mode": "live", "seed": 1, "generated_at": "x"}}
+    assert "**Mode: live.**" in report.render(live) and "Extraction agent" in report.render(live)
 
 
 def test_inject_replaces_only_the_marked_block(tmp_path):
@@ -204,7 +214,9 @@ def test_committed_results_carry_their_mode_and_the_readme_matches_them():
     assert meta["mode"] in {"mock", "live"}
     assert results["agent"]["mode"] == meta["mode"]
     if meta["mode"] == "mock":
-        assert all(m["cost_usd"] is None for m in results["agent"]["models"])
+        assert results["agent"]["stand_in"] is True
+        assert all(m["stand_in"] and m["cost_usd"] is None and "muse" not in m["label"].lower() for m in results["agent"]["models"])
+        assert "pending live run" in (REPO / "README.md").read_text(encoding="utf-8")
     readme = (REPO / "README.md").read_text(encoding="utf-8")
     block = readme.split(report.START, 1)[1].split(report.END, 1)[0]
     assert block.strip() == report.render(results).strip(), "README table is stale: run make eval"

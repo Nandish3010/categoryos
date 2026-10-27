@@ -52,11 +52,11 @@ Negotiate is transcript-first: the vendor call is transcribed and the commitment
 transposition, decimal shift, kg vs g, Rs vs paise, wrong row, wrong column, rounding beyond tolerance, spelled-out
 numbers) with matched correct controls; the **extraction agent** through two models, graded by the verifier and the
 self-correction loop; and **prompt injection** variants hidden in vendor text. It defaults to mock (free): the verifier
-and injection checks run real code on synthetic data, the agent rows use scripted stand-ins. `--live` runs the models
+and injection checks run real code on synthetic data; the model comparison is not shown until a live run exists (the mock results keep scripted stand-ins in eval/results, never model names). `--live` runs the models
 (needs `MODEL_MODE=live`, keys, credits). The table below is injected by `scripts/measure.py` and always names its mode.
 
 <!-- eval:start -->
-**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data, but the agent rows use scripted stand-ins for the models, so they are NOT measurements of Muse Spark. Seed 42, run 2026-10-27.
+**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data. No model was called, so there are no model results here. Seed 42, run 2026-10-27.
 
 **Verifier** (no model; synthetic sheet, planted errors, matched correct controls)
 
@@ -74,14 +74,7 @@ and injection checks run real code on synthetic data, the agent rows use scripte
 
 Misses are errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages), which the verifier accepts by design.
 
-**Extraction agent** (160 tasks, mode: mock)
-
-| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Latency / task |
-|---|---|---|---|---|---|---|---|---|
-| muse-spark-1.3 (model A) | 94.4% | 9 | 8 | 89% | 99.4% | 0 | n/a (mock) | n/a (mock) |
-| Muse Spark Open via Baseten (model B) | 84.4% | 25 | 21 | 84% | 97.5% | 0 | n/a (mock) | n/a (mock) |
-
-_Mock: scripted stand-ins with a fixed error profile replace the models. The loop, feedback, verifier and scoring are real; the error rates are parameters, not measurements. Cost and latency are not reported._
+Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run
 
 **Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)
 
@@ -90,6 +83,8 @@ _Mock: scripted stand-ins with a fixed error profile replace the models. The loo
 | Regex guard (playbook `screening.injection_patterns`) | 9/30 (30%) | 0/30 (0%) |
 | Model | not run (mock) | not run (mock) |
 | Regex + model | 9/30 (30%) | |
+
+The model layer is measured in the live run.
 <!-- eval:end -->
 
 ## Meta models used

@@ -82,8 +82,8 @@ def render(results: dict) -> str:
     banner = (
         f"**Mode: {mode}.** "
         + (
-            "These numbers come from a mock run: the verifier and injection checks are real code on synthetic data, but the "
-            "agent rows use scripted stand-ins for the models, so they are NOT measurements of Muse Spark."
+            "These numbers come from a mock run: the verifier and injection checks are real code on synthetic data. "
+            "No model was called, so there are no model results here."
             if mode != "live"
             else "Live run: models called through the gateway."
         )
@@ -98,9 +98,14 @@ def render(results: dict) -> str:
         ]
     if "agent" in results:
         a = results["agent"]
-        parts += [f"**Extraction agent** ({a['tasks']} tasks, mode: {a['mode']})", "", agent_table(a), "", f"_{a['note']}_", ""]
+        if a.get("stand_in"):
+            parts += ["Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run", ""]
+        else:
+            parts += [f"**Extraction agent** ({a['tasks']} tasks, mode: {a['mode']})", "", agent_table(a), "", f"_{a['note']}_", ""]
     if "injection" in results:
         parts += ["**Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)", "", injection_table(results["injection"]), ""]
+        if not results["injection"]["model"].get("ran"):
+            parts += ["The model layer is measured in the live run.", ""]
     return "\n".join(parts).rstrip() + "\n"
 
 

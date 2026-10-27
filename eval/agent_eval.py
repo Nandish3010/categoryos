@@ -35,11 +35,12 @@ class ModelSpec:
     model: str | None  # None: the gateway default for the provider
     error_rate: float  # mock only
     fix_rate: float  # mock only: chance a retry after feedback is right
+    stand_in: str = ""  # mock only: the name results carry instead of the model id
 
 
 MODELS = [
-    ModelSpec("muse-spark-1.3", "muse-spark-1.3 (model A)", "meta", None, error_rate=0.06, fix_rate=0.85),
-    ModelSpec("muse-spark-open", "Muse Spark Open via Baseten (model B)", "baseten", None, error_rate=0.12, fix_rate=0.60),
+    ModelSpec("muse-spark-1.3", "muse-spark-1.3 (model A)", "meta", None, error_rate=0.06, fix_rate=0.85, stand_in="scripted stand-in A"),
+    ModelSpec("muse-spark-open", "Muse Spark Open via Baseten (model B)", "baseten", None, error_rate=0.12, fix_rate=0.60, stand_in="scripted stand-in B"),
 ]
 
 
@@ -231,9 +232,11 @@ async def run_model(spec: ModelSpec, world: World, tasks: list[Task], mode: str,
     cost = round(agent.cost + sum(e.cost_usd or 0.0 for e in model_calls), 6) if live and isinstance(agent, LiveAgent) else None
     latency = (agent.latency_ms + sum(e.latency_ms or 0.0 for e in model_calls)) / n if live and isinstance(agent, LiveAgent) else None
     return {
-        "key": spec.key,
-        "label": spec.label,
-        "provider": spec.provider,
+        # Model ids appear only in live results; a mock result is a scripted stand-in and says so.
+        "key": spec.key if mode == "live" else spec.stand_in.replace(" ", "_").replace("-", "_"),
+        "label": spec.label if mode == "live" else spec.stand_in,
+        "stand_in": mode != "live",
+        "provider": spec.provider if mode == "live" else None,
         "tasks": n,
         "first_pass_accuracy": round(first_right / n, 4),
         "caught_by_verifier": len(caught),
@@ -260,6 +263,7 @@ async def run(world: World, mode: str, seed: int = 42, n_tasks: int = 100, model
     rows = [await run_model(m, world, tasks, mode, seed) for m in (models or MODELS)]
     return {
         "mode": mode,
+        "stand_in": mode != "live",
         "seed": seed,
         "tasks": len(tasks),
         "models": rows,
