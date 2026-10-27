@@ -146,6 +146,26 @@ Every key gets a one-line YAML comment saying what it does and which stage uses 
   shows "Reject" chip (V003). Derive from latest run screen result + counts; add vitest.
 - Use existing components/tokens (Chip, PanelHeader, Banner, Slider, DataTable). Dark theme tokens from DESIGN.md. vitest for: hints-driven field render, dirty tracking + save payload is minimal partial, read-only disables inputs.
 
+## Deal evaluator knobs (negotiation)
+
+Conditional offers ("15% base, +20% marketing support if you sell 2,000 units in 90 days") are valued by `backend/app/deals.py`
+with these playbook keys (all under `negotiation`, used by the Negotiate stage; schema hints are generated like every other field):
+
+| Key | Default | Meaning |
+|---|---|---|
+| `forecast.ramp_by_month` | `[0.5, 0.75, 0.9, 1.0]` | share of steady-state monthly units a new listing sells in month 1, 2, 3...; the last value repeats |
+| `forecast.cv` / `forecast.cv_by_category` | `0.45` / `{}` | forecast uncertainty (lognormal coefficient of variation), optionally per category |
+| `forecast.sku_correlation` | `0.5` | share of demand noise common to all SKUs |
+| `forecast.mc_draws` / `forecast.seed` | `20000` / `42` | Monte Carlo size and the fixed seed (same inputs, same probability) |
+| `contingent.min_probability` | `0.6` | a conditional bonus counts only when P(earn it) is at least this |
+| `contingent.value_basis` | `risk_adjusted` | or `guaranteed_only`: count no conditional bonus at all |
+| `contingent.dead_stock_horizon_days` / `dead_stock_writeoff_pct` | `180` / `100` | unsold stock treated as dead after this long; share of its cost lost |
+| `contingent.counter_window_days` | `[30 ... 365]` | windows tried when proposing a longer or shorter condition window |
+| `contingent.threshold_round_{units,inr,pct}` | `10` / `5000` / `1` | counter thresholds are rounded down to these steps |
+| `cost_of_capital_pct_annual` | `14` | prices paying earlier for a discount |
+| `inventory_carrying_pct_monthly` | `2` | prices holding extra stock for a bigger-MOQ discount |
+| `verifier.tolerances.pts` | `0.05` | tolerance when a claim is a value in margin points |
+
 ## Addendum: documents (document vision)
 `documents` is a playbook section like the others (defaults in `config/policy.yaml`, overrides in `policy.local.yaml`, hints in
 `schema_hints`); `catalog.label_panel_prompt` holds the SAM phrase. It is vertical-agnostic: a vertical lists its own document

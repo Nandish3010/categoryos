@@ -156,7 +156,8 @@ VENDORS = {
          ("PAN", "PAN-DEMO-0001", "2099-12-31", "valid"), ("Trademark", "TM-DEMO-0001", "2032-05-10", "valid"),
          ("Certificate of Incorporation", "CIN-DEMO-0001", "2099-12-31", "valid")],
    terms=dict(margin_offered_pct=34, payment_terms_days=45, moq_units=150, marketing_support_inr=250000, launch_discount_pct=10,
-              returns_policy="Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window"),
+              returns_policy="Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window",
+              additional_terms=["Tiered back margin: we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period."]),
    pitch="We make small-batch, high-protein grain-free dog food with single-source chicken and salmon, tested by a vet nutritionist. Our Bengaluru repeat rate is 62% and we want to bring our range to a platform with national reach. We are happy to fund launch marketing and trade at a healthy margin."),
  "V002": dict(vendor_type="d2c_brand", brand="Mewsli", company="Mewsli Cat Care LLP", contact="Priya Nair", email="priya.nair@example.com",
    city="Pune", years=3, cats=["treats", "cat litter"],
@@ -409,6 +410,8 @@ KEYWORDS = [
 
 # Canonical V002 (Mewsli) negotiation call. Commitments differ from application.json proposed_terms:
 # margin 17->21, payment 15->30 days, MOQ 800->500, marketing 20000->50000, launch discount 0->5. Refused: sale-or-return.
+# Turns 17-20 add a CONTINGENT offer on the litter (15% base + 20% marketing support if 2,000 units in 90 days): the deal
+# evaluator (backend/app/deals.py) prices it; it is not a commitment.
 V002_CALL = [
  ("buyer", "Hi Priya, thanks for making time. I have gone through your application and the SKU sheet. We like the creamy lick treats, but the numbers need work before we can place an order."),
  ("vendor", "Thanks for having me. Happy to talk through it. What are you looking at first?"),
@@ -426,7 +429,11 @@ V002_CALL = [
  ("vendor", "I can give a 5 percent launch discount for the first 30 days."),
  ("buyer", "That works. One more request: sale-or-return on unsold stock after 90 days, since this is a new brand for us."),
  ("vendor", "I am sorry, I cannot accept returns of unsold stock. Treats have a short shelf life and we cannot resell them. Defect returns within 7 days stay as they are."),
- ("buyer", "Fine, no sale-or-return. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only."),
+ ("buyer", "Fine, no sale-or-return. Before we recap, one thing on the cat litter: you said you would look at it again. Can you offer something now?"),
+ ("vendor", "For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days."),
+ ("buyer", "2,000 units in 90 days is far above what we expect for a new brand, and 15 percent is well under our litter target. Can the margin be guaranteed instead of depending on volume?"),
+ ("vendor", "The volume target is how I fund the marketing. The 15 percent base stays guaranteed, and the 20 percent applies only if you reach 2,000 units."),
+ ("buyer", "Understood, we will evaluate that structure separately. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only."),
  ("vendor", "That is correct. I will send the written confirmation by Friday."),
 ]
 

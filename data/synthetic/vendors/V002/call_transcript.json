@@ -82,10 +82,30 @@
   {
     "turn": 17,
     "speaker": "buyer",
-    "text": "Fine, no sale-or-return. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only."
+    "text": "Fine, no sale-or-return. Before we recap, one thing on the cat litter: you said you would look at it again. Can you offer something now?"
   },
   {
     "turn": 18,
+    "speaker": "vendor",
+    "text": "For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days."
+  },
+  {
+    "turn": 19,
+    "speaker": "buyer",
+    "text": "2,000 units in 90 days is far above what we expect for a new brand, and 15 percent is well under our litter target. Can the margin be guaranteed instead of depending on volume?"
+  },
+  {
+    "turn": 20,
+    "speaker": "vendor",
+    "text": "The volume target is how I fund the marketing. The 15 percent base stays guaranteed, and the 20 percent applies only if you reach 2,000 units."
+  },
+  {
+    "turn": 21,
+    "speaker": "buyer",
+    "text": "Understood, we will evaluate that structure separately. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only."
+  },
+  {
+    "turn": 22,
     "speaker": "vendor",
     "text": "That is correct. I will send the written confirmation by Friday."
   }

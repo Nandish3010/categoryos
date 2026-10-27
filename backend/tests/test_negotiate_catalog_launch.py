@@ -120,7 +120,7 @@ def test_rejected_commitments_do_not_enter_the_gap_table(monkeypatch):
 
     async def lying(*args, **kwargs):
         res = await real(*args, **kwargs)
-        for c in res.parsed.commitments:
+        for c in getattr(res.parsed, "commitments", []):
             if c.term == "margin_pct":
                 c.offered = 30
         return res

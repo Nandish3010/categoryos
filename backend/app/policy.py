@@ -233,6 +233,48 @@ class Margins(M):
         return v
 
 
+class Forecast(M):
+    ramp_by_month: list[float] = F([0.5, 0.75, 0.9, 1.0], "Ramp by month", "Share of steady-state monthly units a new listing sells in month 1, 2, 3...; the last value repeats.", used_in=["negotiate"])
+    cv: float = F(0.45, "Forecast uncertainty", "Coefficient of variation of a SKU's demand over the window (lognormal).", unit="ratio", min=0.01, max=3, step=0.05, used_in=["negotiate"])
+    cv_by_category: dict[str, float] = F({}, label="Uncertainty by category", help="Per-category override of the coefficient of variation.", used_in=["negotiate"])
+    sku_correlation: float = F(0.5, "SKU correlation", "Share of demand noise common to all SKUs (0 independent, 1 move together).", min=0, max=1, step=0.05, used_in=["negotiate"])
+    mc_draws: int = F(20000, "Monte Carlo draws", "Simulation size; more draws, smoother probabilities.", min=1000, max=200000, step=1000, used_in=["negotiate"])
+    seed: int = F(42, "Random seed", "Fixed so the same inputs always give the same probability.", min=0, max=2147483647, step=1, used_in=["negotiate"])
+
+    @field_validator("ramp_by_month")
+    @classmethod
+    def _ramp(cls, v: list[float]) -> list[float]:
+        if not v or any(not 0 < x <= 3 for x in v):
+            raise ValueError("ramp_by_month needs at least one value, each above 0 and at most 3")
+        return v
+
+    @field_validator("cv_by_category")
+    @classmethod
+    def _cv(cls, v: dict[str, float]) -> dict[str, float]:
+        for k, x in v.items():
+            if not 0.01 <= x <= 3:
+                raise ValueError(f"cv for {k!r} must be between 0.01 and 3")
+        return v
+
+
+class Contingent(M):
+    min_probability: float = F(0.6, "Minimum probability", "A conditional bonus counts only when the chance of earning it is at least this.", unit="ratio", min=0, max=1, step=0.05, used_in=["negotiate"])
+    value_basis: Literal["risk_adjusted", "guaranteed_only"] = F("risk_adjusted", "Value basis", "risk_adjusted counts probability x bonus; guaranteed_only counts no conditional bonus at all.", used_in=["negotiate"], options=["risk_adjusted", "guaranteed_only"])
+    dead_stock_horizon_days: int = F(180, "Dead-stock horizon", "Days after which unsold stock is treated as dead.", unit="days", min=30, max=730, step=30, used_in=["negotiate"])
+    dead_stock_writeoff_pct: float = F(100, "Dead-stock write-off", "Share of the cost of unsold stock that is lost.", unit="%", min=0, max=100, step=5, used_in=["negotiate"])
+    counter_window_days: list[float] = F([30, 45, 60, 90, 120, 180, 270, 365], "Counter windows", "Windows (days) tried when proposing a longer or shorter condition window.", used_in=["negotiate"])
+    threshold_round_units: float = F(10, "Round unit thresholds to", unit="units", min=1, max=10000, step=1, used_in=["negotiate"])
+    threshold_round_inr: float = F(5000, "Round rupee thresholds to", unit="inr", min=1, max=10000000, step=500, used_in=["negotiate"])
+    threshold_round_pct: float = F(1, "Round sell-through thresholds to", unit="pp", min=0.1, max=50, step=0.5, used_in=["negotiate"])
+
+    @field_validator("counter_window_days")
+    @classmethod
+    def _windows(cls, v: list[float]) -> list[float]:
+        if any(x < 1 for x in v):
+            raise ValueError("each counter window must be at least 1 day")
+        return v
+
+
 class Negotiation(M):
     margin_ask: Literal["target", "min"] = F("target", "Margin we ask for", "target or the floor.", used_in=["negotiate"], options=["target", "min"])
     payment_terms_days: Literal["category"] | int = F("category", "Payment terms", "'category' or a fixed number of days.", used_in=["negotiate"])
@@ -241,6 +283,10 @@ class Negotiation(M):
     marketing_min_pct_of_order: float = F(0.10, "Marketing support", "Share of first-order retail value.", unit="ratio", min=0, max=1, step=0.01, used_in=["negotiate"])
     launch_discount_min_pct: float = F(5, "Launch discount", unit="%", min=0, max=100, step=0.5, used_in=["negotiate"])
     defect_return_min_days: int = F(7, "Defect return window", unit="days", min=0, max=365, step=1, used_in=["negotiate"])
+    cost_of_capital_pct_annual: float = F(14, "Cost of capital", "Annual rate used to price paying earlier for a discount.", unit="%", min=0, max=100, step=0.5, used_in=["negotiate"])
+    inventory_carrying_pct_monthly: float = F(2, "Inventory carrying cost", "Monthly cost of holding extra stock, as a share of its cost.", unit="%", min=0, max=20, step=0.25, used_in=["negotiate"])
+    forecast: Forecast = F(Forecast(), "Demand forecast", "How the agent estimates the chance of hitting a vendor's sales target.", used_in=["negotiate"])
+    contingent: Contingent = F(Contingent(), "Conditional offers", "How offers such as '20% marketing support if you sell 2,000 units' are valued and decided.", used_in=["negotiate"])
 
 
 class Bullets(M):
@@ -412,6 +458,7 @@ class Tolerances(M):
     score: float = F(0.5, "Score", min=0, max=100, step=0.1)
     ratio: float = F(0.005, "Ratio", min=0, max=1, step=0.001)
     qty: float = F(0, "Quantity", min=0, max=1000, step=1)
+    pts: float = F(0.05, "Margin points", "Tolerance for deal values expressed in margin points.", unit="pp", min=0, max=5, step=0.01)
 
 
 class Verifier(M):

@@ -138,6 +138,61 @@ the call is also transcribed (`POST /v1/asr/transcribe`) and diffed against the 
 - `transcript_source` is `"asr"` when a voice transcription was produced (shown next to the canonical text), else `"canonical"`.
 - No negotiate SKUs: `done`, summary `No negotiation needed`, `gap_table: []`. No call transcript on file (V003): a
   deterministic gap table from the application terms, every row `not_stated`, `transcript: null`.
+- A conditional or tiered offer ("X% if you sell Y units in N days") is not a commitment; it is valued by the deal
+  evaluator below, in `data.deals`.
+
+#### `data.deals` (deal evaluator)
+
+Present when the call transcript or `application.proposed_terms.additional_terms` holds something to read (V002's
+contingent litter offer, V001's tiered back margin); absent otherwise. The model (`muse-spark`, task `deals_<VID>`) only
+copies offers into `DealTerm`s: `{id, kind: base|conditional|tiered|rebate|free_goods|exclusivity|payment_for_discount|
+moq_for_discount|sell_or_return|price_protection, term: margin_pct|back_margin_pct|discount_pct|marketing_pct|marketing_inr|
+free_goods_pct|returnable_pct|exclusivity_months|price_protection_days, value, unit, condition?: {metric: units|gmv_inr|
+sell_through_pct, threshold, window_days, scope[]}, tiers?: [{threshold, value}], scope[], base_of?, days?, units?, quote,
+turn, source: transcript|application}`. For an application term, `turn` is the 1-based index into `additional_terms`.
+Every number of a term (value, threshold, window, tier values, days, units) is a `model_extraction` Claim
+(`deal_term_<field>`): its quote must appear verbatim in that turn / additional term and state the number, or the whole
+term is sent back to the agent first (self-correction, `verifier.max_self_corrections`, task `deals_<VID>__fix<n>`) and, if still wrong, dropped into `rejected_terms` and never valued. `app/deals.py` then values the verified terms in Python:
+
+```json
+{"decision": "reject_structure|accept|needs_human|not_assessable|none", "headline": "...",
+ "assessments": [{"term_id", "kind", "term", "label", "source", "turn", "quote",
+   "decision": "accept|reject_structure|needs_human|not_assessable", "call": "plain-English verdict",
+   "reasoning": [], "base_pts", "face_pts", "expected_bonus_pts", "counted_bonus_pts", "expected_pts", "guaranteed_pts",
+   "counted_pts", "required_pts", "shortfall_pts", "probability": 0.0, "net_pts": null,
+   "tiers": [{"threshold", "bonus_pts", "incremental_pts", "probability", "counted"}],
+   "distribution": {"metric", "window_days", "mean", "p10", "p50", "p90", "threshold", "bins": [33 edges], "density": [32]},
+   "counters": [{"kind": "threshold|window|scope|convert_to_base", "text", "threshold?", "window_days?", "scope?",
+     "probability?", "required_base_pts?", "uplift_pts?", "fair_conversion_pts?", "counted_pts_after", "meets_requirement"}],
+   "recommended_counter": 0, "base_term_id": "t1", "base_assumed": false}],
+ "base_terms": [DealTerm], "rejected_terms": [{"id", "label", "reasons": []}],
+ "assumptions": {"min_probability", "value_basis", "ramp_by_month", "cv", "cv_by_category", "sku_correlation", "mc_draws",
+   "seed", "cost_of_capital_pct_annual", "inventory_carrying_pct_monthly"},
+ "talk": {"talk_track", "email_paragraph", "source": "model|rules", "struck": []} | null,
+ "claim_status": {"<claim id>": "verified|rejected|unverifiable"}, "verification": {"total", "verified", "rejected", "unverifiable"}, "mode"}
+```
+
+- Demand: per SKU, the Decide engine's `est_monthly_units` x the new-listing ramp (`negotiation.forecast.ramp_by_month`),
+  lognormal noise (`forecast.cv`, optionally per category), a shared factor (`forecast.sku_correlation`) and a fixed-seed
+  Monte Carlo (`forecast.mc_draws`, `forecast.seed`): `probability` is P(metric >= threshold) and `p10/p50/p90` are quantiles
+  of the metric over the window. Tiers each carry their own probability.
+- Value, in margin points: `expected = base + sum(p_i x bonus_i)`, `guaranteed = base`. `counted` replaces each bonus by 0
+  when `p_i < negotiation.contingent.min_probability` (or all of them under `value_basis: guaranteed_only`). `required_pts`
+  is the target margin of the SKUs involved. Marketing in rupees converts to points over the first-order GMV; discounts
+  and free goods convert by landed cost / price. Payment-for-discount trades subtract `cost_of_capital_pct_annual` x days
+  brought forward; MOQ-for-discount trades subtract carrying cost (`inventory_carrying_pct_monthly`) and dead-stock risk;
+  exclusivity is `needs_human` with an opportunity-cost note and is never auto-accepted.
+- Decision: `accept` when `counted_pts >= required_pts`, else `reject_structure` with `counters`, in this order:
+  `threshold` (largest target with P >= min_probability, rounded down), `window` (shortest window that makes the vendor's
+  own target likely), `scope` (sell-through only) and `convert_to_base` (guaranteed uplift = required - base, with the
+  risk-adjusted bonus as the fair anchor). `recommended_counter` is the first that meets the requirement.
+- Claims (`origin: engine`, recomputed by the verifier from a self-contained `source_ref.key`
+  `<VID>?offset=..&moq=..#<json of terms and context>`): `deal_probability` (`column: tier:<i>`), `deal_percentile`
+  (`p10|p50|p90`), `deal_pts` (`base|expected|counted|required|net`), `deal_counter` (`threshold:<i>`, `uplift:<i>`).
+  `Claim.unit` gains `pts` (tolerance `verifier.tolerances.pts`).
+- `talk` is the agent's call and email paragraph written from the figures only; a sentence stating a number the evaluator
+  did not produce is removed and listed in `struck`. `null` when every offer is acceptable. Recommended counters are also
+  appended to `counter_offer.asks`.
 
 ### `catalog` `data`
 
@@ -387,7 +442,7 @@ holds beauty and electronics playbooks. Replay mode ignores local overrides and 
 | Route | Notes |
 |---|---|
 | `GET /api/policy` | The full shape below. Always open. |
-| `PUT /api/policy` | Body is a NESTED PARTIAL playbook. Dicts merge key by key; lists and scalars replace; a `null` value for a key of a dict-table (`margins.categories`, `margins.brands`, `onboarding.vendor_types`, `catalog.required_attributes`, `catalog.image_prompts.segmentation`, `po.gst_rate_by_category`) deletes that key. Returns the full GET shape. |
+| `PUT /api/policy` | Body is a NESTED PARTIAL playbook. Dicts merge key by key; lists and scalars replace; a `null` value for a key of a dict-table (`margins.categories`, `margins.brands`, `onboarding.vendor_types`, `catalog.required_attributes`, `catalog.image_prompts.segmentation`, `po.gst_rate_by_category`, `negotiation.forecast.cv_by_category`) deletes that key. Returns the full GET shape. |
 | `POST /api/policy/reset` | Body `{section?: string}`; `section` is a top-level section (`research`) or any dotted path (`research.demand_min`). No body or `{}` resets everything. Returns the full GET shape. |
 
 Writes: `403 {code: "policy_read_only"}` in replay mode; otherwise they need `X-Demo-Key` only when `DEMO_KEY` is
