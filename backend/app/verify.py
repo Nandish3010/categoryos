@@ -266,6 +266,11 @@ def _verify_vision(claim: Claim, rel_file: str) -> Claim:
 
 
 def verify_claim(claim: Claim) -> Claim:
+    if _normalize(claim.source_ref.file).startswith("ops/"):  # Run (existing vendors): app.ops.verify owns these claims
+        # imported here because that module imports this one
+        from app.ops.verify import verify_ops_claim
+
+        return verify_ops_claim(claim)
     rel_file = _normalize(claim.source_ref.file)
     if _resolve(claim.source_ref.file) is None:
         return _finish(claim, "rejected", f"unknown source: {rel_file!r} is not an allowlisted data file")

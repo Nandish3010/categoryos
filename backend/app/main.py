@@ -15,6 +15,7 @@ from app.data_loader import check_vendor, doc_path, load_application
 from app.errors import AssetNotFound, CategoryOSError, LeverOutOfRange, PolicyReadOnly
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
+from app.ops.api import router as ops_router
 from app.schemas import (
     ApproveBody,
     LeverResponse,
@@ -41,6 +42,7 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="CategoryOS", lifespan=lifespan)
+app.include_router(ops_router)  # Run: weekly review and PO follow-up for existing vendors
 
 origins = ["http://localhost:3000"]
 if settings.frontend_origin:

@@ -1,0 +1,140 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_po_tracker",
+        "args": {}
+      }
+    ],
+    "final": {
+      "drafts": [
+        {
+          "po_id": "PO-E005-0008",
+          "channel": "email",
+          "subject": "Formal notice: PO-E005-0008 is 7 days overdue",
+          "body": "Dear Sanjay,\n\nPO-E005-0008 was promised for 19 Oct and is now 7 days overdue. Your replies on 14 Oct and 23 Oct gave no dispatch date. Clumping Bentonite 5 kg has 5 days of cover with us, so without a dated dispatch we expect to be out of stock for about 3 days.\n\nPlease confirm in writing by Tuesday 27 Oct the dispatch date for the 700 units of Clumping Bentonite 5 kg and the 600 units of Clumping Bentonite Unscented 10 kg, with the tracking number. If we do not have a date by then we will place the quantity with another source and refer to the terms of the PO.\n\nRegards,\nCategory manager",
+          "figures": [
+            {
+              "metric": "ops_days_overdue",
+              "key": "PO-E005-0008",
+              "value": 7,
+              "shown": "7 days",
+              "text": "PO-E005-0008 days past promised date"
+            },
+            {
+              "metric": "ops_line_cover_days",
+              "key": "PO-E005-0008:LT-05",
+              "value": 5,
+              "shown": "5 days",
+              "text": "Clumping Bentonite 5 kg stock cover"
+            },
+            {
+              "metric": "ops_stockout_days",
+              "key": "PO-E005-0008:LT-05",
+              "value": 3,
+              "shown": "3 days",
+              "text": "Days out of stock before the PO lands"
+            },
+            {
+              "metric": "ops_open_qty",
+              "key": "PO-E005-0008:LT-05",
+              "value": 700,
+              "shown": "700 units",
+              "text": "LT-05 still to arrive"
+            },
+            {
+              "metric": "ops_open_qty",
+              "key": "PO-E005-0008:LT-01",
+              "value": 600,
+              "shown": "600 units",
+              "text": "LT-01 still to arrive"
+            }
+          ]
+        },
+        {
+          "po_id": "PO-E003-0010",
+          "channel": "email",
+          "subject": "PO-E003-0010: Peanut Butter Biscuits is out of stock until the balance arrives",
+          "body": "Hi Meera,\n\nThank you for the update on the part shipment of 23 Oct. PO-E003-0010 is now 6 days past its promised date and the 600 units still due are the ones we are waiting on: Peanut Butter Biscuits 400 g has 0 days of cover, so we are out of stock until the balance lands.\n\nYou told us the balance would ship by 3 Nov. If the date holds we expect to be out of stock for 8 days on our best seller, so please bring it forward, even as a part shipment, and confirm by Tuesday.\n\nI am copying your head of sales on this.\n\nRegards,\nCategory manager",
+          "figures": [
+            {
+              "metric": "ops_days_overdue",
+              "key": "PO-E003-0010",
+              "value": 6,
+              "shown": "6 days",
+              "text": "PO-E003-0010 days past promised date"
+            },
+            {
+              "metric": "ops_open_qty",
+              "key": "PO-E003-0010:NP-03",
+              "value": 600,
+              "shown": "600 units",
+              "text": "NP-03 still to arrive"
+            },
+            {
+              "metric": "ops_line_cover_days",
+              "key": "PO-E003-0010:NP-03",
+              "value": 0,
+              "shown": "0 days",
+              "text": "NP-03 stock cover"
+            },
+            {
+              "metric": "ops_stockout_days",
+              "key": "PO-E003-0010:NP-03?eta=2026-11-03",
+              "value": 8,
+              "shown": "8 days",
+              "text": "Days out of stock if the balance lands on 3 Nov"
+            }
+          ]
+        },
+        {
+          "po_id": "PO-E002-0012",
+          "channel": "whatsapp",
+          "subject": "PO-E002-0012 follow-up",
+          "body": "Hi Rakesh, PO-E002-0012 is 2 days past its promised date. Thanks for the note that the truck reaches us by Thursday. Please send the tracking number today. You said only part of Ocean Fish Adult fits in this lot: we ordered 500 units and the shortfall is the gap. We have 6 days of cover on it, so please share when the balance ships.",
+          "figures": [
+            {
+              "metric": "ops_days_overdue",
+              "key": "PO-E002-0012",
+              "value": 2,
+              "shown": "2 days",
+              "text": "PO-E002-0012 days past promised date"
+            },
+            {
+              "metric": "ops_open_qty",
+              "key": "PO-E002-0012:PL-01",
+              "value": 500,
+              "shown": "500 units",
+              "text": "PL-01 ordered and not yet received"
+            },
+            {
+              "metric": "ops_line_cover_days",
+              "key": "PO-E002-0012:PL-01",
+              "value": 6,
+              "shown": "6 days",
+              "text": "PL-01 stock cover"
+            }
+          ]
+        },
+        {
+          "po_id": "PO-E004-0007",
+          "channel": "email",
+          "subject": "Reminder: PO-E004-0007 is promised for 27 Oct",
+          "body": "Hi Vikram,\n\nA reminder that PO-E004-0007 is promised for 27 Oct, which is 1 day away. Your note points to dispatch around 30 Oct because of the fabric for the plush duck. The Collapsible Travel Bowl is ready, so please send it now and share a firm date for the rest, plus the tracking number.\n\nThanks,\nCategory executive",
+          "figures": [
+            {
+              "metric": "ops_days_overdue",
+              "key": "PO-E004-0007",
+              "value": -1,
+              "shown": "1 day",
+              "text": "PO-E004-0007 days to the promised date"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

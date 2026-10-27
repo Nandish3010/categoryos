@@ -275,7 +275,7 @@ def category_summary(d: OpsData, ops: Operations) -> dict[str, Any]:
     codes = list(d.skus)
     gmv, prev = weekly(d, codes, 0), weekly(d, codes, 1)
     start, end = week_range(d, 0)
-    recent, prior = fill_windows(d, ops, None)
+    recent, _prior = fill_windows(d, ops, None)
     return {
         "week_start": start.isoformat(),
         "week_end": end.isoformat(),

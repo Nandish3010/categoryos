@@ -1,0 +1,159 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_open_pos",
+        "args": {}
+      },
+      {
+        "tool": "get_vendor_replies",
+        "args": {}
+      }
+    ],
+    "final": {
+      "readings": [
+        {
+          "reply_id": "R001",
+          "stance": "committed",
+          "summary": "Confirms the PO and promises delivery on 29 Oct for the full quantity.",
+          "excuse": null,
+          "root_cause": "none",
+          "commitments": [
+            {
+              "kind": "eta_date",
+              "quote": "We will deliver on 29th Oct as per PO",
+              "eta_date": "2026-10-29",
+              "qty": null,
+              "note": "delivery"
+            },
+            {
+              "kind": "qty",
+              "quote": "qty 400 bags BK-01",
+              "eta_date": null,
+              "qty": 400,
+              "note": "BK-01"
+            },
+            {
+              "kind": "qty",
+              "quote": "1200 pouches BK-05",
+              "eta_date": null,
+              "qty": 1200,
+              "note": "BK-05"
+            }
+          ]
+        },
+        {
+          "reply_id": "R002",
+          "stance": "partial",
+          "summary": "Truck leaves tonight and reaches Thursday, but only part of PL-01 is in this lot because fish meal is short.",
+          "excuse": "transporter strike in Pune; fish-meal supplier problem",
+          "root_cause": "transport",
+          "commitments": [
+            {
+              "kind": "eta_date",
+              "quote": "Will reach by Thursday for sure",
+              "eta_date": "2026-10-29",
+              "qty": null,
+              "note": "this lot"
+            },
+            {
+              "kind": "qty",
+              "quote": "Only 350 pcs of PL-01 can be sent in this lot",
+              "eta_date": null,
+              "qty": 350,
+              "note": "PL-01, this lot"
+            }
+          ]
+        },
+        {
+          "reply_id": "R003",
+          "stance": "partial",
+          "summary": "300 units of NP-03 were dispatched on 23 Oct; the balance of 600 is still in production and promised for 3 Nov.",
+          "excuse": "oven line down for 3 days",
+          "root_cause": "production",
+          "commitments": [
+            {
+              "kind": "qty",
+              "quote": "Dispatched 300 units of NP-03 today",
+              "eta_date": null,
+              "qty": 300,
+              "note": "already shipped"
+            },
+            {
+              "kind": "qty",
+              "quote": "Balance 600 units is still under production",
+              "eta_date": null,
+              "qty": 600,
+              "note": "balance"
+            },
+            {
+              "kind": "eta_date",
+              "quote": "We will ship the balance by 3rd Nov",
+              "eta_date": "2026-11-03",
+              "qty": null,
+              "note": "balance ships"
+            }
+          ]
+        },
+        {
+          "reply_id": "R004",
+          "stance": "committed",
+          "summary": "Dispatch in about 5 to 6 working days because fabric for the plush duck is awaited; bowls are ready.",
+          "excuse": "fabric awaited from the mill",
+          "root_cause": "raw_material",
+          "commitments": [
+            {
+              "kind": "eta_date",
+              "quote": "approx 5-6 working days from today",
+              "eta_date": "2026-10-29",
+              "qty": null,
+              "note": "dispatch"
+            }
+          ]
+        },
+        {
+          "reply_id": "R005",
+          "stance": "vague",
+          "summary": "Says the PO is processing and dispatch is 'next week'; names no date.",
+          "excuse": null,
+          "root_cause": "none",
+          "commitments": []
+        },
+        {
+          "reply_id": "R006",
+          "stance": "vague",
+          "summary": "Material is 'under dispatch preparation' with a packing-material problem; no date, will revert 'soon'.",
+          "excuse": "issue with packing material",
+          "root_cause": "packing",
+          "commitments": []
+        },
+        {
+          "reply_id": "R007",
+          "stance": "committed",
+          "summary": "PO noted for 350 bottles, ready by 31 Oct.",
+          "excuse": null,
+          "root_cause": "none",
+          "commitments": [
+            {
+              "kind": "qty",
+              "quote": "PO noted for 350 shampoo bottles",
+              "eta_date": null,
+              "qty": 350,
+              "note": "GW-01"
+            },
+            {
+              "kind": "eta_date",
+              "quote": "ready by 31st Oct",
+              "eta_date": "2026-10-31",
+              "qty": null,
+              "note": "ready"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

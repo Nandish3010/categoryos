@@ -24,6 +24,7 @@ test:
 
 data:
 	python3 data/generate.py
+	python3 data/generate_ops.py
 
 # Vendor scans, labels and the price-list PDF, plus the mock vision fixtures (needs the backend environment: Pillow, PyYAML).
 data-docs:
