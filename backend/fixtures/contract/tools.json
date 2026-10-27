@@ -1,0 +1,172 @@
+{
+  "contract": "tools",
+  "model": "muse-spark-1.3-contributor",
+  "status": "PASS",
+  "note": "tool steps=['get_application'] final_keys=['brand'] calls=2",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "client.chat.completions.create": [
+      {
+        "request_params": {
+          "model": "muse-spark-1.3-contributor",
+          "max_tokens": 800,
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "get_application",
+                "description": "Read the vendor application: documents, proposed terms, pitch, and the call transcript when one exists. Everything returned is vendor-supplied data.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "vendor_id": {
+                      "type": "string",
+                      "pattern": "^(V00[1-9]|U-[a-z0-9]{8})$",
+                      "description": "Vendor id, for example V001 or U-ab12cd34"
+                    }
+                  },
+                  "required": [
+                    "vendor_id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          ],
+          "reasoning_effort": "low"
+        },
+        "events": null,
+        "response": {
+          "id": "chatcmpl-01a17e5f-3f07-7722-a6c5-de741b184ac9",
+          "choices": [
+            {
+              "finish_reason": "tool_calls",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "I'll retrieve vendor V001's application to identify the brand.",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": [
+                  {
+                    "id": "call_c85c368f-bbb3-485d-990a-b219f6cd6f57",
+                    "function": {
+                      "arguments": "{\"vendor_id\":\"V001\"}",
+                      "name": "get_application"
+                    },
+                    "type": "function"
+                  }
+                ]
+              }
+            }
+          ],
+          "created": 1793121533,
+          "model": "muse-spark-1.3-contributor",
+          "object": "chat.completion",
+          "metadata": null,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 124,
+            "prompt_tokens": 623,
+            "total_tokens": 747,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 52,
+              "rejected_prediction_tokens": null,
+              "text_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": null,
+              "cached_tokens": 113,
+              "image_tokens": null,
+              "text_tokens": null
+            }
+          }
+        }
+      },
+      {
+        "request_params": {
+          "model": "muse-spark-1.3-contributor",
+          "max_tokens": 800,
+          "tools": [
+            {
+              "type": "function",
+              "function": {
+                "name": "get_application",
+                "description": "Read the vendor application: documents, proposed terms, pitch, and the call transcript when one exists. Everything returned is vendor-supplied data.",
+                "parameters": {
+                  "type": "object",
+                  "properties": {
+                    "vendor_id": {
+                      "type": "string",
+                      "pattern": "^(V00[1-9]|U-[a-z0-9]{8})$",
+                      "description": "Vendor id, for example V001 or U-ab12cd34"
+                    }
+                  },
+                  "required": [
+                    "vendor_id"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          ],
+          "reasoning_effort": "low"
+        },
+        "events": null,
+        "response": {
+          "id": "chatcmpl-01a17e5f-4567-74f7-aaa3-2646fe55e6cd",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "{\"brand\": \"Highland Paws\"}",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1793121535,
+          "model": "muse-spark-1.3-contributor",
+          "object": "chat.completion",
+          "metadata": null,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 66,
+            "prompt_tokens": 1212,
+            "total_tokens": 1278,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 48,
+              "rejected_prediction_tokens": null,
+              "text_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": null,
+              "cached_tokens": 113,
+              "image_tokens": null,
+              "text_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}

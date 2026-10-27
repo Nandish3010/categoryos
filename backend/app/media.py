@@ -1,12 +1,14 @@
 """Media gateway: images (muse-image), segmentation (SAM 3.1), transcription (muse-voice) and the local image store.
 
-Live paths follow the public Meta docs (dev.meta.ai) and are exercised in tests only with fakes:
+Live paths follow the public Meta docs (dev.meta.ai); shapes were verified against the live API on 2026-10-27
+(raw responses in fixtures/contract/, replayed by tests/test_contract_fixtures.py):
 - images:  POST {base}/images/generations  {model, prompt, n, size, response_format: b64_json, output_format: png}
            -> data[0].b64_json
 - SAM:     POST {base}/responses (stream) {model: sam-3.1, input: [{type: message, role: user, content:
            [input_text <noun phrase>, input_image <data url>]}]} -> output_text deltas holding, per match, an object id,
            one box token (x1,y1,x2,y2,w,h[,c]) and one mask token (x=0,y=0,data=<H>,<W>,<enc><base85 payload>)
 - ASR:     POST {base}/asr/transcribe multipart: `request` (JSON: model, audioEncoding, mode) + `audio` (WAV)
+           -> {sessionId, transcript, audioDurationMs, turns[]}
 
 In mock and replay mode no network is touched: deterministic Pillow placeholders stand in for every image.
 Every spend goes through app.ledger (muse-image per image, sam per call, voice per audio hour)."""
@@ -235,7 +237,9 @@ async def generate_image(prompt: str, *, size: str = "1024x1024") -> tuple[bytes
 # ---------- SAM ----------
 
 _BOX = re.compile(r"x1=(?P<x1>-?[\d.]+)\D+?y1=(?P<y1>-?[\d.]+)\D+?x2=(?P<x2>-?[\d.]+)\D+?y2=(?P<y2>-?[\d.]+)")
-_MASK = re.compile(r"data=(?P<h>\d+),(?P<w>\d+),(?P<enc>[~!])(?P<payload>\S+)")
+# Live-verified (2026-10-27): the token is `<|mask;x=0;y=0;data=H,W,<enc><payload>|>`; the payload alphabet never holds | < > so the
+# closing `|>` ends it (non-greedy, so the delimiter is never swallowed into the payload). H is the mask height, W its width; they differ slightly from the image's own size.
+_MASK = re.compile(r"data=(?P<h>\d+),(?P<w>\d+),(?P<enc>[~!])(?P<payload>\S+?)(?:\|>|\s|$)")
 
 
 @dataclass
@@ -263,10 +267,60 @@ def parse_sam_text(text: str) -> list[SamRecord]:
     return records
 
 
+META_B85 = "!#$%&'()*+-./0123456789:=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{"  # ASCII order, 85 digits
+_META_INDEX = {c: i for i, c in enumerate(META_B85)}
+
+
+def meta_unpack(body: str) -> bytes:
+    """Meta's base85 (custom alphabet, 5 chars -> 4 bytes big-endian, a short last group padded with the top digit).
+    Live-verified: the result is a 4-byte big-endian length followed by exactly that many arithmetic-coded bytes."""
+    out = bytearray()
+    for i in range(0, len(body), 5):
+        group = body[i : i + 5]
+        value = 0
+        for ch in group:
+            value = value * 85 + _META_INDEX[ch]
+        value = value * 85 ** (5 - len(group)) + (85 ** (5 - len(group)) - 1)
+        if value >= 1 << 32:
+            raise ValueError("base85 group overflows 32 bits")
+        out += value.to_bytes(4, "big")[: 4 if len(group) == 5 else len(group) - 1]
+    if len(out) < 4 or int.from_bytes(out[:4], "big") != len(out) - 4:
+        raise ValueError("length prefix does not match the payload")
+    return bytes(out)
+
+
+def _decode_arithmetic(rec: SamRecord) -> list[int]:
+    """The real SAM 3.1 payload (both `~` lossless and `!` one_bit) is arithmetic-coded. Meta ships the decoder as the
+    dependency-free `meta-sam-parser` package; it is used when installed, otherwise the cutout is reported unavailable
+    and callers fall back to the box token (segment_region) or the packshot (segment)."""
+    try:
+        from meta_sam_parser import SegmentationMask, decode_mask_to_raster  # type: ignore[import-not-found]
+    except ImportError as exc:
+        raise SegmentationUnusable(cause="the mask is arithmetic-coded and the optional meta-sam-parser package is not installed") from exc
+    mask = SegmentationMask("lossless" if rec.enc == "~" else "one_bit", rec.enc + rec.payload, rec.mask_w, rec.mask_h)
+    return list(decode_mask_to_raster(mask))
+
+
 def decode_mask(rec: SamRecord) -> list[int]:
-    """Row-major 0/1 values, length H*W. Payload is base85 (not base64). '~' is the default lossless encoding and
-    '!' is one_bit; both are accepted as raw bytes, bit-packed (MSB first), optionally zlib-compressed.
-    ASSUMPTION to check against a real response once credits land: the exact byte layout behind '~'."""
+    """Row-major 0/1 values, length H*W.
+    Real payloads (live-verified): marker `~`|`!`, then Meta base85 holding a length prefix + an arithmetic-coded body; those go
+    to meta-sam-parser when installed. Legacy fallback (what the fakes in the tests send): plain base85, raw or bit-packed
+    (MSB first), optionally zlib-compressed."""
+    try:
+        meta_unpack(rec.payload)
+        is_meta = True
+    except (ValueError, KeyError):
+        is_meta = False
+    if is_meta:
+        try:
+            bits = _decode_arithmetic(rec)
+        except SegmentationUnusable:
+            raise
+        except Exception as exc:
+            raise SegmentationUnusable(cause=f"undecodable mask: {type(exc).__name__}: {str(exc)[:120]}") from exc
+        if len(bits) != rec.mask_h * rec.mask_w:
+            raise SegmentationUnusable(cause=f"decoded mask has {len(bits)} cells, expected {rec.mask_h * rec.mask_w}")
+        return bits
     cells = rec.mask_h * rec.mask_w
     last_error: Exception | None = None
     for payload in (rec.payload, rec.payload[:-1]):  # the closing delimiter of a token may stick to the payload
@@ -330,6 +384,7 @@ async def _sam_text(source_png: bytes, phrase: str) -> tuple[str, Spend]:
                 }
             ],
             stream=True,
+            extra_body={"metadata": {"mask_encoding": "one_bit"}},  # live-verified: ~100 bytes instead of ~8 KB for a 160x112 mask
         )
         async for event in stream:
             if getattr(event, "type", "") == "response.output_text.delta":
@@ -349,8 +404,8 @@ async def segment(source_png: bytes, phrase: str) -> tuple[bytes, Spend]:
 
 
 def _normalise_box(box: tuple[float, float, float, float], width: int, height: int) -> list[float] | None:
-    """A SAM box as fractions of the image. ASSUMPTION to check against a real response: the box tokens are pixel
-    coordinates of the image that was sent; values that all lie within 0..1 are taken as already normalised."""
+    """A SAM box as fractions of the image. Live-verified: the box tokens are pixel coordinates of the image that was sent
+    (x2/y2 inclusive, w/h its size); values that all lie within 0..1 are taken as already normalised."""
     x0, y0, x1, y1 = box
     if max(abs(v) for v in box) > 1.0:
         x0, x1, y0, y1 = x0 / width, x1 / width, y0 / height, y1 / height
@@ -408,7 +463,10 @@ def wav_hours(wav: bytes) -> float:
 
 
 def _asr_text(body: Any) -> str:
+    """Live-verified body: {sessionId, transcript, audioDurationMs, turns[]}. Silence or non-speech gives transcript "" (not an error)."""
     if isinstance(body, dict):
+        if isinstance(body.get("transcript"), str) and not body["transcript"].strip() and not body.get("turns"):
+            return ""
         for key in ("text", "transcript", "transcription"):
             if isinstance(body.get(key), str) and body[key].strip():
                 return body[key].strip()
