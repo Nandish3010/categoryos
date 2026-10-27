@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval contract
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval contract video video-render
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -84,3 +84,12 @@ fixtures-run:
 contract:
 	@echo "WARNING: live contract smoke calls paid model APIs."
 	cd backend && MODEL_MODE=live uv run python ../scripts/contract_smoke.py $(if $(ONLY),--only $(ONLY),)
+
+# Demo video (video/): re-capture the app flows, draft VO (video/vo/<scene>.wav overrides TTS), synth SFX, mix, render both cuts.
+# Outputs: video/out/categoryos-demo.mp4, video/out/categoryos-x-30s.mp4, video/out/stills/. BASE_URL overrides the target app.
+video:
+	cd video && npm ci && node capture/capture.mjs && $(MAKE) -C .. video-render
+
+# Everything except the screen captures (re-uses video/captures/): handy after editing scenes or swapping the VO.
+video-render:
+	cd video && node scripts/vo.mjs && node scripts/sfx.mjs && node scripts/mix.mjs && node scripts/render.mjs
