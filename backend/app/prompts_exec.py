@@ -64,7 +64,9 @@ moq_for_discount | sell_or_return | price_protection.
 free_goods_pct, returnable_pct, exclusivity_months or price_protection_days. value is the plain number stated; unit is \
 pct, inr, units, days or months.
 - condition (conditional, tiered, rebate): {metric: units | gmv_inr | sell_through_pct, threshold, window_days, scope}. \
-scope lists SKU codes (empty means the whole range). window_days: 90 for "first 90 days", 90 for a quarter.
+scope lists SKU codes (empty means the whole range). A target the vendor counts "across the range", "in total" or \
+"overall" covers the whole range: leave the condition's scope empty even when the base margin it sits on is for one \
+category. window_days: 90 for "first 90 days", 90 for a quarter.
 - tiers: for slabs, [{threshold, value}] where value is the TOTAL bonus once that threshold is reached.
 - scope: SKU codes the term applies to (empty means all). base_of: the id of the base term a bonus sits on top of.
 - days: payment days required (payment_for_discount) or the return window (sell_or_return). units: the first-order \
