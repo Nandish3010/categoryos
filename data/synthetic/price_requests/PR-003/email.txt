@@ -1,0 +1,13 @@
+From: Meera Iyer <supply@nutripaws.example>
+To: buying@petshop.example
+Date: Mon, 26 Oct 2026 09:15:00 +0530
+Subject: Revised price list - NutriPaws (new rates from 10th Nov)
+
+Hello Buying Team,
+
+Because of higher meat, fish and packaging costs we are revising our prices by 15% from 10th Nov 2026 on the attached list.
+Please process the new rates from the effective date.
+
+With regards,
+Meera Iyer
+NutriPaws Snacks Pvt Ltd

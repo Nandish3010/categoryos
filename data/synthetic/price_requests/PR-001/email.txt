@@ -1,0 +1,17 @@
+From: Neha Bhatt <care@groomwell.example>
+To: buying@petshop.example
+Date: Fri, 23 Oct 2026 10:42:00 +0530
+Subject: Price revision - Groomwell w.e.f. 1st Dec 2026
+
+Dear Team,
+
+Due to the continued rise in raw material costs (oat extract, surfactants and packaging film) we are revising our prices
+by 4% from 1st Dec 2026 on the attached list. Rates are cost to you, GST extra.
+
+We value the partnership and so we will give an extra 2% marketing support if you take the full revision.
+
+Kindly acknowledge and update your system. Old rates stay valid till 30th Nov.
+
+Warm regards,
+Neha Bhatt
+Groomwell Care Pvt Ltd

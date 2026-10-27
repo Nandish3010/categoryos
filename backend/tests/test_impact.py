@@ -23,9 +23,9 @@ class Clock:
 
 @pytest.fixture(autouse=True)
 def onboarding_only_baseline():
-    """These tests pin the research report's onboarding-only baseline; the Run modules (weekly review, PO chaser) ship
+    """These tests pin the research report's onboarding-only baseline; the Run modules (weekly review, PO chaser, price requests) ship
     in the default playbook, and test_ops_impact.py covers the rollup with them."""
-    policy.save_overrides({"impact": {"modules": {"weekly_review_mis": {"status": "not_built"}, "po_followup": {"status": "not_built"}}}})
+    policy.save_overrides({"impact": {"modules": {"weekly_review_mis": {"status": "not_built"}, "po_followup": {"status": "not_built"}, "price_increase_evaluator": {"status": "not_built"}}}})
     yield
     policy.reset()
 

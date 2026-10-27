@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "effective_date": "2026-11-10",
+    "effective_quote": "from 10th Nov 2026",
+    "reason": "meat, fish and packaging costs",
+    "reason_quote": "Because of higher meat, fish and packaging costs",
+    "lines": [
+      {
+        "sku_code": "NP-01",
+        "old_cost": 150.0,
+        "new_cost": 172.5,
+        "source": "price_list",
+        "quote": "NP-01,Chicken Strips 150 g,150.00,172.50,10 Nov 2026,+15% chicken/tuna/packaging"
+      },
+      {
+        "sku_code": "NP-02",
+        "old_cost": 165.0,
+        "new_cost": 819.75,
+        "source": "price_list",
+        "quote": "NP-02,Dental Chew Sticks 150 g,165.00,189.75,10 Nov 2026,+15% chicken/tuna/packaging"
+      },
+      {
+        "sku_code": "NP-04",
+        "old_cost": 70.0,
+        "new_cost": 80.5,
+        "source": "price_list",
+        "quote": "NP-04,Training Bites 60 g,70.00,80.50,10 Nov 2026,+15% chicken/tuna/packaging"
+      },
+      {
+        "sku_code": "NP-05",
+        "old_cost": 78.0,
+        "new_cost": 89.7,
+        "source": "price_list",
+        "quote": "NP-05,Tuna Cat Treats 60 g,78.00,89.70,10 Nov 2026,+15% chicken/tuna/packaging"
+      }
+    ],
+    "sweeteners": []
+  }
+}

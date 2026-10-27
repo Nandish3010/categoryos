@@ -1,0 +1,9 @@
+{
+  "vendor_id": "E003",
+  "received_at": "2026-10-26",
+  "sender": "Meera Iyer <supply@nutripaws.example>",
+  "subject": "Revised price list - NutriPaws (new rates from 10th Nov)",
+  "story": "15% on four SKUs with 15 days notice; passing it on would put us 15% above competitor prices",
+  "id": "PR-003",
+  "price_list": "price_list.csv"
+}

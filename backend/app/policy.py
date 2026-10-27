@@ -554,6 +554,87 @@ class Impact(M):
         return self
 
 
+# ---------- existing-vendor price-increase requests ----------
+
+
+class Elasticity(M):
+    default: float = F(-1.3, "Default elasticity", "Price elasticity of demand for a category without its own value: % change in units for a 1% price rise (negative).", min=-6, max=0, step=0.1)
+    by_category: dict[str, float] = F({}, label="Elasticity by category", help="Category -> elasticity (negative). Units sold change by (1 + price rise) ^ elasticity.")
+    risk_medium_loss_pct: float = F(5, "Medium risk from", "Volume loss at or above this is flagged as medium elasticity risk.", unit="%", min=0, max=100, step=0.5)
+    risk_high_loss_pct: float = F(10, "High risk from", "Volume loss at or above this is flagged as high elasticity risk.", unit="%", min=0, max=100, step=0.5)
+
+    @field_validator("by_category")
+    @classmethod
+    def _neg(cls, v: dict[str, float]) -> dict[str, float]:
+        bad = [k for k, e in v.items() if e > 0]
+        if bad:
+            raise ValueError(f"elasticity must be zero or negative for {bad}")
+        return v
+
+    @model_validator(mode="after")
+    def _order(self) -> "Elasticity":
+        if self.risk_medium_loss_pct > self.risk_high_loss_pct:
+            raise ValueError("the medium risk threshold cannot exceed the high one")
+        return self
+
+
+class PassThrough(M):
+    allow: bool = F(True, "Allow pass-through to price", "When off, a cost increase is never answered by raising our retail price.", used_in=["negotiate"])
+    max_competitor_gap_pct: float = F(5, "Largest gap to competitors", "Passing on is only allowed while the new price stays within this % above the competitor median.", unit="%", min=0, max=100, step=0.5, used_in=["negotiate"])
+    max_volume_loss_pct: float = F(8, "Largest volume loss", "Passing on is only allowed while the elasticity model expects to lose no more than this share of units.", unit="%", min=0, max=100, step=0.5, used_in=["negotiate"])
+    prefer_when_below_target: bool = F(True, "Prefer pass-through below target", "When absorbing would leave the margin under the category target but passing on is allowed, pass it on.", used_in=["negotiate"])
+
+
+class Justification(M):
+    index_name: str = F("Raw material index", "Index name", "The commodity or input index the justification check compares with.", used_in=["negotiate"])
+    index_change_pct: float | None = F(3.0, "Index change", "Change in the input index since the vendor's last revision. Leave empty to skip the justification check.", unit="%", min=-100, max=1000, step=0.1, used_in=["negotiate"])
+    index_change_by_category: dict[str, float] = F({}, label="Index change by category", help="Category -> index change (%), overriding the overall figure.")
+    tolerance_pp: float = F(2.0, "Tolerance", "A request is justified up to the index change plus this many percentage points.", unit="pp", min=0, max=100, step=0.5, used_in=["negotiate"])
+
+
+class ApprovalTier(M):
+    above_pct: float = F(0, "Above", "The request (or counter) raises cost by more than this %.", unit="%", min=0, max=1000, step=0.5)
+    approver: str = F(label="Approver", help="Role id, e.g. category_executive, category_manager, head_of_category.")
+    label: str = F("", "Label")
+
+
+class Approval(M):
+    matrix: list[ApprovalTier] = F(label="Approval matrix", help="Who must approve, by the size of the cost increase being agreed. Ascending, the first row starts at 0.", used_in=["negotiate"])
+    decision_floor: dict[str, str] = F({}, label="Minimum approver by decision", help="Decision (pass_through, delist, ...) -> role id: that decision needs at least this approver whatever the size.")
+
+    @model_validator(mode="after")
+    def _matrix(self) -> "Approval":
+        if not self.matrix:
+            raise ValueError("the approval matrix needs at least one row")
+        steps = [r.above_pct for r in self.matrix]
+        if steps != sorted(set(steps)) or steps[0] != 0:
+            raise ValueError("approval matrix rows must start at 0 and have ascending, distinct 'above' values")
+        roles = {r.approver for r in self.matrix}
+        bad = [d for d, role in self.decision_floor.items() if role not in roles]
+        if bad:
+            raise ValueError(f"decision_floor names an approver that is not in the matrix for {bad}")
+        return self
+
+
+def _default_matrix() -> list[ApprovalTier]:
+    return [
+        ApprovalTier(above_pct=0, approver="category_executive", label="Category executive"),
+        ApprovalTier(above_pct=5, approver="category_manager", label="Category manager"),
+        ApprovalTier(above_pct=10, approver="head_of_category", label="Head of category"),
+    ]
+
+
+class PriceRequests(M):
+    notice_period_days: int = F(30, "Notice period", "A cost change needs this many days between the request and its effective date; shorter notice is answered with a later date.", unit="days", min=0, max=365, step=1, used_in=["negotiate"])
+    max_acceptable_increase_pct: float = F(5, "Largest increase without escalation", "Accepted outright up to this % when no input index justifies more; anything above is countered down to it (or passed on).", unit="%", min=0, max=100, step=0.5, used_in=["negotiate"])
+    min_counter_pct: float = F(0.5, "Smallest useful counter", "A counter below this % is not offered: the line is delisted or an alternate is sought.", unit="%", min=0, max=100, step=0.1, used_in=["negotiate"])
+    horizon_days: int = F(90, "Impact horizon", "Window for the GMV and margin impact.", unit="days", min=7, max=365, step=1, used_in=["negotiate"])
+    elasticity: Elasticity = F(label="Demand elasticity", used_in=["negotiate"])
+    pass_through: PassThrough = F(label="Pass-through to price", used_in=["negotiate"])
+    justification: Justification = F(label="Commodity justification", used_in=["negotiate"])
+    approval: Approval = F(label="Approvals", used_in=["negotiate"])
+
+
 class DocKind(M):
     kind: str = F(label="Kind", help="Document kind id; a vendor's manifest assigns each file one.")
     label: str = F(label="Label")
@@ -732,6 +813,16 @@ class Policy(M):
         json_schema_extra={"label": "Operations", "help": "Run: weekly vendor review and PO follow-up for existing vendors.", "used_in": ["ops_review", "ops_chaser"]},
     )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
+
+    price_requests: PriceRequests = Field(
+        default_factory=lambda: PriceRequests(
+            elasticity=Elasticity(),
+            pass_through=PassThrough(),
+            justification=Justification(),
+            approval=Approval(matrix=_default_matrix(), decision_floor={"pass_through": "category_manager", "delist": "head_of_category"}),
+        ),
+        json_schema_extra={"label": "Price requests", "help": "How an existing vendor's price-increase request is evaluated.", "used_in": ["negotiate"]},
+    )
 
     documents: Documents = Field(
         default_factory=Documents,

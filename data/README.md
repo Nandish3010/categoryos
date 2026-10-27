@@ -75,3 +75,16 @@ Planted issues: E002 falling fill rate (98% earlier, about 54% recent) with a la
 NP-03 out of stock with a part-shipped PO (balance promised 3 Nov); E004 ageing slow movers (TW-03/04/05) and a reply promising
 "5-6 working days"; E005 a PO a week overdue with two vague replies and low cover on LT-05; E006 GW-02 returns and rating slide
 (leaking packaging) and a GW-03 sales drop; E001 is healthy apart from a promo-driven BK-02 spike.
+
+## Price-increase requests (`price_requests/`)
+
+`generate_price_requests.py` (`make data-price-requests`, seed 42, byte-identical on re-run; reads `ops/skus.csv` and `ops/vendors.json`)
+writes three messy vendor emails with revised price lists (CSV or a text table), `competitors.csv` (three marketplace prices per ops
+SKU, median = our price) and the mock model fixtures under `backend/fixtures/mock/negotiate/price_request_*`. It never touches
+`generate.py`, `generate_docs.py` or `generate_ops.py`.
+
+| Request | Vendor | Plant | Expected decision (default playbook) |
+|---|---|---|---|
+| PR-001 | E006 Groomwell | 4% on five SKUs, raw-material index +3% (+2 pt tolerance), 39 days notice, "extra 2% marketing support if you take the full revision" | accept |
+| PR-002 | E004 Tailwind Play | 8-12% on SKUs already under target, "absorb half if you commit 1,500 units/month" (we sell about 600) | counter at 4.4-5.0%, sweetener counted at 0 |
+| PR-003 | E003 NutriPaws | 15% with 15 days notice; passing it on puts us 15% above competitors. The mock model first misreads one cost (189.75 as 819.75): the verifier catches it and the agent corrects it | delay to 25 Nov, then counter at 4.7% |
