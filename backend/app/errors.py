@@ -371,3 +371,61 @@ class CallNotAccepting(CategoryOSError):
     problem = "This call does not take typed or recorded turns"
     cause = "A simulated call plays its own recorded script"
     fix = "Start a live call to speak into the pipeline"
+
+
+# ---------- Run: catalog QC (fix queue for existing listings) ----------
+
+
+class CatalogDataMissing(CategoryOSError):
+    status = 500
+    code = "catalog_data_missing"
+    problem = "The live catalog files are missing or unreadable"
+    cause = "data/synthetic/ops/catalog_live.csv, vendor_price_list.csv or catalog_licences.json was not generated"
+    fix = "Run python3 data/generate_catalog_live.py from the repo root"
+
+
+class UnknownCatalogFix(CategoryOSError):
+    status = 404
+    code = "unknown_catalog_fix"
+    cause = "The fix id is not in the current queue (the playbook or the data changed, or the server restarted)"
+    fix = "Reload the queue with GET /api/ops/catalog and use one of its fix ids"
+
+    def __init__(self, fix_id: str) -> None:
+        super().__init__(f"unknown catalog fix: {fix_id!r}")
+        self.fix_id = fix_id
+
+
+class CatalogFixNotPending(CategoryOSError):
+    status = 409
+    code = "catalog_fix_not_pending"
+    problem = "This fix was already decided"
+    cause = "Only fixes waiting for a decision can be approved or rejected"
+    fix = "Open the catalog update outbox to see its status; a decided fix cannot be changed"
+
+
+class CatalogFixBlocked(CategoryOSError):
+    status = 409
+    code = "catalog_fix_unverified"
+    problem = "This fix has a proposed value the verifier did not confirm"
+    cause = "At least one claim behind the fix was rejected or could not be checked, so it cannot be approved as proposed"
+    fix = "Reject the fix, or correct the listing by hand; a fix whose claims all verify can be approved"
+
+
+class BulkLimitExceeded(CategoryOSError):
+    status = 409
+    code = "bulk_limit_exceeded"
+    problem = "That is more fixes than one bulk approve may apply"
+    cause = "The playbook caps a bulk approve (catalog_qc.bulk_approve_limit) so a person looks at the batch"
+    fix = "Select fewer fixes (filter the queue by issue type or vendor), or raise the limit in the playbook"
+
+    def __init__(self, count: int, limit: int) -> None:
+        super().__init__(f"{count} fixes selected; the bulk-approve limit is {limit}")
+        self.count, self.limit = count, limit
+
+
+class EmptySelection(CategoryOSError):
+    status = 422
+    code = "empty_selection"
+    problem = "No fixes were selected"
+    cause = "The request listed no fix ids"
+    fix = "Select at least one fix"

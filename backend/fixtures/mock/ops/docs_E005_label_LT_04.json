@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "kind": "product_label",
+    "legible": true,
+    "fields": [
+      {
+        "name": "product_name",
+        "value": "Activated Carbon Clumping Cat Litter 5 kg",
+        "bbox": [
+          0.0411,
+          0.1618,
+          0.7509,
+          0.1968
+        ],
+        "confidence": 0.97,
+        "sku_code": "LT-04"
+      },
+      {
+        "name": "claims_text",
+        "value": "Odour control.",
+        "bbox": [
+          0.0615,
+          0.6017,
+          0.258,
+          0.623
+        ],
+        "confidence": 0.97,
+        "sku_code": "LT-04"
+      },
+      {
+        "name": "net_quantity",
+        "value": "5 kg",
+        "bbox": [
+          0.3026,
+          0.6723,
+          0.3756,
+          0.6994
+        ],
+        "confidence": 0.97,
+        "sku_code": "LT-04"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 449",
+        "bbox": [
+          0.3036,
+          0.7164,
+          0.4199,
+          0.7385
+        ],
+        "confidence": 0.97,
+        "sku_code": "LT-04"
+      },
+      {
+        "name": "fssai_number",
+        "value": "NA - not a food",
+        "bbox": [
+          0.3046,
+          0.7571,
+          0.5208,
+          0.7803
+        ],
+        "confidence": 0.97,
+        "sku_code": "LT-04"
+      }
+    ],
+    "notes": ""
+  }
+}

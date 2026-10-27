@@ -358,7 +358,7 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     weekly_review_mis: {label: "Weekly vendor-performance review and MIS generator", status: shipped}
     price_increase_evaluator: {label: "Existing-vendor price-increase evaluator", status: not_built}
     po_followup: {label: "PO follow-up and fill-rate chaser", status: shipped}
-    catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: not_built}
+    catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: shipped}
     promotions_planner: {label: "Promotions and event planner", status: not_built}
     competitor_monitor: {label: "Competitor price monitor", status: not_built}
     inventory_health_module: {label: "Inventory health and liquidation", status: not_built}
@@ -383,6 +383,35 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     - {module: inventory_health_module, task: inventory_health, in_scope_pct: 100}
   max_review_minutes: 120        # a review gap longer than this counts as this many minutes (the reviewer walked away)
   target_reduction_pct: 33.3     # the team view compares the saving with this goal
+
+catalog_qc:                      # Run: QC and fix queue for the LIVE listings of existing vendors (ops_catalog). Rules reused from catalog (required attributes, title length) and screening.claim_rules
+  severities:                    # low | medium | high per issue type; a claim rule's own severity wins when higher
+    title_too_long: low
+    title_missing_attributes: medium
+    missing_attribute: medium
+    banned_claim: high
+    mrp_mismatch: high
+    pack_mismatch: high
+    duplicate_listing: medium
+    wrong_category: medium
+    missing_image: high
+    low_res_image: medium
+    high_returns_not_as_described: medium
+    expired_licence: high
+    label_mismatch: high
+  severity_points: {low: 1, medium: 2, high: 3}   # what a severity counts as in the priority score
+  priority_weights: {gmv_at_risk: 0.5, severity: 0.35, return_rate: 0.15}   # score = weighted mean of three 0-100 signals (weights are normalised)
+  gmv_window_days: 28            # GMV at risk = the listing's sales over the last N days of data
+  near_duplicate_threshold: 0.8  # name similarity (Jaccard overlap of title words + pack) at or above which two listings of a category are duplicates
+  returns:                       # the "not as described" return signal, from the ops returns data
+    threshold_pct: 0.6           # returned units citing the reasons below, as % of units sold
+    min_returned_units: 5        # ...and at least this many units
+    window_days: 91              # last N days of data
+    reasons: [quality not as expected, wrong item sent, not as described]
+  images: {min_resolution_px: 800, min_count: 1}   # shortest side of the main image; images per listing
+  title_required: [brand, pack] # what a listing title must contain: brand | pack
+  bulk_approve_limit: 25         # most fixes one bulk approve applies; a bigger selection is refused
+  model_rewrites: true           # let the model (muse-spark) rewrite titles and bullets and fill text attributes; false = deterministic fixes only
 
 documents:                       # Intake and Catalog: scanned vendor documents read by the vision models (muse-spark-1.3 reads, sam-3.1 crops the label panel)
   enabled: true                  # read vendor documents (certificates, labels, price lists) when the vendor has uploaded any
