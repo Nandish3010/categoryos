@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "classify_V002",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 1186,
+  "output_tokens": 3122,
+  "checksum": "8c41e29cc854b1b0d37332b25bbada8a515e5d39e1570291b48ef856600b0600",
+  "content": "{\"classifications\": [{\"code\": \"MW-T01\", \"category\": \"treats\", \"subcategory\": \"cat treats\"}, {\"code\": \"MW-T02\", \"category\": \"treats\", \"subcategory\": \"cat treats\"}, {\"code\": \"MW-T03\", \"category\": \"treats\", \"subcategory\": \"cat treats\"}, {\"code\": \"MW-L01\", \"category\": \"cat litter\", \"subcategory\": \"tofu\"}]}"
+}

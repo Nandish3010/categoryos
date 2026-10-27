@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "negotiate",
+  "task": "deals_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 12817,
+  "output_tokens": 1635,
+  "checksum": "05d129641c6a7876017f47dc0a3ee25784b0aa9dd19d350282b8fde940b9d066",
+  "content": "{\"steps\": [{\"tool\": \"get_transcript\", \"args\": {\"vendor_id\": \"V002\"}}, {\"tool\": \"get_application\", \"args\": {\"vendor_id\": \"V002\"}}, {\"tool\": \"get_metrics\", \"args\": {\"vendor_id\": \"V002\"}}], \"final\": {\"terms\": [{\"id\": \"t1\", \"kind\": \"base\", \"term\": \"margin_pct\", \"value\": 15, \"unit\": \"pct\", \"scope\": [\"MW-L01\", \"MW-L02\", \"MW-L03\", \"MW-L04\", \"MW-L05\"], \"quote\": \"For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\", \"turn\": 18, \"source\": \"transcript\"}, {\"id\": \"t2\", \"kind\": \"conditional\", \"term\": \"marketing_pct\", \"value\": 20, \"unit\": \"pct\", \"condition\": {\"metric\": \"units\", \"threshold\": 2000, \"window_days\": 90, \"scope\": []}, \"scope\": [\"MW-L01\", \"MW-L02\", \"MW-L03\", \"MW-L04\", \"MW-L05\"], \"base_of\": \"t1\", \"quote\": \"For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\", \"turn\": 18, \"source\": \"transcript\"}]}}"
+}

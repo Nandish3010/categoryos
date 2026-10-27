@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "screen_V001",
+  "model": "muse-spark-1.3",
+  "input_tokens": 6301,
+  "output_tokens": 1886,
+  "checksum": "e519c412934b430574360241256d26e24fe416af69dc1a72863923fdf37efb71",
+  "content": "{\"steps\": [{\"tool\": \"get_application\", \"args\": {\"vendor_id\": \"V001\"}}, {\"tool\": \"get_sku_rows\", \"args\": {\"vendor_id\": \"V001\"}}], \"final\": {\"risk_flags\": [{\"type\": \"unsubstantiated_claim\", \"quote\": \"vet-formulated.\", \"severity\": \"medium\"}, {\"type\": \"missing_data\", \"quote\": \"HP-D07: MRP blank\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"HP-D05: Cost to Us blank\", \"severity\": \"low\"}], \"injection_detected\": false, \"followup_questions\": [\"Provide MRP for SKU HP-D07.\", \"Provide Cost to Us for SKU HP-D05.\", \"Provide evidence for vet-formulated claim on SKU HP-D03.\", \"Confirm correct cost for SKU HP-D06: SKU sheet says 3325 vs supplier price list PDF says Rs.3,352.00.\"], \"decision\": \"pass\", \"reasons\": [\"All compliance documents (GST, PAN, FSSAI) are valid with no blocking issues.\", \"SKU HP-D03 makes unsubstantiated claim vet-formulated requiring evidence.\", \"SKU HP-D07 is missing MRP and SKU HP-D05 is missing cost, blocking pricing.\", \"Cost for SKU HP-D06 differs between sheet and supplier price list and needs clarification.\"]}}"
+}

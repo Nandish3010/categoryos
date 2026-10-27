@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "jbp",
+  "task": "jbp_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1866,
+  "output_tokens": 4307,
+  "checksum": "e4685a72a01bd8807dce0ae317dfd034849f8e066b192e4a86da04102771cf9a",
+  "content": "{\"markdown\": \"## Overview\\n\\nJoint Business Plan between Indian online pet retailer and Mewsli for launch, sell-through and review of shortlisted assortment.\\n\\n## Targets\\n\\n| Metric | Value |\\n| --- | --- |\\n| Shortlisted SKUs | 4 |\\n| Est monthly GMV INR | 37844.17 |\\n| Est monthly units | 136.5 |\\n| Blended margin pct | 0.1504 |\\n| First order units | 500 |\\n| First order cost INR | 113518.82 |\\n| Payment days | 30.0 |\\n\\n## Investments\\n\\n- Brand-funded marketing INR: 50000.0\\n- Launch discount pct: 5.0\\n- Launch discount days: 30\\n- Brand-funded pct: 5.0\\n\\n## Promo calendar\\n\\n| Activity | Start | End |\\n| --- | --- | --- |\\n| Listings live | 2026-11-13 | 2026-11-13 |\\n| Launch week: sponsored listings and sampling | 2026-11-13 | 2026-11-19 |\\n| Launch-month discount window | 2026-11-13 | 2026-12-12 |\\n| First sell-through review | 2026-12-13 | 2026-12-13 |\\n\\n## Commitments and next steps\\n\\n- Agreed margin pct: 21.0\\n- Agreed payment days: 30.0\\n- Agreed MOQ: 500.0\\n- Agreed marketing INR: 50000.0\\n- Agreed launch discount pct: 5.0\\n- Agreed returns: 7.0\"}"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V004_fssai_certificate",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1898,
+  "output_tokens": 481,
+  "checksum": "cbb5b36a2b1fb54845d3576a9ac7d7bf5099137aa6c900e555a29a7b270842fd",
+  "content": "{\"fields\":[{\"bbox\":[0.362,0.243,0.673,0.273],\"confidence\":0.99,\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"FSSAI-DEMO-0004\"},{\"bbox\":[0.36,0.326,0.675,0.356],\"confidence\":0.99,\"name\":\"holder_name\",\"sku_code\":null,\"value\":\"Verdant Tails Herbals\"},{\"bbox\":[0.354,0.568,0.545,0.593],\"confidence\":0.99,\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"01 APR 2023\"},{\"bbox\":[0.385,0.645,0.59,0.671],\"confidence\":0.99,\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"31 MAR 2026\"}],\"kind\":\"licence_certificate\",\"legible\":true,\"notes\":\"\"}"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "classify_V003",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 555,
+  "output_tokens": 548,
+  "checksum": "9df2c8e24fe155ef5a2b0ba0691954c362f0e42f0467f85ad20aeffd2623f0b6",
+  "content": "{\"classifications\": [{\"code\": \"ST-101\", \"category\": \"toys\", \"subcategory\": \"dog toys\"}, {\"code\": \"ST-201\", \"category\": \"accessories\", \"subcategory\": \"collars\"}, {\"code\": \"ST-202\", \"category\": \"accessories\", \"subcategory\": \"harness\"}, {\"code\": \"ST-204\", \"category\": \"accessories\", \"subcategory\": \"bowls\"}]}"
+}

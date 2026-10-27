@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "marketing",
+  "task": "marketing_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 891,
+  "output_tokens": 816,
+  "checksum": "bcce50d3b7395514dddc82ddde86c8c8b62e53ec62ee718983cab37d64de1889",
+  "content": "{\"campaign_name\": \"Mewsli Launch Week: Sponsored Listings and Sampling\", \"copy\": \"Discover Mewsli's 4 new cat favourites, led by Salmon Freeze-dried Bites and Tofu Cat Litter Green Tea. Enjoy a 5% launch discount during launch week with sponsored sampling.\", \"discount_ask\": {\"brand_funded_pct\": 5.0, \"our_pct\": 0, \"rationale\": \"Vendor committed to 5% brand-funded launch discount for 30 days, so no additional funding required.\"}}"
+}

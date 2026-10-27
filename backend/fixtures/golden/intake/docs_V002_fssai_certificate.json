@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V002_fssai_certificate",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1898,
+  "output_tokens": 603,
+  "checksum": "1535896d5e4a7c390779baf6ae3691976e48676c999bdd32208bfeea57827526",
+  "content": "{\"fields\": [{\"bbox\": [0.398, 0.28, 0.712, 0.305], \"confidence\": 0.99, \"name\": \"licence_number\", \"sku_code\": null, \"value\": \"FSSAI-DEMO-0002\"}, {\"bbox\": [0.395, 0.352, 0.701, 0.381], \"confidence\": 0.99, \"name\": \"holder_name\", \"sku_code\": null, \"value\": \"Mewsli Cat Care LLP\"}, {\"bbox\": [0.388, 0.59, 0.585, 0.615], \"confidence\": 0.99, \"name\": \"valid_from\", \"sku_code\": null, \"value\": \"01 DEC 2023\"}, {\"bbox\": [0.388, 0.65, 0.585, 0.675], \"confidence\": 0.99, \"name\": \"valid_until\", \"sku_code\": null, \"value\": \"30 NOV 2026\"}], \"kind\": \"licence_certificate\", \"legible\": true, \"notes\": \"\"}"
+}

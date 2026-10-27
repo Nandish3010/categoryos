@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "catalog_copy_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1044,
+  "output_tokens": 2274,
+  "checksum": "bb2e652b452d25221ce7c7f5b0f973cdddacd3e0fa3ae99a11edf49f71ad5a7b",
+  "content": "{\"items\": [{\"attributes\": {}, \"bullets\": [\"Lickable tuna puree treat with 92% fish\", \"No grain\", \"4 x 15g strips, 60g total\", \"Great for pilling and bonding\"], \"compliance_flags\": [{\"rule\": \"missing_label_info\", \"severity\": \"medium\", \"text\": \"life_stage missing\"}], \"description\": \"Lickable tuna puree treat with 92% fish and no grain. Pack contains 4 x 15g strips (60g total), great for pilling and bonding.\", \"sku_code\": \"MW-T01\", \"title\": \"Mewsli Tuna Creamy Lick Treat 4 x 15g\"}]}"
+}

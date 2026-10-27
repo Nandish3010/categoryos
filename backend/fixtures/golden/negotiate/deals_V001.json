@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "negotiate",
+  "task": "deals_V001",
+  "model": "muse-spark-1.3",
+  "input_tokens": 10013,
+  "output_tokens": 2320,
+  "checksum": "64c05df45f0d804252ff62c865767e1393cbcda9d118a2202441c12b40447997",
+  "content": "{\"steps\": [{\"tool\": \"get_transcript\", \"args\": {\"vendor_id\": \"V001\"}}, {\"tool\": \"get_application\", \"args\": {\"vendor_id\": \"V001\"}}, {\"tool\": \"get_metrics\", \"args\": {\"vendor_id\": \"V001\"}}], \"final\": {\"terms\": [{\"id\": \"t1\", \"kind\": \"tiered\", \"term\": \"back_margin_pct\", \"value\": 4.0, \"unit\": \"pct\", \"condition\": {\"metric\": \"gmv_inr\", \"threshold\": 500000.0, \"window_days\": 90, \"scope\": []}, \"tiers\": [{\"threshold\": 500000.0, \"value\": 2.0}, {\"threshold\": 1000000.0, \"value\": 4.0}], \"scope\": [], \"base_of\": null, \"days\": null, \"units\": null, \"quote\": \"Tiered back margin: we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period.\", \"turn\": 1, \"source\": \"application\"}]}}"
+}

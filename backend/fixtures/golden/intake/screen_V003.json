@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "screen_V003",
+  "model": "muse-spark-1.3",
+  "input_tokens": 5560,
+  "output_tokens": 899,
+  "checksum": "b0c493b839ee55cf119380d7ba19539d2659e3d63806f9fd1840fe29e5c49fbf",
+  "content": "{\"steps\": [{\"tool\": \"get_application\", \"args\": {\"vendor_id\": \"V003\"}}, {\"tool\": \"get_sku_rows\", \"args\": {\"vendor_id\": \"V003\"}}], \"final\": {\"risk_flags\": [{\"type\": \"missing_data\", \"quote\": \"ST-104: blank HSN\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"ST-203: blank HSN\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"ST-203: missing cost\", \"severity\": \"low\"}], \"injection_detected\": false, \"followup_questions\": [\"Provide HSN code for SKU ST-104 (Feather Wand Cat Teaser).\", \"Provide HSN code and Landed Cost (Rs) for SKU ST-203 (Retractable Leash 5m).\"], \"decision\": \"pass\", \"reasons\": [\"Documents are valid with no blocking issues (GST and PAN valid; FSSAI not required for toys/accessories).\", \"No regulated or unsubstantiated claims found in pitch or SKU copy.\", \"SKU sheet incomplete for pricing: missing HSN for 2 SKUs and missing cost for 1 SKU.\"]}}"
+}

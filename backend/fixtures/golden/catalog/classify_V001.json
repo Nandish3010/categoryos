@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "classify_V001",
+  "model": "meta-models/muse-spark-open",
+  "input_tokens": 1318,
+  "output_tokens": 3773,
+  "checksum": "d91ae2bd163df22086c47a4d19910ff96244431999e6664ce5b81f4381af42b7",
+  "content": "{\"classifications\": [{\"code\": \"HP-D01\", \"category\": \"dog dry food\", \"subcategory\": \"adult\"}, {\"code\": \"HP-D02\", \"category\": \"dog dry food\", \"subcategory\": \"adult\"}, {\"code\": \"HP-D05\", \"category\": \"dog dry food\", \"subcategory\": \"adult\"}, {\"code\": \"HP-D06\", \"category\": \"dog dry food\", \"subcategory\": \"adult\"}, {\"code\": \"HP-D07\", \"category\": \"dog dry food\", \"subcategory\": \"senior\"}, {\"code\": \"HP-W02\", \"category\": \"dog wet food\", \"subcategory\": \"pate\"}, {\"code\": \"HP-W03\", \"category\": \"dog wet food\", \"subcategory\": \"chunks\"}]}"
+}
