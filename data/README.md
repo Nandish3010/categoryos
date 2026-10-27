@@ -24,6 +24,24 @@ make data        # runs: python3 data/generate.py
 | `market/search_demand.csv` | Keyword search volume, 3-month trend and competition |
 | `market/reviews.json` | Customer reviews of comparable products |
 
+## Vendor documents (`vendors/V00x/docs/`)
+
+`generate_docs.py` (`make data-docs`, needs Pillow and PyYAML from the backend environment) draws deterministic, clearly
+SAMPLE-marked documents with a scan look (slight rotation, grain, uneven light) and no real logos or emblems: licence
+certificates (FSSAI and GST style), back-of-pack label photos with a nutrition and claims panel, and a supplier price-list PDF
+(plus the page image it was made from, since the PDF is image-only). Each folder has `manifest.json` (what the vendor says each
+file is; the only files the API serves) and `truth.json` (what is really printed, with boxes; for tests and mock fixtures, never
+read by the pipeline). The script also writes the mock vision fixtures under `backend/fixtures/mock/{intake,catalog}/docs_*`.
+`generate.py` is untouched, so its outputs stay byte-identical.
+
+Planted discrepancies:
+
+| Vendor | Application / sheet says | The document says |
+|---|---|---|
+| V002 | FSSAI valid until 2027-11-30 | Scan: valid until 30 NOV 2026 (about a month after the demo date), so it is expiring soon |
+| V001 | HP-D01 sheet and listing: 32% protein | Label HP-D01 prints 30.0% protein |
+| V001 | HP-D06 sheet cost Rs. 3,325 | Price list prints Rs. 3,352.00 (HP-D01's 956.50 agrees) |
+
 ## The four vendors
 
 | ID | Vendor | Intended outcome |

@@ -54,8 +54,17 @@ approving it makes it `done`. If Screen fails, `intake` is `failed` and every la
 }
 ```
 
-`claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine` or
-`model_extraction`; `status` is `verified|rejected|unverifiable`).
+`claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine`, `model_extraction` or
+`vision_extraction`; `status` is `verified|rejected|unverifiable`).
+
+A `vision_extraction` claim is a number or date a vision model read off a scanned document. Its `evidence` is
+`{doc, page, bbox: [x0, y0, x1, y1] (fractions of the page), crop_sha256, raw_value (the page read, as printed),
+reread_value (the second, independent read of the cropped region), as_of, sha256 (of the page file), parser_version}`.
+`source_ref.file` is `vendors/<VID>/docs/<page file>`. The verifier checks that the page file is the one that was read, that
+the box lies on the page and its pixels hash to `crop_sha256`, that `raw_value` parses to the claimed number and that
+`reread_value` says the same: `verified` when both reads agree, `rejected` when they differ (the reason quotes both),
+`unverifiable` when there is no second read. Date claims carry the days from `as_of` to the printed date (`metric`
+`doc_date:<kind>.<field>`); other claims use `doc_value:<kind>.<field>` with the field's unit.
 
 `intake` `data`: `{decision: "pass"|"fail", reasons[], risk_flags: [{type, quote, severity}], injection_detected,
 followup_questions[], documents: {documents[], problems[], blocking}, guards[], mode}`. When it fails,
@@ -304,10 +313,56 @@ is running; `404 run_not_found` (also when the run belongs to another vendor).
 ### `POST /api/admin/reset`  (demo key, always)
 `200 {"ok": true}`. Empties the store and in-memory run state. Idempotent.
 
+### `GET /api/docs/{vendor}/{file}` -> `image/png|jpeg` or `application/pdf`
+A vendor's uploaded document or page image, as listed in `data/synthetic/vendors/<VID>/docs/manifest.json`. Anything else
+(`manifest.json`, `truth.json`, traversal, unknown vendor or file) is `404 asset_not_found`. Open (no key).
+
 ### `GET /api/assets/{vendor}/{file}` -> `image/png`
 Cached catalog and campaign images. `file` is `<SKU code>-packshot|cutout|lifestyle.png` or `campaign.png`; anything else
 (traversal, other extensions, unknown vendor) is `404 asset_not_found`. In mock/replay a missing file for a real SKU is drawn
 as a labelled placeholder on demand. Open (no key).
+
+## Scanned documents
+
+Playbook section `documents` decides which document kinds are read (`kinds`, each read in `intake` or `catalog`), which fields
+(`fields`, typed `text|date|pct|inr|qty|number`, `critical` ones are cropped and read again) and which pairs are compared
+(`cross_checks`: a document field against the application, the SKU sheet or the listing copy, with a severity and a
+tolerance in the field's unit). `catalog.label_panel_prompt` is the phrase SAM 3.1 uses to find a label's nutrition and claims
+panel. Per document: muse-spark-1.3 (vision) extracts the fields with boxes; for a label SAM segments the panel and that crop is
+read again, otherwise the critical fields are cropped by their own boxes; every numeric or date field becomes a
+`vision_extraction` claim; the cross-checks run on the verified readings.
+
+`intake` `data.scanned_documents` and `catalog` `data.scanned_documents` (both `{enabled: false, ...}` when the playbook turns
+the pipeline off or the vendor filed nothing of that stage):
+
+```json
+{"enabled": true,
+ "documents": [{"file", "kind", "label", "title", "declares": "FSSAI"|null, "sku_code"|null, "url": "/api/docs/V002/<file>",
+   "pages": [{"page", "file", "url", "width", "height"}], "legible", "error"|null, "notes", "mode",
+   "panel": {"page", "bbox"|null, "prompt", "source": "sam-3.1"|..., "crop_sha256"}|null,
+   "expiry": {"valid_until", "days", "state": "valid|expiring_soon|expired", "as_of"}|null, "injection": [],
+   "fields": [{"name", "label", "type", "raw", "value", "reread"|null, "page", "bbox", "confidence", "sku_code"|null,
+     "status": "verified|rejected|unverifiable|read|conflict|low_confidence|unreadable", "reason"|null, "claim_id"|null}]}],
+ "findings": [{"id", "check", "label", "severity", "status": "match|mismatch|unreliable|injection", "doc", "doc_label", "page",
+   "bbox", "field", "field_label", "sku_code"|null, "document_value", "other_label", "other_value", "other_source": {},
+   "claim_id", "claim_status", "message"}],
+ "summary": {"documents", "fields", "claims", "verified", "rejected", "unverifiable", "mismatches"}}
+```
+
+- `unreliable` means the page read and the re-read of the crop disagree, so the value was not compared. `injection` means
+  text addressed to an AI reviewer was found inside a document; it is ignored and Screen fails the vendor.
+- Intake: the scanned certificate is ground truth over the declared status. `data.documents.documents[]` entries gain
+  `source: "scan"` and `declared_valid_until` when a scan decided the date and state (a declared "valid" with a scan that says
+  "expired" fails screening as a blocking problem). Mismatches add `document_mismatch` risk flags and follow-up questions, a
+  certificate expiring or expired on the scan adds `document_expiring_soon` / `document_expired`, an unreadable page adds
+  `document_unreadable`. The stage `claims` hold the `vision_extraction` claims.
+- Catalog: each SKU with a label gets `label_check: {doc, title, url, pages, panel, error, fields, rows: [{field, label,
+  label_value, sheet: {value, status, source, check}|null, listing: {...}|null, status: "match|mismatch", severity,
+  unreliable, claim_id, claim_status, page, bbox}]}` (`null` without one). A mismatch adds a `label_mismatch` compliance flag
+  and the playbook's claim rules also run over the text printed on the label (flags have `source: "label"`).
+
+Trace: `tool_call` `read_documents` and `cross_check_documents` (deterministic), `model_call` with `task` `doc_extract`,
+`segment_panel`, `doc_reread_panel` or `doc_reread_fields` (and `document`), then `claim_checked` per vision claim.
 
 ## Other routes (unchanged)
 

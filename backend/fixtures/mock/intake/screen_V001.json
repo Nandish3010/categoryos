@@ -51,7 +51,8 @@
       "reasons": [
         "GST, FSSAI, PAN, trademark and incorporation documents are all valid.",
         "No medical or cure claims; the two soft claims need supporting evidence, not rejection.",
-        "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up."
+        "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up.",
+        "One supplier price-list line disagrees with the SKU sheet; ask the vendor which figure is right."
       ]
     }
   }

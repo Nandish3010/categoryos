@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "licence_number",
+        "value": "GST-DEMO-0002",
+        "sku_code": null
+      },
+      {
+        "name": "valid_from",
+        "value": "01 APR 2023",
+        "sku_code": null
+      },
+      {
+        "name": "valid_until",
+        "value": "31 MAR 2030",
+        "sku_code": null
+      }
+    ]
+  }
+}

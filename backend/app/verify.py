@@ -5,14 +5,15 @@ model's own evidence.raw_value."""
 import hashlib
 import posixpath
 import re
+from datetime import date
 from pathlib import Path
 
 from pydantic import BaseModel
 
-from app import deals, policy
+from app import deals, docparse, policy
 from app.config import settings
 from app.constants import ALLOWED_VENDORS
-from app.data_loader import load_application, load_sheet, load_transcript
+from app.data_loader import doc_files, load_application, load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.parsing import PARSER_VERSION, map_columns, parse_pack, parse_price
@@ -37,6 +38,8 @@ _TRANSCRIPT = re.compile(rf"^vendors/({_VENDOR_ALT})/call_transcript\.json$")
 _APPLICATION = re.compile(rf"^vendors/({_VENDOR_ALT})/application\.json$")
 _VENDOR_SHEET = re.compile(rf"^vendors/({_VENDOR_ALT})/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
+_VENDOR_DOC = re.compile(rf"^vendors/({_VENDOR_ALT})/docs/([^/]+)$")
+_SAME_READ = 1e-6  # two reads of the same printed text must agree exactly
 
 METRIC_FILE = {
     "price_gap_pct": "market/competitor_listings.csv",
@@ -65,6 +68,7 @@ def allowed_sources() -> frozenset[str]:
         files.add(f"vendors/{vid}/sku_sheet.csv")
         files.add(f"vendors/{vid}/application.json")
         files.add(f"vendors/{vid}/call_transcript.json")
+        files.update(f"vendors/{vid}/docs/{name}" for name in doc_files(vid))
     return frozenset(files)
 
 
@@ -217,10 +221,62 @@ def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
     return _finish(claim, "verified", None, claim.value)
 
 
+def _vision_kind(claim: Claim) -> str:
+    if claim.metric.startswith("doc_date:"):
+        return "date"
+    return {"pct": "pct", "inr": "inr", "qty": "qty"}.get(claim.unit, "number")
+
+
+def _verify_vision(claim: Claim, rel_file: str) -> Claim:
+    """A value read off a scan by a vision model. There is no machine-readable source to re-read, so the verifier
+    binds the claim to the pixels and to a second read: the page file must be the one read, the box must lie on the
+    page and its pixels must hash to the recorded crop, the printed text must parse to the claimed number, and the
+    independent re-read of the cropped region must say the same."""
+    ev = claim.evidence
+    match = _VENDOR_DOC.match(rel_file)
+    if ev is None or match is None or ev.bbox is None or not ev.crop_sha256 or ev.raw_value is None:
+        return _finish(claim, "rejected", "no evidence: the scan, a bounding box, a crop hash and the printed text are required")
+    if file_sha256(rel_file) != ev.sha256:
+        return _finish(claim, "rejected", "source changed: evidence sha256 does not match the scan")
+    if not docparse.valid_bbox(ev.bbox):
+        return _finish(claim, "rejected", f"the bounding box {ev.bbox} does not lie on the page")
+    try:
+        page = (Path(settings.data_dir) / rel_file).read_bytes()
+        digest = docparse.region_digest(page, ev.bbox)
+    except (OSError, ValueError) as exc:
+        return _finish(claim, "rejected", f"the scan cannot be opened: {exc}")
+    if digest != ev.crop_sha256:
+        return _finish(claim, "rejected", "the pixels inside the bounding box are not the ones the value was read from (crop hash differs)")
+    kind = _vision_kind(claim)
+    try:
+        as_of = date.fromisoformat(ev.as_of) if ev.as_of else None
+    except ValueError:
+        return _finish(claim, "rejected", f"as_of {ev.as_of!r} is not an ISO date")
+
+    def read(text: str) -> float | None:
+        return docparse.claim_number(kind, docparse.parse_value(kind, text), as_of)
+
+    first = read(ev.raw_value)
+    if first is None:
+        return _finish(claim, "rejected", f"the printed text {ev.raw_value!r} cannot be read as a {kind}")
+    if abs(first - claim.value) > _SAME_READ:
+        return _finish(claim, "rejected", f"the printed text {ev.raw_value!r} reads as {first:g}, the claim says {claim.value:g}", first)
+    if ev.reread_value is None:
+        return _finish(claim, "unverifiable", "the region was not read a second time, so the value rests on a single read", first)
+    second = read(ev.reread_value)
+    if second is None or abs(second - first) > _SAME_READ:
+        return _finish(
+            claim, "rejected", f"the page read says {ev.raw_value!r} but the re-read of the cropped region says {ev.reread_value!r}", second
+        )
+    return _finish(claim, "verified", None, second)
+
+
 def verify_claim(claim: Claim) -> Claim:
     rel_file = _normalize(claim.source_ref.file)
     if _resolve(claim.source_ref.file) is None:
         return _finish(claim, "rejected", f"unknown source: {rel_file!r} is not an allowlisted data file")
+    if claim.origin == "vision_extraction":
+        return _verify_vision(claim, rel_file)
     unit = (
         METRIC_UNITS.get(claim.metric)
         or VENDOR_METRICS.get(claim.metric)

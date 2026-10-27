@@ -1,0 +1,87 @@
+{
+  "note": "What is really printed on each page. For tests and fixtures only; the pipeline never reads this file.",
+  "documents": [
+    {
+      "file": "gst_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "gst_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "GST-DEMO-0003",
+              "px": [
+                327,
+                304,
+                544,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3851,
+                0.2564,
+                0.6438,
+                0.2789
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "SnapTail Accessories Pvt Ltd",
+              "px": [
+                327,
+                395,
+                682,
+                425
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3865,
+                0.332,
+                0.8095,
+                0.3611
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "01 APR 2021",
+              "px": [
+                327,
+                672,
+                492,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3905,
+                0.5687,
+                0.5872,
+                0.5908
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "31 MAR 2030",
+              "px": [
+                327,
+                764,
+                499,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3918,
+                0.6466,
+                0.5969,
+                0.6687
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    }
+  ]
+}

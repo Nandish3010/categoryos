@@ -1,0 +1,87 @@
+{
+  "note": "What is really printed on each page. For tests and fixtures only; the pipeline never reads this file.",
+  "documents": [
+    {
+      "file": "fssai_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "fssai_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "FSSAI-DEMO-0004",
+              "px": [
+                327,
+                304,
+                564,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3947,
+                0.2563,
+                0.6773,
+                0.2801
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "Verdant Tails Herbals",
+              "px": [
+                327,
+                395,
+                594,
+                420
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3928,
+                0.3334,
+                0.7112,
+                0.3585
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "01 APR 2023",
+              "px": [
+                327,
+                672,
+                492,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3871,
+                0.5681,
+                0.584,
+                0.5909
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "31 MAR 2026",
+              "px": [
+                327,
+                764,
+                499,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3852,
+                0.6461,
+                0.5904,
+                0.6689
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    }
+  ]
+}

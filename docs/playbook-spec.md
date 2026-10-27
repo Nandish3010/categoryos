@@ -165,3 +165,23 @@ with these playbook keys (all under `negotiation`, used by the Negotiate stage; 
 | `cost_of_capital_pct_annual` | `14` | prices paying earlier for a discount |
 | `inventory_carrying_pct_monthly` | `2` | prices holding extra stock for a bigger-MOQ discount |
 | `verifier.tolerances.pts` | `0.05` | tolerance when a claim is a value in margin points |
+
+## Addendum: documents (document vision)
+`documents` is a playbook section like the others (defaults in `config/policy.yaml`, overrides in `policy.local.yaml`, hints in
+`schema_hints`); `catalog.label_panel_prompt` holds the SAM phrase. It is vertical-agnostic: a vertical lists its own document
+kinds (CDSCO or BIS certificates, labels with SPF or rated watts) and cross-checks. `config/examples/*.yaml` show it.
+```yaml
+documents:
+  enabled: true            # read scanned vendor documents at all
+  min_confidence: 0.6      # a field the model reads below this is flagged, not compared
+  crop_padding: 0.01       # margin around a box when it is cropped for the second read
+  max_pages: 3
+  kinds:        [{kind, label, stage: intake|catalog, panel: bool, per_sku: bool}]
+  fields:       [{kind, name, label, type: text|date|pct|inr|qty|number, critical: bool}]
+  cross_checks: [{id, label, kind, field, against: application_document|sku_sheet|listing_copy,
+                  target (application: number|valid_until|company_name; sheet: mrp|cost|pack),
+                  pattern (regex, one group, over the sheet row or listing text), tolerance (field unit; empty = verifier tolerance),
+                  severity}]
+```
+Validation: every field names a known kind, every cross-check a known field, targets and patterns are valid for their `against`.
+The Rules page shows the scalar settings; the three tables are shown read-only (edit `policy.local.yaml`).

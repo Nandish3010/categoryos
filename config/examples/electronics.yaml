@@ -350,3 +350,28 @@ verifier:
     score: 0.5
     ratio: 0.005
     qty: 0
+documents:
+  enabled: true
+  min_confidence: 0.6
+  crop_padding: 0.01
+  max_pages: 3
+  kinds:
+  - kind: licence_certificate
+    label: BIS registration certificate
+    stage: intake
+    panel: false
+    per_sku: false
+  - kind: product_label
+    label: Product label
+    stage: catalog
+    panel: true
+    per_sku: false
+  fields:
+  - {kind: licence_certificate, name: licence_number, label: Registration number, type: text, critical: true}
+  - {kind: licence_certificate, name: valid_until, label: Valid until, type: date, critical: true}
+  - {kind: product_label, name: rated_watts, label: Rated power (W), type: number, critical: false}
+  - {kind: product_label, name: mrp, label: MRP, type: inr, critical: false}
+  cross_checks:
+  - {id: certificate_number_vs_application, label: Registration number on the scan vs the application, kind: licence_certificate, field: licence_number, against: application_document, target: number, severity: high}
+  - {id: label_power_vs_sheet, label: Rated power on the label vs the SKU sheet, kind: product_label, field: rated_watts, against: sku_sheet, pattern: '(\d+)\s*W\b', tolerance: 0, severity: high}
+  - {id: label_mrp_vs_sheet, label: MRP on the label vs the SKU sheet, kind: product_label, field: mrp, against: sku_sheet, target: mrp, tolerance: 1, severity: medium}

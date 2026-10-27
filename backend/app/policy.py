@@ -377,6 +377,12 @@ class Catalog(M):
     label_licences: list[LabelLicence] = F([], label="Label licences", help="Licence numbers that must appear on listings.", used_in=["catalog"])
     label_checks: list[LabelCheck] = F([], label="Label information checks", used_in=["catalog"])
     hero_sku_count: int = F(3, "Hero SKUs", "SKUs that get a lifestyle image.", min=0, max=50, step=1, used_in=["catalog"])
+    label_panel_prompt: str = F(
+        "the nutrition or ingredients table and claims panel on the back of the pack",
+        "Label panel prompt",
+        "Noun phrase SAM uses to find the panel of a product label that Catalog reads closely.",
+        used_in=["catalog"],
+    )
     image_sizes: ImageSizes = F(label="Image sizes", used_in=["catalog", "marketing"])
     image_prompts: ImagePrompts = F(label="Image prompts", used_in=["catalog", "marketing"])
 
@@ -459,6 +465,73 @@ class Verifier(M):
     tolerances: Tolerances = F(label="Tolerances", help="How closely a claim must match the recomputed value.", used_in=["research", "negotiate", "catalog", "po"])
 
 
+class DocKind(M):
+    kind: str = F(label="Kind", help="Document kind id; a vendor's manifest assigns each file one.")
+    label: str = F(label="Label")
+    stage: Literal["intake", "catalog"] = F("intake", "Read in", "intake reads it during Screen; catalog reads it for shortlisted SKUs.", options=["intake", "catalog"])
+    panel: bool = F(False, "Segment a panel", "Find the panel with SAM (catalog.label_panel_prompt) and re-read that crop.")
+    per_sku: bool = F(False, "One row per SKU", "The document is a table: each field is read once per row, tagged with the row's SKU code.")
+
+
+class DocField(M):
+    kind: str = F(label="Kind")
+    name: str = F(label="Field")
+    label: str = F(label="Label")
+    type: Literal["text", "date", "pct", "inr", "qty", "number"] = F("text", "Type", options=["text", "date", "pct", "inr", "qty", "number"])
+    critical: bool = F(False, "Re-read", "Crop the field and read it a second time; the verifier needs both reads to agree.")
+
+
+class CrossCheck(M):
+    id: str = F(label="Id")
+    label: str = F(label="Label")
+    kind: str = F(label="Document kind")
+    field: str = F(label="Field")
+    against: Literal["application_document", "sku_sheet", "listing_copy"] = F(
+        "application_document", "Compared with", options=["application_document", "sku_sheet", "listing_copy"]
+    )
+    target: str = F("", "Target", "application_document: number | valid_until | company_name; sku_sheet: mrp | cost | pack (a sheet column).")
+    pattern: str = F("", "Pattern", "sku_sheet or listing_copy: a regex with one capture group, matched against the SKU row or listing text.")
+    tolerance: float | None = F(None, "Tolerance", "In the field's unit (a fraction for pct). Empty uses the verifier tolerance for that unit.", min=0)
+    severity: Literal["low", "medium", "high"] = F("medium", "Severity", options=["low", "medium", "high"])
+
+    @field_validator("pattern")
+    @classmethod
+    def _pat(cls, v: str) -> str:
+        if v:
+            _compile_all([v])
+        return v
+
+
+class Documents(M):
+    enabled: bool = F(False, "Read scanned documents", "Turn the vision pipeline on: certificates, labels and price lists are read, cross-checked and verified.", used_in=["intake", "catalog"])
+    min_confidence: float = F(0.6, "Minimum confidence", "A field the model reads below this confidence is not trusted.", min=0, max=1, step=0.05, used_in=["intake", "catalog"])
+    crop_padding: float = F(0.01, "Crop padding", "Margin added around a box when it is cropped for the re-read (share of the page).", min=0, max=0.2, step=0.005, used_in=["intake", "catalog"])
+    max_pages: int = F(3, "Pages per document", "Pages read per document; the rest are ignored.", min=1, max=20, step=1, used_in=["intake", "catalog"])
+    kinds: list[DocKind] = F([], label="Document kinds", help="Which kinds of document are read, and in which stage.", used_in=["intake", "catalog"])
+    fields: list[DocField] = F([], label="Fields", help="What is read from each kind.", used_in=["intake", "catalog"])
+    cross_checks: list[CrossCheck] = F([], label="Cross-checks", help="Which pairs of sources are compared, and how closely they must agree.", used_in=["intake", "catalog"])
+
+    @model_validator(mode="after")
+    def _refs(self) -> "Documents":
+        kinds = {k.kind for k in self.kinds}
+        if len(kinds) != len(self.kinds):
+            raise ValueError("document kinds must be unique")
+        names = {(f.kind, f.name) for f in self.fields}
+        for f in self.fields:
+            if f.kind not in kinds:
+                raise ValueError(f"field {f.name!r} refers to unknown document kind {f.kind!r}")
+        for c in self.cross_checks:
+            if (c.kind, c.field) not in names:
+                raise ValueError(f"cross-check {c.id!r} refers to unknown field {c.kind}.{c.field}")
+            if c.against == "application_document" and c.target not in ("number", "valid_until", "company_name"):
+                raise ValueError(f"cross-check {c.id!r}: target must be number, valid_until or company_name")
+            if c.against == "sku_sheet" and not (c.pattern or c.target in ("mrp", "cost", "pack")):
+                raise ValueError(f"cross-check {c.id!r}: give a pattern, or a target of mrp, cost or pack")
+            if c.against == "listing_copy" and not c.pattern:
+                raise ValueError(f"cross-check {c.id!r}: listing_copy needs a pattern")
+        return self
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -473,6 +546,10 @@ class Policy(M):
     po: Po = F(label="Purchase order", used_in=["po"])
     levers: Levers = F(label="Levers", used_in=["research"])
     verifier: Verifier = F(label="Verifier", used_in=["research", "negotiate", "catalog", "po"])
+    documents: Documents = Field(
+        default_factory=Documents,
+        json_schema_extra={"label": "Documents", "help": "Scanned certificates, labels and price lists read by the vision models.", "used_in": ["intake", "catalog"]},
+    )
 
     @model_validator(mode="after")
     def _cross(self) -> "Policy":

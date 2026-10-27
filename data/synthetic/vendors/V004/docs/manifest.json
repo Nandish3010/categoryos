@@ -1,0 +1,13 @@
+{
+  "documents": [
+    {
+      "file": "fssai_certificate.jpg",
+      "kind": "licence_certificate",
+      "title": "FSSAI licence certificate (scan)",
+      "pages": [
+        "fssai_certificate.jpg"
+      ],
+      "declares": "FSSAI"
+    }
+  ]
+}
