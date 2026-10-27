@@ -11,8 +11,9 @@ const TASKS = ['Vendor emails', 'Sheets', 'Vendor calls', 'Licence checks', 'Pri
 const GOOD = ['Strategy', 'Vendors', 'Growth'];
 const CELL_W = 214, CELL_H = 70, GAP = 6, GX = MARGIN_X + 30, GY = 232;
 
-const saved = Math.round(((IMPACT.saved_pct as number) ?? 32.7)); // modelled % of the week (from GET /api/impact)
-const SAVED_BLOCKS = Math.round((DAYS.length * ROWS * ((IMPACT.saved_pct as number) ?? 32.7)) / 100);
+const savedPct = IMPACT.saved_pct as number; // modelled % of the week, read from GET /api/impact at capture time
+const saved = Math.round(savedPct);
+const SAVED_BLOCKS = Math.round((DAYS.length * ROWS * savedPct) / 100);
 // the blocks that dissolve into green (deterministic pick)
 const order = Array.from({ length: DAYS.length * ROWS }, (_, i) => i).sort((a, b) => rnd(a * 1.3 + 4) - rnd(b * 1.3 + 4));
 const GREEN = new Set(order.slice(0, SAVED_BLOCKS));
@@ -23,7 +24,7 @@ export const WeekScene: React.FC = () => {
   const melt = sc.frames * 0.3; // melt starts here
   const hours = (IMPACT.hours_saved_per_month as number) ?? 0;
   const calm = prog(lf, melt, melt + 60, E.inOut);
-  const pct = ((IMPACT.saved_pct as number) ?? 0) * prog(lf, melt + 10, melt + 70, E.out);
+  const pct = (IMPACT.saved_pct as number) * prog(lf, melt + 10, melt + 70, E.out);
   return (
     <AbsoluteFill style={{ background: `radial-gradient(1300px 800px at 50% 35%, ${calm > 0.5 ? '#123222' : '#2a1613'} 0%, ${calm > 0.5 ? '#0c1a14' : '#140b09'} 62%)`, transition: 'none' }}>
       <AbsoluteFill style={{ background: `radial-gradient(1300px 800px at 50% 35%, #123222 0%, #0c1a14 62%)`, opacity: calm }} />

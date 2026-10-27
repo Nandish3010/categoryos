@@ -25,8 +25,8 @@ export const zoomFor = (f: Focus) => Math.min(2.8, (1920 * 0.94) / f.w, (1080 * 
 /** The recorded screen, with a zoom-to-focus camera and pulsing highlight rings drawn in video space. */
 export const ScreenView: React.FC<{
   src: Src; from: number; lf: number; frames: number; focus?: Focus; callouts?: Callout[]; zoomIn?: number; rate?: number; zoom?: number; holdZoom?: boolean; playFrames?: number;
-}> = ({ src, from, lf, frames, focus, callouts = [], zoomIn = 4, rate = 1, zoom, holdZoom = false, playFrames }) => {
-  const zin = prog(lf, zoomIn, zoomIn + 24, E.inOut);
+}> = ({ src, from, lf, frames, focus, callouts = [], zoomIn = 2, rate = 1, zoom, holdZoom = false, playFrames }) => {
+  const zin = prog(lf, zoomIn, zoomIn + 16, E.inOut);
   const zout = holdZoom ? 0 : prog(lf, frames - 14, frames - 2, E.inOut);
   const k = focus ? zin * (1 - zout) : 0;
   const Z = focus ? zoom ?? zoomFor(focus) : 1;
@@ -52,7 +52,7 @@ export const ScreenView: React.FC<{
 };
 
 /** Slightly 3D-tilted browser window. Children are laid out in a 1920x1080 space scaled to fit. */
-export const TiltFrame: React.FC<{ lf: number; children: React.ReactNode; scale?: number; url?: string; enter?: number; tilt?: number; x?: number; y?: number }> = ({ lf, children, scale = 0.78, url = 'categoryos.vercel.app', enter = 0, tilt = 1, x = 960, y = 478 }) => {
+export const TiltFrame: React.FC<{ lf: number; children: React.ReactNode; scale?: number; url?: string; enter?: number; tilt?: number; x?: number; y?: number }> = ({ lf, children, scale = 0.84, url = 'categoryos.vercel.app', enter = 0, tilt = 1, x = 960, y = 500 }) => {
   const w = 1920 * scale, h = 1080 * scale, bar = 46;
   const p = pop(lf, enter, FPS, 14, 120, 0.9);
   const ry = (-5 + Math.sin(lf * 0.02) * 1.2) * tilt, rx = 2.2 * tilt;

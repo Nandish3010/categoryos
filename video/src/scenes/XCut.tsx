@@ -70,7 +70,7 @@ const Montage: React.FC = () => {
 
 const WeekBack: React.FC = () => {
   const lf = useCurrentFrame();
-  const pct = ((IMPACT.saved_pct as number) ?? 0) * prog(lf, 4, 40, E.out);
+  const pct = (IMPACT.saved_pct as number) * prog(lf, 4, 40, E.out);
   return (
     <AbsoluteFill style={{ background: 'radial-gradient(900px 700px at 50% 30%, #123222 0%, #0c1a14 70%)' }}>
       <div style={{ position: 'absolute', top: 90, left: 0, right: 0, textAlign: 'center' }}>

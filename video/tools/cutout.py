@@ -1,6 +1,6 @@
 """Cut a Muse Image render (character on a flat pale-grey backdrop) out to a transparent PNG.
 
-Usage: cutout.py <in.png> <out.png> [--no-floor]
+Usage: cutout.py <in.png> <out.png> [--no-floor] [--thresh=N]  (lower thresh keeps white floating papers)
 
 Method (kept reproducible on purpose):
   1. Pillow floodfill from the edges and corners, thresh=40.
@@ -18,7 +18,7 @@ from PIL import Image, ImageChops, ImageDraw, ImageFilter
 SENTINEL = (255, 0, 255)
 
 
-def cutout(src: str, dst: str, floor: bool = True) -> None:
+def cutout(src: str, dst: str, floor: bool = True, thresh: int = 40) -> None:
     im = Image.open(src).convert("RGB")
     w, h = im.size
     work = im.copy()
@@ -31,7 +31,7 @@ def cutout(src: str, dst: str, floor: bool = True) -> None:
     seeds += [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]
     for s in seeds:
         if work.getpixel(s) != SENTINEL:
-            ImageDraw.floodfill(work, s, SENTINEL, thresh=40)
+            ImageDraw.floodfill(work, s, SENTINEL, thresh=thresh)
     px = work.load()
     ipx = im.load()
     mask = Image.new("L", (w, h), 255)
@@ -72,4 +72,5 @@ def cutout(src: str, dst: str, floor: bool = True) -> None:
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    cutout(args[0], args[1], floor="--no-floor" not in sys.argv)
+    th = next((int(a.split("=")[1]) for a in sys.argv if a.startswith("--thresh=")), 40)
+    cutout(args[0], args[1], floor="--no-floor" not in sys.argv, thresh=th)

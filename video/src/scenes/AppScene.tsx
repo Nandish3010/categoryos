@@ -50,7 +50,7 @@ const TagChip: React.FC<{ lf: number; text: string }> = ({ lf, text }) => {
   );
 };
 
-export const AppScene: React.FC<{ sceneId: string; segs: Seg[]; hours: [number, number]; frameScale?: number; hue?: 'blue' | 'green'; showHours?: boolean }> = ({ sceneId, segs, hours, frameScale = 0.78, hue = 'blue', showHours = true }) => {
+export const AppScene: React.FC<{ sceneId: string; segs: Seg[]; hours: [number, number]; frameScale?: number; hue?: 'blue' | 'green'; showHours?: boolean }> = ({ sceneId, segs, hours, frameScale = 0.84, hue = 'blue', showHours = true }) => {
   const sc = sceneOf(sceneId);
   const f = useCurrentFrame();
   const max = (IMPACT.hours_saved_per_month as number) ?? 0;

@@ -39,3 +39,4 @@ video/out/
 video/captures/
 video/public/
 video/vo/*.aiff
+video/src/data/impact.json

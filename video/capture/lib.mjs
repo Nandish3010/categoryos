@@ -54,6 +54,8 @@ export async function record(browser, name, fn) {
   fs.mkdirSync(dir, { recursive: true });
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   await ctx.addInitScript(CURSOR_JS);
+  // dismiss the judges' guided tour (frontend/lib/tour.ts: categoryos.tour.v1 === 'done')
+  await ctx.addInitScript("try { localStorage.setItem('categoryos.tour.v1', 'done'); } catch (e) {}");
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
   const frames = [];
