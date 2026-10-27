@@ -11,6 +11,7 @@ import { fetchTeamImpact } from "@/lib/impact";
 import { vendorOutcome } from "@/lib/outcome";
 import { fetchLatestRun, fetchRun, screeningFailure } from "@/lib/runs";
 import { inrCompact } from "@/lib/format";
+import { startTour } from "@/lib/tour";
 import { useAsync } from "@/lib/useAsync";
 import { useEffect, useState } from "react";
 
@@ -121,7 +122,14 @@ export default function VendorsBoard() {
       <header className="mb-6">
         <div className="flex items-center justify-between gap-3">
           <div className="text-xl font-semibold tracking-tight">CategoryOS</div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
+            <button
+              type="button"
+              onClick={startTour}
+              className="inline-flex min-h-11 items-center gap-1 rounded-card bg-accent px-3 text-sm font-semibold text-bg"
+            >
+              Judges: start here <ArrowRight size={16} aria-hidden="true" />
+            </button>
             <Link href="/try" className="inline-flex min-h-11 items-center rounded-card border border-accent/40 px-3 text-sm text-accent hover:bg-surface-2">
               Try your own vendor
             </Link>

@@ -40,6 +40,31 @@ window). Modal prints the web URL, `https://<workspace>--categoryos-backend-fast
 Replay sessions are in memory and write nothing; the Volume is only used if a vendor's golden run fails validation (it is
 then served from the mock fixtures, flagged `degraded` in `GET /api/mode`) or you switch the deploy to `MODEL_MODE=live`.
 
+### Optional: public live budget (judges can try live features without the demo key)
+
+Off by default. The deploy stays `MODEL_MODE=replay`: the four vendor runs keep replaying recorded output, and only the
+features you list may make real model calls, within a hard dollar budget. Set at deploy time (they are ordinary env vars,
+config, not playbook), and make sure the Modal secret holds a real `MODEL_API_KEY`:
+
+```bash
+PUBLIC_LIVE_BUDGET_USD=10 PUBLIC_LIVE_PER_IP_USD=0.50 PUBLIC_LIVE_FEATURES=byo,copilot \
+FRONTEND_ORIGIN=https://<your-app>.vercel.app modal deploy backend/modal_app.py
+```
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `PUBLIC_LIVE_BUDGET_USD` | `0` (disabled) | Total model spend the public may cause, in total (kept in `STATE_DIR/public_live.json`). |
+| `PUBLIC_LIVE_PER_IP_USD` | `0.50` | Most one address may cause per UTC day. Uses `TRUST_FORWARDED_FOR` like the upload limits; behind a proxy that is not trusted every visitor shares one address. |
+| `PUBLIC_LIVE_FEATURES` | empty | Comma list, allowed values `byo` (model stages of uploaded vendors) and `copilot` (live push-to-talk / typed call). Unknown names are ignored. |
+
+Limits stack: the shared public budget, the per-IP share, the per-call budget (`CALL_BUDGET_USD` for the copilot), the
+global `MAX_SPEND_USD` ledger cap and the existing rate limits. When any of them is hit nothing breaks: a BYO vendor is
+run rules-only, a live call is refused with `public_budget_exhausted` and the UI offers Simulate call, with the message
+"Public live budget used up: showing the recorded run". The demo key still works exactly as before and is never metered.
+A public call never replaces the shared recorded transcript. Check it with `GET /api/public-live` (remaining budget for the
+caller) and `GET /api/mode` (`public_live`). Spend is also in `/api/ledger` and counts toward `MAX_SPEND_USD`. Budget and
+per-IP counters are enforced per container and checked before each call, so one in-flight call can overshoot slightly.
+
 ## 3. Deploy the frontend (Vercel)
 
 1. Import the GitHub repo in Vercel. **Root Directory: `frontend/`**. Framework preset: Next.js.

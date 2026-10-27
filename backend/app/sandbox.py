@@ -24,7 +24,7 @@ from typing import Any
 
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from app import persist, policy, registry, sandbox_budget, scope, uploads
+from app import persist, policy, public_live, registry, sandbox_budget, scope, uploads
 from app.config import settings
 from app.errors import CategoryOSError, RateLimited
 from app.uploads import ApplicationIn, UploadError
@@ -99,17 +99,26 @@ def reset_rate_limits() -> None:
 # ---------- model mode ----------
 
 
+def decide_llm(keyed: bool, key: str) -> tuple[str, bool]:
+    """(mode, public). ``public`` is True when "live" comes from the public live budget (no demo key), so the vendor's
+    spend is charged to it. With PUBLIC_LIVE_FEATURES listing ``byo`` the public budget governs keyless callers in every
+    model mode (including the replay deploy); otherwise the older per-IP rule applies in live mode only."""
+    if settings.model_mode == "mock":
+        return "mock", False
+    if not settings.model_api_key:
+        return "rules_only", False
+    if keyed:
+        return "live", False
+    if public_live.enabled("byo"):
+        return ("live", True) if public_live.available("byo", key) else ("rules_only", False)
+    if settings.model_mode == "live" and sandbox_budget.remaining(key) > 0:
+        return "live", False
+    return "rules_only", False
+
+
 def decide_llm_mode(keyed: bool, key: str) -> str:
     """How this vendor's model stages run (see the module docstring). Evaluated at upload and again at run start."""
-    if settings.model_mode == "mock":
-        return "mock"
-    if not settings.model_api_key:
-        return "rules_only"
-    if keyed:
-        return "live"
-    if settings.model_mode == "live" and sandbox_budget.remaining(key) > 0:
-        return "live"
-    return "rules_only"
+    return decide_llm(keyed, key)[0]
 
 
 def authorize_run(request: Any, vendor_id: str, header: str | None) -> None:
@@ -120,9 +129,10 @@ def authorize_run(request: Any, vendor_id: str, header: str | None) -> None:
         return
     keyed = demo_key_ok(header)
     key = ip_key(client_ip(request))
-    mode = decide_llm_mode(keyed, key)
+    mode, public = decide_llm(keyed, key)
     meta["llm_mode"] = mode
     meta["ip_key"] = "" if keyed else key
+    meta["public_live"] = public
     if mode != "live":
         _drop_manifest(vendor_id, meta)
     registry.write_meta(vendor_id, meta)
@@ -277,7 +287,8 @@ def create(
     vid = new_id()
     app_dict, provided = build_application(vid, application, pol)
 
-    live = decide_llm_mode(keyed, ip_key(ip)) == "live"
+    llm_mode, via_public = decide_llm(keyed, ip_key(ip))
+    live = llm_mode == "live"
     kinds = {k.kind: k for k in pol.documents.kinds}
     doc_meta: list[dict[str, Any]] = []
     manifest: list[dict[str, Any]] = []
@@ -324,7 +335,8 @@ def create(
         meta = {
             "id": vid,
             "starter": starter,
-            "llm_mode": decide_llm_mode(keyed, ip_key(ip)),
+            "llm_mode": llm_mode,
+            "public_live": via_public,
             "ip_key": "" if keyed else ip_key(ip),
             "created_at": now,
             "expires_at": now + settings.upload_ttl_hours * 3600,
@@ -415,6 +427,7 @@ def options(keyed: bool, ip: str) -> dict[str, Any]:
         "llm_mode": mode,
         "mode_label": MODE_LABELS[mode],
         "live_budget_usd": settings.upload_live_budget_usd_per_ip,
+        "public_live": public_live.status(ip_key(ip), "byo"),
     }
 
 

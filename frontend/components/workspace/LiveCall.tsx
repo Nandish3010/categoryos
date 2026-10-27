@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { fetchMode } from "@/lib/api";
 import { useCall, type CallView, type NextAsk } from "@/lib/call";
 import { getDemoKey } from "@/lib/demoKey";
+import { budgetMessage, publicLiveOpen } from "@/lib/publicLive";
 import { fmtProb, readDeals } from "@/lib/deals";
 import { PushToTalk, type Speaker } from "@/lib/recorder";
 import { readNegotiate } from "@/lib/stages";
@@ -160,7 +161,10 @@ export function LiveCall({ vendorId }: { vendorId: string }) {
   const { view, start, end, say, chunk, reset } = useCall(vendorId);
   const mode = useAsync(fetchMode, "mode");
   const [fast, setFast] = useState(false);
-  const liveOk = mode.data?.mode === "live" && !!getDemoKey();
+  const publicCopilot = publicLiveOpen(mode.data?.public_live, "copilot");
+  const liveOk = (mode.data?.mode === "live" && !!getDemoKey()) || publicCopilot;
+  const copilotPublic = mode.data?.public_live?.features.includes("copilot") ? mode.data.public_live : null;
+  const budgetNote = budgetMessage(copilotPublic, view.error?.code);
   const stage = view.stage;
   const neg = useMemo(() => readNegotiate(stage), [stage]);
   const deals = useMemo(() => readDeals(stage), [stage]);
@@ -192,13 +196,19 @@ export function LiveCall({ vendorId }: { vendorId: string }) {
               <button
                 type="button"
                 disabled={!liveOk}
-                title={liveOk ? "Listen on the microphone" : "Needs live mode and the demo key. Simulate call is free."}
+                title={liveOk ? "Listen on the microphone" : (copilotPublic ? "Needs the demo key or remaining public live budget. Simulate call is free." : "Needs live mode and the demo key. Simulate call is free.")}
                 onClick={() => void start("live")}
                 className="inline-flex min-h-11 items-center gap-2 rounded-card border border-border px-4 text-sm font-medium disabled:opacity-50"
               >
                 <Mic size={16} aria-hidden="true" /> Start live call (microphone)
               </button>
-              {!liveOk ? <span className="text-xs text-text-dim">Microphone calls need live mode and the demo key; the simulation runs the same pipeline at no cost.</span> : null}
+              {!liveOk ? (
+                <span className="text-xs text-text-dim" data-testid="live-unavailable">
+                  {budgetNote ? `${budgetNote}. ` : ""}Microphone calls need {copilotPublic ? "the demo key or remaining public live budget" : "live mode and the demo key"}; the simulation runs the same pipeline at no cost.
+                </span>
+              ) : publicCopilot && !getDemoKey() ? (
+                <span className="text-xs text-text-dim">Public live budget: up to ${copilotPublic?.per_ip_usd.toFixed(2)} per visitor per day.</span>
+              ) : null}
               {view.status === "ended" ? (
                 <button type="button" onClick={reset} className="min-h-11 px-2 text-sm text-accent hover:underline">Clear</button>
               ) : null}
@@ -217,7 +227,7 @@ export function LiveCall({ vendorId }: { vendorId: string }) {
       </section>
 
       {view.error ? (
-        <Banner tone="warn" title={view.error.problem}>
+        <Banner tone="warn" title={view.error.code === "public_budget_exhausted" ? budgetMessage(null, view.error.code) ?? view.error.problem : view.error.problem}>
           {[view.error.cause, view.error.fix].filter(Boolean).join(" ")}
         </Banner>
       ) : null}

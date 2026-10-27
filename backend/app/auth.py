@@ -17,7 +17,7 @@ def reset_rate_limits() -> None:
     _hits.clear()
 
 
-def _check_rate(ip: str) -> None:
+def check_rate(ip: str) -> None:
     now = time.monotonic()
     q = _hits[ip]
     while q and now - q[0] > WINDOW_S:
@@ -35,4 +35,4 @@ async def require_demo_key(request: Request, x_demo_key: str | None = Header(def
         )
     if not x_demo_key or not secrets.compare_digest(x_demo_key.encode(), settings.demo_key.encode()):
         raise DemoKeyRequired()
-    _check_rate(request.client.host if request.client else "unknown")
+    check_rate(request.client.host if request.client else "unknown")

@@ -1,4 +1,6 @@
 import { getDemoKey } from "./demoKey";
+import type { Provenance } from "./provenance";
+import type { PublicLiveStatus } from "./publicLive";
 
 export const BACKEND_URL = (
   process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:8001"
@@ -154,6 +156,9 @@ export type ModeResponse = {
   spend_usd: number;
   max_spend_usd: number;
   warn_spend_usd?: number;
+  /** Replay deploys: where each vendor's recorded run came from. */
+  provenance?: Record<string, Provenance>;
+  public_live?: PublicLiveStatus;
 };
 
 export type ApiErrorBody = {
@@ -278,6 +283,7 @@ export const fetchClaims = (id: string, inject: boolean, signal?: AbortSignal) =
   );
 
 export const fetchMode = (signal?: AbortSignal) => get<ModeResponse>("/api/mode", signal);
+export const fetchPublicLive = (signal?: AbortSignal) => get<PublicLiveStatus>("/api/public-live", signal);
 
 export type UploadStarter = {
   id: string;
@@ -296,6 +302,8 @@ export type UploadOptions = {
   llm_mode: SandboxInfo["llm_mode"];
   mode_label: string;
   live_budget_usd: number;
+  /** Present on newer backends: the public live budget for model-backed uploads. */
+  public_live?: PublicLiveStatus;
 };
 
 export const fetchUploadOptions = (signal?: AbortSignal) => {

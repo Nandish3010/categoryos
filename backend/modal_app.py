@@ -6,7 +6,8 @@
 * SQLite and the spend ledger live on the Volume ``categoryos-state`` (/state); committed after state changes.
 * One container (in-process run state + SSE), scale-to-zero by default, ~10 minute idle window.
 
-Deploy-time environment: MODEL_MODE (default replay), FRONTEND_ORIGIN (the Vercel URL, for CORS), MIN_CONTAINERS (default 0).
+Deploy-time environment: MODEL_MODE (default replay), FRONTEND_ORIGIN (the Vercel URL, for CORS), MIN_CONTAINERS (default 0),
+PUBLIC_LIVE_BUDGET_USD / PUBLIC_LIVE_PER_IP_USD / PUBLIC_LIVE_FEATURES (opt-in public live budget, see scripts/deploy.md).
 """
 
 import os
@@ -37,6 +38,9 @@ image_env = {
 }
 if os.environ.get("FRONTEND_ORIGIN"):
     image_env["FRONTEND_ORIGIN"] = os.environ["FRONTEND_ORIGIN"]
+for _name in ("PUBLIC_LIVE_BUDGET_USD", "PUBLIC_LIVE_PER_IP_USD", "PUBLIC_LIVE_FEATURES"):  # opt-in public live budget (off by default)
+    if os.environ.get(_name):
+        image_env[_name] = os.environ[_name]
 
 image = (
     modal.Image.debian_slim(python_version="3.12")

@@ -197,6 +197,20 @@ def pure_replay() -> bool:
     return settings.model_mode == "replay" and not problems()
 
 
+def provenance(vendor_id: str) -> dict[str, Any] | None:
+    """Where a replayed run came from, straight from the fixture's meta.source: "live" (recorded from real model calls)
+    or "mock" (scripted). A vendor whose golden run failed validation is served from the mock fixtures, so it is "mock".
+    None outside replay mode."""
+    if settings.model_mode != "replay":
+        return None
+    _ensure()
+    run = _goldens.get(vendor_id)
+    if run is None:
+        return {"source": "mock", "recorded_at": None, "cost_usd": 0.0, "degraded": True}
+    cost = sum(e.cost_usd or 0.0 for e in run.events)
+    return {"source": run.meta.source, "recorded_at": run.meta.recorded_at, "cost_usd": round(cost, 4), "degraded": False}
+
+
 def status() -> dict[str, Any]:
     found = problems()
     return {"vendors": {v: found.get(v, "ok") for v in ALLOWED_VENDORS}}

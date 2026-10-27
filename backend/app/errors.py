@@ -33,6 +33,14 @@ class CategoryOSError(Exception):
         }
 
 
+class PublicBudgetExhausted(CategoryOSError):
+    status = 429
+    code = "public_budget_exhausted"
+    problem = "Public live budget used up: showing the recorded run"
+    cause = "The shared public live budget, or this address's share of it, is spent"
+    fix = "Rules-only and recorded runs are free and unlimited; a demo key lifts the budget"
+
+
 class UnknownVendor(CategoryOSError):
     status = 404
     code = "unknown_vendor"
