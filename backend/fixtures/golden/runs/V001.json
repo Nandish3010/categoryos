@@ -1579,7 +1579,8 @@
      "reasons": [
       "GST, FSSAI, PAN, trademark and incorporation documents are all valid.",
       "No medical or cure claims; the two soft claims need supporting evidence, not rejection.",
-      "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up."
+      "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up.",
+      "One supplier price-list line disagrees with the SKU sheet; ask the vendor which figure is right."
      ],
      "risk_flags": [
       {
@@ -9368,7 +9369,7 @@
  "meta": {
   "metrics_hash": "837101a7c0f39b4971e399fa99b420ecd7f6f488475643d5cd6002d7d963f4c4",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T03:02:17+00:00",
+  "recorded_at": "2026-10-27T03:10:45+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -22907,7 +22908,8 @@
     "reasons": [
      "GST, FSSAI, PAN, trademark and incorporation documents are all valid.",
      "No medical or cure claims; the two soft claims need supporting evidence, not rejection.",
-     "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up."
+     "Two sheet cells are blank (one cost, one MRP) and can be resolved by follow-up.",
+     "One supplier price-list line disagrees with the SKU sheet; ask the vendor which figure is right."
     ],
     "risk_flags": [
      {
