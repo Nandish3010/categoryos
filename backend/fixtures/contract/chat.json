@@ -1,0 +1,64 @@
+{
+  "contract": "chat",
+  "model": "muse-spark-1.3-contributor",
+  "status": "PASS",
+  "note": "finish=stop content=str usage_keys=['completion_tokens', 'completion_tokens_details', 'prompt_tokens', 'prompt_tokens_details', 'total_tokens'] text='pong' tokens=15/274",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "client.chat.completions.create": [
+      {
+        "request_params": {
+          "model": "muse-spark-1.3-contributor",
+          "max_tokens": 400,
+          "reasoning_effort": "low"
+        },
+        "events": null,
+        "response": {
+          "id": "chatcmpl-01a17e5e-9395-7384-86ba-1af23520177a",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "pong",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1793121489,
+          "model": "muse-spark-1.3-contributor",
+          "object": "chat.completion",
+          "metadata": null,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 274,
+            "prompt_tokens": 15,
+            "total_tokens": 289,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 264,
+              "rejected_prediction_tokens": null,
+              "text_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": null,
+              "cached_tokens": 0,
+              "image_tokens": null,
+              "text_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}

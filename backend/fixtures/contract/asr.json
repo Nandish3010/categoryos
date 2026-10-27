@@ -1,0 +1,21 @@
+{
+  "contract": "asr",
+  "model": "muse-voice-transcribe-1.0",
+  "status": "PASS",
+  "note": "HTTP 200 body keys=['audioDurationMs', 'sessionId', 'transcript', 'turns'] text='price is 45 rupees per kilo.' diff_vs_spoken=76.9%",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "asr": [
+      {
+        "status": 200,
+        "content_type": "application/json",
+        "body": {
+          "sessionId": "voyager/transcribe/540AD1DC4F3B4D56B9E0F845C06AD40C",
+          "transcript": "price is 45 rupees per kilo.",
+          "audioDurationMs": 2000,
+          "turns": []
+        }
+      }
+    ]
+  }
+}

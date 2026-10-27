@@ -1,0 +1,51 @@
+{
+  "contract": "image",
+  "model": "muse-image-1.0",
+  "status": "PASS",
+  "note": "decoded PNG (1600, 1600) bytes=1528681; output_format via extra_body accepted",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "client.images.generate": [
+      {
+        "request_params": {
+          "model": "muse-image-1.0",
+          "prompt": "A plain white ceramic coffee mug on a white background, product photo",
+          "n": 1,
+          "size": "1024x1024",
+          "response_format": "b64_json",
+          "extra_body": {
+            "output_format": "png"
+          }
+        },
+        "events": null,
+        "response": {
+          "created": 1793120965,
+          "background": "opaque",
+          "data": [
+            {
+              "b64_json": {
+                "_truncated": true,
+                "prefix": "iVBORw0KGgoAAAANSUhEUgAABkAAAAZACAIAAACubhnwAAABl2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJX",
+                "length": 2038244,
+                "sha256": "d558fa9d2e353a00e593d9336820778882f5732a9d578ba5b7079b5dfa951eb3"
+              },
+              "revised_prompt": null,
+              "url": null
+            }
+          ],
+          "output_format": "png",
+          "quality": null,
+          "safety_identifier": null,
+          "size": null,
+          "usage": {
+            "input_tokens": 9630,
+            "input_tokens_details": null,
+            "output_tokens": 532,
+            "total_tokens": 10162,
+            "output_tokens_details": null
+          }
+        }
+      }
+    ]
+  }
+}
