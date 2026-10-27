@@ -63,3 +63,15 @@ The call also contains a contingent offer on the litter (turns 17 to 20): a 15% 
 units sell across the range within 90 days. It is not a commitment; the deal evaluator estimates the chance of hitting the target
 (effectively none) and rejects the structure with counters. V001's application carries a tiered back-margin slab (2 points above
 ₹5,00,000 GMV in 90 days, 4 points above ₹10,00,000) that the evaluator accepts as likely.
+
+## Run: existing vendors (`data/synthetic/ops/`)
+
+`python3 data/generate_ops.py` (also run by `make data`) writes a second, independent dataset for the Run area: six existing
+vendors (E001 to E006), 13 weeks of daily sales per SKU, inventory batches, open and closed PO lines (promised vs actual dates
+and quantities), returns, weekly ratings and seven messy vendor email replies. Seed 42, byte-identical on re-run. It never
+touches `generate.py`. `meta.json` holds `as_of` (the Run module's "today", 26 Oct 2026).
+
+Planted issues: E002 falling fill rate (98% earlier, about 54% recent) with a late PO and a transporter excuse; E003 hero SKU
+NP-03 out of stock with a part-shipped PO (balance promised 3 Nov); E004 ageing slow movers (TW-03/04/05) and a reply promising
+"5-6 working days"; E005 a PO a week overdue with two vague replies and low cover on LT-05; E006 GW-02 returns and rating slide
+(leaking packaging) and a GW-03 sales drop; E001 is healthy apart from a promo-driven BK-02 spike.

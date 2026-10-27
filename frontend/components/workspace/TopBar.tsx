@@ -78,6 +78,9 @@ export function TopBar({
 
       <div className="ml-auto flex items-center gap-2 min-[900px]:ml-0">
         {impact && onToggleImpact ? <ImpactChip impact={impact} open={impactOpen} onToggle={onToggleImpact} /> : null}
+        <Link href="/run" className="inline-flex h-8 items-center rounded-chip px-2 text-sm text-text-dim hover:text-text">
+          Run
+        </Link>
         <Link href="/rules" className="inline-flex h-8 items-center rounded-chip px-2 text-sm text-text-dim hover:text-text">
           Playbook
         </Link>

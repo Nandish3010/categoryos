@@ -240,3 +240,10 @@ def test_policy_hash_changes_with_operations_edits():
     before = policy.policy_hash()
     policy.save_overrides({"operations": {"anomaly": {"growth_z_threshold": 3.5}}})
     assert policy.policy_hash() != before
+
+
+def test_existing_vendor_ids_are_not_sandbox_ids_and_never_set_a_scope():
+    from app import registry, scope
+
+    assert not any(registry.is_sandbox_id(v) for v in ("E001", "E006", "PO-E001-0001"))
+    assert scope.current() is None
