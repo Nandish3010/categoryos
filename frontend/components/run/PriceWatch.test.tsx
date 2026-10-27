@@ -61,8 +61,8 @@ describe("lib/priceWatch helpers", () => {
     expect(effectText(null, String)).toBe("No change was made.");
   });
   it("lists Price watch in the Run navigation", () => {
-    expect(RUN_NAV.at(-1)?.href).toBe("/run/price-watch");
-    expect(RUN_NAV.at(-1)?.match("/run/price-watch")).toBe(true);
+    const item = RUN_NAV.find((n) => n.href === "/run/price-watch");
+    expect(item?.match("/run/price-watch")).toBe(true);
   });
 });
 

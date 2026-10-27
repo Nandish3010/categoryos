@@ -34,11 +34,13 @@ def reset() -> None:
     )
 
     catalog_api.reset()
+    from app.ops.inventory_health import api as inventory_health_api
     from app.ops.pricewatch import (
         api as price_watch_api,  # lazy: these modules import this one
     )
     from app.ops.promotions import api as promotions_api
 
+    inventory_health_api.reset()
     price_watch_api.reset()
     promotions_api.reset()
 

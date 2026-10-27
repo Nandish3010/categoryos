@@ -383,6 +383,40 @@ price_watch:                     # Run: competitor price monitor (ops_price_watc
     horizon_days: 30
   ask_price_protection: true     # when a match would break the floor, ask the vendor to fund the gap
 
+inventory_health:                # Run: weekly inventory health review (ops_inventory_health). Python decides every number; the model only drafts the note and vendor emails
+  forecast:
+    window_days: 28              # daily demand = units sold over this many latest days / this many days
+    min_daily_units: 0.05        # selling slower than this a day: no cover figure, the SKU counts as not moving
+  cover:                         # days of cover = units on hand / daily demand
+    min_days: 14                 # on-hand cover under this is below the band
+    target_days: 30              # a reorder or a clearance brings the SKU to this cover
+    max_days: 60                 # on-hand cover over this is excess stock
+    by_category: {}              # optional per-category band, e.g. {cat litter: {min_days: 10, target_days: 25, max_days: 50}}
+  stock_out:
+    safety_days: 5               # reorder is due when cover (on hand + inbound) falls under lead time + review cycle + this
+    review_days: 7               # the category is reviewed weekly: an order placed at the next review lands this much later
+    overdue_assumed_days: 7      # a PO line past its promised date is assumed to land this many days from today, not today
+    critical_days: 3             # stock forecast to end within this many days is critical
+  ageing:
+    aged_days: 90                # a batch received more than this many days ago is aged
+    dead_no_sale_days: 45        # stock with no sale for this many days is dead
+  moq:
+    overbuy_ratio: 1.5           # a PO line or reorder this many times what is needed, because of the vendor's MOQ, is an overbuy
+    pack_round_units: 10         # reorder quantities with no MOQ on file round up to this
+  rtv:                           # return to vendor under sell-or-return terms (terms and window dates are in data/synthetic/ops/inventory_terms.csv)
+    allow: true
+    min_credit_inr: 2000         # a return worth less credit than this is liquidated instead
+    prefer_pct_of_liquidation: 100   # return when the vendor credit is at least this % of what a liquidation promo recovers
+    urgent_window_days: 21       # a sell-or-return window with this many days or fewer left is urgent
+  liquidate:
+    discount_aged_pct: 25
+    discount_dead_pct: 40
+    discount_excess_pct: 15
+    floor_pct_of_cost: 60        # a liquidation price is never under this % of cost
+    uplift_multiplier: 2.0       # daily sales on the promo = this x the normal rate (sets days to clear)
+    max_clear_days: 90           # a promo that would take longer than this to clear the stock does not beat a return to the vendor
+    price_round_inr: 1
+
 impact:                        # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
   baseline_status: research_estimate   # research_estimate | measured: the UI labels every figure derived from the numbers below accordingly
   baseline_minutes:              # by-hand minutes to onboard one new vendor of about 12 SKUs (about 1,085 min). Per-SKU steps scale with the shortlist
@@ -443,7 +477,7 @@ impact:                        # Impact meter. RESEARCH ESTIMATES (not measured)
     catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: shipped}
     promotions_planner: {label: "Promotions and event planner", status: shipped}
     competitor_monitor: {label: "Competitor price monitor", status: shipped}
-    inventory_health_module: {label: "Inventory health and liquidation", status: not_built}
+    inventory_health_module: {label: "Inventory health and liquidation", status: shipped}
   coverage:                      # module, task, and the share of that task's time the module takes over
     - {module: new_vendor_onboarding, task: new_vendor_onboarding, in_scope_pct: 100}
     - {module: new_vendor_onboarding, task: catalog_create_qc, in_scope_pct: 30}    # creation only

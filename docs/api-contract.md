@@ -686,4 +686,11 @@ Approving is SIMULATED: it queues a catalog update in memory; nothing leaves the
 - `GET /api/ops/price-watch[?inject=1]`: `counts`, `headline` / `narrative`, `actions` (kind undercut / breach / blip / trend, recommendation match / hold / ask_vendor_funding / flag_breach / escalate, numbers, `series`, `claims`, `decision`),
   `skus` (every SKU scanned), `drafts` (kind `price_watch`), `claims` / `verification` / `trace`.
 - `POST /api/ops/price-watch/actions/{id}/approve|reject`: simulated; a match records the price change, a vendor action approves the vendor message. 404 `unknown_price_watch_action`, 409 `price_watch_action_decided`.
-- Both modules: `POST .../reset` (demo key). Assumed live shapes: see the module docstrings (`ops/promotions/agent.py`, `ops/pricewatch/agent.py`).
+
+## Run: inventory health
+
+- `GET /api/ops/inventory-health[?inject=1]`: `counts`, `headline` / `narrative`, `actions` (kind stock_out / overbuy / dead / aged / excess, recommendation reorder / expedite_po / pause_po / return_to_vendor / liquidate, severity, `reorder` / `pause` / `clear` blocks, `stock`, `note`, `claims`, `decision`),
+  `vendors` (roll-up), `skus` (every SKU reviewed, live and discontinued lots), `drafts` (kind `inventory_health`), `thresholds`, `claims` / `verification` / `trace`.
+- `POST /api/ops/inventory-health/actions/{id}/approve|reject`: simulated; a reorder records the PO draft, a liquidation the promo nomination, expedite / pause / return approve the vendor message. 404 `unknown_inventory_action`, 409 `inventory_action_decided`; 500 `inventory_health_data_missing`.
+- All Run modules: `POST .../reset` (demo key). Assumed live shapes: see the module docstrings (`ops/promotions/agent.py`, `ops/pricewatch/agent.py`, `ops/inventory_health/agent.py`).
+

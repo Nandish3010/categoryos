@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval contract
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch data-inventory-health fixtures-run lint live record smoke requirements eval contract
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -73,6 +73,9 @@ data-promotions:
 
 data-price-watch:
 	python3 data/generate_price_watch.py
+
+data-inventory-health:
+	python3 data/generate_inventory_health.py
 
 # Rebuild the mock model fixtures of those two modules from the engines (after changing the playbook knobs or the data).
 fixtures-run:
