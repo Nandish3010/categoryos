@@ -72,6 +72,25 @@ describe("RequestDetail", () => {
     expect(screen.getByTestId("tier")).toHaveTextContent("Category executive");
   });
 
+  it("says plainly when no retail change is needed instead of three equal impact rows", () => {
+    render(<RequestDetail d={detail("PR-001")} onStatus={() => {}} />);
+    expect(screen.getByTestId("impact-unchanged")).toHaveTextContent(/No retail change needed: absorbing keeps margin above target/);
+    expect(screen.queryByText("Margin if we pass it on")).not.toBeInTheDocument();
+  });
+
+  it("compares absorb, pass-through and the decision when they differ", () => {
+    render(<RequestDetail d={detail("PR-002")} onStatus={() => {}} />);
+    expect(screen.queryByTestId("impact-unchanged")).not.toBeInTheDocument();
+    expect(screen.getByText("Margin if we pass it on")).toBeInTheDocument();
+  });
+
+  it("gives each SKU a one-line reason from the engine, not just its code", () => {
+    const d = structuredClone(detail("PR-001"));
+    d.evaluation.lines[0].why = "margin stays 38.4% vs 38% target; index justifies up to 5.0%";
+    render(<RequestDetail d={d} onStatus={() => {}} />);
+    expect(screen.getByText(/Why: margin stays 38\.4% vs 38% target/)).toBeInTheDocument();
+  });
+
   it("approves at a role, sending nothing: the backend records a simulated send", async () => {
     const calls = stub({
       "POST /api/price-requests/PR-001/approve": () => json({ id: "PR-001", status: "approved", by: "category_executive", at: "t", sent: { simulated: true, to: "x", subject: "s", body: "b" } }),

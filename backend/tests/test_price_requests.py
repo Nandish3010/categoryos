@@ -493,3 +493,11 @@ def test_request_data_is_deterministic_and_covers_existing_vendors():
     assert before == after
     idx = json.loads((root / "data" / "synthetic" / "price_requests" / "index.json").read_text())["requests"]
     assert [r["vendor_id"] for r in idx] == ["E006", "E004", "E003"]
+
+
+def test_every_line_carries_a_one_line_reason_made_of_engine_figures():
+    for rid, expect in (("PR-001", "margin stays 38.4% vs 38% target; index justifies up to 5.0%"), ("PR-002", "counter")):
+        ev = next(x for x in evaluate_request(rid) if hasattr(x, "lines"))
+        assert all(r.why and "\n" not in r.why for r in ev.lines)
+        assert expect in ev.lines[0].why
+    assert "ask for 2026-11-25" in next(x for x in evaluate_request("PR-003") if hasattr(x, "lines")).lines[0].why

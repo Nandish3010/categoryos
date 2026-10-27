@@ -381,6 +381,37 @@ def test_beauty_and_electronics_samples_produce_real_verdicts(client):
         assert lever["vendor_id"] == vid
 
 
+def test_samples_ship_competitor_stubs_so_the_price_gap_is_populated(client):
+    for name, n in (("beauty", 13), ("electronics", 12)):
+        vid = sample(client, name)["id"]
+        skus = apply_levers(build_base(vid)).skus
+        assert len(skus) == n
+        assert all(s.competitor_count == 3 and s.price_gap_pct is not None for s in skus), name
+        assert not any("no_competitors" in s.flags for s in skus)
+
+
+def test_clay_detox_face_mask_is_a_face_mask_not_a_moisturiser(client):
+    vid = sample(client, "beauty")["id"]
+    mask = next(s for s in apply_levers(build_base(vid)).skus if s.code == "LL-S04")
+    assert (mask.category, mask.subcategory) == ("skincare", "masks")
+    assert "unclassified" not in mask.flags and "approx_category" not in mask.flags
+    # a hair mask still goes to haircare, ahead of the skincare rule
+    from app import policy, taxonomy
+    from app import registry as reg
+
+    with reg.scoped(vid):
+        assert taxonomy.classify("Keratin Hair Mask 200 g").category == "haircare"
+        assert taxonomy.classify("Charcoal Peel-Off Mask").subcategory == "masks"
+        assert policy.get() is not None
+
+
+def test_electronics_sample_classifies_stands_and_hubs_on_their_own(client):
+    vid = sample(client, "electronics")["id"]
+    subs = {s.code: (s.category, s.subcategory) for s in apply_levers(build_base(vid)).skus}
+    assert subs["VT-C02"] == ("computing accessories", "stands") and subs["VT-C03"] == ("computing accessories", "hubs")
+    assert subs["VT-A02"] == ("audio", "headphones") and subs["VT-C01"][1] == "input devices"
+
+
 def test_lever_bounds_use_the_vendors_playbook(client):
     vid = sample(client, "beauty")["id"]
     assert client.get(f"/api/vendors/{vid}/decide/metrics?target_margin_pct_offset=10").status_code == 200

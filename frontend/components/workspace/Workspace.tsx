@@ -362,6 +362,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         vendorId={vendorId}
         brand={brand}
         mode={mode.data}
+        modeLoading={mode.loading}
         claims={mergedClaims}
         onToggleDrawer={() => setDrawer((d) => !d)}
         phase={phaseOfStage(stage)}
@@ -624,7 +625,9 @@ export function Workspace({ vendorId }: { vendorId: string }) {
             <div className="mb-2 text-xs text-text-dim">
               {mode.data
                 ? `${mode.data.mode} mode · $${mode.data.spend_usd.toFixed(2)} of $${mode.data.max_spend_usd.toFixed(2)} spent`
-                : "Mode unavailable"}
+                : mode.loading
+                  ? "Loading mode…"
+                  : "Mode unavailable"}
             </div>
             {actionBar}
           </div>

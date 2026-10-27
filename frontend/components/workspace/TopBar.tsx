@@ -7,8 +7,8 @@ import { ModeChip } from "./ModeChip";
 
 const PHASES = ["Screen", "Decide", "Execute", "Launch"] as const;
 
-export function modeLabel(mode: ModeResponse | null, claims: ClaimsResponse | null): string {
-  if (!mode) return "Mode unavailable";
+export function modeLabel(mode: ModeResponse | null, claims: ClaimsResponse | null, loading = false): string {
+  if (!mode) return loading ? "Loading mode…" : "Mode unavailable";
   const name = mode.mode.charAt(0).toUpperCase() + mode.mode.slice(1);
   const parts = [name, `$${mode.spend_usd.toFixed(2)}`];
   if (claims) parts.push(`${claims.verified}/${claims.total} verified`);
@@ -19,6 +19,7 @@ export function TopBar({
   vendorId,
   brand,
   mode,
+  modeLoading = false,
   claims,
   onToggleDrawer,
   phase = "Decide",
@@ -30,6 +31,8 @@ export function TopBar({
   vendorId: string;
   brand: string | null;
   mode: ModeResponse | null;
+  /** The mode request is still in flight: say so rather than "unavailable". */
+  modeLoading?: boolean;
   claims: ClaimsResponse | null;
   onToggleDrawer: () => void;
   /** Phase of the stage whose view is showing. */
@@ -84,7 +87,7 @@ export function TopBar({
         <Link href="/rules" className="inline-flex h-8 items-center rounded-chip px-2 text-sm text-text-dim hover:text-text">
           Playbook
         </Link>
-        <ModeChip label={modeLabel(mode, claims)} known={!!mode} />
+        <ModeChip label={modeLabel(mode, claims, modeLoading)} known={!!mode} />
       </div>
       <button
         type="button"

@@ -1,0 +1,37 @@
+vendor_sku_ref,marketplace,title,price,rating,review_count,est_monthly_sales
+VT-A01,GadgetHub,Boomtone Wireless Earbuds Bluetooth 5.3,1799,3.9,400,60
+VT-A01,ShopNest,ChargeRight Wireless Earbuds Bluetooth 5.3,1899,4.0,1550,135
+VT-A01,KartKing,DeskPro Wireless Earbuds Bluetooth 5.3,2049,4.1,630,210
+VT-A02,GadgetHub,Boomtone Neckband Bluetooth Headphones,1149,4.0,1090,110
+VT-A02,ShopNest,ChargeRight Neckband Bluetooth Headphones,1249,4.1,2240,185
+VT-A02,KartKing,DeskPro Neckband Bluetooth Headphones,1349,4.2,1320,85
+VT-A03,GadgetHub,Boomtone Portable Bluetooth Speaker 10W,2299,4.1,1780,160
+VT-A03,ShopNest,ChargeRight Portable Bluetooth Speaker 10W,2399,4.2,860,60
+VT-A03,KartKing,DeskPro Portable Bluetooth Speaker 10W,2599,4.3,2010,135
+VT-M01,GadgetHub,Boomtone 65W GaN Fast Charger,1649,4.2,400,210
+VT-M01,ShopNest,ChargeRight 65W GaN Fast Charger,1699,4.3,1550,110
+VT-M01,KartKing,DeskPro 65W GaN Fast Charger,1849,3.9,630,185
+VT-M02,GadgetHub,Boomtone Type-C Braided Cable 1.5m,399,4.3,1090,85
+VT-M02,ShopNest,ChargeRight Type-C Braided Cable 1.5m,449,3.9,2240,160
+VT-M02,KartKing,DeskPro Type-C Braided Cable 1.5m,529,4.0,1320,60
+VT-M03,GadgetHub,Boomtone Power Bank 20000mAh,2099,3.9,1780,135
+VT-M03,ShopNest,ChargeRight Power Bank 20000mAh,2199,4.0,860,210
+VT-M03,KartKing,DeskPro Power Bank 20000mAh,2399,4.1,2010,110
+VT-M04,GadgetHub,Boomtone Tempered Glass Screen Guard pack of 2,329,4.0,400,185
+VT-M04,ShopNest,ChargeRight Tempered Glass Screen Guard pack of 2,369,4.1,1550,85
+VT-M04,KartKing,DeskPro Tempered Glass Screen Guard pack of 2,419,4.2,630,160
+VT-C01,GadgetHub,Boomtone Wireless Keyboard and Mouse Combo,1599,4.1,1090,60
+VT-C01,ShopNest,ChargeRight Wireless Keyboard and Mouse Combo,1649,4.2,2240,135
+VT-C01,KartKing,DeskPro Wireless Keyboard and Mouse Combo,1649,4.3,1320,210
+VT-C02,GadgetHub,Boomtone Laptop Stand Aluminium,1149,4.2,1780,110
+VT-C02,ShopNest,ChargeRight Laptop Stand Aluminium,1199,4.3,860,185
+VT-C02,KartKing,DeskPro Laptop Stand Aluminium,1349,3.9,2010,85
+VT-C03,GadgetHub,Boomtone USB Hub 4 Port,629,4.3,400,160
+VT-C03,ShopNest,ChargeRight USB Hub 4 Port,659,3.9,1550,60
+VT-C03,KartKing,DeskPro USB Hub 4 Port,729,4.0,630,135
+VT-H01,GadgetHub,Boomtone Smart Plug Wifi 16A,899,3.9,1090,210
+VT-H01,ShopNest,ChargeRight Smart Plug Wifi 16A,949,4.0,2240,110
+VT-H01,KartKing,DeskPro Smart Plug Wifi 16A,1049,4.1,1320,185
+VT-H02,GadgetHub,Boomtone Smart Bulb 9W Colour,719,4.0,1780,85
+VT-H02,ShopNest,ChargeRight Smart Bulb 9W Colour,749,4.1,860,160
+VT-H02,KartKing,DeskPro Smart Bulb 9W Colour,829,4.2,2010,60

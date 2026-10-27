@@ -1,31 +1,47 @@
 # CategoryOS
 
-[![CI](https://github.com/Nandish3010/categoryos/actions/workflows/ci.yml/badge.svg)](https://github.com/Nandish3010/categoryos/actions/workflows/ci.yml)
-
-An agentic category manager that decides whether to bet ₹X on a new vendor — which SKUs, at what terms — and proves every number.
-
-**Live demo:** _coming Nov 1_
-
-_GIF: demo walkthrough (placeholder, added Nov 3)_
+An agentic category manager that cuts category-team workload: it decides whether to bet ₹X on a new vendor (which SKUs, at what terms), then keeps the category running, and proves every number it states.
 
 Built for the Meta Global AI Developer Hackathon (indie track), Oct 26 - Nov 4, 2026.
 
-## Try it in 60 seconds
+> **Status.** All model stages run in **mock** mode (the real pipeline against hand-written model fixtures) until live API credits land. The eval numbers below are deterministic verifier results on synthetic data, not model results. All vendors, SKUs, prices and documents are synthetic.
+
+## What it does
+
+**Onboard** a new vendor: **screen** (documents, claims, prompt-injection check) → **decide** (a verdict per SKU from rules over market data, with live margin and MOQ levers) → **negotiate** (gap table against the application, a deal evaluator for conditional offers, a live-call copilot) → **catalog** (listing copy, packshots, compliance flags) → **launch** (marketing, joint business plan, PO). Bring your own vendor at `/try` with a SKU sheet.
+
+**Run** the existing category (`/run`): a weekly **MIS** review of vendor performance, a **PO tracker** that reads vendor replies and drafts the chaser, **price requests** (a vendor wants an 8-12% rise: the agent reads the email, Python decides each SKU, a person approves) and **catalog fixes** (a queue of listing errors with a fix per row).
+
+**The playbook** (`config/policy.yaml`, edited at `/rules`) holds every rule a category manager would tune: margins, thresholds, compliance documents, negotiation requirements, approval tiers, the SKU taxonomy. Nothing is hardcoded to pets; beauty and electronics playbooks ship in `config/examples/`.
+
+**The verifier**: every number an agent states cites a source cell and is re-checked by Python; a wrong reading is sent back for correction, and a claim that never gets right is removed before it reaches the page.
+
+## Quickstart
 
 ```bash
-git clone <repo-url> categoryos && cd categoryos
-make setup
-make demo
+make setup   # uv sync + npm ci
+make demo    # backend (replay mode) on :8001 and frontend on :3000
 ```
 
 Then open http://localhost:3000/vendors/V001.
 
-`make demo` runs in **replay** mode: it plays back recorded runs of the full pipeline (screen, decide, negotiate, catalog,
-launch packet) with their original pacing. No API keys, no database, no network. Approve, override, reject and re-plan all
-work on your session. `make dev` runs the same app in **mock** mode (the pipeline actually executes against canned model
-fixtures, with a local SQLite database). Neither needs keys.
+`make demo` plays back recorded runs of the full pipeline with their original pacing: no API keys, no database, no network. Approve, override, reject and re-plan all work on your session. `make dev` runs the same app in **mock** mode (the pipeline actually executes against canned model fixtures, with a local SQLite database). Neither needs keys. Prerequisites: [uv](https://docs.astral.sh/uv/), Node 20+.
 
-## What it does
+## Meta models used
+
+| Model | What it does here | Where | Without it |
+|---|---|---|---|
+| `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies` | No agent output; only the deterministic metrics remain |
+| `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
+| `muse-spark-1.3-contributor` | Cheaper development model. Configured, not wired into a stage yet | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
+| Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
+| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes |
+| `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
+| `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
+
+Model names come from `backend/app/config.py`; every call goes through one gateway that switches mock / replay / live and enforces the spend cap.
+
+## Feature details
 
 CategoryOS takes a vendor from application to a launch-ready order in four phases, shown as eight stages in the UI.
 
@@ -47,7 +63,7 @@ These features carry the product:
 
 - **Document vision.** Vendor documents arrive as scans and photos. muse-spark-1.3 reads the licence certificates, label photos and price-list PDF with bounding boxes; SAM 3.1 segments a label's nutrition and claims panel and the crop is read a second time; the verifier binds every reading to the page pixels and to that second read (new claim origin `vision_extraction`, evidence `{doc, page, bbox, crop_sha256}`); cross-document checks compare certificate vs application, label vs SKU sheet vs listing copy, and price list vs sheet. Screen treats the scanned certificate as ground truth over the declared status. Which documents, fields, pairs and tolerances: the playbook `documents` section. The synthetic scans (all marked SAMPLE) come from `data/generate_docs.py` (`make data-docs`).
 
-- **Live negotiation copilot.** In Negotiate, "Live call" transcribes the call as it happens (push-to-talk buttons for who is speaking), reads what the vendor commits to, updates the gap table row by row, prices any conditional offer the moment it is said ("Don't accept: <0.1% chance") and suggests the buyer's next line with the reason. "Simulate call" streams the recorded call through the same pipeline from fixtures, so the public demo shows it at no cost; a microphone call needs live mode and the demo key and has a per-call spend budget (`CALL_BUDGET_USD`).
+- **Live negotiation copilot.** In Negotiate, "Live call" transcribes the call as it happens (push-to-talk buttons for who is speaking), reads what the vendor commits to, updates the gap table row by row, prices any conditional offer the moment it is said ("Don't accept: <0.1% chance") and suggests the buyer's next line with the reason. "Simulate call" streams the recorded call through the same pipeline from fixtures, so a replay or mock deployment shows it at no cost; a microphone call needs live mode and the demo key and has a per-call spend budget (`CALL_BUDGET_USD`).
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
@@ -92,17 +108,6 @@ Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run
 The model layer is measured in the live run.
 <!-- eval:end -->
 
-## Meta models used
-
-| Model | What it does here | Where (file) | Without it |
-|---|---|---|---|
-| `muse-spark-1.3` | Reasoning, extraction and narrative for all agents; vision: reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/agents/*`, `backend/app/docs.py` | No agent output; only deterministic metrics remain. Without vision, declared document status is used |
-| `muse-spark-1.3-contributor` | Cheaper model for development iteration | `backend/app/llm.py` (planned) | Dev loops use the main model and cost more |
-| Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets | `backend/app/agents/catalog.py` (planned) | Falls back to a deterministic keyword classifier |
-| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/agents/catalog.py`, `backend/app/docs.py`, `backend/app/media.py` | Original packshot shown with a label; label fields are read from their own boxes instead of the panel |
-| `muse-image-1.0` | Packshots and lifestyle images | `backend/app/agents/catalog.py`, `backend/app/agents/launch.py` (planned) | Catalog and launch cards have no generated imagery |
-| `muse-voice-transcribe-1.0` | Transcribes the vendor call | `backend/app/agents/negotiate.py` (planned) | Uses the stored transcript fixture, with a banner |
-
 ## Architecture
 
 ```
@@ -121,7 +126,7 @@ The backend gateway (`app/llm.py`) switches between mock and live, tracks cost a
 | Mode | What it does | Keys needed | Cost |
 |---|---|---|---|
 | `mock` | Executes the pipeline against hand-written fixtures for every model call. Default for `make dev` and the tests. | None | Free |
-| `replay` | Plays back recorded golden runs (`backend/fixtures/golden/runs/`) as ephemeral in-memory sessions with their original pacing (gaps capped at 1.5 s). Re-plan serves cached narratives for the presets 0, +2, +4 at the default MOQ; other lever values return `narrative_unavailable`. The lever/metrics endpoint stays live. Default for `make demo` and the public deploy. A golden run that fails its checksum, schema or metrics-hash check is served from the mock fixtures and flagged `degraded` in `GET /api/mode`. | None | Free |
+| `replay` | Plays back recorded golden runs (`backend/fixtures/golden/runs/`) as ephemeral in-memory sessions with their original pacing (gaps capped at 1.5 s). Re-plan serves cached narratives for the presets 0, +2, +4 at the default MOQ; other lever values return `narrative_unavailable`. The lever/metrics endpoint stays live. Default for `make demo` and the mode the Modal deploy is configured for. A golden run that fails its checksum, schema or metrics-hash check is served from the mock fixtures and flagged `degraded` in `GET /api/mode`. | None | Free |
 | `live` | Calls the Meta Model API and Baseten for the stages in `LIVE_STAGES`; keyed routes need `X-Demo-Key`. | `MODEL_API_KEY`, `BASETEN_API_KEY` | Metered, capped by `MAX_SPEND_USD` |
 
 Golden runs are produced by `make record` (runs the mock pipeline end to end and captures every event; deterministic).
@@ -136,7 +141,7 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `MODEL_API_KEY` | Meta Model API key |
 | `MODEL_API_BASE_URL` | Meta Model API base URL |
 | `BASETEN_API_KEY` | Key for Muse Spark Open on Baseten |
-| `DEMO_KEY` | Server-side key that unlocks live calls on the public deploy |
+| `DEMO_KEY` | Server-side key that unlocks live calls on a deployed backend |
 | `MODEL_MODE` | `mock`, `live` or `replay` |
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
@@ -172,7 +177,7 @@ Ops limits: `UPLOAD_MAX_ROWS`, `UPLOAD_MAX_SHEET_BYTES`, `UPLOAD_MAX_DOCS`, `UPL
 
 ## Deploy
 
-Backend on Modal (replay mode), frontend on Vercel. Step by step, including the Modal secret and the post-deploy smoke
+Prepared for Modal (backend, replay mode) and Vercel (frontend); no deployment is claimed here. Step by step, including the Modal secret and the post-deploy smoke
 test (`make smoke URL=...`), in [scripts/deploy.md](scripts/deploy.md).
 
 ## Built during the hackathon
@@ -180,7 +185,6 @@ test (`make smoke URL=...`), in [scripts/deploy.md](scripts/deploy.md).
 All code and data in this repository were created from October 26, 2026 onward, during the hackathon.
 
 - First commit date: 2026-10-27
-- Release tags: `v0.1-mock`, `v1.0-submission`
 - Synthetic data is generated by `data/generate.py` with seed 42
 - No real company data is used
 
@@ -209,7 +213,7 @@ make test   # backend pytest + frontend vitest
 make lint   # ruff + eslint
 ```
 
-CI (`.github/workflows/ci.yml`) runs the backend (pytest, ruff), the frontend (eslint, tsc, vitest, build) and gitleaks on every push and PR.
+`.github/workflows/ci.yml` defines the same checks plus gitleaks, but GitHub Actions is currently disabled for this account (billing), so CI has not run: results here come from running the commands locally.
 
 ## Troubleshooting
 

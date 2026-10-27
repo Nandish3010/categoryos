@@ -158,13 +158,19 @@ async def _mark_review(db: Any, run_id: str, result: StageResult) -> None:
     await db.add_mark(run_id, result.stage, "review_started")
 
 
-async def _drive_stage(state: RunState, stage_id: str, agent: Agent) -> StageResult:
+async def _drive_stage(
+    state: RunState, stage_id: str, agent: Agent, before_save: Callable[[StageResult], Awaitable[None]] | None = None
+) -> StageResult:
+    """Run one stage and persist its result. ``before_save`` runs just before the result is stored, so anything that must
+    be visible no later than this stage (research's shortlist mirror) is never missing when a reader sees the result."""
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
     await state.db.save_stage(state.run_id, StageResult(stage=stage_id, status="running", summary="Running"))
     async for event in run_stage(ctx, stage_id, agent):
         await _persist_publish(state, event)
     result = ctx.result
     assert result is not None
+    if before_save is not None:
+        await before_save(result)
     await state.db.save_stage(state.run_id, result)
     await _mark_review(state.db, state.run_id, result)
     return result
@@ -314,9 +320,14 @@ async def _execute_scoped(state: RunState) -> None:
         if screened.status == "failed":
             await _lock_downstream(state, screened)
         else:
-            research = await _drive_stage(state, "research", decide.run)
-            if research.status == "review":
-                await _mirror_shortlist(state, research, done=False)
+
+            async def mirror(research: StageResult) -> None:
+                # research and its shortlist mirror appear together: a reader that sees research in review also sees
+                # shortlist in review (saving research first left a window where the shortlist was still pending)
+                if research.status == "review":
+                    await _mirror_shortlist(state, research, done=False)
+
+            await _drive_stage(state, "research", decide.run, before_save=mirror)
     except Exception:
         log.exception("run %s crashed", state.run_id)
     finally:
