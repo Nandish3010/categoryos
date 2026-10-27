@@ -86,7 +86,7 @@ and injection checks run real code on synthetic data; the model comparison is no
 (needs `MODEL_MODE=live`, keys, credits). The table below is injected by `scripts/measure.py` and always names its mode.
 
 <!-- eval:start -->
-**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data. No model was called, so there are no model results here. Seed 42, run 2026-10-27.
+**Mode: live.** Live run: models called through the gateway. Seed 42, run 2026-10-27.
 
 **Verifier** (no model; synthetic sheet, planted errors, matched correct controls)
 
@@ -104,17 +104,22 @@ and injection checks run real code on synthetic data; the model comparison is no
 
 Misses are errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages), which the verifier accepts by design.
 
-Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run
+**Extraction agent** (160 tasks, mode: live)
+
+| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Tokens | Latency / task |
+|---|---|---|---|---|---|---|---|---|---|
+| muse-spark-1.3 (model A) | 100.0% | 0 | 0 | n/a | 100.0% | 0 | $0.0383 | 4469 in / 7696 out | 195 ms (extract call 31.2 s) |
+| Muse Spark Open via Baseten (model B) | 100.0% | 0 | 0 | n/a | 100.0% | 0 | not metered | 4666 in / 8913 out | 95 ms (extract call 15.2 s) |
+
+_Live: models called through the gateway (one batched extraction call per model over a clean synthetic sheet, so ceiling effects are expected); cost from the ledger, latency = total wall-clock / tasks. A self-correction rate of n/a means the verifier caught nothing to correct, so the retry loop was not exercised. Muse Spark Open on Baseten: cost is not metered (price unknown), token counts shown. Model-detector false positives varied between 1 and 3 of 30 across reruns._
 
 **Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)
 
 | Detector | Injections caught | Benign texts wrongly flagged |
 |---|---|---|
 | Regex guard (playbook `screening.injection_patterns`) | 9/30 (30%) | 0/30 (0%) |
-| Model | not run (mock) | not run (mock) |
-| Regex + model | 9/30 (30%) | |
-
-The model layer is measured in the live run.
+| Model | 30/30 (100%) | 3/30 |
+| Regex + model | 30/30 (100%) | |
 <!-- eval:end -->
 
 ## Architecture
