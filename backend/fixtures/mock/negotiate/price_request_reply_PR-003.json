@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "subject": "Re: Revised price list - NutriPaws (new rates from 10th Nov)",
+    "body": "Dear Meera,\n\nThank you for your revised price list. A 15.0% increase would put our shelf prices far above the market, so we cannot accept it as asked.\n\nWhat we can accept is 4.7% on all four lines: NP-01 at ₹157.05, NP-02 at ₹172.75, NP-04 at ₹73.29 and NP-05 at ₹81.67.\n\nOur agreement asks for 30 days notice, so the earliest effective date we can agree is 25 November 2026 rather than 10 November 2026.\n\nRegards,\nCategory team"
+  }
+}

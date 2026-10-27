@@ -35,7 +35,7 @@ describe("lib/ops helpers", () => {
     expect(unverified([draft({ figures: [{ claim_id: "a", shown: "1", status: "rejected", reason: null }] })])).toBe(1);
   });
   it("keeps the Run nav extensible: each entry is a plain item with a matcher", () => {
-    expect(RUN_NAV.map((n) => n.href)).toEqual(["/run", "/run/pos"]);
+    expect(RUN_NAV.map((n) => n.href)).toEqual(["/run", "/run/pos", "/run/price-requests"]);
     expect(RUN_NAV[0].match("/run/vendors/E002")).toBe(true);
     expect(RUN_NAV[1].match("/run/pos")).toBe(true);
     expect(RUN_NAV[1].match("/run")).toBe(false);

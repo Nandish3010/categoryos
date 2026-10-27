@@ -429,3 +429,47 @@ class EmptySelection(CategoryOSError):
     problem = "No fixes were selected"
     cause = "The request listed no fix ids"
     fix = "Select at least one fix"
+
+
+class PriceRequestNotFound(CategoryOSError):
+    status = 404
+    code = "price_request_not_found"
+    problem = "No price request with this id"
+    cause = "The id is not in the inbox, or the backend restarted (submitted requests live in memory)"
+    fix = "List the inbox with GET /api/price-requests and use one of its ids"
+
+    def __init__(self, request_id: str) -> None:
+        super().__init__(f"unknown price request: {request_id!r}")
+        self.request_id = request_id
+
+
+class PriceRequestUnreadable(CategoryOSError):
+    status = 422
+    code = "price_request_unreadable"
+    problem = "No price line in this request could be verified"
+    cause = "Every line the model read failed the quote check, or the model read none"
+    fix = "Check the email and price list text, or edit the lines by hand"
+
+
+class PriceRequestInvalid(CategoryOSError):
+    status = 422
+    code = "price_request_invalid"
+    problem = "The price request cannot be accepted"
+    cause = "A required field is missing or too long"
+    fix = "Send a known vendor, the email text and (optionally) the price list text"
+
+
+class ApprovalTierTooLow(CategoryOSError):
+    status = 403
+    code = "approval_tier_too_low"
+    problem = "This approver cannot approve this request"
+    cause = "The playbook's approval matrix asks for a more senior approver for the size or kind of this decision"
+    fix = "Escalate to the approver named in the problem, or counter with a smaller increase"
+
+
+class PriceRequestDecided(CategoryOSError):
+    status = 409
+    code = "price_request_decided"
+    problem = "This request has already been decided"
+    cause = "A reply was approved or the request was rejected"
+    fix = "Open a new request; a decision is final in this demo"

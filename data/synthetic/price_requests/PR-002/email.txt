@@ -1,0 +1,15 @@
+From: Vikram Sethi <sales@tailwindplay.example>
+To: buying@petshop.example
+Date: Tue, 20 Oct 2026 16:05:00 +0530
+Subject: URGENT - revised prices from 1 Dec (8-12%)
+
+Dear Sir/Madam,
+
+due to raw material costs (resin, nylon webbing, imported packaging) we are revising prices by 8-12% depending on the SKU, effective 1st Dec 2026,
+as per the attached list. The market has moved and we cannot hold the old rates any longer.
+
+To support you we will absorb half of the revision across the range if you commit 1,500 units/month. Please confirm at the earliest.
+
+Thanks & regards,
+Vikram Sethi
+Tailwind Play Co

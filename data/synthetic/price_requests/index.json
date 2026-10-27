@@ -1,0 +1,28 @@
+{
+  "requests": [
+    {
+      "id": "PR-001",
+      "vendor_id": "E006",
+      "received_at": "2026-10-23",
+      "sender": "Neha Bhatt <care@groomwell.example>",
+      "subject": "Price revision - Groomwell w.e.f. 1st Dec 2026",
+      "price_list": "price_list.csv"
+    },
+    {
+      "id": "PR-002",
+      "vendor_id": "E004",
+      "received_at": "2026-10-20",
+      "sender": "Vikram Sethi <sales@tailwindplay.example>",
+      "subject": "URGENT - revised prices from 1 Dec (8-12%)",
+      "price_list": "price_list.txt"
+    },
+    {
+      "id": "PR-003",
+      "vendor_id": "E003",
+      "received_at": "2026-10-26",
+      "sender": "Meera Iyer <supply@nutripaws.example>",
+      "subject": "Revised price list - NutriPaws (new rates from 10th Nov)",
+      "price_list": "price_list.csv"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "vendor_id": "E004",
+  "received_at": "2026-10-20",
+  "sender": "Vikram Sethi <sales@tailwindplay.example>",
+  "subject": "URGENT - revised prices from 1 Dec (8-12%)",
+  "story": "excessive 8-12% on thin-margin SKUs; the 'absorb half if 1,500 units/month' sweetener is very unlikely (we sell about 600 a month)",
+  "id": "PR-002",
+  "price_list": "price_list.txt"
+}

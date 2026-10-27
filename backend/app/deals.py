@@ -21,7 +21,7 @@ import json
 import math
 import random
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import lru_cache
 from typing import Any, Literal
 
@@ -90,6 +90,7 @@ class Context:
     base_margin_pct: float | None = None  # margin we are already counting for this vendor (committed or applied)
     base_payment_days: float | None = None
     base_moq: float | None = None
+    ramp: tuple[float, ...] | None = None  # demand ramp override: (1.0,) values an EXISTING listing at steady state, not a new one
 
 
 def first_order_gmv(skus: tuple[SkuFact, ...]) -> float:
@@ -233,8 +234,9 @@ def _sim(skus: tuple[SkuFact, ...], window_days: float, p: Params) -> Sim:
     return Sim(skus, window_days, p)
 
 
-def sim_for(skus: tuple[SkuFact, ...], window_days: float) -> Sim:
-    return _sim(skus, float(window_days), params())
+def sim_for(skus: tuple[SkuFact, ...], window_days: float, ramp: tuple[float, ...] | None = None) -> Sim:
+    p = params()
+    return _sim(skus, float(window_days), p if ramp is None else replace(p, ramp=tuple(ramp)))
 
 
 def prob_at_least(samples: tuple[float, ...], threshold: float) -> float:
@@ -456,7 +458,7 @@ def _assess_conditional(term: DealTerm, base: DealTerm | None, ctx: Context, a: 
     if not cond_skus:
         return a.model_copy(update={"decision": "not_assessable", "call": "None of the SKUs in the condition is on our shortlist, so the chance of hitting it cannot be estimated.", "reasoning": [f"Condition scope {cond.scope} has no shortlisted SKU."]})
     val_skus = pick(ctx.skus, base.scope if base is not None else term.scope) or ctx.skus
-    sim = sim_for(cond_skus, cond.window_days)
+    sim = sim_for(cond_skus, cond.window_days, ctx.ramp)
     samples = sim.values(cond.metric)
     pts = [to_pts(term.term, t.value, val_skus) for t in levels_in]
     levels = []  # (threshold, incremental pts, probability)
@@ -538,7 +540,7 @@ def _counters(
     assert cond is not None
     metric, min_p = cond.metric, pol.min_probability
     required, base_pts = a.required_pts, a.base_pts
-    samples = sim_for(cond_skus, cond.window_days).values(metric)
+    samples = sim_for(cond_skus, cond.window_days, ctx.ramp).values(metric)
     out: list[Counter] = []
 
     def after(replace: int | None, p_new: float) -> float:
@@ -575,7 +577,7 @@ def _counters(
             for w in sorted(set(pol.counter_window_days)):
                 if w == cond.window_days:
                     continue
-                p_w = prob_at_least(sim_for(cond_skus, w).values(metric), th)
+                p_w = prob_at_least(sim_for(cond_skus, w, ctx.ramp).values(metric), th)
                 if p_w >= min_p:
                     counted = after(i, p_w)
                     out.append(
@@ -597,7 +599,7 @@ def _counters(
             th = levels[0][0]
             for k in range(1, len(ranked)):
                 sub = tuple(sorted(ranked[:k], key=lambda s: s.code))
-                p_k = prob_at_least(sim_for(sub, cond.window_days).values(metric), th)
+                p_k = prob_at_least(sim_for(sub, cond.window_days, ctx.ramp).values(metric), th)
                 if levels[0][2] < min_p <= p_k:
                     counted = after(0, p_k)
                     out.append(
