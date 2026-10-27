@@ -1,12 +1,15 @@
 "use client";
 
-import { ArrowRight, Check, Flag, Lock } from "lucide-react";
+import { ArrowRight, Check, Flag, Lock, ScanSearch } from "lucide-react";
+import { useState } from "react";
+import { labelAsDoc, scannedSummary, type LabelRow } from "@/lib/docs";
 import type { StageResult } from "@/lib/runs";
 import { classificationText, readCatalog, type CatalogSku } from "@/lib/stages";
 import { Banner } from "../Banner";
 import { Chip, Tag } from "../Chip";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
+import { DocViewer } from "./DocViewer";
 import type { Verdict } from "@/lib/api";
 
 const SEV_TONE = (s: string) => (/high|critical/i.test(s) ? "bad" : /medium/i.test(s) ? "warn" : "neutral") as "bad" | "warn" | "neutral";
@@ -27,6 +30,71 @@ export function ClassificationBadge({ sku }: { sku: CatalogSku }) {
         Rules: {c.rules} · Muse Spark Open: {c.model} · {c.verdict}
       </Tag>
     </span>
+  );
+}
+
+const side = (s: LabelRow["sheet"]) => (s ? <span className={`num ${s.status === "mismatch" ? "font-semibold text-bad" : ""}`}>{s.value}</span> : <span className="text-text-dim">—</span>);
+
+/** The scanned label next to the vendor sheet and the listing copy: where the pack and the paperwork disagree. */
+export function LabelVsSheet({ sku }: { sku: CatalogSku }) {
+  const [viewer, setViewer] = useState<string | null>(null);
+  const lc = sku.labelCheck;
+  if (!lc) return null;
+  const mismatches = lc.rows.filter((r) => r.status === "mismatch").length;
+  return (
+    <div className="flex flex-col gap-2 border-t border-border px-4 py-3" aria-label={`Label versus sheet for ${sku.code}`} role="group" data-testid="label-vs-sheet">
+      <div className="flex flex-wrap items-center gap-2">
+        <h4 className="text-xs font-medium uppercase tracking-wide text-text-dim">Label vs sheet</h4>
+        <Tag tone={mismatches ? "bad" : "ok"}>{mismatches ? `${mismatches} mismatch${mismatches === 1 ? "" : "es"}` : "label agrees"}</Tag>
+        <button
+          type="button"
+          aria-expanded={viewer !== null}
+          onClick={() => setViewer(viewer === null ? "" : null)}
+          className="ml-auto inline-flex min-h-8 items-center gap-1 text-xs text-accent hover:underline"
+        >
+          <ScanSearch size={16} aria-hidden="true" />
+          {viewer === null ? "View the label" : "Hide the label"}
+        </button>
+      </div>
+      {lc.error ? <p className="text-xs text-text-dim">Label not used: {lc.error}</p> : null}
+      {lc.rows.length ? (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs text-text-dim">
+              <th className="py-1 pr-2 font-medium">Field</th>
+              <th className="py-1 pr-2 font-medium">Label says</th>
+              <th className="py-1 pr-2 font-medium">Sheet says</th>
+              <th className="py-1 pr-2 font-medium">Listing says</th>
+              <th className="py-1 font-medium">
+                <span className="sr-only">Result</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {lc.rows.map((r) => (
+              <tr key={r.field} data-status={r.status} data-field={r.field} className={r.status === "mismatch" ? "bg-bad/10" : ""}>
+                <td className="py-1 pr-2">{r.label}</td>
+                <td className="num py-1 pr-2">
+                  <button type="button" onClick={() => setViewer(r.field)} className="underline decoration-dotted underline-offset-2" aria-label={`Show ${r.label} on the label`}>
+                    {r.labelValue}
+                  </button>
+                </td>
+                <td className="py-1 pr-2">{side(r.sheet)}</td>
+                <td className="py-1 pr-2">{side(r.listing)}</td>
+                <td className="py-1">
+                  {r.unreliable ? <Tag tone="warn">unclear read</Tag> : r.status === "mismatch" ? <Tag tone={r.severity === "high" ? "bad" : "warn"}>Mismatch</Tag> : <Tag tone="ok">Match</Tag>}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p className="text-xs text-text-dim">Nothing on this label could be compared with the sheet.</p>
+      )}
+      {viewer !== null ? (
+        <DocViewer key={viewer} documents={[labelAsDoc(sku.code, lc)]} initialField={viewer || undefined} title={`${sku.code} label`} />
+      ) : null}
+    </div>
   );
 }
 
@@ -97,6 +165,7 @@ function Listing({ sku }: { sku: CatalogSku }) {
                 {f.severity}
               </Tag>
               <span className="font-mono text-xs text-text-dim">{f.rule}</span>
+              {f.source === "label" ? <Tag tone="accent">from label</Tag> : null}
               <span className="text-text-dim">{f.text}</span>
             </li>
           ))}
@@ -126,6 +195,7 @@ export function SkuCard({ sku }: { sku: CatalogSku }) {
         </div>
         <Listing sku={sku} />
       </div>
+      <LabelVsSheet sku={sku} />
     </article>
   );
 }
@@ -200,6 +270,11 @@ export function CatalogStudio({
                 <span data-testid="agreement">Classified by rules</span>
               )}
             </p>
+            {data.scanned && data.scanned.documents.length ? (
+              <p className="num text-sm text-text-dim" data-testid="label-summary">
+                Labels: {scannedSummary(data.scanned)}
+              </p>
+            ) : null}
           </div>
           {canApprove || status === "done" ? (
             <button

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "licence_number",
+        "value": "FSSAI-DEMO-0001",
+        "sku_code": null
+      },
+      {
+        "name": "valid_from",
+        "value": "16 AUG 2022",
+        "sku_code": null
+      },
+      {
+        "name": "valid_until",
+        "value": "15 AUG 2027",
+        "sku_code": null
+      }
+    ]
+  }
+}

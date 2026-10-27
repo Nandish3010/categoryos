@@ -5,6 +5,7 @@
  */
 import { BACKEND_URL } from "./api";
 import type { Claim } from "./api";
+import { readLabelCheck, readScanned, type LabelCheck, type Scanned } from "./docs";
 import type { RunSnapshot, StageId, StageResult } from "./runs";
 
 type Obj = Record<string, unknown>;
@@ -269,12 +270,15 @@ export type CatalogSku = {
   hero: boolean;
   generatedBy: string;
   corrections: number;
+  /** The scanned label of this SKU read against the sheet and the listing copy; null when no label was filed. */
+  labelCheck: LabelCheck | null;
 };
 export type CatalogData = {
   skus: CatalogSku[];
   agreementPct: number | null;
   imageMode: string | null;
   heroSkus: string[];
+  scanned: Scanned | null;
 };
 
 const cell = (v: unknown): string => (v == null ? "" : typeof v === "string" ? v : String(v));
@@ -322,11 +326,13 @@ export function readCatalog(stage: StageResult | undefined | null): CatalogData 
           hero: s.hero === true,
           generatedBy: str(copy.generated_by) ?? "rules",
           corrections: arr(s.corrections).length,
+          labelCheck: readLabelCheck(s.label_check),
         };
       }),
     agreementPct: num(d.classifier_agreement_pct),
     imageMode: str(d.image_mode),
     heroSkus: strArr(d.hero_skus),
+    scanned: readScanned(d.scanned_documents),
   };
 }
 

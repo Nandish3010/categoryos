@@ -218,8 +218,11 @@ def get_metrics(vendor_id: str, target_margin_pct_offset: float = 0, moq: int | 
     }
 
 
-def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str, Any]:
-    """Expiry and presence check against the playbook's document rules. ``today`` freezes the clock."""
+def check_documents(vendor_id: str, today: str | date | None = None, scans: dict[str, dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Expiry and presence check against the playbook's document rules. ``today`` freezes the clock.
+
+    ``scans`` maps an application document type to what its scanned certificate says (``valid_until`` ISO date). A scan
+    is ground truth: its date replaces the declared one, and the entry records both so the difference is visible."""
     check_vendor(vendor_id)
     now = _parse_today(today)
     screening = policy.get().screening
@@ -231,6 +234,12 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
     for doc in application.get("documents", []):
         declared = doc.get("status", "")
         valid_until = doc.get("valid_until") or ""
+        declared_until = valid_until
+        scan = (scans or {}).get(doc["type"])
+        if scan and scan.get("valid_until") and doc.get("number") and declared != "missing":
+            valid_until = str(scan["valid_until"])
+        else:
+            scan = None
         if declared == "missing" or not doc.get("number"):
             state = "missing"
         elif declared == "pending_verification":
@@ -252,6 +261,8 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
             "declared_status": declared,
             "state": state,
         }
+        if scan:
+            entry |= {"source": "scan", "declared_valid_until": declared_until}
         docs.append(entry)
         if state != "valid":
             rule = rules.get(doc["type"])
@@ -262,7 +273,7 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
                     "state": state,
                     "severity": "blocking" if blocking else "warning",
                     "detail": f"{doc['type']} is {state.replace('_', ' ')}"
-                    + (f" (valid until {valid_until})" if valid_until else ""),
+                    + (f" (valid until {valid_until}" + (f" on the scan; the application says {declared_until}" if scan and declared_until != valid_until else "") + ")" if valid_until else ""),
                 }
             )
     if screening.absent_document_counts_as_missing:

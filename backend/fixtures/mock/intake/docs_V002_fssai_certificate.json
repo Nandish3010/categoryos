@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "kind": "licence_certificate",
+    "legible": true,
+    "fields": [
+      {
+        "name": "licence_number",
+        "value": "FSSAI-DEMO-0002",
+        "bbox": [
+          0.3964,
+          0.2559,
+          0.6791,
+          0.2808
+        ],
+        "confidence": 0.97,
+        "sku_code": null
+      },
+      {
+        "name": "holder_name",
+        "value": "Mewsli Cat Care LLP",
+        "bbox": [
+          0.3939,
+          0.333,
+          0.7028,
+          0.3592
+        ],
+        "confidence": 0.97,
+        "sku_code": null
+      },
+      {
+        "name": "valid_from",
+        "value": "01 DEC 2023",
+        "bbox": [
+          0.3865,
+          0.5677,
+          0.5882,
+          0.5913
+        ],
+        "confidence": 0.97,
+        "sku_code": null
+      },
+      {
+        "name": "valid_until",
+        "value": "30 NOV 2026",
+        "bbox": [
+          0.384,
+          0.6456,
+          0.5881,
+          0.6693
+        ],
+        "confidence": 0.97,
+        "sku_code": null
+      }
+    ],
+    "notes": ""
+  }
+}

@@ -31,8 +31,10 @@ def test_screen_passes_clean_vendors(vendor_id):
     assert not result.needs_approval
     # deterministic doc check comes first, then the tool steps, then the model call
     kinds = [(e.type, e.payload.get("tool")) for e in events]
-    assert kinds[0] == ("tool_call", "check_documents") and events[0].payload["deterministic"] is True
-    assert ("tool_call", "get_application") in kinds and kinds[-1][0] == "model_call"
+    doc_check = kinds.index(("tool_call", "check_documents"))
+    assert events[doc_check].payload["deterministic"] is True
+    assert {t[1] for t in kinds[:doc_check] if t[0] == "tool_call"} <= {"read_documents", "cross_check_documents"}  # scans are read first
+    assert kinds.index(("tool_call", "get_application")) > doc_check and kinds[-1][0] == "model_call"
 
 
 def test_screen_fails_v004_with_injection_and_expired_fssai():

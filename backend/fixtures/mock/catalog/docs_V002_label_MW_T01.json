@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "kind": "product_label",
+    "legible": true,
+    "fields": [
+      {
+        "name": "product_name",
+        "value": "Tuna Creamy Lick Treat",
+        "bbox": [
+          0.0403,
+          0.1652,
+          0.4462,
+          0.1973
+        ],
+        "confidence": 0.97,
+        "sku_code": "MW-T01"
+      },
+      {
+        "name": "claims_text",
+        "value": "No grain. Lickable tuna puree.",
+        "bbox": [
+          0.0618,
+          0.5996,
+          0.4557,
+          0.6271
+        ],
+        "confidence": 0.97,
+        "sku_code": "MW-T01"
+      },
+      {
+        "name": "net_quantity",
+        "value": "60 g",
+        "bbox": [
+          0.3031,
+          0.6733,
+          0.3787,
+          0.6997
+        ],
+        "confidence": 0.97,
+        "sku_code": "MW-T01"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 199",
+        "bbox": [
+          0.3042,
+          0.7165,
+          0.4205,
+          0.7388
+        ],
+        "confidence": 0.97,
+        "sku_code": "MW-T01"
+      },
+      {
+        "name": "fssai_number",
+        "value": "FSSAI-DEMO-0002",
+        "bbox": [
+          0.3053,
+          0.7583,
+          0.5689,
+          0.7806
+        ],
+        "confidence": 0.97,
+        "sku_code": "MW-T01"
+      }
+    ],
+    "notes": ""
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "protein_pct",
+        "value": "30.0 %",
+        "sku_code": "HP-D01"
+      },
+      {
+        "name": "claims_text",
+        "value": "Grain-free. Single-source chicken. Supports joint health.",
+        "sku_code": "HP-D01"
+      },
+      {
+        "name": "net_quantity",
+        "value": "1.5 kg",
+        "sku_code": "HP-D01"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 1,499",
+        "sku_code": "HP-D01"
+      },
+      {
+        "name": "fssai_number",
+        "value": "FSSAI-DEMO-0001",
+        "sku_code": "HP-D01"
+      }
+    ]
+  }
+}

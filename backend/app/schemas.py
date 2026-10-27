@@ -28,7 +28,7 @@ StageId = Literal["intake", "research", "shortlist", "negotiate", "catalog", "ma
 Unit = Literal["pct", "inr", "units", "score", "ratio", "qty"]
 Verdict = Literal["list", "negotiate", "reject", "needs_data"]
 CostSource = Literal["sheet", "inferred", "missing"]
-ClaimOrigin = Literal["engine", "model_extraction", "injected_test"]
+ClaimOrigin = Literal["engine", "model_extraction", "vision_extraction", "injected_test"]
 ClaimStatus = Literal["pending", "verified", "rejected", "unverifiable"]
 StageStatus = Literal["pending", "running", "review", "done", "locked", "failed", "degraded"]
 
@@ -46,6 +46,13 @@ class Evidence(BaseModel):
     normalized_value: float | str | None = None
     parser_version: str
     sha256: str
+    # vision_extraction only: where on which scan the value was read, and the second, independent read of that region
+    doc: str | None = None
+    page: int | None = None
+    bbox: list[float] | None = None  # [x0, y0, x1, y1], fractions of the page (0 to 1)
+    crop_sha256: str | None = None
+    reread_value: str | None = None
+    as_of: str | None = None  # ISO date the expiry arithmetic of a date claim was done against
 
 
 class Claim(BaseModel):
@@ -329,3 +336,33 @@ class MarketingFinal(BaseModel):
     campaign_name: str
     copy_text: str = Field(alias="copy")
     discount_ask: DiscountAsk
+
+
+# ---------- Document vision (muse-spark-1.3 with images) ----------
+
+
+class VisionField(BaseModel):
+    """One value the vision model read off a page. ``value`` is the text exactly as printed."""
+
+    name: str
+    value: str
+    bbox: list[float] = Field(min_length=4, max_length=4)  # [x0, y0, x1, y1] as fractions of the page
+    confidence: float = 1.0
+    sku_code: str | None = None
+
+
+class VisionExtraction(BaseModel):
+    kind: str
+    legible: bool = True
+    fields: list[VisionField] = Field(default_factory=list)
+    notes: str = ""
+
+
+class RereadItem(BaseModel):
+    name: str
+    value: str
+    sku_code: str | None = None
+
+
+class VisionReread(BaseModel):
+    reads: list[RereadItem] = Field(default_factory=list)
