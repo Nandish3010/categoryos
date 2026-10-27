@@ -140,6 +140,14 @@ def test_run_tools_rejects_fixture_calling_unoffered_tool():
 
 def test_run_tools_replay_falls_back_to_mock_degraded(monkeypatch):
     monkeypatch.setattr(settings, "model_mode", "replay")
+    real = llm._load_fixture
+
+    def no_golden(kind, stage, task):  # every vendor now has a recorded stage fixture; simulate a missing one
+        if kind == "golden":
+            raise llm.FixtureMissing(f"{kind}/{stage}/{task}")
+        return real(kind, stage, task)
+
+    monkeypatch.setattr(llm, "_load_fixture", no_golden)
     res = run(llm.run_tools("intake", "screen_V001", MSGS, screen_tools(), schema=ScreenFinal))
     assert res.mode == "replay" and res.degraded and len(res.steps) == 2
 

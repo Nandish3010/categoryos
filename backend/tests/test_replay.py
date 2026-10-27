@@ -198,7 +198,9 @@ def broken_fixtures(tmp_path, monkeypatch):
 
 def test_checksum_mismatch_serves_mock_degraded(broken_fixtures):
     path = broken_fixtures / "V001.json"
-    path.write_text(path.read_text().replace('"source": "mock"', '"source":  "mock"'))
+    text = path.read_text()
+    marker = '"source": "live"' if '"source": "live"' in text else '"source": "mock"'
+    path.write_text(text.replace(marker, marker.replace('": "', '":  "')))  # any edit the checksum does not cover
     with TestClient(app) as client:
         mode = client.get("/api/mode").json()
         assert mode["degraded"] is True
@@ -206,8 +208,9 @@ def test_checksum_mismatch_serves_mock_degraded(broken_fixtures):
         assert mode["replay"]["vendors"]["V002"] == "ok"
         run_id = client.post("/api/vendors/V001/runs").json()["run_id"]
         stages = wait_for(client, run_id, ["intake", "research"])
-        assert stages["research"]["status"] == "review"  # served by the mock fixtures through the normal pipeline
-        assert any(e["type"] == "degraded" for e in sse_events(client, run_id))
+        assert stages["research"]["status"] == "review"  # re-run through the normal pipeline on stage fixtures
+        # (no per-call "degraded" event any more: the recorded live stage fixtures exist, so no call falls back to a mock;
+        # the degradation is reported by /api/mode above)
         assert not replay.has_session(run_id)
         other = client.post("/api/vendors/V002/runs").json()["run_id"]  # other vendors still replay their golden run
         assert replay.has_session(other)
@@ -263,9 +266,12 @@ def test_record_is_deterministic_and_matches_committed_goldens(tmp_path):
         assert first.read_bytes() == second.read_bytes()
         assert replay.checksum_path(first).read_text() == replay.checksum_path(second).read_text()
         committed = replay.golden_dir() / f"{vendor_id}.json"
-        assert _without_recorded_at(first) == _without_recorded_at(committed), (
-            f"{vendor_id} golden run is stale: run `make record`"
-        )
+        if json.loads(committed.read_text())["meta"]["source"] == "mock":
+            assert _without_recorded_at(first) == _without_recorded_at(committed), (
+                f"{vendor_id} golden run is stale: run `make record`"
+            )
+        # a golden recorded live is real model output: it cannot be reproduced for free, so drift is guarded by
+        # test_committed_golden_validates (metrics_hash against the current engine and playbook) instead
 
 
 def test_rerecording_unchanged_content_keeps_the_timestamp(tmp_path):

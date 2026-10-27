@@ -378,20 +378,25 @@ def replay_mode(monkeypatch):
 def test_provenance_reports_the_fixture_source(client, replay_mode):
     mode = client.get("/api/mode").json()
     assert set(mode["provenance"]) == {"V001", "V002", "V003", "V004"}
-    # the committed goldens were produced by the mock model: they must never be called live
-    assert {p["source"] for p in mode["provenance"].values()} == {"mock"}
+    # the committed goldens were recorded live on 2026-10-27 (scripted `mock` goldens would report "mock"); either way the
+    # source must be one of the two honest labels
+    assert {p["source"] for p in mode["provenance"].values()} == {"live"}
     assert all(p["recorded_at"] and p["degraded"] is False for p in mode["provenance"].values())
 
 
 def test_provenance_live_source_carries_date_and_cost(client, replay_mode):
     replay.load_all()
     golden = replay._goldens["V001"]
+    for event in golden.events:
+        event.cost_usd = None  # start from a known total: the recorded run's real spend is not what is under test
     golden.meta.source = "live"
     golden.events[0].cost_usd = 0.4
     golden.events[1].cost_usd = 0.125
     p = replay.provenance("V001")
     assert p["source"] == "live" and p["cost_usd"] == pytest.approx(0.525) and p["recorded_at"] == golden.meta.recorded_at
     assert client.get("/api/mode").json()["provenance"]["V001"]["source"] == "live"
+    other = replay._goldens["V002"]
+    other.meta.source = "mock"  # sources are per vendor: one vendor's label does not leak into another's
     assert client.get("/api/mode").json()["provenance"]["V002"]["source"] == "mock"
 
 
@@ -405,7 +410,7 @@ def test_degraded_vendor_is_never_labelled_live(client, replay_mode, monkeypatch
 def test_run_payload_carries_provenance(client, replay_mode):
     run_id = client.post("/api/vendors/V001/runs").json()["run_id"]
     body = client.get(f"/api/runs/{run_id}").json()
-    assert body["mode"] == "replay" and body["provenance"]["source"] == "mock"
+    assert body["mode"] == "replay" and body["provenance"]["source"] == replay.provenance("V001")["source"] == "live"
 
 
 def test_no_provenance_outside_replay(client):
