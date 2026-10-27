@@ -241,3 +241,66 @@ class LeverOutOfRange(CategoryOSError):
     problem = "A lever value is outside the playbook's allowed range"
     cause = "The playbook bounds the what-if levers (levers.margin_offset, levers.moq)"
     fix = "Pick a value inside the range, or widen it in the playbook"
+
+
+# ---------- Run (existing vendors) ----------
+
+
+class UnknownOpsVendor(CategoryOSError):
+    status = 404
+    code = "unknown_ops_vendor"
+    cause = "The id is not one of the existing vendors in data/synthetic/ops/vendors.json"
+    fix = "Use an id from GET /api/ops/review (E001 to E006 in the synthetic data)"
+
+    def __init__(self, vendor_id: str) -> None:
+        super().__init__(f"unknown existing vendor: {vendor_id!r}")
+        self.vendor_id = vendor_id
+
+
+class UnknownPo(CategoryOSError):
+    status = 404
+    code = "unknown_po"
+    cause = "The PO id is not in data/synthetic/ops/purchase_orders.csv"
+    fix = "Use a PO id from GET /api/ops/pos"
+
+    def __init__(self, po_id: str) -> None:
+        super().__init__(f"unknown purchase order: {po_id!r}")
+        self.po_id = po_id
+
+
+class UnknownDraft(CategoryOSError):
+    status = 404
+    code = "unknown_draft"
+    cause = "The draft id is not in the outbox, or the outbox was reset"
+    fix = "List the outbox with GET /api/ops/outbox and use one of its ids"
+
+    def __init__(self, draft_id: str) -> None:
+        super().__init__(f"unknown draft: {draft_id!r}")
+        self.draft_id = draft_id
+
+
+class DraftNotPending(CategoryOSError):
+    status = 409
+    code = "draft_not_pending"
+    problem = "This draft was already decided"
+    cause = "Only drafts waiting for approval can be approved, edited or rejected"
+    fix = "Open the outbox to see its status; a decided draft cannot be changed"
+
+
+class OpsDataMissing(CategoryOSError):
+    status = 500
+    code = "ops_data_missing"
+    problem = "The operations data files are missing or unreadable"
+    cause = "data/synthetic/ops was not generated"
+    fix = "Run python3 data/generate_ops.py from the repo root"
+
+
+class UnknownOpsMetric(CategoryOSError):
+    status = 422
+    code = "unknown_ops_metric"
+    cause = "The metric is not registered in app/ops/claims.py"
+    fix = "Use a registered ops_* metric name"
+
+    def __init__(self, metric: str) -> None:
+        super().__init__(f"unknown ops metric: {metric!r}")
+        self.metric = metric

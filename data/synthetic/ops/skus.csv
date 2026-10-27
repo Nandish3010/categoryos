@@ -1,0 +1,37 @@
+sku_code,vendor_id,name,mrp,cost,selling_price
+BK-01,E001,Chicken & Rice Adult 3 kg,1050,760,966
+BK-02,E001,Lamb & Rice Adult 3 kg,1100,800,1012
+BK-03,E001,Puppy Starter 1 kg,420,300,386
+BK-04,E001,Senior Care 3 kg,1150,840,1058
+BK-05,E001,Chicken Gravy Pouch 100 g,90,62,83
+BK-06,E001,Beef Pate Can 350 g,190,135,175
+PL-01,E002,Ocean Fish Adult 1.2 kg,640,450,589
+PL-02,E002,Chicken & Tuna Adult 1.2 kg,660,465,607
+PL-03,E002,Kitten Starter 400 g,290,205,267
+PL-04,E002,Indoor Hairball Care 1.2 kg,680,480,626
+PL-05,E002,Tuna in Gravy Pouch 70 g,55,38,51
+PL-06,E002,Mackerel Mousse Can 85 g,75,52,69
+NP-01,E003,Chicken Strips 150 g,229,150,211
+NP-02,E003,Dental Chew Sticks 150 g,249,165,229
+NP-03,E003,Peanut Butter Biscuits 400 g,499,330,459
+NP-04,E003,Training Bites 60 g,110,70,101
+NP-05,E003,Tuna Cat Treats 60 g,120,78,110
+NP-06,E003,Creamy Lick Treat 4 pack,199,130,183
+TW-01,E004,Rope Tug Toy Large,349,210,321
+TW-02,E004,Squeaky Plush Duck,299,180,275
+TW-03,E004,Feather Wand Teaser,249,150,229
+TW-04,E004,Adjustable Harness Medium,599,360,551
+TW-05,E004,Printed Bandana Set,199,110,183
+TW-06,E004,Collapsible Travel Bowl,249,140,229
+LT-01,E005,Clumping Bentonite Unscented 10 kg,699,480,643
+LT-02,E005,Clumping Bentonite Lavender 10 kg,729,500,671
+LT-03,E005,Tofu Litter Original 6 L,549,380,505
+LT-04,E005,Activated Carbon Clumping 5 kg,449,310,413
+LT-05,E005,Clumping Bentonite 5 kg,399,275,367
+LT-06,E005,Litter Scoop Metal,149,85,137
+GW-01,E006,Oatmeal Pet Shampoo 250 ml,349,190,321
+GW-02,E006,Deshedding Brush,449,250,413
+GW-03,E006,Paw Balm 50 g,249,130,229
+GW-04,E006,Nail Clipper,199,105,183
+GW-05,E006,Ear Cleaner 100 ml,299,160,275
+GW-06,E006,Tick & Flea Comb,179,90,165
