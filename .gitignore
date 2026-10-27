@@ -32,3 +32,11 @@ backend/fixtures/assets/
 
 # Playbook overrides written by the UI (defaults live in config/policy.yaml)
 config/policy.local.yaml
+
+# Demo video pipeline (video/): generated captures, audio and renders
+video/node_modules/
+video/out/
+video/captures/
+video/public/
+video/vo/*.aiff
+video/src/data/impact.json
