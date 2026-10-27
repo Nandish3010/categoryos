@@ -54,8 +54,8 @@ approving it makes it `done`. If Screen fails, `intake` is `failed` and every la
 }
 ```
 
-`claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine` or
-`model_extraction`; `status` is `verified|rejected|unverifiable`). A `model_extraction` claim the verifier rejected and
+`claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine`, `model_extraction` or
+`vision_extraction`; `status` is `verified|rejected|unverifiable`). A `model_extraction` claim the verifier rejected and
 the agent was asked to re-read also carries `attempts: [{attempt, value, status, reason?, recomputed?}]`, oldest first
 (`attempt` 0 is the agent's first answer). `status` is the last attempt's: `verified` with more than one attempt is
 "caught, then corrected"; `rejected` with more than one is "unresolved" after `verifier.max_self_corrections` retries.
@@ -74,6 +74,15 @@ corrected one); a claim still wrong after the last retry stays `rejected`, its s
 commitment drops out of the gap table (Negotiate) or the sheet value replaces it (Catalog). Decide's `data` gains
 `self_correction: {max, corrected: [claim_id], unresolved: [claim_id]}`, and an `extractions[]` item that was corrected
 carries `original_value` and `attempts`.
+
+A `vision_extraction` claim is a number or date a vision model read off a scanned document. Its `evidence` is
+`{doc, page, bbox: [x0, y0, x1, y1] (fractions of the page), crop_sha256, raw_value (the page read, as printed),
+reread_value (the second, independent read of the cropped region), as_of, sha256 (of the page file), parser_version}`.
+`source_ref.file` is `vendors/<VID>/docs/<page file>`. The verifier checks that the page file is the one that was read, that
+the box lies on the page and its pixels hash to `crop_sha256`, that `raw_value` parses to the claimed number and that
+`reread_value` says the same: `verified` when both reads agree, `rejected` when they differ (the reason quotes both),
+`unverifiable` when there is no second read. Date claims carry the days from `as_of` to the printed date (`metric`
+`doc_date:<kind>.<field>`); other claims use `doc_value:<kind>.<field>` with the field's unit.
 
 `intake` `data`: `{decision: "pass"|"fail", reasons[], risk_flags: [{type, quote, severity}], injection_detected,
 followup_questions[], documents: {documents[], problems[], blocking}, guards[], mode}`. When it fails,
@@ -235,29 +244,38 @@ stage reaches `review` and stops at its first approval (re-plans do not restart 
 shortlist), `catalog` (negotiation prep and follow-up, catalog listings, image briefs) and `po` (marketing brief, JBP,
 PO raise and follow-up).
 ```json
-{"run_id", "vendor_id", "mode", "baseline_status": "placeholder|measured", "n_skus", "tasks": [{"task", "label", "gate",
+{"run_id", "vendor_id", "mode", "baseline_status": "research_estimate|measured", "n_skus", "tasks": [{"task", "label", "gate",
   "minutes", "per_sku", "count", "total_minutes"}],
  "gates": [{"stage": "research|catalog|po", "label", "status": "measured|pending", "baseline_minutes", "review_seconds"|null,
    "counted_minutes"|null, "capped", "overrides", "replans", "edits"}],
  "baseline_minutes", "baseline_measured_minutes", "human_minutes", "reduction_pct"|null, "measured_gates", "total_gates",
- "complete", "basis": "measured|baseline_estimate", "edits", "overrides", "replans", "max_review_minutes"}
+ "complete", "basis": "measured|research_estimate", "edits", "overrides", "replans", "max_review_minutes"}
 ```
 `reduction_pct` compares the human minutes with the baseline of the *reviewed* steps only (`null` before any approval);
-`edits` are verdict overrides plus re-plans. `baseline_status` mirrors the playbook: the shipped baselines are placeholders.
+`edits` are verdict overrides plus re-plans. `baseline_status` mirrors the playbook: the shipped baselines are research estimates (about 1,085 min for a 12-SKU vendor).
 
 ### `GET /api/impact`
-The team rollup over every vendor's latest run, from the playbook's `impact.team` settings:
+The team rollup. Every number is built from the playbook's `impact` section, which ships **research estimates, not
+measurements** (`docs/research/category-manager-workload.md`; `baseline_status: research_estimate`). The team is
+`impact.team` (default 1 category manager + 2 category executives, 45 h week); `impact.workload` gives each task's share of
+each role's week and the share of it automation saves; `impact.modules` lists the modules (`shipped` or `not_built`) and
+`impact.coverage` says which share of which task each one takes over, so a new module registers there.
 ```json
-{"basis": "measured|baseline_estimate", "measured_runs", "partly_measured_runs", "baseline_status", "human_share_pct",
- "baseline_hours_per_vendor", "human_hours_per_vendor", "vendors_per_month", "demand_hours_per_month",
- "hours_saved_per_month", "workload_hours_per_month", "task_capacity_hours_per_month", "pct_of_workload",
- "pct_of_task_time", "demand_vs_capacity_pct", "target_pct", "meets_target", "formula", "team": {...}, "mode",
- "vendors": [{"vendor_id", "run_id", "baseline_minutes", "human_minutes", "measured_gates", "complete", "reduction_pct"}]}
+{"basis": "measured|research_estimate", "measured_runs", "partly_measured_runs", "baseline_status",
+ "in_scope_pct", "saved_pct", "potential_saved_pct", "target_pct", "meets_target", "team_hours_per_month",
+ "hours_saved_per_month", "roles": [{"role", "label", "headcount", "in_scope_pct", "saved_pct"}],
+ "modules": [{"key", "label", "status": "shipped|not_built", "in_scope_pct", "saved_pct", "tasks": [{"task", "label", "in_scope_pct"}]}],
+ "onboarding": {"typical_skus", "baseline_hours_per_vendor", "human_share_pct"|null, "saved_pct_basis", "vendors_per_month",
+   "demand_hours_per_month", "team_hours_on_task_per_month"},
+ "formula", "team": {...}, "mode", "vendors": [{"vendor_id", "run_id", "baseline_minutes", "human_minutes", "measured_gates", "complete", "reduction_pct"}]}
 ```
-`hours saved per month = vendors per month x baseline hours per vendor x (1 - human share)` and
-`pct_of_workload = hours saved / (category managers x hours per week x weeks per month)`. The human share is measured
-(recorded review time over the fully reviewed runs, `measured_runs` of them) when there is at least one such run, else the
-playbook's `impact.assumed_review_share_pct` and `basis` is `baseline_estimate`.
+(a) `in_scope_pct` is the share of the team's week that shipped modules touch; (b) `saved_pct` is the share of the week saved;
+(c) `modules` lists every module with its status (`saved_pct` of a `not_built` module is what it would add). Per task:
+`share of the week x share of the task a shipped module covers (rows on one task add up, capped at 100) x share of that time
+saved`; the team is headcount-weighted over the two roles. A module marked `measured_from_runs` (onboarding) uses the
+measured review reduction (1 - recorded human review time / by-hand baseline, over fully reviewed runs) instead of the
+table's `saved_pct` once at least one run is fully reviewed; then `basis` is `measured`. With the shipped defaults the
+numbers reproduce the report: about 19% in scope, about 9% saved, about 34% if every module were built.
 
 ### `GET /api/runs/{run_id}/events` -> `text/event-stream`
 ```
@@ -302,10 +320,56 @@ is running; `404 run_not_found` (also when the run belongs to another vendor).
 ### `POST /api/admin/reset`  (demo key, always)
 `200 {"ok": true}`. Empties the store and in-memory run state. Idempotent.
 
+### `GET /api/docs/{vendor}/{file}` -> `image/png|jpeg` or `application/pdf`
+A vendor's uploaded document or page image, as listed in `data/synthetic/vendors/<VID>/docs/manifest.json`. Anything else
+(`manifest.json`, `truth.json`, traversal, unknown vendor or file) is `404 asset_not_found`. Open (no key).
+
 ### `GET /api/assets/{vendor}/{file}` -> `image/png`
 Cached catalog and campaign images. `file` is `<SKU code>-packshot|cutout|lifestyle.png` or `campaign.png`; anything else
 (traversal, other extensions, unknown vendor) is `404 asset_not_found`. In mock/replay a missing file for a real SKU is drawn
 as a labelled placeholder on demand. Open (no key).
+
+## Scanned documents
+
+Playbook section `documents` decides which document kinds are read (`kinds`, each read in `intake` or `catalog`), which fields
+(`fields`, typed `text|date|pct|inr|qty|number`, `critical` ones are cropped and read again) and which pairs are compared
+(`cross_checks`: a document field against the application, the SKU sheet or the listing copy, with a severity and a
+tolerance in the field's unit). `catalog.label_panel_prompt` is the phrase SAM 3.1 uses to find a label's nutrition and claims
+panel. Per document: muse-spark-1.3 (vision) extracts the fields with boxes; for a label SAM segments the panel and that crop is
+read again, otherwise the critical fields are cropped by their own boxes; every numeric or date field becomes a
+`vision_extraction` claim; the cross-checks run on the verified readings.
+
+`intake` `data.scanned_documents` and `catalog` `data.scanned_documents` (both `{enabled: false, ...}` when the playbook turns
+the pipeline off or the vendor filed nothing of that stage):
+
+```json
+{"enabled": true,
+ "documents": [{"file", "kind", "label", "title", "declares": "FSSAI"|null, "sku_code"|null, "url": "/api/docs/V002/<file>",
+   "pages": [{"page", "file", "url", "width", "height"}], "legible", "error"|null, "notes", "mode",
+   "panel": {"page", "bbox"|null, "prompt", "source": "sam-3.1"|..., "crop_sha256"}|null,
+   "expiry": {"valid_until", "days", "state": "valid|expiring_soon|expired", "as_of"}|null, "injection": [],
+   "fields": [{"name", "label", "type", "raw", "value", "reread"|null, "page", "bbox", "confidence", "sku_code"|null,
+     "status": "verified|rejected|unverifiable|read|conflict|low_confidence|unreadable", "reason"|null, "claim_id"|null}]}],
+ "findings": [{"id", "check", "label", "severity", "status": "match|mismatch|unreliable|injection", "doc", "doc_label", "page",
+   "bbox", "field", "field_label", "sku_code"|null, "document_value", "other_label", "other_value", "other_source": {},
+   "claim_id", "claim_status", "message"}],
+ "summary": {"documents", "fields", "claims", "verified", "rejected", "unverifiable", "mismatches"}}
+```
+
+- `unreliable` means the page read and the re-read of the crop disagree, so the value was not compared. `injection` means
+  text addressed to an AI reviewer was found inside a document; it is ignored and Screen fails the vendor.
+- Intake: the scanned certificate is ground truth over the declared status. `data.documents.documents[]` entries gain
+  `source: "scan"` and `declared_valid_until` when a scan decided the date and state (a declared "valid" with a scan that says
+  "expired" fails screening as a blocking problem). Mismatches add `document_mismatch` risk flags and follow-up questions, a
+  certificate expiring or expired on the scan adds `document_expiring_soon` / `document_expired`, an unreadable page adds
+  `document_unreadable`. The stage `claims` hold the `vision_extraction` claims.
+- Catalog: each SKU with a label gets `label_check: {doc, title, url, pages, panel, error, fields, rows: [{field, label,
+  label_value, sheet: {value, status, source, check}|null, listing: {...}|null, status: "match|mismatch", severity,
+  unreliable, claim_id, claim_status, page, bbox}]}` (`null` without one). A mismatch adds a `label_mismatch` compliance flag
+  and the playbook's claim rules also run over the text printed on the label (flags have `source: "label"`).
+
+Trace: `tool_call` `read_documents` and `cross_check_documents` (deterministic), `model_call` with `task` `doc_extract`,
+`segment_panel`, `doc_reread_panel` or `doc_reread_fields` (and `document`), then `claim_checked` per vision claim.
 
 ## Other routes (unchanged)
 

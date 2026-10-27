@@ -28,7 +28,7 @@ export type RunImpact = {
   run_id: string;
   vendor_id: string;
   mode: string;
-  baseline_status: "placeholder" | "measured";
+  baseline_status: "research_estimate" | "measured";
   n_skus: number;
   tasks: ImpactTask[];
   gates: ImpactGate[];
@@ -39,41 +39,51 @@ export type RunImpact = {
   measured_gates: number;
   total_gates: number;
   complete: boolean;
-  basis: "measured" | "baseline_estimate";
+  basis: "measured" | "research_estimate";
   edits: number;
   overrides: number;
   replans: number;
   max_review_minutes: number;
 };
 
+export type ImpactModule = {
+  key: string;
+  label: string;
+  status: "shipped" | "not_built";
+  in_scope_pct: number;
+  saved_pct: number;
+  tasks: { task: string; label: string; in_scope_pct: number }[];
+};
+
 /** `GET /api/impact`. */
 export type TeamImpact = {
-  basis: "measured" | "baseline_estimate";
+  basis: "measured" | "research_estimate";
   measured_runs: number;
   partly_measured_runs: number;
-  baseline_status: "placeholder" | "measured";
-  human_share_pct: number;
-  baseline_hours_per_vendor: number;
-  human_hours_per_vendor: number;
-  vendors_per_month: number;
-  demand_hours_per_month: number;
-  hours_saved_per_month: number;
-  workload_hours_per_month: number;
-  task_capacity_hours_per_month: number;
-  pct_of_workload: number | null;
-  pct_of_task_time: number | null;
-  demand_vs_capacity_pct: number | null;
+  baseline_status: "research_estimate" | "measured";
+  /** Team week in scope of shipped modules, and saved, in % of the week. */
+  in_scope_pct: number;
+  saved_pct: number;
+  /** Saving if every listed module were built (an estimate). */
+  potential_saved_pct: number;
   target_pct: number;
   meets_target: boolean;
+  team_hours_per_month: number;
+  hours_saved_per_month: number;
+  roles: { role: string; label: string; headcount: number; in_scope_pct: number; saved_pct: number }[];
+  modules: ImpactModule[];
+  onboarding: {
+    typical_skus: number;
+    baseline_hours_per_vendor: number;
+    human_share_pct: number | null;
+    saved_pct_basis: "measured" | "research_estimate";
+    vendors_per_month: number;
+    demand_hours_per_month: number;
+    team_hours_on_task_per_month: number;
+  };
   formula: string;
   mode: string;
-  team: {
-    category_managers: number;
-    vendors_onboarded_per_month: number;
-    share_of_week_on_these_tasks_pct: number;
-    work_hours_per_week: number;
-    weeks_per_month: number;
-  };
+  team: { category_managers: number; category_executives: number; work_hours_per_week: number; weeks_per_month: number; vendors_onboarded_per_month: number; typical_skus_per_vendor: number };
   vendors: { vendor_id: string; run_id: string; baseline_minutes: number; human_minutes: number; measured_gates: number; complete: boolean; reduction_pct: number | null }[];
 };
 

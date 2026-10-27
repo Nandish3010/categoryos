@@ -11,7 +11,7 @@ from app import ledger, media, persist, policy, replay, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
-from app.data_loader import check_vendor, load_application
+from app.data_loader import check_vendor, doc_path, load_application
 from app.errors import AssetNotFound, CategoryOSError, LeverOutOfRange, PolicyReadOnly
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
@@ -213,6 +213,16 @@ async def get_asset(vendor_id: str, file: str) -> FileResponse:
         subtitle = (sku.pack or "") if sku else base.brand
         media.ensure_placeholder(vendor_id, file, parsed[1], title, subtitle)
     return FileResponse(path, media_type="image/png", headers={"Cache-Control": "public, max-age=300"})
+
+
+@app.get("/api/docs/{vendor_id}/{file}")
+async def get_doc(vendor_id: str, file: str) -> FileResponse:
+    """A vendor's uploaded scan, label photo or PDF. Path-safe: a known vendor and a file name its manifest lists."""
+    path = doc_path(vendor_id, file)
+    if path is None:
+        raise AssetNotFound(cause=f"{file!r} is not a document of {vendor_id}")
+    media_type = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".pdf": "application/pdf"}.get(path.suffix.lower(), "application/octet-stream")
+    return FileResponse(path, media_type=media_type, headers={"Cache-Control": "public, max-age=300"})
 
 
 # ---------- runs ----------

@@ -241,6 +241,7 @@ catalog:                         # Catalog: listing copy, compliance, images
     - categories: [dog dry food, dog wet food, cat dry food, cat wet food, treats]
       require: [shelf_life, net_quantity, ingredients]   # shelf_life | net_quantity | ingredients
   hero_sku_count: 3              # top SKUs by GMV that get a lifestyle image
+  label_panel_prompt: the nutrition or ingredients table and claims panel on the back of the pack   # Catalog: noun phrase SAM 3.1 uses to find the label panel that is cropped and read a second time
   image_sizes: {packshot: 1024x1024, lifestyle: 1792x1024, campaign: 1792x1024}   # generated image sizes
   image_prompts:                 # image generation templates; {brand} {name} {pack} {category} {subcategory} {campaign} and segment names such as {species}
     packshot: "Studio packshot of {brand} {name}, {pack}, product packaging, front view, centred on a plain white background, soft shadow, sharp focus, no extra text."
@@ -358,3 +359,44 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     - {module: inventory_health_module, task: inventory_health, in_scope_pct: 100}
   max_review_minutes: 120        # a review gap longer than this counts as this many minutes (the reviewer walked away)
   target_reduction_pct: 33.3     # the team view compares the saving with this goal
+
+documents:                       # Intake and Catalog: scanned vendor documents read by the vision models (muse-spark-1.3 reads, sam-3.1 crops the label panel)
+  enabled: true                  # read vendor documents (certificates, labels, price lists) when the vendor has uploaded any
+  min_confidence: 0.6            # a field the model reads below this confidence is not trusted (it is flagged, not compared)
+  crop_padding: 0.01             # margin added around a box when it is cropped for the second read, as a share of the page
+  max_pages: 3                   # pages read per document; extra pages are ignored
+  kinds:                         # which kinds of document are read, and where
+    - kind: licence_certificate  # id; a vendor manifest assigns each uploaded file one kind
+      label: Licence certificate # shown in the UI
+      stage: intake              # intake: read during Screen, and the scan is the ground truth over the declared status. catalog: read for shortlisted SKUs
+      panel: false               # true: SAM finds the panel (catalog.label_panel_prompt) and that crop is read a second time
+    - kind: price_list
+      label: Supplier price list
+      stage: intake
+      panel: false
+      per_sku: true              # a table: every field is read once per row, tagged with the row's SKU code
+    - kind: product_label
+      label: Product label
+      stage: catalog
+      panel: true
+  fields:                        # what is read from each kind. type: text | date | pct | inr | qty | number. critical: crop the field and read it again
+    - {kind: licence_certificate, name: licence_number, label: Licence number, type: text, critical: true}
+    - {kind: licence_certificate, name: holder_name, label: Holder, type: text, critical: false}
+    - {kind: licence_certificate, name: valid_from, label: Valid from, type: date, critical: true}
+    - {kind: licence_certificate, name: valid_until, label: Valid until, type: date, critical: true}
+    - {kind: price_list, name: price, label: Price per unit, type: inr, critical: true}
+    - {kind: product_label, name: product_name, label: Product name, type: text, critical: false}
+    - {kind: product_label, name: net_quantity, label: Net quantity, type: qty, critical: false}
+    - {kind: product_label, name: mrp, label: MRP, type: inr, critical: false}
+    - {kind: product_label, name: protein_pct, label: Protein, type: pct, critical: false}
+    - {kind: product_label, name: fssai_number, label: Licence number on pack, type: text, critical: false}
+    - {kind: product_label, name: claims_text, label: Claims on pack, type: text, critical: false}
+  cross_checks:                  # pairs of sources that must agree. tolerance is in the field's unit (a fraction for pct); empty uses verifier.tolerances for that unit
+    - {id: certificate_number_vs_application, label: Licence number on the scan vs the application, kind: licence_certificate, field: licence_number, against: application_document, target: number, severity: high}
+    - {id: certificate_expiry_vs_application, label: Valid-until date on the scan vs the application, kind: licence_certificate, field: valid_until, against: application_document, target: valid_until, severity: high}
+    - {id: certificate_holder_vs_application, label: Holder on the scan vs the applicant, kind: licence_certificate, field: holder_name, against: application_document, target: company_name, severity: medium}
+    - {id: price_list_vs_sheet, label: Price list vs the SKU sheet cost, kind: price_list, field: price, against: sku_sheet, target: cost, tolerance: 1, severity: medium}
+    - {id: label_protein_vs_sheet, label: Protein on the label vs the SKU sheet, kind: product_label, field: protein_pct, against: sku_sheet, pattern: '(\d+(?:\.\d+)?)\s*%\s*protein', severity: high}
+    - {id: label_protein_vs_listing, label: Protein on the label vs the listing copy, kind: product_label, field: protein_pct, against: listing_copy, pattern: '(\d+(?:\.\d+)?)\s*%\s*protein', severity: high}
+    - {id: label_mrp_vs_sheet, label: MRP on the label vs the SKU sheet, kind: product_label, field: mrp, against: sku_sheet, target: mrp, tolerance: 1, severity: medium}
+    - {id: label_quantity_vs_sheet, label: Net quantity on the label vs the SKU sheet pack, kind: product_label, field: net_quantity, against: sku_sheet, target: pack, severity: medium}

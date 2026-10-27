@@ -24,7 +24,7 @@ export function ImpactChip({ impact, open, onToggle }: { impact: RunImpact; open
 
 /** Per-vendor impact drawer: the baseline by hand against the human review time the app recorded. */
 export function ImpactPanel({ impact, onClose }: { impact: RunImpact; onClose: () => void }) {
-  const placeholder = impact.baseline_status === "placeholder";
+  const placeholder = impact.baseline_status === "research_estimate";
   return (
     <section
       id="impact-panel"
@@ -55,8 +55,8 @@ export function ImpactPanel({ impact, onClose }: { impact: RunImpact; onClose: (
             <Tag tone="warn">Baseline estimate: nothing reviewed yet</Tag>
           )}
           {placeholder ? (
-            <Tag tone="warn" title="Set impact.baseline_status to measured in the Playbook once you replace the times">
-              Placeholder baselines
+            <Tag tone="warn" title="From docs/research/category-manager-workload.md. Set impact.baseline_status to measured in the Playbook once you replace the times with your own">
+              Research estimate (not measured)
             </Tag>
           ) : null}
           {impact.mode !== "live" ? <Tag>{impact.mode} run</Tag> : null}
@@ -99,7 +99,7 @@ export function ImpactPanel({ impact, onClose }: { impact: RunImpact; onClose: (
         <p className="text-xs text-text-dim">
           Human time runs from a stage reaching review to the approve click, counted up to {impact.max_review_minutes} minutes per
           step. Edits are verdict overrides and re-plans.{" "}
-          {placeholder ? "The by-hand times are placeholders until you replace them in the " : "The by-hand times come from the "}
+          {placeholder ? "The by-hand times are a research estimate (docs/research/category-manager-workload.md) until you replace them in the " : "The by-hand times come from the "}
           <Link href="/rules" className="text-accent hover:underline">Playbook</Link> (Impact).
         </p>
       </div>

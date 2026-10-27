@@ -16,7 +16,7 @@ describe("impact formatting", () => {
   });
 
   it("says nothing was recorded yet when no step was reviewed", () => {
-    const i = runImpact({ measured_gates: 0, reduction_pct: null, human_minutes: 0, basis: "baseline_estimate", edits: 0 });
+    const i = runImpact({ measured_gates: 0, reduction_pct: null, human_minutes: 0, basis: "research_estimate", edits: 0 });
     expect(impactHeadline(i)).toBe("Baseline 14.3 h by hand · human review not recorded yet");
     expect(impactChipLabel(i)).toBe("Impact · 14.3 h baseline");
   });

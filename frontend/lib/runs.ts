@@ -8,6 +8,7 @@ import {
   type Verdict,
 } from "./api";
 import { getDemoKey } from "./demoKey";
+import { readScanned, type Scanned } from "./docs";
 import type { RunImpact } from "./impact";
 
 export const STAGE_IDS = [
@@ -149,7 +150,19 @@ export type ScreenData = {
   followup_questions: string[];
   decision: string | null;
   reasons: string[];
-  documents: { label: string; status: string | null }[];
+  documents: ScreenDocument[];
+  /** The vision pipeline's reading of the vendor's scans (absent when the playbook turns it off). */
+  scanned?: Scanned | null;
+};
+
+/** `source` is "scan" when the scanned certificate, not the application, decided the status and date. */
+export type ScreenDocument = {
+  label: string;
+  status: string | null;
+  source?: string | null;
+  validUntil?: string | null;
+  declaredValidUntil?: string | null;
+  declaredStatus?: string | null;
 };
 
 export function readScreen(stage: StageResult | undefined | null): ScreenData | null {
@@ -172,10 +185,18 @@ export function readScreen(stage: StageResult | undefined | null): ScreenData | 
       if (isObj(x)) {
         const label = str(x.name) ?? str(x.type) ?? str(x.file) ?? str(x.title) ?? "document";
         const status = str(x.status) ?? str(x.state) ?? (typeof x.present === "boolean" ? (x.present ? "present" : "missing") : null);
-        return { label, status };
+        return {
+          label,
+          status,
+          source: str(x.source),
+          validUntil: str(x.valid_until),
+          declaredValidUntil: str(x.declared_valid_until),
+          declaredStatus: str(x.declared_status),
+        };
       }
       return { label: String(x), status: null };
     }),
+    scanned: readScanned(d.scanned_documents),
   };
 }
 

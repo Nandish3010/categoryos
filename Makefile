@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data lint live record smoke requirements eval
+.PHONY: setup dev demo test data data-docs lint live record smoke requirements eval
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -24,6 +24,10 @@ test:
 
 data:
 	python3 data/generate.py
+
+# Vendor scans, labels and the price-list PDF, plus the mock vision fixtures (needs the backend environment: Pillow, PyYAML).
+data-docs:
+	cd backend && uv run python ../data/generate_docs.py
 
 lint:
 	cd backend && uv run ruff check .

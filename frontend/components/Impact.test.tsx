@@ -15,7 +15,7 @@ describe("ImpactPanel", () => {
     const panel = screen.getByRole("region", { name: "Impact" });
     expect(within(panel).getByText(/So far: baseline 4.0 h → 10 min human review \(−96%\)/)).toBeInTheDocument();
     expect(within(panel).getByText("Measured review time")).toBeInTheDocument();
-    expect(within(panel).getByText("Placeholder baselines")).toBeInTheDocument();
+    expect(within(panel).getByText("Research estimate (not measured)")).toBeInTheDocument();
     const rows = within(panel).getAllByRole("row");
     expect(rows.some((r) => r.getAttribute("data-status") === "pending")).toBe(true);
     expect(within(panel).getAllByText("not reviewed yet", { selector: "td" })).toHaveLength(2);
@@ -24,14 +24,14 @@ describe("ImpactPanel", () => {
   });
 
   it("calls itself a baseline estimate when nothing has been reviewed", () => {
-    render(<ImpactPanel impact={runImpact({ measured_gates: 0, basis: "baseline_estimate", reduction_pct: null, human_minutes: 0 })} onClose={() => {}} />);
+    render(<ImpactPanel impact={runImpact({ measured_gates: 0, basis: "research_estimate", reduction_pct: null, human_minutes: 0 })} onClose={() => {}} />);
     expect(screen.getByText("Baseline estimate: nothing reviewed yet")).toBeInTheDocument();
     expect(screen.queryByText("Measured review time")).toBeNull();
   });
 
   it("drops the placeholder label once the playbook says the baselines are measured", () => {
     render(<ImpactPanel impact={runImpact({ baseline_status: "measured" })} onClose={() => {}} />);
-    expect(screen.queryByText("Placeholder baselines")).toBeNull();
+    expect(screen.queryByText("Research estimate (not measured)")).toBeNull();
   });
 
   it("closes", () => {
@@ -55,27 +55,37 @@ describe("ImpactChip", () => {
 });
 
 describe("ImpactTeam", () => {
-  it("is honest that it is an estimate built on placeholders", () => {
+  it("is honest that it is a research estimate, and lists every module as shipped or not yet built", () => {
     render(<ImpactTeam impact={teamImpact()} />);
     const sec = screen.getByRole("region", { name: "Team impact" });
-    expect(within(sec).getByText("Baseline estimate")).toBeInTheDocument();
-    expect(within(sec).getByText("Placeholder baselines")).toBeInTheDocument();
-    expect(within(sec).getByText("102.6 h")).toBeInTheDocument();
-    expect(within(sec).getByText("9.9%")).toBeInTheDocument();
+    expect(within(sec).getByText("Estimate, not measured")).toBeInTheDocument();
+    expect(within(sec).getByText("Research estimate (not measured)")).toBeInTheDocument();
+    expect(within(sec).getAllByText("18.5%").length).toBeGreaterThan(0); // in scope
+    expect(within(sec).getAllByText("8.8%").length).toBeGreaterThan(0); // saved
     expect(within(sec).getByText(/goal 33.3% · not met/)).toBeInTheDocument();
-    expect(within(sec).getByText("10% assumed", { exact: false })).toBeInTheDocument();
+    expect(within(sec).getByText("1 CM + 2 CE, 45 h week")).toBeInTheDocument();
+    const rows = within(sec).getAllByRole("row");
+    expect(rows.find((r) => r.getAttribute("data-status") === "shipped")).toHaveTextContent("Shipped");
+    expect(rows.find((r) => r.getAttribute("data-status") === "not_built")).toHaveTextContent("Not yet built");
     fireEvent.click(within(sec).getByText("How this is calculated"));
-    expect(within(sec).getByText(/8 vendors × 14.3 h × \(1 − 10.0%\)/)).toBeInTheDocument();
+    expect(within(sec).getByText(/saved % of the week = sum over tasks/)).toBeInTheDocument();
+    expect(within(sec).getByText(/Category executives \(2\): 18.8% in scope, 9.1% saved/)).toBeInTheDocument();
     expect(within(sec).getByText(/No run has been fully reviewed yet/)).toBeInTheDocument();
   });
 
-  it("says measured on N runs when there are fully reviewed runs", () => {
-    render(<ImpactTeam impact={teamImpact({ basis: "measured", measured_runs: 3, human_share_pct: 8.4, baseline_status: "measured", meets_target: true })} />);
+  it("says measured on N runs once onboarding has fully reviewed runs", () => {
+    const base = teamImpact();
+    render(
+      <ImpactTeam
+        impact={teamImpact({ basis: "measured", measured_runs: 3, baseline_status: "measured", meets_target: true, onboarding: { ...base.onboarding, human_share_pct: 8.4, saved_pct_basis: "measured" } })}
+      />,
+    );
     const sec = screen.getByRole("region", { name: "Team impact" });
-    expect(within(sec).getByText("Measured on 3 runs")).toBeInTheDocument();
-    expect(within(sec).queryByText("Placeholder baselines")).toBeNull();
+    expect(within(sec).getByText("Onboarding measured on 3 runs")).toBeInTheDocument();
+    expect(within(sec).queryByText("Research estimate (not measured)")).toBeNull();
     expect(within(sec).getByText(/goal 33.3% · met/)).toBeInTheDocument();
-    expect(within(sec).getByText(/8.4% of by-hand time, measured/)).toBeInTheDocument();
+    fireEvent.click(within(sec).getByText("How this is calculated"));
+    expect(within(sec).getByText(/human review took 8.4% of the by-hand time over 3 fully reviewed runs/)).toBeInTheDocument();
   });
 });
 

@@ -15,7 +15,7 @@ export function formatClaimValue(value: number | string | null | undefined, unit
     case "units":
       return `${Math.round(value)} units`;
     case "qty":
-      return String(Math.round(value * 1000) / 1000);
+      return `${Math.round(value * 1000) / 1000}`;
     case "ratio":
       return value.toFixed(2); // 0-1 scores (demand, overlap), shown as the backend sees them
     default:
@@ -24,6 +24,9 @@ export function formatClaimValue(value: number | string | null | undefined, unit
 }
 
 export function sourceLabel(c: Claim): string {
+  if (c.origin === "vision_extraction" && c.evidence?.doc) {
+    return [c.evidence.doc, c.evidence.page != null ? `p${c.evidence.page}` : null, c.source_ref.column].filter(Boolean).join(" · ");
+  }
   const parts = [c.source_ref.file];
   if (c.evidence?.row != null) parts.push(`row ${c.evidence.row}`);
   const col = c.source_ref.column ?? c.evidence?.header;
@@ -65,17 +68,29 @@ function Attempts({ claim }: { claim: Claim }) {
   );
 }
 
-export function ClaimRow({ claim }: { claim: Claim }) {
+export function ClaimRow({ claim, onHover }: { claim: Claim; onHover?: (claim: Claim | null) => void }) {
   const corrected = isCorrected(claim);
   const s = corrected ? { Icon: RotateCcw, cls: "text-ok", label: "Caught, then corrected" } : (STATUS[claim.status] ?? STATUS.pending);
   const rejected = claim.status === "rejected";
   const sheetValue = claim.recomputed ?? claim.evidence?.normalized_value ?? null;
   const injected = claim.origin === "injected_test";
+  const vision = claim.origin === "vision_extraction";
+  const hover = onHover
+    ? {
+        tabIndex: 0,
+        onMouseEnter: () => onHover(claim),
+        onMouseLeave: () => onHover(null),
+        onFocus: () => onHover(claim),
+        onBlur: () => onHover(null),
+      }
+    : {};
 
   return (
     <li
       className={`border-b border-border px-4 py-2 last:border-b-0 ${rejected ? "bg-bad/10" : corrected ? "bg-ok/5" : ""}`}
       data-status={corrected ? "corrected" : claim.status}
+      data-origin={claim.origin}
+      {...hover}
     >
       <div className="flex items-start gap-2">
         <s.Icon size={16} className={`mt-0.5 shrink-0 ${s.cls}`} aria-label={s.label} />
@@ -87,20 +102,30 @@ export function ClaimRow({ claim }: { claim: Claim }) {
             <span className="num text-xs text-text-dim">
               {formatClaimValue(claim.value, claim.unit)}
               {claim.status === "verified"
-                ? claim.origin === "model_extraction"
-                  ? " · matches sheet cell"
-                  : " · recomputed from"
+                ? vision
+                  ? " · matches the re-read of the crop"
+                  : claim.origin === "model_extraction"
+                    ? " · matches sheet cell"
+                    : " · recomputed from"
                 : ""}
             </span>
             <span className="rounded-chip border border-border bg-surface-2 px-1.5 py-0.5 font-mono text-[11px] text-text-dim">
               {sourceLabel(claim)}
             </span>
             {injected ? <Tag tone="warn">Injected test</Tag> : null}
+            {vision ? <Tag tone="accent">Scan</Tag> : null}
             {corrected ? <Tag tone="ok">Caught → corrected</Tag> : null}
             {rejected && wasRetried(claim) ? <Tag tone="bad">Unresolved after {(claim.attempts?.length ?? 1) - 1} {(claim.attempts?.length ?? 1) - 1 === 1 ? "retry" : "retries"}</Tag> : null}
           </div>
           {wasRetried(claim) ? <Attempts claim={claim} /> : null}
-          {rejected ? (
+          {rejected && vision ? (
+            <div className="mt-2 rounded-chip border border-bad/40 bg-bad/10 p-2 text-sm text-bad">
+              <span className="num">
+                Page read “{claim.evidence?.raw_value ?? "?"}” {"·"} Re-read of the crop “{claim.evidence?.reread_value ?? "?"}”
+              </span>
+              {claim.reason ? <div className="mt-0.5 text-xs text-text-dim">{claim.reason}</div> : null}
+            </div>
+          ) : rejected ? (
             <div className="mt-2 rounded-chip border border-bad/40 bg-bad/10 p-2 text-sm text-bad">
               <span className="num">
                 Agent said {formatClaimValue(claim.value, claim.unit)} {"·"} Sheet says{" "}

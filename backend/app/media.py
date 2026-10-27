@@ -312,11 +312,12 @@ def cutout_png(source_png: bytes, record: SamRecord) -> bytes:
     return out.getvalue()
 
 
-async def segment(source_png: bytes, phrase: str) -> tuple[bytes, Spend]:
-    """SAM 3.1 via the Responses API (streamed). Returns a transparent cutout of the first match."""
+async def _sam_text(source_png: bytes, phrase: str) -> tuple[str, Spend]:
+    """One SAM 3.1 call (Responses API, streamed): the concatenated output text and what it cost."""
     _guard()
     client = _client()
-    data_url = "data:image/png;base64," + base64.b64encode(source_png).decode()
+    mime = "image/jpeg" if source_png[:2] == b"\xff\xd8" else "image/png"
+    data_url = f"data:{mime};base64," + base64.b64encode(source_png).decode()
     text = ""
     try:
         stream = await client.responses.create(
@@ -335,11 +336,57 @@ async def segment(source_png: bytes, phrase: str) -> tuple[bytes, Spend]:
                 text += event.delta
     except Exception as exc:
         raise _map_error(exc) from exc
-    cost = ledger.record(settings.model_seg, {"images": 1})
+    return text, Spend(settings.model_seg, ledger.record(settings.model_seg, {"images": 1}))
+
+
+async def segment(source_png: bytes, phrase: str) -> tuple[bytes, Spend]:
+    """SAM 3.1 via the Responses API (streamed). Returns a transparent cutout of the first match."""
+    text, spend = await _sam_text(source_png, phrase)
     records = parse_sam_text(text)
     if not records:
         raise SegmentationUnusable(cause="SAM found no match for the prompt")
-    return cutout_png(source_png, records[0]), Spend(settings.model_seg, cost)
+    return cutout_png(source_png, records[0]), spend
+
+
+def _normalise_box(box: tuple[float, float, float, float], width: int, height: int) -> list[float] | None:
+    """A SAM box as fractions of the image. ASSUMPTION to check against a real response: the box tokens are pixel
+    coordinates of the image that was sent; values that all lie within 0..1 are taken as already normalised."""
+    x0, y0, x1, y1 = box
+    if max(abs(v) for v in box) > 1.0:
+        x0, x1, y0, y1 = x0 / width, x1 / width, y0 / height, y1 / height
+    x0, y0, x1, y1 = (min(max(v, 0.0), 1.0) for v in (x0, y0, x1, y1))
+    if x1 - x0 < 0.01 or y1 - y0 < 0.01:
+        return None
+    return [round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4)]
+
+
+def region_from_record(record: SamRecord, width: int, height: int) -> list[float]:
+    """The matched region as a normalised [x0, y0, x1, y1]: the mask's extent when it decodes (it is what SAM actually
+    segmented), else the box token."""
+    try:
+        bits = decode_mask(record)
+        mask = Image.new("L", (record.mask_w, record.mask_h))
+        mask.putdata([255 if b else 0 for b in bits])
+        extent = mask.getbbox()
+        coverage = sum(bits) / max(len(bits), 1)
+        if extent and SAM_MIN_COVERAGE <= coverage <= SAM_MAX_COVERAGE:
+            return [round(extent[0] / record.mask_w, 4), round(extent[1] / record.mask_h, 4), round(extent[2] / record.mask_w, 4), round(extent[3] / record.mask_h, 4)]
+    except SegmentationUnusable:
+        pass
+    if record.box is not None and (region := _normalise_box(record.box, width, height)):
+        return region
+    raise SegmentationUnusable(cause="SAM matched the phrase but returned neither a usable mask nor a box")
+
+
+async def segment_region(source_png: bytes, phrase: str) -> tuple[list[float], Spend]:
+    """SAM 3.1 finds a described region of a page (for example a label's nutrition and claims panel). Returns its
+    normalised box [x0, y0, x1, y1]; the caller crops the page itself, so the pixels it hashes are its own."""
+    text, spend = await _sam_text(source_png, phrase)
+    records = parse_sam_text(text)
+    if not records:
+        raise SegmentationUnusable(cause="SAM found no match for the prompt")
+    img = Image.open(io.BytesIO(source_png))
+    return region_from_record(records[0], img.width, img.height), spend
 
 
 # ---------- ASR ----------

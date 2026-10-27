@@ -34,6 +34,7 @@ export const SECTIONS = [
   { id: "margins", label: "Margins" },
   { id: "negotiation", label: "Negotiation" },
   { id: "catalog", label: "Catalog" },
+  { id: "documents", label: "Documents" },
   { id: "launch", label: "Launch" },
   { id: "po", label: "PO" },
   { id: "levers", label: "Levers" },

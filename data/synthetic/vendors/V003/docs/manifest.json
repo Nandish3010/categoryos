@@ -1,0 +1,13 @@
+{
+  "documents": [
+    {
+      "file": "gst_certificate.jpg",
+      "kind": "licence_certificate",
+      "title": "GST registration certificate (scan)",
+      "pages": [
+        "gst_certificate.jpg"
+      ],
+      "declares": "GST"
+    }
+  ]
+}
