@@ -1,0 +1,198 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_vendor_funding",
+        "args": {
+          "event_id": "festive"
+        }
+      },
+      {
+        "tool": "get_vendor_contacts",
+        "args": {}
+      }
+    ],
+    "final": {
+      "emails": [
+        {
+          "vendor_id": "E001",
+          "subject": "Festive Sale: funding with Barkley & Co",
+          "body": "Hi Anil,\n\nThank you for the offer. On our forecast the range reaching its sales target in the event is only 3.6% likely, so it counts as ₹0 against the ₹45,176 we asked for on those SKUs. Could you give the target a longer window, or turn the bonus into a guaranteed share?\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "festive:E001?share=50&thr=3400&banner=3",
+              "value": 0.0,
+              "shown": "₹0",
+              "text": "Barkley & Co: offer value counted"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "festive:E001?share=50&thr=3400&banner=3",
+              "value": 45176.32,
+              "shown": "₹45,176",
+              "text": "Barkley & Co: ask on the SKUs the offer covers"
+            },
+            {
+              "metric": "promo_offer_probability_pct",
+              "key": "festive:E001?share=50&thr=3400&banner=3",
+              "value": 0.0359,
+              "shown": "3.6%",
+              "text": "Barkley & Co: chance of the sales condition"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E002",
+          "subject": "Festive Sale: funding with Purrline Foods",
+          "body": "Hi Rakesh,\n\nThank you for the offer. It is worth ₹27,448 to us, 60.0% of the ₹45,746 we asked for on those SKUs. Could you raise the share to 50.0% of the markdown?\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "festive:E002?share=30",
+              "value": 27447.53,
+              "shown": "₹27,448",
+              "text": "Purrline Foods: offer value counted"
+            },
+            {
+              "metric": "promo_offer_covers_ask_pct",
+              "key": "festive:E002?share=30",
+              "value": 0.6,
+              "shown": "60.0%",
+              "text": "Purrline Foods: share of the ask covered"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "festive:E002?share=30",
+              "value": 45745.88,
+              "shown": "₹45,746",
+              "text": "Purrline Foods: ask on the SKUs the offer covers"
+            },
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "festive:E002",
+              "value": 0.5,
+              "shown": "50.0%",
+              "text": "Purrline Foods: share of the markdown asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E003",
+          "subject": "Festive Sale: funding with NutriPaws",
+          "body": "Hi Meera,\n\nThank you for the offer. It is worth ₹3,107 to us, 85.5% of the ₹3,635 we asked for on those SKUs. Could you lower the sales target or make the share unconditional, so that it counts in full?\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "festive:E003?share=35&thr=1150",
+              "value": 3106.59,
+              "shown": "₹3,107",
+              "text": "NutriPaws: offer value counted"
+            },
+            {
+              "metric": "promo_offer_covers_ask_pct",
+              "key": "festive:E003?share=35&thr=1150",
+              "value": 0.8547,
+              "shown": "85.5%",
+              "text": "NutriPaws: share of the ask covered"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "festive:E003?share=35&thr=1150",
+              "value": 3634.78,
+              "shown": "₹3,635",
+              "text": "NutriPaws: ask on the SKUs the offer covers"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E004",
+          "subject": "Festive Sale: funding with Tailwind Play",
+          "body": "Hi Vikram,\n\nThank you, we accept. It is worth ₹4,419 to us, 120.2% of the ₹3,677 we asked for on those SKUs.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "festive:E004?share=40&scope=TW-01+TW-02",
+              "value": 4419.06,
+              "shown": "₹4,419",
+              "text": "Tailwind Play: offer value counted"
+            },
+            {
+              "metric": "promo_offer_covers_ask_pct",
+              "key": "festive:E004?share=40&scope=TW-01+TW-02",
+              "value": 1.2017,
+              "shown": "120.2%",
+              "text": "Tailwind Play: share of the ask covered"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "festive:E004?share=40&scope=TW-01+TW-02",
+              "value": 3677.39,
+              "shown": "₹3,677",
+              "text": "Tailwind Play: ask on the SKUs the offer covers"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E005",
+          "subject": "Festive Sale: funding with Litterly",
+          "body": "Hi Sanjay,\n\nThanks for letting us know. Would a smaller share of the markdown be possible? Our ask is ₹15,294.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "festive:E005",
+              "value": 0.45,
+              "shown": "45.0%",
+              "text": "Litterly: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "festive:E005",
+              "value": 15293.88,
+              "shown": "₹15,294",
+              "text": "Litterly: funding asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E006",
+          "subject": "Festive Sale: funding with Groomwell",
+          "body": "Hi Neha,\n\nThank you for the offer. It is worth ₹3,952 to us, 36.8% of the ₹10,742 we asked for on those SKUs. Could you raise the share to 30.0% of the markdown?\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "festive:E006?share=25&banner=3&scope=GW-01+GW-03",
+              "value": 3952.07,
+              "shown": "₹3,952",
+              "text": "Groomwell: offer value counted"
+            },
+            {
+              "metric": "promo_offer_covers_ask_pct",
+              "key": "festive:E006?share=25&banner=3&scope=GW-01+GW-03",
+              "value": 0.3679,
+              "shown": "36.8%",
+              "text": "Groomwell: share of the ask covered"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "festive:E006?share=25&banner=3&scope=GW-01+GW-03",
+              "value": 10742.49,
+              "shown": "₹10,742",
+              "text": "Groomwell: ask on the SKUs the offer covers"
+            },
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "festive:E006",
+              "value": 0.3,
+              "shown": "30.0%",
+              "text": "Groomwell: share of the markdown asked"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

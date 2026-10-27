@@ -26,8 +26,8 @@ function stub(routes: Record<string, (init?: RequestInit) => Response>) {
 
 describe("lib/catalog helpers", () => {
   it("adds the Catalog fixes entry to the Run navigation", () => {
-    expect(RUN_NAV.at(-1)?.href).toBe("/run/catalog");
-    expect(RUN_NAV.at(-1)?.match("/run/catalog")).toBe(true);
+    const entry = RUN_NAV.find((n) => n.href === "/run/catalog");
+    expect(entry?.match("/run/catalog")).toBe(true);
     expect(RUN_NAV[0].match("/run/catalog")).toBe(false);
   });
   it("words the counter from the impact baseline", () => {

@@ -1,0 +1,65 @@
+[
+ {
+  "id": "F001",
+  "event_id": "festive",
+  "vendor_id": "E001",
+  "received_at": "2026-10-23T11:02:00",
+  "from": "Anil Rao <orders@barkley.example>",
+  "subject": "RE: Festive Sale - funding",
+  "body": "Hi team,\n\nThanks for the Festive Sale slot. We can fund 50% of the markdown on the Barkley range, provided you guarantee a top-3 banner and the range sells 3,400 units between 6th and 12th Nov. If the target is missed the funding lapses.\n\nRegards\nAnil Rao\nBarkley Foods"
+ },
+ {
+  "id": "F002",
+  "event_id": "festive",
+  "vendor_id": "E002",
+  "received_at": "2026-10-23T16:40:00",
+  "from": "Rakesh Shah <dispatch@purrline.example>",
+  "subject": "Festive sale - Purrline support",
+  "body": "Dear Sir/Madam,\n\nFor the Festive Sale Purrline will fund 30% of the markdown on every Purrline SKU you put on promo. No other conditions. We will send the credit note after the event.\n\nThanks & regards\nRakesh Shah\nPurrline Nutrition LLP"
+ },
+ {
+  "id": "F003",
+  "event_id": "festive",
+  "vendor_id": "E003",
+  "received_at": "2026-10-24T09:15:00",
+  "from": "Meera Iyer <supply@nutripaws.example>",
+  "subject": "RE: Festive Sale funding ask",
+  "body": "Hello,\n\nNutriPaws can support 35% of the discount cost across our range if the range sells 1,150 units during 6-12 Nov. Happy to review after the event.\n\nBest\nMeera Iyer"
+ },
+ {
+  "id": "F004",
+  "event_id": "festive",
+  "vendor_id": "E005",
+  "received_at": "2026-10-24T13:30:00",
+  "from": "Sanjay Kulkarni <ops@litterly.example>",
+  "subject": "RE: Festive Sale - funding",
+  "body": "Hi,\n\nSorry, margins are very thin this quarter and we are not able to fund any discount for the Festive Sale. We will keep stock ready as usual.\n\nSanjay\nLitterly Products"
+ },
+ {
+  "id": "F005",
+  "event_id": "festive",
+  "vendor_id": "E006",
+  "received_at": "2026-10-24T15:05:00",
+  "from": "Neha Bhatt <care@groomwell.example>",
+  "subject": "Groomwell festive support",
+  "body": "Hi team,\n\nGroomwell will fund 25% of the markdown on GW-01 and GW-03 for the Festive Sale if you give us a top-3 banner placement. No sales target from our side.\n\nRegards\nNeha Bhatt\nGroomwell Care"
+ },
+ {
+  "id": "F006",
+  "event_id": "festive",
+  "vendor_id": "E004",
+  "received_at": "2026-10-25T10:20:00",
+  "from": "Vikram Sethi <sales@tailwindplay.example>",
+  "subject": "RE: Festive sale, TW-01 and TW-02",
+  "body": "Dear team,\n\nWe can fund 40% of the markdown on TW-01 and TW-02. Please note our lead time is 14 days, so we cannot ship fresh stock before the sale starts.\n\nVikram Sethi\nTailwind Play Co"
+ },
+ {
+  "id": "F007",
+  "event_id": "payday",
+  "vendor_id": "E002",
+  "received_at": "2026-10-25T17:45:00",
+  "from": "Rakesh Shah <dispatch@purrline.example>",
+  "subject": "Payday sale",
+  "body": "Dear team,\n\nFor the Payday Sale we can fund 20% of the markdown, nothing more this month.\n\nRakesh Shah\nPurrline Nutrition LLP"
+ }
+]

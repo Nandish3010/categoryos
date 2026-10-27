@@ -13,6 +13,7 @@ import os
 import re
 import string
 import types
+from datetime import date
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import lru_cache
@@ -882,6 +883,150 @@ class CatalogQc(M):
         return v
 
 
+# ---------- promotions and event planner (Run) ----------
+
+_PROMO = ["ops_promotions"]
+_WATCH = ["ops_price_watch"]
+
+
+class PromoEvent(M):
+    id: str = F(label="Id", help="Short key used in URLs and claim keys, for example festive.")
+    name: str = F(label="Event")
+    start: str = F(label="Starts", help="ISO date, for example 2026-11-06.")
+    end: str = F(label="Ends", help="ISO date, inclusive.")
+    traffic_lift_pct: float = F(0, "Traffic lift", "Extra demand the event brings to every SKU even without a discount.", unit="%", min=0, max=500, step=1, used_in=_PROMO)
+    banner_slots: int = F(3, "Banner slots", "Top banner slots a vendor can be promised.", min=0, max=50, step=1, used_in=_PROMO)
+
+    @model_validator(mode="after")
+    def _dates(self) -> "PromoEvent":
+        try:
+            a, b = date.fromisoformat(self.start), date.fromisoformat(self.end)
+        except ValueError as exc:
+            raise ValueError(f"event {self.id!r}: start and end must be ISO dates ({exc})") from exc
+        if b < a:
+            raise ValueError(f"event {self.id!r} ends before it starts")
+        if not re.fullmatch(r"[a-z0-9_-]{1,32}", self.id):
+            raise ValueError(f"event id {self.id!r} must be lower-case letters, digits, - or _")
+        return self
+
+
+class PromoUplift(M):
+    default_elasticity: float = F(-3.0, "Default promo elasticity", "Units sold change by (1 - discount) ^ elasticity. Promo elasticity is steeper than everyday price elasticity.", min=-12, max=0, step=0.1, used_in=_PROMO)
+    by_category: dict[str, float] = F({}, label="Promo elasticity by category", help="Category -> elasticity (negative): the uplift curve for that category.", used_in=_PROMO)
+    max_multiplier: float = F(4.0, "Largest uplift", "Demand cannot grow without limit: the uplift curve is capped at this multiple of baseline demand.", min=1, max=50, step=0.1, used_in=_PROMO)
+    pull_forward_pct: float = F(15, "Pulled forward", "Share of the extra units that would have sold anyway in the weeks after the event (it is not new demand).", unit="%", min=0, max=100, step=1, used_in=_PROMO)
+
+    @field_validator("by_category")
+    @classmethod
+    def _neg(cls, v: dict[str, float]) -> dict[str, float]:
+        bad = [k for k, e in v.items() if e > 0]
+        if bad:
+            raise ValueError(f"promo elasticity must be negative; fix {bad}")
+        return v
+
+
+class PromoDiscount(M):
+    steps_pct: list[float] = F([5, 10, 15, 20, 25, 30], "Discount steps", "Depths tried for each SKU (percent off today's selling price).", used_in=_PROMO)
+    max_pct: float = F(25, "Deepest discount", "No SKU is planned deeper than this.", unit="%", min=0, max=90, step=1, used_in=_PROMO)
+    floor_below_regular_pp: float = F(5, "Promo margin floor", "The margin after vendor funding may sit this many points under the category's regular floor during the event.", unit="pp", min=0, max=50, step=0.5, used_in=_PROMO)
+
+    @field_validator("steps_pct")
+    @classmethod
+    def _steps(cls, v: list[float]) -> list[float]:
+        if not v or any(x <= 0 or x >= 100 for x in v):
+            raise ValueError("discount steps must be numbers between 0 and 100")
+        return sorted(set(v))
+
+
+class PromoStock(M):
+    safety_buffer_pct: float = F(10, "Safety buffer", "Event demand is multiplied by (1 + this) when checking stock.", unit="%", min=0, max=200, step=1, used_in=_PROMO)
+    baseline_cover_days: float = F(14, "Cover kept by normal replenishment", "When an order placed today can still land before the event, normal replenishment is assumed to keep at least this many days of baseline cover until it starts. A vendor whose lead time is too long is planned on today's stock and open POs alone.", unit="days", min=0, max=120, step=1, used_in=_PROMO)
+    min_cover_days: float = F(3, "Thinnest stock at event start", "A SKU with fewer days of baseline cover than this at the event start is left out (fix supply first).", unit="days", min=0, max=60, step=0.5, used_in=_PROMO)
+    receiving_buffer_days: int = F(2, "Receiving buffer", "A stock-up PO must land this many days before the event starts.", unit="days", min=0, max=30, step=1, used_in=_PROMO)
+    pack_round_units: int = F(10, "Round POs to", "Suggested PO quantities are rounded up to a multiple of this.", unit="units", min=1, max=10000, step=1, used_in=_PROMO)
+    max_stock_up_cover_days: float = F(45, "Largest stock-up", "A stock-up never takes the SKU beyond this many days of baseline cover.", unit="days", min=1, max=365, step=1, used_in=_PROMO)
+
+
+class PromoFunding(M):
+    target_share_pct: float = F(30, "Funding ask", "Share of the markdown cost we ask each vendor to fund.", unit="%", min=0, max=100, step=1, used_in=_PROMO)
+    target_share_by_category: dict[str, float] = F({}, label="Funding ask by category", help="Category -> share (%) of the markdown we ask for, where the everyday margin is thinner and a promo needs more support.", used_in=_PROMO)
+    max_ask_share_pct: float = F(60, "Largest funding ask", "A depth that would need a bigger share than this to hold the margin floor is not planned.", unit="%", min=0, max=100, step=1, used_in=_PROMO)
+    banner_slot_cost_inr: float = F(5000, "Cost of a banner slot", "Opportunity cost we charge a vendor's funding offer for each top banner slot it asks us to guarantee.", unit="INR", min=0, max=10000000, step=500, used_in=_PROMO)
+
+
+class PromoCannibalisation(M):
+    similarity_threshold: float = F(0.5, "Near-duplicate similarity", "Name similarity (shared title words) at or above which two SKUs of one vendor are near-duplicates.", min=0.1, max=1, step=0.05, used_in=_PROMO)
+    max_price_gap_pct: float = F(25, "Largest price gap", "Near-duplicates must sit within this % of each other's price.", unit="%", min=0, max=500, step=1, used_in=_PROMO)
+    cannibalised_share_pct: float = F(30, "Taken from the sibling", "Share of a promoted SKU's extra units that come out of a near-duplicate sibling that is NOT on promo.", unit="%", min=0, max=100, step=1, used_in=_PROMO)
+
+
+class PromoCandidates(M):
+    max_skus_per_event: int = F(24, "SKUs per event", "At most this many SKUs go on promo in one event (best incremental margin first).", min=1, max=500, step=1, used_in=_PROMO)
+    min_incremental_margin_inr: float = F(250, "Smallest worthwhile gain", "A SKU whose net extra margin (after pull-forward and cannibalisation) is below this is left out.", unit="INR", min=0, max=10000000, step=100, used_in=_PROMO)
+
+
+def _default_events() -> list[PromoEvent]:
+    return [
+        PromoEvent(id="festive", name="Festive Sale", start="2026-11-06", end="2026-11-12", traffic_lift_pct=10, banner_slots=3),
+        PromoEvent(id="payday", name="Payday Sale", start="2026-11-28", end="2026-11-30", traffic_lift_pct=6, banner_slots=2),
+    ]
+
+
+class Promotions(M):
+    events: list[PromoEvent] = Field(
+        default_factory=_default_events,
+        json_schema_extra={"label": "Calendar", "help": "Sale events to plan. Add a row for each event; the planner works from today's stock and demand.", "used_in": _PROMO},
+    )
+    uplift: PromoUplift = Field(default_factory=PromoUplift, json_schema_extra={"label": "Uplift curves", "help": "How much extra demand a discount buys.", "used_in": _PROMO})
+    discount: PromoDiscount = Field(default_factory=PromoDiscount, json_schema_extra={"label": "Discount depth", "help": "Depths tried and the margin floor during the event.", "used_in": _PROMO})
+    stock: PromoStock = Field(default_factory=PromoStock, json_schema_extra={"label": "Stock", "help": "Stock-out checks and stock-up POs.", "used_in": _PROMO})
+    funding: PromoFunding = Field(default_factory=PromoFunding, json_schema_extra={"label": "Vendor funding", "help": "What we ask vendors to fund.", "used_in": _PROMO})
+    cannibalisation: PromoCannibalisation = Field(default_factory=PromoCannibalisation, json_schema_extra={"label": "Cannibalisation", "help": "Near-duplicate SKUs.", "used_in": _PROMO})
+    candidates: PromoCandidates = Field(default_factory=PromoCandidates, json_schema_extra={"label": "Candidates", "help": "Which SKUs make the plan.", "used_in": _PROMO})
+
+    @model_validator(mode="after")
+    def _unique(self) -> "Promotions":
+        ids = [e.id for e in self.events]
+        if len(set(ids)) != len(ids):
+            raise ValueError("event ids must be unique")
+        return self
+
+
+# ---------- competitor price monitor (Run) ----------
+
+
+class WatchUndercut(M):
+    threshold_pct: float = F(3, "Undercut threshold", "A competitor price at least this % below ours is an undercut.", unit="%", min=0, max=100, step=0.5, used_in=_WATCH)
+    min_sustained_days: int = F(3, "Sustained after", "Consecutive latest days beyond the threshold before an undercut counts as sustained. Anything shorter is a blip: watched, never matched.", unit="days", min=1, max=30, step=1, used_in=_WATCH)
+    trend_window_days: int = F(7, "Trend window", "Days used to fit the price trend.", unit="days", min=3, max=30, step=1, used_in=_WATCH)
+    trend_min_slope_pct_per_day: float = F(0.5, "Falling trend from", "A competitor price falling by at least this % a day over the trend window is flagged as a trend (watched, not yet matched).", unit="% per day", min=0, max=50, step=0.1, used_in=_WATCH)
+
+
+class WatchParity(M):
+    tolerance_pct: float = F(3, "Parity tolerance", "A vendor selling on another marketplace this % or more below our price is breaching price parity.", unit="%", min=0, max=100, step=0.5, used_in=_WATCH)
+    min_days: int = F(3, "Breach after", "Consecutive latest days below parity before it is flagged.", unit="days", min=1, max=30, step=1, used_in=_WATCH)
+    enforce_map: bool = F(True, "Check MAP", "Also flag a vendor price below the minimum advertised price on file.", used_in=_WATCH)
+
+
+class WatchMatch(M):
+    allow: bool = F(True, "Allow price matching", "When off, an undercut is never answered by cutting our price.", used_in=_WATCH)
+    max_cut_pct: float = F(12, "Largest cut without a person", "A match that needs a bigger price cut than this is escalated, not recommended.", unit="%", min=0, max=100, step=0.5, used_in=_WATCH)
+    price_round_inr: float = F(1, "Round match price up to", "The match price is the competitor's price rounded up to a multiple of this (never below it).", unit="INR", min=0.01, max=1000, step=0.5, used_in=_WATCH)
+    margin_buffer_pp: float = F(0, "Margin buffer", "The margin after a match must stay at the category floor plus this.", unit="pp", min=-50, max=50, step=0.5, used_in=_WATCH)
+    comparison_share_pct: float = F(70, "Shoppers who compare", "Share of demand that compares prices across marketplaces: only this share reacts to a price gap.", unit="%", min=0, max=100, step=5, used_in=_WATCH)
+    like_for_like_elasticity: float = F(-5.0, "Elasticity against an identical pack", "Units change by (our price / competitor price) ^ this for shoppers who compare. Much steeper than everyday price elasticity because the product is the same.", min=-20, max=0, step=0.5, used_in=_WATCH)
+    elasticity_by_category: dict[str, float] = F({}, label="Elasticity by category", help="Category -> like-for-like elasticity (negative), overriding the overall figure.", used_in=_WATCH)
+    horizon_days: int = F(30, "Impact horizon", "Window of the margin impact of matching or holding.", unit="days", min=7, max=180, step=1, used_in=_WATCH)
+
+
+class PriceWatch(M):
+    window_days: int = F(30, "History analysed", "Days of snapshots read.", unit="days", min=7, max=120, step=1, used_in=_WATCH)
+    undercut: WatchUndercut = Field(default_factory=WatchUndercut, json_schema_extra={"label": "Undercuts", "help": "What counts as an undercut, a trend or a blip.", "used_in": _WATCH})
+    parity: WatchParity = Field(default_factory=WatchParity, json_schema_extra={"label": "Vendor parity and MAP", "help": "When a vendor selling cheaper elsewhere is flagged.", "used_in": _WATCH})
+    match: WatchMatch = Field(default_factory=WatchMatch, json_schema_extra={"label": "Match rules", "help": "When to match, hold or ask the vendor for help.", "used_in": _WATCH})
+    ask_price_protection: bool = F(True, "Ask the vendor for price protection", "When matching would break the margin floor, ask the vendor to fund the gap instead.", used_in=_WATCH)
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -903,6 +1048,14 @@ class Policy(M):
     catalog_qc: CatalogQc = Field(
         default_factory=CatalogQc,
         json_schema_extra={"label": "Catalog QC (Run)", "help": "Fix queue for the live listings of existing vendors.", "used_in": ["ops_catalog"]},
+    )
+    promotions: Promotions = Field(
+        default_factory=Promotions,
+        json_schema_extra={"label": "Promotions (Run)", "help": "Sale events, uplift curves, discount depth, stock checks and vendor funding asks.", "used_in": ["ops_promotions"]},
+    )
+    price_watch: PriceWatch = Field(
+        default_factory=PriceWatch,
+        json_schema_extra={"label": "Price watch (Run)", "help": "Competitor undercuts, blips, vendor parity breaches and match rules.", "used_in": ["ops_price_watch"]},
     )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
 

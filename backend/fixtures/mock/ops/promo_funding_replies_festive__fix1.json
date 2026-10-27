@@ -1,0 +1,13 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "fixes": [
+      {
+        "claim_id": "promo:F003:t0:share",
+        "value": 35
+      }
+    ]
+  }
+}

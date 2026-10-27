@@ -34,6 +34,11 @@ def reset() -> None:
     )
 
     catalog_api.reset()
+    from app.ops.pricewatch import api as price_watch_api  # lazy: these modules import this one
+    from app.ops.promotions import api as promotions_api
+
+    price_watch_api.reset()
+    promotions_api.reset()
 
 
 async def _get(kind: str, inject: bool) -> dict[str, Any]:
