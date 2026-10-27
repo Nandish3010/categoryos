@@ -231,3 +231,12 @@ def test_image_request_shape_and_response_field():
     assert p["extra_body"] == {"output_format": "png"} and p["response_format"] == "b64_json" and p["size"] == "1024x1024"
     assert entry["response"]["data"][0]["b64_json"]  # the field generate_image reads (blob truncated in the fixture)
 
+
+
+def test_recorded_sam_mask_decodes_offline_through_meta_sam_parser():
+    pytest.importorskip("meta_sam_parser")
+    (rec,) = media.parse_sam_text(sam_text())
+    bits = media.decode_mask(rec)
+    assert len(bits) == rec.mask_h * rec.mask_w == 160 * 112
+    assert 0.3 < sum(bits) / len(bits) < 0.98  # a plausible object, neither empty nor the whole box
+    assert rec.origin() == (2, 0)  # box corner + the token's x=0;y=0
