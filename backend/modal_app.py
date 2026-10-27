@@ -1,7 +1,7 @@
 """Modal deployment of the CategoryOS backend (deploy deliberately: `modal deploy backend/modal_app.py`, see scripts/deploy.md).
 
 * Dependencies are pinned from uv.lock: ``backend/requirements.txt`` (regenerate with ``make requirements``).
-* The image carries the app, ``data/synthetic`` and ``backend/fixtures`` (golden runs, mock fixtures); no .env is baked in.
+* The image carries the app, ``config`` (the playbook defaults), ``data/synthetic`` and ``backend/fixtures`` (golden runs, mock fixtures); no .env is baked in.
 * Secrets come from the Modal Secret ``categoryos-secrets`` (MODEL_API_KEY, BASETEN_API_KEY, DEMO_KEY).
 * SQLite and the spend ledger live on the Volume ``categoryos-state`` (/state); committed after state changes.
 * One container (in-process run state + SSE), scale-to-zero by default, ~10 minute idle window.
@@ -20,11 +20,14 @@ REPO_DIR = BACKEND_DIR.parent
 STATE_DIR = "/state"
 DATA_DIR = "/root/data/synthetic"
 FIXTURES_DIR = "/root/fixtures"
+CONFIG_DIR = "/root/config"
 
 image_env = {
     "MODEL_MODE": os.environ.get("MODEL_MODE", "replay"),
     "DATA_DIR": DATA_DIR,
     "FIXTURES_DIR": FIXTURES_DIR,
+    "CONFIG_DIR": CONFIG_DIR,
+    "POLICY_LOCAL_PATH": f"{STATE_DIR}/policy.local.yaml",  # playbook edits survive restarts on the Volume
     "DB_PATH": f"{STATE_DIR}/categoryos.db",
     "LEDGER_PATH": f"{STATE_DIR}/ledger.json",
 }
@@ -38,6 +41,7 @@ image = (
     # add_local_* must come last: these are mounted at container start, not baked into the image layers
     .add_local_python_source("app")
     .add_local_dir(REPO_DIR / "data" / "synthetic", DATA_DIR)
+    .add_local_dir(REPO_DIR / "config", CONFIG_DIR, ignore=["policy.local.yaml"])
     .add_local_dir(BACKEND_DIR / "fixtures", FIXTURES_DIR, ignore=["**/__pycache__/**"])
 )
 

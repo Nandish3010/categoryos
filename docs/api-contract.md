@@ -259,6 +259,101 @@ as a labelled placeholder on demand. Open (no key).
 `GET /health`, `/api/stages`, `/api/mode`, `/api/vendors`, `/api/vendors/{id}`,
 `/api/vendors/{id}/decide/metrics`, `/api/vendors/{id}/claims`, `/api/ledger` (demo key).
 
+## Playbook
+
+All business rules live in `config/policy.yaml` (committed defaults) plus `config/policy.local.yaml` (UI overrides,
+gitignored). Effective playbook = deep-merge(defaults, overrides). Nothing is pet-specific in code; `config/examples/`
+holds beauty and electronics playbooks. Replay mode ignores local overrides and is read-only.
+
+### Routes
+
+| Route | Notes |
+|---|---|
+| `GET /api/policy` | The full shape below. Always open. |
+| `PUT /api/policy` | Body is a NESTED PARTIAL playbook. Dicts merge key by key; lists and scalars replace; a `null` value for a key of a dict-table (`margins.categories`, `margins.brands`, `onboarding.vendor_types`, `catalog.required_attributes`, `catalog.image_prompts.segmentation`, `po.gst_rate_by_category`) deletes that key. Returns the full GET shape. |
+| `POST /api/policy/reset` | Body `{section?: string}`; `section` is a top-level section (`research`) or any dotted path (`research.demand_min`). No body or `{}` resets everything. Returns the full GET shape. |
+
+Writes: `403 {code: "policy_read_only"}` in replay mode; otherwise they need `X-Demo-Key` only when `DEMO_KEY` is
+configured (`403 demo_key_required` without it). Invalid input is `422` with the usual error shape plus the dotted
+field `path` of the first problem and the whole list: `{code: "policy_invalid", problem, cause, fix, run_id, path, errors: [{path, message}]}`.
+Nothing is written when validation fails. `GET /api/mode` also returns `policy_hash`.
+
+Lever bounds come from `levers`: `target_margin_pct_offset` outside `levers.margin_offset.{min,max}` or `moq` above
+`levers.moq.max_factor x` the vendor's proposed MOQ is `422 lever_out_of_range` (the Query limits of -20..20 and 0..20000 stay as the outer safety).
+A changed playbook changes `policy_hash`, which is part of every `metrics_hash`, so approvals made under old rules are refused (`409 stale_approval`).
+
+### GET /api/policy
+
+```json
+{
+  "policy": { "...": "effective playbook, same keys as config/policy.yaml" },
+  "defaults": { "...": "committed defaults, same shape" },
+  "overridden_paths": ["research.demand_min", "margins.categories"],
+  "hash": "1a77e883d0ccbaab",
+  "editable": true,
+  "schema_hints": { "<dotted.path>": { "...": "see below" } }
+}
+```
+
+`overridden_paths`: dotted paths whose effective value differs from the default. Tables and lists are listed as a whole
+(`margins.categories`, never `margins.categories.treats`). `editable` is false in replay mode.
+
+### schema_hints
+
+Keyed by dotted path, one entry per field (and per section, kind `section`, whose `used_in` is the stage chips for the
+section card). Every entry has `label`, `help`, `kind`, `used_in` (stage ids from `/api/stages`), and optionally `unit`
+(`%`, `pp`, `days`, `x`, `ratio`, `chars`, `units`), `min`, `max`, `step`, `integer`, `options`. `kind` is one of
+`number | bool | enum | string_list | table | text | section`. One example per kind:
+
+```json
+{
+  "research.demand_min": {"kind": "number", "integer": false, "label": "Minimum demand", "help": "A SKU below this demand percentile is rejected.", "min": 0, "max": 1, "step": 0.05, "used_in": ["research", "shortlist"]},
+  "screening.absent_document_counts_as_missing": {"kind": "bool", "label": "Absent counts as missing", "help": "...", "used_in": ["intake"]},
+  "research.below_min_margin_action": {"kind": "enum", "options": ["negotiate", "reject"], "label": "Below-floor action", "help": "...", "used_in": ["research", "shortlist"]},
+  "onboarding.required_terms": {"kind": "string_list", "options": ["margin_offered_pct", "payment_terms_days", "moq_units", "marketing_support_inr", "launch_discount_pct", "returns_policy"], "label": "Terms compared in negotiation", "help": "...", "used_in": ["negotiate"]},
+  "business.retailer": {"kind": "text", "label": "Retailer", "help": "...", "used_in": ["intake", "research", "shortlist", "negotiate", "catalog", "marketing", "jbp", "po"]},
+  "research.fit_weights": {"kind": "section", "label": "Fit score weights", "help": "Must sum to 1.", "used_in": ["research"]},
+  "margins.categories": {
+    "kind": "table", "shape": "dict", "label": "Category margins", "help": "...", "used_in": ["research", "shortlist", "negotiate"],
+    "columns": [
+      {"key": "name", "label": "Name", "kind": "text"},
+      {"key": "target_pct", "kind": "number", "integer": false, "label": "Target margin", "unit": "%", "min": 0, "max": 95, "step": 0.5},
+      {"key": "min_pct", "kind": "number", "integer": false, "label": "Minimum margin", "unit": "%", "min": 0, "max": 95, "step": 0.5},
+      {"key": "payment_terms_days", "kind": "number", "integer": true, "label": "Payment terms", "unit": "days", "min": 0, "max": 365, "step": 1}
+    ]
+  },
+  "screening.documents": {
+    "kind": "table", "shape": "list", "label": "Documents", "used_in": ["intake"],
+    "columns": [
+      {"key": "type", "kind": "text", "label": "Document"},
+      {"key": "blocking", "kind": "bool", "label": "Blocking"},
+      {"key": "categories", "kind": "string_list", "allows_all": true, "label": "Applies to"}
+    ]
+  }
+}
+```
+
+Tables: `shape: "dict"` is a mapping keyed by name (the first column, `key: "name"`, is the dict key; the remaining columns are
+the row's fields; if the only other column is `value` the row is a bare value); `shape: "list"` is an ordered list of rows with the
+listed columns. Dict tables are PUT as nested partials (null deletes a row); list tables are PUT whole. A column can itself
+be a table (`taxonomy.categories[].subcategories`). `allows_all: true` on a `string_list` means the value may be the string `"all"` instead of a list.
+`negotiation.payment_terms_days` is `kind: "text"` and accepts the word `category` or a number of days.
+
+Sections (top-level keys of `policy`, in stage order): `business`, `onboarding`, `screening`, `taxonomy`, `research`, `margins`,
+`negotiation`, `catalog`, `launch`, `po`, `levers`, `verifier`. Rows: `margins.categories.<name>` is `{target_pct, min_pct, payment_terms_days}`;
+`onboarding.vendor_types.<key>` is `{label, target_offset_pp}`; `margins.brands.<brand>` is `{target_offset_pp, note}`;
+`levers.margin_offset` is `{min, max, step}`; `levers.moq` is `{step, max_factor}`.
+Vertical-agnostic sections: `taxonomy` (`categories[{name, patterns[], subcategories{name: patterns[]}, approximate_as?}]`,
+`fallback_category`, `segments[{name, values{value: patterns[]}}]`; names may contain `{segment}` placeholders), `research.keyword_matching`,
+`screening.claim_rules[].categories` (scope: `"all"` or a list), `catalog.label_licences`, `catalog.label_checks`, `catalog.image_prompts`.
+
+### SkuMetrics additions
+
+`SkuMetrics.target_breakdown = {category_pct, vendor_type_pp, brand_pp, lever_pp}`, all in PERCENT / percentage points, the
+same unit as `margins.categories.*.target_pct` (so `27` means 27%). `target_pct` (a 0 to 1 fraction, clamped to 0..0.95) equals
+`(category_pct + vendor_type_pp + brand_pp + lever_pp) / 100`. The floor shifts by `vendor_type_pp` and `brand_pp` only (not the lever).
+The negotiate stage's `required` adds `margin_breakdown` (the same four numbers for the dominant negotiate category).
+
 ## Replay mode (`MODEL_MODE=replay`)
 
 `POST /api/vendors/{id}/runs` creates an ephemeral in-memory session (no database writes) that re-emits the recorded

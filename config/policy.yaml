@@ -1,0 +1,282 @@
+# CategoryOS playbook: every business rule a category manager tunes lives in this one file.
+# This is the committed DEFAULT playbook (the pet-retail demo). The UI writes overrides to
+# config/policy.local.yaml (gitignored); effective playbook = deep-merge(this file, local overrides).
+# Lists and tables replace wholesale; nested sections merge key by key.
+# Each key below says what it does and which stage reads it.
+# Market FACTS (units per SKU, price bands, gaps) stay in data/synthetic/category_benchmarks.json.
+# Ops settings (spend caps, rate limits, timeouts, token prices) stay in env, not here.
+version: 1                       # schema version of this file
+
+business:                        # wording injected into every model prompt (all stages)
+  retailer: an Indian online pet retailer   # who the agents work for, as it reads in a sentence
+  vertical: pet                  # one word for the product world, used as "<vertical>-category buying team"
+
+onboarding:                      # Intake: what a vendor application must contain
+  required_application_fields:   # application fields that must be present and non-empty (Intake flags the rest)
+    - company_name
+    - brand_name
+    - contact_name
+    - contact_email
+    - city
+    - years_in_business
+    - categories
+    - documents
+    - proposed_terms
+    - vendor_type
+  required_terms:                # commercial terms compared in Negotiate's gap table (application field names)
+    - margin_offered_pct
+    - payment_terms_days
+    - moq_units
+    - marketing_support_inr
+    - launch_discount_pct
+    - returns_policy
+  vendor_types:                  # vendor kinds; the application's vendor_type picks one. Shifts margin target (Research, Negotiate)
+    national_brand:
+      label: National brand      # shown in the UI
+      target_offset_pp: -3       # percentage points added to every category target for this kind of vendor
+    d2c_brand:
+      label: D2C brand
+      target_offset_pp: 0
+    importer:
+      label: Importer / distributor
+      target_offset_pp: 0
+    private_label:
+      label: Private / white label
+      target_offset_pp: 8
+
+screening:                       # Intake: compliance and risk gate
+  documents:                     # one row per compliance document type
+    - type: GST                  # document type as written in applications
+      blocking: true             # blocking: expired or missing fails screening, and a missing one is also flagged when not listed at all
+      categories: all            # "all" or a list of category names the document applies to
+    - type: PAN
+      blocking: true
+      categories: all
+    - type: FSSAI
+      blocking: true
+      categories: [dog dry food, dog wet food, cat dry food, cat wet food, treats]
+    - type: Trademark
+      blocking: false            # non-blocking problems are reported as warnings
+      categories: all
+    - type: Certificate of Incorporation
+      blocking: false
+      categories: all
+  absent_document_counts_as_missing: true   # a blocking document that applies to the vendor's categories but is not listed counts as missing
+  expiry_warning_days: 60        # a valid document expiring within this many days is flagged "expiring soon"
+  fail_on:                       # what makes the deterministic guard fail a vendor: blocking_document, prompt_injection or a claim_rules type
+    - blocking_document
+    - prompt_injection
+    - medical_claim
+  claim_rules:                   # one list shared by Intake (vendor text) and Catalog (listing copy compliance)
+    - type: medical_claim        # rule id; also the compliance flag name
+      severity: high             # low | medium | high
+      categories: all            # "all" or the categories the rule applies to (a vertical can have its own banned claims)
+      patterns:                  # regex alternatives (case-insensitive, matched on word boundaries)
+        - cures?
+        - cured
+        - curing
+        - heals?
+        - healing
+        - 'treats? (?:\w+ ){0,2}(?:infections?|diseases?|arthritis|allerg\w+|dermatitis)'
+        - 'prevents? (?:\w+ ){0,2}(?:diseases?|infections?|cancer)'
+        - therapeutic
+        - 'diagnos\w+'
+        - 'anti-?inflammatory'
+      examples: [cures arthritis, treats ear infections, heals dermatitis]   # shown to the model in prompts
+    - type: unverifiable_superlative
+      severity: medium
+      categories: all
+      patterns:
+        - best
+        - '#1'
+        - number one
+        - 'no\.? ?1'
+        - 'world''?s'
+        - guaranteed
+        - '100% (?:safe|natural|pure)'
+        - perfect
+        - ultimate
+        - finest
+        - unmatched
+        - miracle
+      examples: [best in the world, guaranteed results, 100% safe]
+    - type: unsubstantiated_claim
+      severity: medium
+      categories: all
+      patterns:
+        - 'vet[- ]formulated'
+        - 'boosts? immunity'
+        - '(?:helps? )?(?:reduce[sd]?|relieve[sd]?) (?:tartar|hairball|stress|odou?r)'
+        - hairball relief
+        - 'clinically \w+'
+        - 'supports? (?:digestion|joint health|immunity)'
+      examples: [boosts immunity, vet formulated]
+  injection_patterns:            # regexes that spot vendor text addressed to an AI reviewer (prompt injection)
+    - '(?:ignore|disregard|override|bypass)\b[^.!?]{0,60}\b(?:rules?|instructions?|screening|guidelines?|prompt)'
+    - 'note to (?:any |the )?(?:ai|llm|model|assistant|system)\b'
+    - '(?:approve|accept) all (?:skus?|products?)'
+  data_quality_flags:            # SKU data gaps the Intake agent reports as missing_data (rendered into its prompt)
+    - mrp_missing
+    - pack_missing
+    - cost_missing
+    - hsn_missing
+
+taxonomy:                        # Research and Catalog: how a SKU is classified. Order is priority: the first category whose patterns match the name wins
+  fallback_category: treats      # used when nothing matches (and as the label of last resort); must be a margins category
+  segments:                      # optional extra dimension read from the text (pet species, gender, skin type...). Usable as {name} in names
+    - name: species
+      values:                    # value -> regexes; the value with most matches wins, ties go to the vendor-level hint, then the first value
+        dog: ['\bdogs?\b', '\bpupp(?:y|ies)\b', canine]
+        cat: ['\bcats?\b', '\bkittens?\b', catnip, hairball, feline]
+  categories:                    # ordered classification rules
+    - name: cat litter           # category name (may contain {segment} placeholders); must exist in margins.categories
+      patterns: [litter]         # regexes matched against the SKU name, then the description
+      subcategories:             # ordered; the first whose patterns match wins; an empty list is the default
+        tofu: [tofu]
+        crystal: [silica, crystal]
+        clumping: []
+    - name: grooming
+      patterns: [shampoo, conditioner, 'ear (?:cleaner|drops)', balm, serum, brush, clipper, grooming]
+      subcategories:
+        shampoo: [shampoo]
+        tools: [brush, clipper]
+        hygiene: []
+    - name: treats
+      patterns: [treat, chew, 'bites?\b', biscuit, 'sticks?\b', jerky, 'strips?\b', dental]
+      subcategories:
+        dental: [dental, tartar]
+        '{species} treats': []
+    - name: toys
+      patterns: ['\btoys?\b', '\btug\b', teaser, wand, catnip, plush, squeak, '\bball\b']
+      subcategories:
+        '{species} toys': []
+    - name: accessories
+      patterns: [collar, harness, leash, bowl, scratch]
+      subcategories:
+        collars: [collar]
+        harness: [harness]
+        leashes: [leash]
+        bowls: [bowl]
+        furniture: []
+    - name: '{species} wet food'
+      patterns: ['\bwet\b', pouch, gravy, pate, stew, '\btray\b', chunks, mousse, jelly]
+      subcategories:
+        pate: [pate]
+        mousse: [mousse]
+        jelly: [jelly]
+        chunks: [chunk]
+        gravy: []
+    - name: '{species} dry food'
+      patterns: [kibble, '\bdry\b', adult, puppy, kitten, senior, large breed, '\bfood\b']
+      subcategories:
+        kitten: [kitten]
+        puppy: [puppy]
+        senior: [senior]
+        adult: []
+    - name: supplement
+      patterns: [probiotic, vitamin, supplement, powder, drops, joint]
+      approximate_as: treats     # no category of its own: classified as this category and flagged approx_category
+
+research:                        # Research / Shortlist: the verdict engine
+  demand_min: 0.40               # a SKU below this demand percentile (0-1) is rejected
+  overlap_max: 0.60              # a SKU at or above this similarity to the existing catalog (0-1) is rejected
+  freight_pct: 0.04              # landed cost = vendor cost x (1 + this)
+  neutral_review_score: 0.6      # review score (0-1) used when the brand has no reviews
+  keyword_matching:              # how a SKU is matched to a search keyword for its demand score
+    generic_tokens: [food, dog, cat, pet, treat, for, under, and, with, the, of]   # words that carry less weight in a match
+    generic_weight: 0.5          # weight of a generic token relative to a specific one (1.0)
+    stop_tokens: [and, for, with, the, of, a, set, x, pack, pc, pcs]               # words ignored when comparing names
+    min_coverage: 0.7            # share of the keyword's weight that must be present in the SKU text
+  fit_weights:                   # fit score weights; must sum to 1
+    margin: 0.4
+    demand: 0.3
+    overlap: 0.2
+    review: 0.1
+  below_min_margin_action: negotiate   # negotiate: margin below target is negotiated (flagged below_min under the floor); reject: margin below the minimum rejects the SKU
+  moq_flag_factor: 2.0           # flag the vendor MOQ when it exceeds this multiple of the shortlist's monthly units
+
+margins:                         # Research, Negotiate, Catalog: margin targets
+  categories:                    # base targets per category. target_pct is the margin we want, min_pct the floor
+    dog dry food: {target_pct: 27, min_pct: 20, payment_terms_days: 30}
+    dog wet food: {target_pct: 28, min_pct: 22, payment_terms_days: 30}
+    cat dry food: {target_pct: 26, min_pct: 19, payment_terms_days: 30}
+    cat wet food: {target_pct: 30, min_pct: 23, payment_terms_days: 30}
+    treats: {target_pct: 35, min_pct: 28, payment_terms_days: 21}
+    cat litter: {target_pct: 22, min_pct: 17, payment_terms_days: 30}
+    grooming: {target_pct: 38, min_pct: 30, payment_terms_days: 30}
+    toys: {target_pct: 40, min_pct: 32, payment_terms_days: 30}
+    accessories: {target_pct: 40, min_pct: 32, payment_terms_days: 30}
+  brands: {}                     # optional per-brand offsets, e.g. "Highland Paws": {target_offset_pp: 2, note: "strategic brand"}
+  # effective target = category target_pct + vendor type offset + brand offset + lever offset
+  # the floor (min_pct) takes the vendor type and brand offsets too (not the lever)
+
+negotiation:                     # Negotiate: what we require from a vendor
+  margin_ask: target             # target: the gap table requires the effective target margin; min: it requires the floor
+  payment_terms_days: category   # "category" uses the category's payment_terms_days, or give a fixed number of days
+  payment_longer_is_better: true # longer payment terms favour us; false inverts the comparison
+  moq_max_factor: 2.0            # we accept a first-order MOQ up to this multiple of the shortlist's monthly units
+  marketing_min_pct_of_order: 0.10   # required launch marketing support, as a share of first-order retail value
+  launch_discount_min_pct: 5     # required vendor-funded launch discount (%)
+  defect_return_min_days: 7      # shortest acceptable defect-return window (days)
+
+catalog:                         # Catalog: listing copy, compliance, images
+  title_max_chars: 80            # listing titles are cut to this length
+  bullets: {min: 3, max: 5}      # bullets per listing (short lists are topped up, long ones cut)
+  description_sentences: {min: 2, max: 3}   # sentences per description (given to the copywriter)
+  required_attributes:           # attributes every listing needs, per category (missing -> missing_label_info flag)
+    default: [pack, mrp]         # used for categories not listed below. "pack" is satisfied by any pack_* attribute
+    dog dry food: [life_stage, breed_size, protein, grain_free, pack_g, mrp]
+    cat dry food: [life_stage, breed_size, protein, grain_free, pack_g, mrp]
+    dog wet food: [life_stage, protein, pack_g, mrp]
+    cat wet food: [life_stage, protein, pack_g, mrp]
+    treats: [life_stage, protein, pack_g, mrp]
+    cat litter: [material, pack, mrp]
+    toys: [material, pack, mrp]
+    accessories: [material, pack, mrp]
+  label_licences:                # a licence number that must appear on a listing for these categories
+    - document: FSSAI            # application document type that holds the licence
+      attribute: fssai_license   # listing attribute the number is written to
+      categories: [dog dry food, dog wet food, cat dry food, cat wet food, treats]
+  label_checks:                  # statutory label information checked per category
+    - categories: [dog dry food, dog wet food, cat dry food, cat wet food, treats]
+      require: [shelf_life, net_quantity, ingredients]   # shelf_life | net_quantity | ingredients
+  hero_sku_count: 3              # top SKUs by GMV that get a lifestyle image
+  image_sizes: {packshot: 1024x1024, lifestyle: 1792x1024, campaign: 1792x1024}   # generated image sizes
+  image_prompts:                 # image generation templates; {brand} {name} {pack} {category} {subcategory} {campaign} and segment names such as {species}
+    packshot: "Studio packshot of {brand} {name}, {pack}, product packaging, front view, centred on a plain white background, soft shadow, sharp focus, no extra text."
+    lifestyle: "Warm lifestyle photograph of a happy {species} at home with {brand} {name}, natural light, shallow depth of field, no text."
+    campaign: "Bright e-commerce launch banner for the brand {brand}: '{campaign}'. Product-forward, clean layout, no small text."
+    segmentation:                # cut-out phrase per category for SAM; "default" covers the rest
+      dog dry food: bag of dog food
+      cat dry food: bag of cat food
+      dog wet food: pet food pouch
+      cat wet food: pet food pouch
+      treats: treat pouch
+      cat litter: bag of cat litter
+      grooming: bottle
+      toys: pet toy
+      accessories: pet accessory
+      default: product
+
+launch:                          # Launch packet (marketing, JBP, PO)
+  launch_discount_days: 30       # length of the launch discount window
+  launch_week_days: 7            # length of the launch-week promotion
+  sell_through_review_day: 30    # first sell-through review, days after listings go live
+  listing_lag_days: 2            # days between the PO being received and listings going live
+  platform_funded_discount_max_pct: 0   # most the platform adds on top of the vendor's launch discount (the model's figure is clamped)
+  jbp_top_skus: 5                # SKUs listed in the joint business plan
+  jbp_sections: [Overview, Targets, Investments, Promo calendar, Commitments and next steps]   # JBP sections in order
+
+po:                              # PO stage
+  gst_rate_default: 0.18         # tax rate applied to PO lines (shown separately)
+  gst_rate_by_category: {}       # category -> rate overrides, e.g. {toys: 0.12}
+  lead_days: {confirmed: 2, shipped: 5, received: 12}   # days from raising the PO to each status
+  simulated_delay_days: 3        # demo only: the simulated shipping delay
+  number_format: "PO-{vendor}-{date}"   # PO number; {vendor} is the vendor id, {date} is YYYYMMDD
+
+levers:                          # Research: bounds of the what-if sliders (the API enforces them)
+  margin_offset: {min: -10, max: 10, step: 1}   # allowed target-margin offset in percentage points
+  moq: {step: 50, max_factor: 2}                # MOQ slider step, and the largest MOQ as a multiple of the vendor's proposal
+
+verifier:                        # all stages: how closely a claim must match the recomputed value
+  tolerances: {pct: 0.01, inr: 1.0, units: 0, score: 0.5, ratio: 0.005, qty: 0}

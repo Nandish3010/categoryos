@@ -68,6 +68,9 @@ export function TopBar({
       </ol>
 
       <div className="ml-auto flex items-center gap-2 min-[900px]:ml-0">
+        <Link href="/rules" className="inline-flex h-8 items-center rounded-chip px-2 text-sm text-text-dim hover:text-text">
+          Playbook
+        </Link>
         <ModeChip label={modeLabel(mode, claims)} known={!!mode} />
       </div>
       <button

@@ -12,7 +12,7 @@
   {
     "turn": 3,
     "speaker": "buyer",
-    "text": "Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?"
+    "text": "Margin. You offered 17 percent, and our treats target is 35 percent. Where can you get to?"
   },
   {
     "turn": 4,
@@ -32,7 +32,7 @@
   {
     "turn": 7,
     "speaker": "buyer",
-    "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard."
+    "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We need at least 21 days."
   },
   {
     "turn": 8,

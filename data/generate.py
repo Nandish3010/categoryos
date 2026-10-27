@@ -105,33 +105,33 @@ def gen_catalog():
 CAT_HDR = ["sku_id", "brand", "name", "category", "subcategory", "pack_size", "mrp", "selling_price", "cost_price",
            "margin_pct", "monthly_units", "rating", "review_count", "in_stock"]
 
-# ---------------------------------------------------------------- 2. benchmarks
+# ---------------------------------------------------------------- 2. benchmarks (market FACTS only; margin targets live in config/policy.yaml)
 BENCH = {
-    "dog dry food": (27, 20, 30, [(0, 500), (500, 1500), (1500, 3500), (3500, 8000)],
+    "dog dry food": ([(0, 500), (500, 1500), (1500, 3500), (3500, 8000)],
                      ["Premium grain-free / high-protein dog food above Rs.1,500 per 3 kg is underserved",
                       "Few salmon or novel-protein adult formulas", "Senior and joint-care formulas thin"]),
-    "dog wet food": (28, 22, 30, [(0, 120), (120, 250), (250, 600)],
+    "dog wet food": ([(0, 120), (120, 250), (250, 600)],
                      ["Natural / high-meat-content wet food in 350 g cans is underserved", "Single-protein options for sensitive dogs missing"]),
-    "cat dry food": (26, 19, 30, [(0, 400), (400, 900), (900, 2000)],
+    "cat dry food": ([(0, 400), (400, 900), (900, 2000)],
                      ["Indoor / sterilised cat formulas in 3 kg+ packs are underserved", "Kitten range has only 2 brands"]),
-    "cat wet food": (30, 23, 30, [(0, 100), (100, 200), (200, 500)],
+    "cat wet food": ([(0, 100), (100, 200), (200, 500)],
                      ["Grain-free cat wet food under Rs.100 is underserved", "Mousse and pate textures for kittens are thin"]),
-    "treats": (35, 28, 21, [(0, 150), (150, 300), (300, 600)],
+    "treats": ([(0, 150), (150, 300), (300, 600)],
                ["Functional cat treats (hairball, dental, creamy lick) are underserved", "Freeze-dried single-ingredient treats missing", "Dog dental chews saturated"]),
-    "cat litter": (22, 17, 30, [(0, 450), (450, 700), (700, 1200)],
+    "cat litter": ([(0, 450), (450, 700), (700, 1200)],
                    ["Tofu / plant-based low-dust litter has only 1 SKU", "Premium lavender / carbon clumping litter above Rs.700 is underserved"]),
-    "grooming": (38, 30, 30, [(0, 250), (250, 450), (450, 800)],
+    "grooming": ([(0, 250), (250, 450), (450, 800)],
                  ["Herbal and natural shampoos with credible claims are underserved", "Paw and coat care (balms, serums) is almost absent"]),
-    "toys": (40, 32, 30, [(0, 200), (200, 350), (350, 700)],
+    "toys": ([(0, 200), (200, 350), (350, 700)],
              ["Range is saturated: rope, squeaky and plush toys have many near-identical SKUs", "Interactive / treat-dispensing toys are the only real gap"]),
-    "accessories": (40, 32, 30, [(0, 300), (300, 450), (450, 800)],
+    "accessories": ([(0, 300), (300, 450), (450, 800)],
                     ["Collars, leashes and bowls are saturated", "Cat furniture and travel accessories underserved"]),
 }
 
 
 def gen_benchmarks(cat_rows):
     out = {}
-    for cat, (tgt, mn, terms, bands, gaps) in BENCH.items():
+    for cat, (bands, gaps) in BENCH.items():
         rs = [r for r in cat_rows if r[3] == cat]
         total_units = sum(r[10] for r in rs) or 1
         pb = []
@@ -140,8 +140,7 @@ def gen_benchmarks(cat_rows):
             pb.append({"band": f"Rs.{lo}-{hi}", "share_of_skus_pct": round(len(inb) / len(rs) * 100, 1),
                        "share_of_units_pct": round(sum(r[10] for r in inb) / total_units * 100, 1)})
         pb.sort(key=lambda x: -x["share_of_units_pct"])
-        out[cat] = {"target_margin_pct": tgt, "min_margin_pct": mn, "typical_payment_terms_days": terms,
-                    "avg_monthly_units_per_sku": round(total_units / len(rs), 1), "sku_count": len(rs),
+        out[cat] = {"avg_monthly_units_per_sku": round(total_units / len(rs), 1), "sku_count": len(rs),
                     "top_price_bands": pb, "gaps": [g.replace("Rs.", "₹") for g in gaps]}
     for v in out.values():
         for b in v["top_price_bands"]:
@@ -151,7 +150,7 @@ def gen_benchmarks(cat_rows):
 
 # ---------------------------------------------------------------- 3. vendors
 VENDORS = {
- "V001": dict(brand="Highland Paws", company="Highland Paws Nutrition Pvt Ltd", contact="Aarav Menon", email="aarav.menon@example.com",
+ "V001": dict(vendor_type="d2c_brand", brand="Highland Paws", company="Highland Paws Nutrition Pvt Ltd", contact="Aarav Menon", email="aarav.menon@example.com",
    city="Bengaluru", years=7, cats=["dog dry food", "dog wet food", "treats"],
    docs=[("GST", "GST-DEMO-0001", "2030-03-31", "valid"), ("FSSAI", "FSSAI-DEMO-0001", "2027-08-15", "valid"),
          ("PAN", "PAN-DEMO-0001", "2099-12-31", "valid"), ("Trademark", "TM-DEMO-0001", "2032-05-10", "valid"),
@@ -159,21 +158,21 @@ VENDORS = {
    terms=dict(margin_offered_pct=34, payment_terms_days=45, moq_units=150, marketing_support_inr=250000, launch_discount_pct=10,
               returns_policy="Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window"),
    pitch="We make small-batch, high-protein grain-free dog food with single-source chicken and salmon, tested by a vet nutritionist. Our Bengaluru repeat rate is 62% and we want to bring our range to a platform with national reach. We are happy to fund launch marketing and trade at a healthy margin."),
- "V002": dict(brand="Mewsli", company="Mewsli Cat Care LLP", contact="Priya Nair", email="priya.nair@example.com",
+ "V002": dict(vendor_type="d2c_brand", brand="Mewsli", company="Mewsli Cat Care LLP", contact="Priya Nair", email="priya.nair@example.com",
    city="Pune", years=3, cats=["treats", "cat litter"],
    docs=[("GST", "GST-DEMO-0002", "2030-03-31", "valid"), ("FSSAI", "FSSAI-DEMO-0002", "2027-11-30", "valid"),
          ("PAN", "PAN-DEMO-0002", "2099-12-31", "valid"), ("Trademark", "TM-DEMO-0002", "2031-01-20", "valid")],
    terms=dict(margin_offered_pct=17, payment_terms_days=15, moq_units=800, marketing_support_inr=20000, launch_discount_pct=0,
               returns_policy="No returns except manufacturing defects reported within 7 days"),
    pitch="Mewsli makes cat treats and tofu litter that cat parents rave about; our creamy lick treats are a Pune bestseller. Raw material costs are high so we can only offer a thin margin, but volumes will make up for it. We need quick payment terms as we are a young company."),
- "V003": dict(brand="SnapTail", company="SnapTail Accessories Pvt Ltd", contact="Rohan Kapoor", email="rohan.kapoor@example.com",
+ "V003": dict(vendor_type="importer", brand="SnapTail", company="SnapTail Accessories Pvt Ltd", contact="Rohan Kapoor", email="rohan.kapoor@example.com",
    city="Delhi", years=5, cats=["toys", "accessories"],
    docs=[("GST", "GST-DEMO-0003", "2030-03-31", "valid"), ("PAN", "PAN-DEMO-0003", "2099-12-31", "valid"),
          ("Trademark", "TM-DEMO-0003", "2029-09-01", "valid")],
    terms=dict(margin_offered_pct=22, payment_terms_days=30, moq_units=400, marketing_support_inr=0, launch_discount_pct=5,
               returns_policy="Exchange only for defective items within 15 days"),
    pitch="SnapTail offers a full range of dog and cat toys, collars, harnesses and bowls at competitive prices. We are already on several marketplaces and can supply large quantities quickly. Let us add our range to your store."),
- "V004": dict(brand="Verdant Tails", company="Verdant Tails Herbals", contact="Meera Joshi", email="meera.joshi@example.com",
+ "V004": dict(vendor_type="d2c_brand", brand="Verdant Tails", company="Verdant Tails Herbals", contact="Meera Joshi", email="meera.joshi@example.com",
    city="Jaipur", years=2, cats=["grooming", "treats"],
    docs=[("GST", "GST-DEMO-0004", "2030-03-31", "valid"), ("FSSAI", "FSSAI-DEMO-0004", "2026-03-31", "expired"),
          ("PAN", "PAN-DEMO-0004", "2099-12-31", "valid"), ("Trademark", "", "", "missing"),
@@ -413,11 +412,11 @@ KEYWORDS = [
 V002_CALL = [
  ("buyer", "Hi Priya, thanks for making time. I have gone through your application and the SKU sheet. We like the creamy lick treats, but the numbers need work before we can place an order."),
  ("vendor", "Thanks for having me. Happy to talk through it. What are you looking at first?"),
- ("buyer", "Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?"),
+ ("buyer", "Margin. You offered 17 percent, and our treats target is 35 percent. Where can you get to?"),
  ("vendor", "Seventeen is thin, I know. Our tuna and salmon costs went up this year. If you take the full treats range, I can move to 21 percent."),
  ("buyer", "Twenty-one is better but still short. Can you go to 24?"),
  ("vendor", "No, 21 is my floor on the treats. The litter I can look at again once we see sales, but not today."),
- ("buyer", "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard."),
+ ("buyer", "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We need at least 21 days."),
  ("vendor", "Fifteen is hard for us, we are a young company. But I can do 30 days if the order is confirmed in writing this week."),
  ("buyer", "Agreed, 30 days payment terms, order confirmed in writing. Now minimum order quantity. You have 800 units, and our forecast is far lower for a new brand."),
  ("vendor", "800 is what our production batch needs. I can bring it down to 500 units in total for the first order, split across the SKUs you list."),
@@ -450,7 +449,7 @@ def main():
     counts["category_benchmarks.json (categories)"] = len(BENCH)
     for vid, v in VENDORS.items():
         app = {"vendor_id": vid, "company_name": v["company"], "brand_name": v["brand"], "contact_name": v["contact"],
-               "contact_email": v["email"], "city": v["city"], "years_in_business": v["years"], "categories": v["cats"],
+               "contact_email": v["email"], "city": v["city"], "years_in_business": v["years"], "categories": v["cats"], "vendor_type": v["vendor_type"],
                "documents": [{"type": t, "number": n, "valid_until": d, "status": s} for t, n, d, s in v["docs"]],
                "proposed_terms": v["terms"], "pitch": v["pitch"]}
         w_json(os.path.join(OUT, "vendors", vid, "application.json"), app)

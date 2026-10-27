@@ -11,11 +11,10 @@ import asyncio
 import re
 from typing import Any
 
-from app import llm, media, prompts_exec
+from app import llm, media, policy, prompts_exec
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
-from app.constants import HERO_SKU_COUNT
 from app.data_loader import load_application
 from app.errors import CategoryOSError, LlmBadOutput, LlmUnavailable
 from app.metrics import build_base
@@ -30,27 +29,10 @@ from app.schemas import (
     SourceRef,
     StageResult,
 )
-from app.taxonomy import catalog_subcategories, categories
+from app.taxonomy import catalog_subcategories, categories, segments_for
 from app.verify import file_sha256, verify_all
 
 STAGE = "catalog"
-FOOD = re.compile(r"food|treats")
-SAM_PHRASE = {
-    "dog dry food": "bag of dog food",
-    "cat dry food": "bag of cat food",
-    "dog wet food": "pet food pouch",
-    "cat wet food": "pet food pouch",
-    "treats": "treat pouch",
-    "cat litter": "bag of cat litter",
-    "grooming": "bottle",
-    "toys": "pet toy",
-    "accessories": "pet accessory",
-}
-_RULES: tuple[tuple[str, str, re.Pattern[str]], ...] = (
-    ("medical_claim", "high", re.compile(r"\b(?:cures?|cured|curing|heals?|healing|treats? (?:\w+ ){0,2}(?:infections?|diseases?|arthritis|allerg\w+|dermatitis)|prevents? (?:\w+ ){0,2}(?:diseases?|infections?|cancer)|therapeutic|diagnos\w+|anti-?inflammatory)\b", re.IGNORECASE)),
-    ("unverifiable_superlative", "medium", re.compile(r"\b(?:best|#1|number one|no\.? ?1|world'?s|guaranteed|100% (?:safe|natural|pure)|perfect|ultimate|finest|unmatched|miracle)\b", re.IGNORECASE)),
-    ("unsubstantiated_claim", "medium", re.compile(r"\b(?:vet[- ]formulated|boosts? immunity|(?:helps? )?(?:reduce[sd]?|relieve[sd]?) (?:tartar|hairball|stress|odou?r)|hairball relief|clinically \w+|supports? (?:digestion|joint health|immunity))\b", re.IGNORECASE)),
-)
 
 
 # ---------- (a) classification ----------
@@ -106,7 +88,7 @@ async def classify(ctx: RunContext, vendor_id: str, skus: list[SkuMetrics]) -> d
 
 def _fallback_copy(sku: SkuMetrics, brand: str) -> CatalogCopy:
     details = sku.raw.get(sku.columns.get("description", ""), "")
-    bullets = [p.strip(" .") for p in re.split(r"[.;]\s+|,\s+(?=[A-Za-z])", details) if len(p.strip()) > 3][:5]
+    bullets = [p.strip(" .") for p in re.split(r"[.;]\s+|,\s+(?=[A-Za-z])", details) if len(p.strip()) > 3][: policy.get().catalog.bullets.max]
     return CatalogCopy(
         sku_code=sku.code,
         title=f"{brand} {sku.name}",
@@ -118,11 +100,12 @@ def _fallback_copy(sku: SkuMetrics, brand: str) -> CatalogCopy:
 
 def _normalise_copy(copy: CatalogCopy, sku: SkuMetrics, brand: str) -> dict[str, Any]:
     title = " ".join(copy.title.split())
-    if len(title) > 80:
-        title = title[:79].rstrip() + "…"
-    bullets = [b.strip() for b in copy.bullets if b.strip()][:5]
+    cat = policy.get().catalog
+    if len(title) > cat.title_max_chars:
+        title = title[: cat.title_max_chars - 1].rstrip() + "…"
+    bullets = [b.strip() for b in copy.bullets if b.strip()][: cat.bullets.max]
     for filler in (f"Pack size: {sku.pack}" if sku.pack else "", f"Brand: {brand}", f"Category: {sku.category}"):
-        if len(bullets) >= 3:
+        if len(bullets) >= cat.bullets.min:
             break
         if filler:
             bullets.append(filler)
@@ -136,23 +119,48 @@ def _shelf_life(sku: SkuMetrics) -> str:
     return ""
 
 
-def compliance_flags(sku: SkuMetrics, copy: dict[str, Any], fssai: dict[str, Any] | None) -> list[dict[str, Any]]:
+def _has_attribute(attr: str, sku: SkuMetrics, attributes: dict[str, Any]) -> bool:
+    if attr == "pack":
+        return any(k.startswith("pack") and attributes.get(k) not in (None, "") for k in attributes) or bool(sku.pack_normalized)
+    if attr == "mrp":
+        return attributes.get("mrp") not in (None, "") or sku.mrp is not None
+    return attributes.get(attr) not in (None, "")
+
+
+def compliance_flags(sku: SkuMetrics, copy: dict[str, Any], licences: dict[str, dict[str, Any]] | None) -> list[dict[str, Any]]:
+    """Playbook-driven compliance: claim rules, label checks, licences and required attributes, on top of the model's flags."""
+    pol = policy.get()
+    licences = licences or {}
     flags: list[dict[str, Any]] = [{**f, "source": "model"} for f in copy.get("compliance_flags", [])]
     text = " | ".join([copy["title"], *copy["bullets"], copy["description"]])
     vendor_text = sku.raw.get(sku.columns.get("description", ""), "")
-    for rule, severity, pattern in _RULES:
+    for rule in pol.screening.claim_rules:
+        if not policy.in_scope(rule.categories, sku.category):
+            continue
+        pattern = policy.claim_regex(rule)
         for where, haystack in (("listing", text), ("vendor sheet", vendor_text)):
             for m in pattern.finditer(haystack):
-                flags.append({"rule": rule, "text": f"{m.group(0)} ({where})", "severity": severity, "source": "rules"})
-    if FOOD.search(sku.category):
-        if not _shelf_life(sku):
-            flags.append({"rule": "missing_label_info", "text": "best-before / shelf life is not in the vendor sheet", "severity": "medium", "source": "rules"})
-        if not sku.pack_normalized:
-            flags.append({"rule": "missing_label_info", "text": "net quantity (pack size) is missing", "severity": "medium", "source": "rules"})
-        if not vendor_text.strip():
-            flags.append({"rule": "missing_label_info", "text": "ingredients / composition not provided", "severity": "medium", "source": "rules"})
-        if fssai is None:
-            flags.append({"rule": "missing_label_info", "text": "no valid FSSAI licence number on file for this vendor", "severity": "high", "source": "rules"})
+                flags.append({"rule": rule.type, "text": f"{m.group(0)} ({where})", "severity": rule.severity, "source": "rules"})
+
+    def label(text_: str, severity: str = "medium") -> None:
+        flags.append({"rule": "missing_label_info", "text": text_, "severity": severity, "source": "rules"})
+
+    for check in pol.catalog.label_checks:
+        if not policy.in_scope(check.categories, sku.category):
+            continue
+        if "shelf_life" in check.require and not _shelf_life(sku):
+            label("best-before / shelf life is not in the vendor sheet")
+        if "net_quantity" in check.require and not sku.pack_normalized:
+            label("net quantity (pack size) is missing")
+        if "ingredients" in check.require and not vendor_text.strip():
+            label("ingredients / composition not provided")
+    for lic in pol.catalog.label_licences:
+        if policy.in_scope(lic.categories, sku.category) and lic.document not in licences:
+            label(f"no valid {lic.document} licence number on file for this vendor", "high")
+    attributes = copy.get("attributes", {})
+    for attr in policy.required_attributes(sku.category):
+        if not _has_attribute(attr, sku, attributes):
+            label(f"required listing attribute '{attr}' is missing")
     seen: set[tuple[str, str]] = set()
     unique = []
     for f in flags:
@@ -163,11 +171,14 @@ def compliance_flags(sku: SkuMetrics, copy: dict[str, Any], fssai: dict[str, Any
     return unique
 
 
-def _fssai(vendor_id: str) -> dict[str, Any] | None:
-    for doc in load_application(vendor_id).get("documents", []):
-        if doc["type"] == "FSSAI" and doc.get("status") == "valid" and doc.get("number"):
-            return doc
-    return None
+def _licences(vendor_id: str) -> dict[str, dict[str, Any]]:
+    """Valid, numbered documents of the vendor that a label licence rule may refer to, by document type."""
+    wanted = {lic.document for lic in policy.get().catalog.label_licences}
+    return {
+        d["type"]: d
+        for d in load_application(vendor_id).get("documents", [])
+        if d["type"] in wanted and d.get("status") == "valid" and d.get("number")
+    }
 
 
 def attribute_claims(vendor_id: str, sku: SkuMetrics, attributes: dict[str, Any]) -> list[Claim]:
@@ -201,16 +212,30 @@ def attribute_claims(vendor_id: str, sku: SkuMetrics, attributes: dict[str, Any]
 # ---------- (d) images ----------
 
 
+def _prompt_vars(sku: SkuMetrics, brand: str, **extra: str) -> dict[str, str]:
+    return {**segments_for(f"{sku.category} {sku.subcategory}"), "brand": brand, "name": sku.name, "pack": sku.pack or "retail pack", "category": sku.category, "subcategory": sku.subcategory, **extra}
+
+
+class _Blank(dict):
+    def __missing__(self, key: str) -> str:
+        return ""
+
+
+def _prompt(template: str, values: dict[str, str]) -> str:
+    return template.format_map(_Blank(values))
+
+
 def _packshot_prompt(sku: SkuMetrics, brand: str) -> str:
-    return (
-        f"Studio packshot of {brand} {sku.name}, {sku.pack or 'retail pack'}, pet product packaging, front view, centred on a "
-        "plain white background, soft shadow, sharp focus, no extra text."
-    )
+    return _prompt(policy.get().catalog.image_prompts.packshot, _prompt_vars(sku, brand))
 
 
 def _lifestyle_prompt(sku: SkuMetrics, brand: str) -> str:
-    pet = "cat" if "cat" in sku.category or "cat" in sku.subcategory else "dog"
-    return f"Warm lifestyle photograph of a happy {pet} at home with {brand} {sku.name}, natural light, shallow depth of field, no text."
+    return _prompt(policy.get().catalog.image_prompts.lifestyle, _prompt_vars(sku, brand))
+
+
+def _segmentation_phrase(category: str) -> str:
+    seg = policy.get().catalog.image_prompts.segmentation
+    return seg.get(category, seg["default"])
 
 
 async def _image(ctx: RunContext, vendor_id: str, name: str, kind: str, title: str, subtitle: str, prompt: str, size: str, live: bool, errors: list[str]) -> str:
@@ -236,7 +261,7 @@ async def _images(ctx: RunContext, vendor_id: str, sku: SkuMetrics, brand: str, 
     errors: list[str] = []
     code = sku.code
     pack_name = media.asset_name(code, "packshot")
-    sources = {"packshot": await _image(ctx, vendor_id, pack_name, "packshot", title, sku.pack or "", _packshot_prompt(sku, brand), "1024x1024", live, errors)}
+    sources = {"packshot": await _image(ctx, vendor_id, pack_name, "packshot", title, sku.pack or "", _packshot_prompt(sku, brand), policy.get().catalog.image_sizes.packshot, live, errors)}
     cut_name = media.asset_name(code, "cutout")
     cutout: str
     if not settings.sam_enabled:
@@ -252,7 +277,7 @@ async def _images(ctx: RunContext, vendor_id: str, sku: SkuMetrics, brand: str, 
         errors.append(f"{cut_name}: no live packshot to segment")
     else:
         try:
-            png, spend = await media.segment((media.asset_dir(vendor_id) / pack_name).read_bytes(), SAM_PHRASE.get(sku.category, "product"))
+            png, spend = await media.segment((media.asset_dir(vendor_id) / pack_name).read_bytes(), _segmentation_phrase(sku.category))
             media.write_asset(vendor_id, cut_name, png, "live")
             ctx.emit("model_call", STAGE, {"task": "segment", "mode": "live", "input_tokens": 0, "output_tokens": 0, "tool_steps": 0, "asset": cut_name}, model=spend.model, cost_usd=spend.cost_usd)
             cutout, sources["cutout"] = media.asset_url(vendor_id, cut_name), "live"
@@ -262,7 +287,7 @@ async def _images(ctx: RunContext, vendor_id: str, sku: SkuMetrics, brand: str, 
     lifestyle = None
     if hero:
         life_name = media.asset_name(code, "lifestyle")
-        sources["lifestyle"] = await _image(ctx, vendor_id, life_name, "lifestyle", title, "hero lifestyle", _lifestyle_prompt(sku, brand), "1792x1024", live, errors)
+        sources["lifestyle"] = await _image(ctx, vendor_id, life_name, "lifestyle", title, "hero lifestyle", _lifestyle_prompt(sku, brand), policy.get().catalog.image_sizes.lifestyle, live, errors)
         lifestyle = media.asset_url(vendor_id, life_name)
     real = [v for v in sources.values() if v != "unavailable"]
     image_source = "live" if real and all(v == "live" for v in real) else ("placeholder" if "live" not in real else "mixed")
@@ -308,7 +333,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     try:
         res = await llm.call(
             STAGE,
-            prompts_exec.copy_messages(vendor_id, brand, rows),
+            prompts_exec.copy_messages(vendor_id, brand, rows, [s.category for s in skus]),
             task=f"catalog_copy_{vendor_id}",
             schema=CatalogCopyFinal,
             max_tokens=4000,
@@ -328,16 +353,17 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     except (LlmBadOutput, LlmUnavailable) as exc:
         ctx.emit("degraded", STAGE, {"reason": f"catalog copy unusable ({exc.code}); wrote rule-based copy"})
 
-    fssai = _fssai(vendor_id)
-    heroes = [s.code for s in sorted(skus, key=lambda s: (-s.est_gmv, s.code))[:HERO_SKU_COUNT]]
+    licences = _licences(vendor_id)
+    heroes = [s.code for s in sorted(skus, key=lambda s: (-s.est_gmv, s.code))[: policy.get().catalog.hero_sku_count]]
     prepared = []
     all_claims: list[Claim] = []
     for s in skus:
         copy = _normalise_copy(copies.get(s.code) or _fallback_copy(s, brand), s, brand)
         copy["generated_by"] = "model" if s.code in copies else "rules"
-        copy["compliance_flags"] = compliance_flags(s, copy, fssai)
-        if FOOD.search(s.category) and fssai:
-            copy["attributes"] = {**copy["attributes"], "fssai_license": fssai["number"]}
+        copy["compliance_flags"] = compliance_flags(s, copy, licences)
+        for lic in policy.get().catalog.label_licences:
+            if lic.document in licences and policy.in_scope(lic.categories, s.category):
+                copy["attributes"] = {**copy["attributes"], lic.attribute: licences[lic.document]["number"]}
         claims = attribute_claims(vendor_id, s, copy["attributes"])
         all_claims += claims
         prepared.append((s, copy, claims))

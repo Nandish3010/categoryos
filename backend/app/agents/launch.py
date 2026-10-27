@@ -8,10 +8,9 @@ computed or the verified negotiation produced."""
 from datetime import date, timedelta
 from typing import Any
 
-from app import llm, media, prompts_exec
+from app import llm, media, policy, prompts_exec
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
-from app.constants import GST_RATE, PO_DELAY_DAYS, PO_LEAD_DAYS
 from app.data_loader import load_application
 from app.errors import CategoryOSError
 from app.metrics import apply_levers, build_base
@@ -52,19 +51,20 @@ def effective_terms(vendor_id: str, negotiate: StageResult | None) -> dict[str, 
 def po_timeline(today: str) -> list[dict[str, Any]]:
     """Simulated PO status timeline with deterministic dates and one delay alert at 'shipped'."""
     start = date.fromisoformat(today)
+    pol = policy.get().po
     steps = [{"step": "raised", "planned": start, "status": "done"}]
     for step in ("confirmed", "shipped", "received"):
-        steps.append({"step": step, "planned": start + timedelta(days=PO_LEAD_DAYS[step]), "status": "scheduled"})
+        steps.append({"step": step, "planned": start + timedelta(days=getattr(pol.lead_days, step)), "status": "scheduled"})
     out = []
     for item in steps:
         row: dict[str, Any] = {"step": item["step"], "status": item["status"], "planned_date": item["planned"].isoformat(), "expected_date": item["planned"].isoformat(), "delay_days": 0}
         if item["step"] in ("shipped", "received"):
-            row["expected_date"] = (item["planned"] + timedelta(days=PO_DELAY_DAYS)).isoformat()
-            row["delay_days"] = PO_DELAY_DAYS
+            row["expected_date"] = (item["planned"] + timedelta(days=pol.simulated_delay_days)).isoformat()
+            row["delay_days"] = pol.simulated_delay_days
         if item["step"] == "shipped":
             row["status"] = "delayed"
             row["alert"] = (
-                f"Shipment is expected {PO_DELAY_DAYS} days late ({row['planned_date']} -> {row['expected_date']}); "
+                f"Shipment is expected {pol.simulated_delay_days} days late ({row['planned_date']} -> {row['expected_date']}); "
                 "the receipt date moves with it. Confirm the revised dispatch date with the vendor."
             )
         out.append(row)
@@ -80,6 +80,7 @@ def po_lines(skus: list[SkuMetrics]) -> list[dict[str, Any]]:
             {
                 "code": s.code,
                 "name": s.name,
+                "category": s.category,
                 "units": s.alloc_units,
                 "unit_cost": round(s.cost, 2),
                 "cost_source": s.cost_source,
@@ -92,18 +93,20 @@ def po_lines(skus: list[SkuMetrics]) -> list[dict[str, Any]]:
 def build_po(vendor_id: str, offset: float, moq: int, skus: list[SkuMetrics], terms: dict[str, Any], today: str) -> tuple[dict[str, Any], list[Claim]]:
     lines = po_lines(skus)
     subtotal = round(sum(line["line_total"] for line in lines), 2)
-    gst = round(subtotal * GST_RATE, 2)
+    gst = policy.gst_total((line["category"], line["line_total"]) for line in lines)
     grand = round(subtotal + gst, 2)
+    pol = policy.get().po
+    rate = pol.gst_rate_default if not lines or {policy.gst_rate(line["category"]) for line in lines} == {pol.gst_rate_default} else round(gst / subtotal, 4)
     po: dict[str, Any] = {
-        "po_number": f"PO-{vendor_id}-{today.replace('-', '')}",
+        "po_number": policy.po_number(vendor_id, today),
         "vendor_id": vendor_id,
         "date": today,
         "lines": lines,
         "subtotal": subtotal,
-        "gst_rate": GST_RATE,
+        "gst_rate": rate,
         "gst": gst,
         "grand_total": grand,
-        "gst_note": "GST is a placeholder at 18% shown separately; confirm HSN-level rates before issuing",
+        "gst_note": f"GST is a placeholder at {rate * 100:g}% shown separately; confirm HSN-level rates before issuing",
         "payment_days": terms["payment_days"]["value"],
         "terms_source": {k: v["source"] for k, v in terms.items()},
         "timeline": po_timeline(today),
@@ -119,13 +122,17 @@ def build_po(vendor_id: str, offset: float, moq: int, skus: list[SkuMetrics], te
 
 
 def promo_calendar(today: str) -> list[dict[str, str]]:
-    received = date.fromisoformat(today) + timedelta(days=PO_LEAD_DAYS["received"] + PO_DELAY_DAYS)
-    launch = received + timedelta(days=2)
+    pol, launch_rules = policy.get().po, policy.get().launch
+    received = date.fromisoformat(today) + timedelta(days=pol.lead_days.received + pol.simulated_delay_days)
+    launch = received + timedelta(days=launch_rules.listing_lag_days)
+    week_end = launch + timedelta(days=launch_rules.launch_week_days - 1)
+    window_end = launch + timedelta(days=max(launch_rules.launch_discount_days - 1, 0))
+    review = launch + timedelta(days=launch_rules.sell_through_review_day)
     return [
         {"name": "Listings live", "start": launch.isoformat(), "end": launch.isoformat()},
-        {"name": "Launch week: sponsored listings and sampling", "start": launch.isoformat(), "end": (launch + timedelta(days=6)).isoformat()},
-        {"name": "Launch-month discount window", "start": launch.isoformat(), "end": (launch + timedelta(days=29)).isoformat()},
-        {"name": "First sell-through review", "start": (launch + timedelta(days=30)).isoformat(), "end": (launch + timedelta(days=30)).isoformat()},
+        {"name": "Launch week: sponsored listings and sampling", "start": launch.isoformat(), "end": week_end.isoformat()},
+        {"name": "Launch-month discount window", "start": launch.isoformat(), "end": window_end.isoformat()},
+        {"name": "First sell-through review", "start": review.isoformat(), "end": review.isoformat()},
     ]
 
 
@@ -147,9 +154,10 @@ async def _campaign_image(ctx: RunContext, vendor_id: str, name: str, brand: str
     live = llm.resolve_mode("marketing") == "live"
     source = media.cached_source(vendor_id, asset)
     if live and source != "live":
-        prompt = f"Bright e-commerce launch banner for the pet brand {brand}: '{campaign}'. Happy pets, product-forward, clean layout, no small text."
+        cat = policy.get().catalog
+        prompt = cat.image_prompts.campaign.format_map({"brand": brand, "campaign": campaign, "name": campaign, "category": "", "subcategory": "", "pack": ""})
         try:
-            data, spend = await media.generate_image(prompt, size="1792x1024")
+            data, spend = await media.generate_image(prompt, size=cat.image_sizes.campaign)
             media.write_asset(vendor_id, asset, data, "live")
             ctx.emit("model_call", "marketing", {"task": "image_campaign", "mode": "live", "input_tokens": 0, "output_tokens": 0, "tool_steps": 0, "asset": asset}, model=spend.model, cost_usd=spend.cost_usd)
         except CategoryOSError as exc:
@@ -191,7 +199,7 @@ async def run(ctx: RunContext, research: StageResult, negotiate: StageResult | N
     investments = {
         "brand_funded_marketing_inr": terms["marketing_inr"]["value"],
         "launch_discount_pct": terms["launch_discount_pct"]["value"],
-        "launch_discount_days": 30,
+        "launch_discount_days": policy.get().launch.launch_discount_days,
         "source": {k: terms[k]["source"] for k in ("marketing_inr", "launch_discount_pct")},
     }
     targets = {
@@ -210,7 +218,8 @@ async def run(ctx: RunContext, research: StageResult, negotiate: StageResult | N
         "promo_calendar": calendar,
         "brand_funded_pct": investments["launch_discount_pct"],
         "agreed_terms": {k: v["value"] for k, v in terms.items()},
-        "skus": [{"code": s.code, "name": s.name, "est_gmv_inr": s.est_gmv} for s in sorted(skus, key=lambda s: -s.est_gmv)[:5]],
+        "jbp_sections": policy.get().launch.jbp_sections,
+        "skus": [{"code": s.code, "name": s.name, "est_gmv_inr": s.est_gmv} for s in sorted(skus, key=lambda s: -s.est_gmv)[: policy.get().launch.jbp_top_skus]],
     }
 
     jbp_res = await llm.call("jbp", prompts_exec.jbp_messages(vendor_id, brand, facts), task=f"jbp_{vendor_id}", schema=JbpFinal, max_tokens=2500)
@@ -227,6 +236,10 @@ async def run(ctx: RunContext, research: StageResult, negotiate: StageResult | N
     if abs(ask["brand_funded_pct"] - committed) > 1e-9:
         corrections.append({"field": "discount_ask.brand_funded_pct", "model": ask["brand_funded_pct"], "committed": committed})
         ask["brand_funded_pct"] = committed
+    cap = float(policy.get().launch.platform_funded_discount_max_pct)
+    if ask["our_pct"] > cap:
+        corrections.append({"field": "discount_ask.our_pct", "model": ask["our_pct"], "cap": cap})
+        ask["our_pct"] = cap
     image = await _campaign_image(ctx, vendor_id, "campaign", brand, mk.campaign_name)
 
     marketing = StageResult(

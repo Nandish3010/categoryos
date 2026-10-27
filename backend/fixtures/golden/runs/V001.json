@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "stage": "research"
   },
   {
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "stage": "po"
   }
  ],
@@ -54,7 +54,7 @@
     "args": {
      "vendor_id": "V001"
     },
-    "result_summary": "application{11}",
+    "result_summary": "application{12}",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -221,7 +221,7 @@
      "vendor_id": "V001"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=e3187147cb5d",
+    "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=5a6712e4c87c",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -239,7 +239,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V001"
     },
-    "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62, summary{7}, skus[12]",
+    "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8, summary{7}, skus[12]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -256,7 +256,7 @@
     "args": {
      "vendor_id": "V001"
     },
-    "result_summary": "application{11}",
+    "result_summary": "application{12}",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -2325,8 +2325,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-    "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+    "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -2538,7 +2538,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2762,7 +2762,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2806,7 +2806,7 @@
      "transcript_source": "canonical"
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -4036,6 +4036,12 @@
           "severity": "medium",
           "source": "rules",
           "text": "best-before / shelf life is not in the vendor sheet"
+         },
+         {
+          "rule": "missing_label_info",
+          "severity": "medium",
+          "source": "rules",
+          "text": "required listing attribute 'protein' is missing"
          }
         ],
         "description": "Adult dry food in a large kibble for large breeds, with chondroitin and glucosamine added.",
@@ -4125,6 +4131,18 @@
           "severity": "medium",
           "source": "rules",
           "text": "best-before / shelf life is not in the vendor sheet"
+         },
+         {
+          "rule": "missing_label_info",
+          "severity": "medium",
+          "source": "rules",
+          "text": "required listing attribute 'protein' is missing"
+         },
+         {
+          "rule": "missing_label_info",
+          "severity": "medium",
+          "source": "rules",
+          "text": "required listing attribute 'mrp' is missing"
          }
         ],
         "description": "A lower-fat senior recipe with added L-carnitine, made easy to chew.",
@@ -4371,12 +4389,12 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-    "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+    "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
-    "summary": "7 listings drafted, 4 compliance flag(s), classifier agreement 71.4%"
+    "summary": "7 listings drafted, 7 compliance flag(s), classifier agreement 71.4%"
    },
    "run_id": "run_recorded",
    "seq": 72,
@@ -4572,7 +4590,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -4636,7 +4654,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -4704,6 +4722,7 @@
      "gst_rate": 0.18,
      "lines": [
       {
+       "category": "dog dry food",
        "code": "HP-D01",
        "cost_source": "sheet",
        "line_total": 21999.5,
@@ -4712,6 +4731,7 @@
        "units": 23
       },
       {
+       "category": "dog dry food",
        "code": "HP-D02",
        "cost_source": "sheet",
        "line_total": 69300.0,
@@ -4720,6 +4740,7 @@
        "units": 22
       },
       {
+       "category": "dog dry food",
        "code": "HP-D05",
        "cost_source": "inferred",
        "line_total": 38229.84,
@@ -4728,6 +4749,7 @@
        "units": 36
       },
       {
+       "category": "dog dry food",
        "code": "HP-D06",
        "cost_source": "sheet",
        "line_total": 39900.0,
@@ -4736,6 +4758,7 @@
        "units": 12
       },
       {
+       "category": "dog dry food",
        "code": "HP-D07",
        "cost_source": "sheet",
        "line_total": 10648.0,
@@ -4744,6 +4767,7 @@
        "units": 11
       },
       {
+       "category": "dog wet food",
        "code": "HP-W02",
        "cost_source": "sheet",
        "line_total": 3068.0,
@@ -4752,6 +4776,7 @@
        "units": 26
       },
       {
+       "category": "dog wet food",
        "code": "HP-W03",
        "cost_source": "sheet",
        "line_total": 4340.0,
@@ -4813,8 +4838,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-    "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+    "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
@@ -4841,9 +4866,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+  "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-26T20:06:12+00:00",
+  "recorded_at": "2026-10-27T02:33:48+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -4874,7 +4899,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=e3187147cb5d",
+      "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=5a6712e4c87c",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -4892,7 +4917,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -4909,7 +4934,7 @@
       "args": {
        "vendor_id": "V001"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -6978,8 +7003,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-      "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+      "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+      "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -7191,7 +7216,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+      "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -7218,7 +7243,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "moq": 150,
    "offset": 0.0,
    "research": {
@@ -8098,8 +8123,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-    "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+    "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+    "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -8132,7 +8157,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 6, 'negotiate': 1, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=e3ba72dcc5d0",
+      "result_summary": "counts={'list': 6, 'negotiate': 1, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=1e2c22a80a2b",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -8150,7 +8175,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -8167,7 +8192,7 @@
       "args": {
        "vendor_id": "V001"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -10243,8 +10268,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
-      "narrative_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
+      "metrics_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
+      "narrative_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -10456,7 +10481,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
+      "metrics_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -10483,7 +10508,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
+   "metrics_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
    "moq": 150,
    "offset": 2.0,
    "research": {
@@ -11370,8 +11395,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
-    "narrative_hash": "e3ba72dcc5d060d0b1975abb48241c8544c8d68a0ad3831c250ff2a288b897d0",
+    "metrics_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
+    "narrative_hash": "1e2c22a80a2bf185c61d15c2c31204c14d995cef63f022e1dc9f1e5867e40d9b",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -11404,7 +11429,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 5, 'negotiate': 2, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=71c8f686626f",
+      "result_summary": "counts={'list': 5, 'negotiate': 2, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=97709c1b8d86",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -11422,7 +11447,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -11439,7 +11464,7 @@
       "args": {
        "vendor_id": "V001"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -13521,8 +13546,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
-      "narrative_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
+      "metrics_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
+      "narrative_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -13734,7 +13759,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
+      "metrics_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -13761,7 +13786,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
+   "metrics_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
    "moq": 150,
    "offset": 4.0,
    "research": {
@@ -14654,8 +14679,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
-    "narrative_hash": "71c8f686626f82f5383d83e6b45914c80eb5bb4bcc4355e2da075e8cb6e3e30e",
+    "metrics_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
+    "narrative_hash": "97709c1b8d869d6cd93f3fcdd151f1402f7ada4478ba899107c21eb37fffa682",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -15321,6 +15346,12 @@
          "severity": "medium",
          "source": "rules",
          "text": "best-before / shelf life is not in the vendor sheet"
+        },
+        {
+         "rule": "missing_label_info",
+         "severity": "medium",
+         "source": "rules",
+         "text": "required listing attribute 'protein' is missing"
         }
        ],
        "description": "Adult dry food in a large kibble for large breeds, with chondroitin and glucosamine added.",
@@ -15410,6 +15441,18 @@
          "severity": "medium",
          "source": "rules",
          "text": "best-before / shelf life is not in the vendor sheet"
+        },
+        {
+         "rule": "missing_label_info",
+         "severity": "medium",
+         "source": "rules",
+         "text": "required listing attribute 'protein' is missing"
+        },
+        {
+         "rule": "missing_label_info",
+         "severity": "medium",
+         "source": "rules",
+         "text": "required listing attribute 'mrp' is missing"
         }
        ],
        "description": "A lower-fat senior recipe with added L-carnitine, made easy to chew.",
@@ -15656,12 +15699,12 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-   "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+   "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
-   "summary": "7 listings drafted, 4 compliance flag(s), classifier agreement 71.4%"
+   "summary": "7 listings drafted, 7 compliance flag(s), classifier agreement 71.4%"
   },
   "intake": {
    "claims": [],
@@ -15800,7 +15843,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -15826,7 +15869,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -15847,7 +15890,7 @@
     "transcript_source": "canonical"
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -15905,6 +15948,7 @@
     "gst_rate": 0.18,
     "lines": [
      {
+      "category": "dog dry food",
       "code": "HP-D01",
       "cost_source": "sheet",
       "line_total": 21999.5,
@@ -15913,6 +15957,7 @@
       "units": 23
      },
      {
+      "category": "dog dry food",
       "code": "HP-D02",
       "cost_source": "sheet",
       "line_total": 69300.0,
@@ -15921,6 +15966,7 @@
       "units": 22
      },
      {
+      "category": "dog dry food",
       "code": "HP-D05",
       "cost_source": "inferred",
       "line_total": 38229.84,
@@ -15929,6 +15975,7 @@
       "units": 36
      },
      {
+      "category": "dog dry food",
       "code": "HP-D06",
       "cost_source": "sheet",
       "line_total": 39900.0,
@@ -15937,6 +15984,7 @@
       "units": 12
      },
      {
+      "category": "dog dry food",
       "code": "HP-D07",
       "cost_source": "sheet",
       "line_total": 10648.0,
@@ -15945,6 +15993,7 @@
       "units": 11
      },
      {
+      "category": "dog wet food",
       "code": "HP-W02",
       "cost_source": "sheet",
       "line_total": 3068.0,
@@ -15953,6 +16002,7 @@
       "units": 26
      },
      {
+      "category": "dog wet food",
       "code": "HP-W03",
       "cost_source": "sheet",
       "line_total": 4340.0,
@@ -16014,8 +16064,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-   "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+   "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -16898,8 +16948,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
-   "narrative_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
+   "narrative_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -17101,7 +17151,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "e3187147cb5daa9a5dd397c107462a0887b007ad2e7b93672186becdc31e5b62",
+   "metrics_hash": "5a6712e4c87ce3f18caa334817ae4a17a6fdff27ba38a30152e6509ce40537e8",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

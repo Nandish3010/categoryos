@@ -74,3 +74,15 @@ export function pp(n: number): string {
   if (n === 0) return "0 pp";
   return `${n < 0 ? MINUS : "+"}${Math.abs(n)} pp`;
 }
+
+/** "27% category −3 pp vendor type +0 pp brand +2 pp lever = 26%". Accepts percent or fraction category_pct. */
+export function targetBreakdownText(
+  b: { category_pct: number; vendor_type_pp: number; brand_pp: number; lever_pp: number },
+  total?: number | null,
+): string {
+  const cat = Math.abs(b.category_pct) <= 1 ? b.category_pct * 100 : b.category_pct;
+  const r = (n: number) => String(Math.round(n * 10) / 10);
+  const sum = cat + b.vendor_type_pp + b.brand_pp + b.lever_pp;
+  const t = total != null && !Number.isNaN(total) ? total * 100 : sum;
+  return `${r(cat)}% category ${pp(b.vendor_type_pp)} vendor type ${pp(b.brand_pp)} brand ${pp(b.lever_pp)} lever = ${r(t)}%`;
+}

@@ -1,7 +1,9 @@
 import pytest
 
+from app import policy
 from app.config import settings
-from app.constants import TOL
+
+TOL = {u: policy.tol(u) for u in ('pct', 'inr', 'units', 'score', 'ratio', 'qty')}
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.schemas import Claim, Evidence, SourceRef
 from app.util import fmt_inr

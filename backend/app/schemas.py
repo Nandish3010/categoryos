@@ -89,11 +89,23 @@ class BaseSku(BaseModel):
     est_monthly_units: float
     category_target_pct: float
     category_min_pct: float
+    vendor_type_pp: float = 0.0
+    brand_pp: float = 0.0
     flags: list[str] = Field(default_factory=list)
+
+
+class TargetBreakdown(BaseModel):
+    """Where a SKU's target margin comes from, all in percent / percentage points."""
+
+    category_pct: float
+    vendor_type_pp: float = 0.0
+    brand_pp: float = 0.0
+    lever_pp: float = 0.0
 
 
 class SkuMetrics(BaseSku):
     target_pct: float
+    target_breakdown: TargetBreakdown | None = None
     landed_cost: float | None = None
     margin_pct: float | None = None
     est_gmv: float = 0.0
@@ -231,6 +243,10 @@ class ReplanBody(BaseModel):
     run_id: str
     target_margin_pct_offset: float = Field(ge=-20, le=20)
     moq: int = Field(ge=0, le=20000)
+
+
+class PolicyResetBody(BaseModel):
+    section: str | None = None
 
 
 class RejectBody(BaseModel):

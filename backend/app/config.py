@@ -42,6 +42,8 @@ class Settings(BaseSettings):
 
     data_dir: Path = REPO_DIR / "data" / "synthetic"
     fixtures_dir: Path = BACKEND_DIR / "fixtures"
+    config_dir: Path = REPO_DIR / "config"  # playbook defaults (policy.yaml)
+    policy_local_path: Path | None = None  # playbook overrides; default config_dir/policy.local.yaml
 
     backend_port: int = 8001
     frontend_origin: str | None = None
