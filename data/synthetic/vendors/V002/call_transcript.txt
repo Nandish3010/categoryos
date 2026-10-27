@@ -1,10 +1,10 @@
 Buyer: Hi Priya, thanks for making time. I have gone through your application and the SKU sheet. We like the creamy lick treats, but the numbers need work before we can place an order.
 Vendor: Thanks for having me. Happy to talk through it. What are you looking at first?
-Buyer: Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?
+Buyer: Margin. You offered 17 percent, and our treats target is 35 percent. Where can you get to?
 Vendor: Seventeen is thin, I know. Our tuna and salmon costs went up this year. If you take the full treats range, I can move to 21 percent.
 Buyer: Twenty-one is better but still short. Can you go to 24?
 Vendor: No, 21 is my floor on the treats. The litter I can look at again once we see sales, but not today.
-Buyer: Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard.
+Buyer: Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We need at least 21 days.
 Vendor: Fifteen is hard for us, we are a young company. But I can do 30 days if the order is confirmed in writing this week.
 Buyer: Agreed, 30 days payment terms, order confirmed in writing. Now minimum order quantity. You have 800 units, and our forecast is far lower for a new brand.
 Vendor: 800 is what our production batch needs. I can bring it down to 500 units in total for the first order, split across the SKUs you list.

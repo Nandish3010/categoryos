@@ -1,22 +1,12 @@
+"""SKU classification driven entirely by the playbook's ``taxonomy`` section: ordered category rules, optional segments
+(pet species, gender, skin type...), subcategory patterns and a fallback. No vertical is hardcoded here."""
+
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 
-from app.data_loader import load_benchmarks, load_catalog
-
-_CAT = re.compile(r"\bcats?\b|\bkittens?\b|catnip|hairball|feline")
-_DOG = re.compile(r"\bdogs?\b|\bpupp(?:y|ies)\b|canine")
-
-_RULES: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("cat litter", re.compile(r"litter")),
-    ("grooming", re.compile(r"shampoo|conditioner|ear (?:cleaner|drops)|balm|serum|brush|clipper|grooming")),
-    ("treats", re.compile(r"treat|chew|bites?\b|biscuit|sticks?\b|jerky|strips?\b|dental")),
-    ("toys", re.compile(r"\btoys?\b|\btug\b|teaser|wand|catnip|plush|squeak|\bball\b")),
-    ("accessories", re.compile(r"collar|harness|leash|bowl|scratch")),
-    ("wet", re.compile(r"\bwet\b|pouch|gravy|pate|stew|\btray\b|chunks|mousse|jelly")),
-    ("dry", re.compile(r"kibble|\bdry\b|adult|puppy|kitten|senior|large breed|\bfood\b")),
-    ("supplement", re.compile(r"probiotic|vitamin|supplement|powder|drops|joint")),
-)
+from app import policy
+from app.data_loader import load_catalog
 
 
 @dataclass(frozen=True)
@@ -26,95 +16,101 @@ class Classification:
     flags: tuple[str, ...] = field(default_factory=tuple)
 
 
+@lru_cache(maxsize=256)
+def _rx(patterns: tuple[str, ...]) -> re.Pattern[str]:
+    return re.compile("|".join(patterns), re.IGNORECASE)
+
+
 @lru_cache(maxsize=1)
-def catalog_subcategories() -> dict[str, frozenset[str]]:
+def _catalog_subcategories() -> dict[str, frozenset[str]]:
     subs: dict[str, set[str]] = {}
     for sku in load_catalog():
         subs.setdefault(sku.category, set()).add(sku.subcategory)
     return {k: frozenset(v) for k, v in subs.items()}
 
 
+def catalog_subcategories() -> dict[str, frozenset[str]]:
+    return _catalog_subcategories()
+
+
 def categories() -> tuple[str, ...]:
-    return tuple(load_benchmarks())
+    return policy.category_names()
 
 
-def species(text: str, hint: str = "dog") -> str:
-    cats, dogs = len(_CAT.findall(text)), len(_DOG.findall(text))
-    if cats == dogs:
+def segment_value(segment: policy.Segment, text: str, hint: str | None = None) -> str:
+    """The segment value with most pattern matches in ``text``; ties go to ``hint``, then the first value."""
+    counts = {v: len(_rx(tuple(p)).findall(text)) if p else 0 for v, p in segment.values.items()}
+    best = max(counts.values())
+    leaders = [v for v, c in counts.items() if c == best]
+    if hint in leaders:
         return hint
-    return "cat" if cats > dogs else "dog"
+    return leaders[0]
 
 
-def _first_rule(text: str) -> str | None:
-    best: tuple[int, str] | None = None
-    for priority, (key, pattern) in enumerate(_RULES):
-        if pattern.search(text) and (best is None or priority < best[0]):
-            best = (priority, key)
-    return best[1] if best else None
+def segment_hints(text: str) -> dict[str, str]:
+    """Vendor-level segment values (for example the species a vendor mostly sells), used when a SKU's own text is silent."""
+    return {s.name: segment_value(s, text.lower()) for s in policy.get().taxonomy.segments}
 
 
-def _subcategory(category: str, text: str, kind: str) -> str:
-    if category == "cat litter":
-        if "tofu" in text:
-            return "tofu"
-        if "silica" in text or "crystal" in text:
-            return "crystal"
-        return "clumping"
-    if category == "grooming":
-        if "shampoo" in text:
-            return "shampoo"
-        if re.search(r"brush|clipper", text):
-            return "tools"
-        return "hygiene"
-    if category == "treats":
-        if re.search(r"dental|tartar", text):
-            return "dental"
-        return "cat treats" if kind == "cat" else "dog treats"
-    if category == "toys":
-        return "cat toys" if kind == "cat" else "dog toys"
-    if category == "accessories":
-        for word, sub in (("collar", "collars"), ("harness", "harness"), ("leash", "leashes"), ("bowl", "bowls")):
-            if word in text:
-                return sub
-        return "furniture"
-    if category.endswith("wet food"):
-        for word, sub in (("pate", "pate"), ("mousse", "mousse"), ("jelly", "jelly"), ("chunk", "chunks")):
-            if word in text:
-                return sub
-        return "gravy"
-    if "kitten" in text:
-        return "kitten"
-    if "puppy" in text:
-        return "puppy"
-    if "senior" in text:
-        return "senior"
-    return "adult"
+def segments_for(text: str, hints: dict[str, str] | None = None) -> dict[str, str]:
+    """Segment values for a piece of text with the playbook's default when the text is silent."""
+    hints = hints or {}
+    return {s.name: segment_value(s, text.lower(), hints.get(s.name)) for s in policy.get().taxonomy.segments}
 
 
-def classify(name: str, description: str = "", hint: str = "dog") -> Classification:
+def _first_rule(text: str, rules: list[policy.TaxCategory]) -> policy.TaxCategory | None:
+    for rule in rules:
+        if rule.patterns and _rx(tuple(rule.patterns)).search(text):
+            return rule
+    return None
+
+
+def _sub_name(rule: policy.TaxCategory, text: str, values: dict[str, str]) -> str:
+    default = None
+    for sub, pats in rule.subcategories.items():
+        if not pats:
+            default = default or sub
+        elif _rx(tuple(pats)).search(text):
+            return sub.format_map(_Safe(values))
+    if default:
+        return default.format_map(_Safe(values))
+    return next(iter(rule.subcategories), "general")
+
+
+class _Safe(dict):
+    def __missing__(self, key: str) -> str:
+        return "{" + key + "}"
+
+
+def classify(name: str, description: str = "", hint: dict[str, str] | None = None) -> Classification:
+    tax = policy.get().taxonomy
+    hint = hint or {}
     flags: list[str] = []
     name_l, desc_l = name.lower(), (description or "").lower()
-    rule = _first_rule(name_l)
+    rule = _first_rule(name_l, tax.categories)
     text = name_l
     if rule is None:
-        rule = _first_rule(desc_l)
+        rule = _first_rule(desc_l, tax.categories)
         text = f"{name_l} {desc_l}"
+    approximate = rule is None or rule.approximate_as is not None
     if rule is None:
-        rule, text = "supplement", f"{name_l} {desc_l}"
         flags.append("unclassified")
-    kind = species(name_l, species(desc_l, hint)) if rule in {"wet", "dry", "treats", "toys"} else hint
-    if rule == "supplement":
-        category, flags = "treats", flags + ["approx_category"]
-        sub = "cat treats" if kind == "cat" else "dog treats"
-    elif rule in {"wet", "dry"}:
-        category = f"{kind} {rule} food"
-        sub = _subcategory(category, text, kind)
-    else:
-        category = rule
-        sub = _subcategory(category, text, kind)
+        text = f"{name_l} {desc_l}"
+    target_name = tax.fallback_category if rule is None else (rule.approximate_as or rule.name)
+    # Segments come from the SKU's own text, except for approximate/unclassified rows, which follow the vendor-level hint.
+    values = dict(hint) if approximate else {
+        s.name: segment_value(s, name_l, segment_value(s, desc_l, hint.get(s.name))) for s in tax.segments
+    }
+    for s in tax.segments:
+        values.setdefault(s.name, next(iter(s.values)))
+    category = target_name.format_map(_Safe(values))
+    owner = next((r for r in tax.categories if r.name == target_name), None)
+    sub = _sub_name(owner, "" if approximate else text, values) if owner else "general"
+    if approximate:
+        flags.append("approx_category")
     if category not in categories():
         flags.append("unclassified")
-        category = categories()[0]
+        category = tax.fallback_category
     if sub not in catalog_subcategories().get(category, frozenset()):
         flags.append("subcategory_not_in_catalog")
     return Classification(category, sub, tuple(dict.fromkeys(flags)))

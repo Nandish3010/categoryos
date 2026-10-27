@@ -7,18 +7,19 @@ from fastapi import Depends, FastAPI, Header, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
-from app import ledger, media, persist, replay, runner, store
+from app import ledger, media, persist, policy, replay, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor, load_application
-from app.errors import AssetNotFound, CategoryOSError
+from app.errors import AssetNotFound, CategoryOSError, LeverOutOfRange, PolicyReadOnly
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
 from app.schemas import (
     ApproveBody,
     LeverResponse,
     OverrideBody,
+    PolicyResetBody,
     RejectBody,
     ReplanBody,
     StageResult,
@@ -97,6 +98,24 @@ async def vendor_detail(vendor_id: str) -> dict[str, Any]:
     return {**load_application(vendor_id), "id": vendor_id, "sku_count": len(base.skus)}
 
 
+def check_levers(vendor_id: str, offset: float | None, moq: int | None) -> None:
+    """Enforce the playbook's lever bounds (the Query limits stay as the outer safety)."""
+    bounds = policy.get().levers
+    if offset is not None and not bounds.margin_offset.min <= offset <= bounds.margin_offset.max:
+        raise LeverOutOfRange(
+            f"target_margin_pct_offset {offset:g} is outside {bounds.margin_offset.min:g} to {bounds.margin_offset.max:g} percentage points",
+            fix="Pick a value inside the range, or widen levers.margin_offset in the playbook",
+        )
+    if moq is not None:
+        proposed = int(build_base(vendor_id).proposed_terms.get("moq_units") or 0)
+        ceiling = max(proposed, int(bounds.moq.max_factor * proposed))
+        if moq > ceiling:
+            raise LeverOutOfRange(
+                f"moq {moq} is above {ceiling} ({bounds.moq.max_factor:g}x the vendor's proposed {proposed})",
+                fix="Pick a lower MOQ, or raise levers.moq.max_factor in the playbook",
+            )
+
+
 @app.get("/api/vendors/{vendor_id}/decide/metrics", response_model=LeverResponse)
 async def decide_metrics(
     vendor_id: str,
@@ -104,6 +123,7 @@ async def decide_metrics(
     moq: int | None = Query(None, ge=0, le=20000),
 ) -> LeverResponse:
     check_vendor(vendor_id)
+    check_levers(vendor_id, target_margin_pct_offset, moq)
     return apply_levers(build_base(vendor_id), target_margin_pct_offset, moq)
 
 
@@ -115,6 +135,7 @@ async def vendor_claims(
     inject: int = Query(0, ge=0, le=1),
 ) -> VerifySummary:
     check_vendor(vendor_id)
+    check_levers(vendor_id, target_margin_pct_offset, moq)
     lever = apply_levers(build_base(vendor_id), target_margin_pct_offset, moq)
     claims = engine_claims(vendor_id, lever)
     if inject:
@@ -127,6 +148,7 @@ async def mode() -> dict[str, Any]:
     problems = replay.problems()
     return {
         "mode": settings.effective_mode,
+        "policy_hash": policy.policy_hash(),
         "degraded": bool(problems),
         **({"replay": replay.status()} if settings.model_mode == "replay" else {}),
         "configured_mode": settings.model_mode,
@@ -136,6 +158,34 @@ async def mode() -> dict[str, Any]:
         "max_spend_usd": settings.max_spend_usd,
         "warn_spend_usd": settings.warn_spend_usd,
     }
+
+
+# ---------- playbook ----------
+
+
+async def require_policy_write(request: Request, x_demo_key: str | None = Header(default=None)) -> None:
+    """Writes are refused in replay; a demo key is required only when one is configured."""
+    if settings.effective_mode == "replay":
+        raise PolicyReadOnly()
+    if settings.demo_key:
+        await require_demo_key(request, x_demo_key)
+
+
+@app.get("/api/policy")
+async def get_policy() -> dict[str, Any]:
+    return policy.snapshot()
+
+
+@app.put("/api/policy", dependencies=[Depends(require_policy_write)])
+async def put_policy(body: dict[str, Any]) -> dict[str, Any]:
+    policy.save_overrides(body)
+    return policy.snapshot()
+
+
+@app.post("/api/policy/reset", dependencies=[Depends(require_policy_write)])
+async def reset_policy(body: PolicyResetBody | None = None) -> dict[str, Any]:
+    policy.reset(body.section if body else None)
+    return policy.snapshot()
 
 
 @app.get("/api/ledger", dependencies=[Depends(require_demo_key)])
@@ -254,6 +304,7 @@ async def override_stage(run_id: str, stage: str, body: OverrideBody) -> StageRe
 @app.post("/api/vendors/{vendor_id}/decide/replan", dependencies=[Depends(require_demo_key_if_live)])
 async def replan(vendor_id: str, body: ReplanBody) -> StageResult:
     check_vendor(vendor_id)
+    check_levers(vendor_id, body.target_margin_pct_offset, body.moq)
     return await runner.replan(body.run_id, vendor_id, body.target_margin_pct_offset, body.moq)
 
 

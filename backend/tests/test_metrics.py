@@ -4,7 +4,8 @@ import statistics
 import pytest
 from fastapi.testclient import TestClient
 
-from app.constants import ALLOWED_VENDORS, DEMAND_MIN, OVERLAP_MAX
+from app import policy
+from app.constants import ALLOWED_VENDORS
 from app.data_loader import check_vendor, load_sheet
 from app.errors import MissingInput, UnknownMetric, UnknownVendor
 from app.main import app
@@ -154,13 +155,13 @@ def test_cost_sources():
 def test_verdict_boundaries():
     assert decide_verdict(0.5, 0.3, 0.8, 0.6)[0] == "reject"
     assert decide_verdict(0.5, 0.3, 0.8, 0.5999)[0] == "list"
-    assert decide_verdict(0.5, 0.3, DEMAND_MIN, 0.1)[0] == "list"
+    assert decide_verdict(0.5, 0.3, policy.get().research.demand_min, 0.1)[0] == "list"
     assert decide_verdict(0.5, 0.3, 0.39996, 0.1)[0] == "list"
     assert decide_verdict(0.5, 0.3, 0.3999, 0.1)[0] == "reject"
     assert decide_verdict(0.3, 0.3, 0.8, 0.1)[0] == "list"
     assert decide_verdict(0.2999, 0.3, 0.8, 0.1)[0] == "negotiate"
     assert decide_verdict(None, 0.3, 0.8, 0.1)[0] == "needs_data"
-    assert OVERLAP_MAX == 0.6
+    assert policy.get().research.overlap_max == 0.6
 
 
 def test_overlap_boundary_through_levers():
@@ -286,4 +287,5 @@ def test_api_validation():
     assert client.get("/api/vendors/V001/decide/metrics?target_margin_pct_offset=-21").status_code == 422
     assert client.get("/api/vendors/V001/decide/metrics?moq=20001").status_code == 422
     assert client.get("/api/vendors/V001/decide/metrics?moq=-1").status_code == 422
-    assert client.get("/api/vendors/V001/decide/metrics?moq=0&target_margin_pct_offset=-20").status_code == 200
+    assert client.get("/api/vendors/V001/decide/metrics?moq=0&target_margin_pct_offset=-10").status_code == 200
+    assert client.get("/api/vendors/V001/decide/metrics?target_margin_pct_offset=-15").status_code == 422  # outside levers.margin_offset

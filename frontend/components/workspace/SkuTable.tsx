@@ -3,7 +3,7 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import type { SkuMetrics, Verdict } from "@/lib/api";
-import { pct, pctSigned } from "@/lib/format";
+import { pct, pctSigned, targetBreakdownText } from "@/lib/format";
 import { Chip, Tag, VERDICTS } from "../Chip";
 import { DataTable, type Column } from "../DataTable";
 import { PanelHeader } from "../PanelHeader";
@@ -83,7 +83,22 @@ export function SkuTable({
       ),
     },
     { key: "margin", header: "Margin", align: "right", render: (s) => pct(s.margin_pct) },
-    { key: "target", header: "Target", align: "right", render: (s) => pct(s.target_pct) },
+    {
+      key: "target",
+      header: "Target",
+      align: "right",
+      render: (s) =>
+        s.target_breakdown ? (
+          <span
+            title={targetBreakdownText(s.target_breakdown, s.target_pct)}
+            className="cursor-help underline decoration-dotted decoration-text-dim underline-offset-4"
+          >
+            {pct(s.target_pct)}
+          </span>
+        ) : (
+          pct(s.target_pct)
+        ),
+    },
     {
       key: "gap",
       header: "Price gap",

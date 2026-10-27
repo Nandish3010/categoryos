@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from typing import Any
 
+from app import policy
 from app.config import settings
 from app.constants import ALLOWED_VENDORS
 from app.data_loader import (
@@ -28,9 +29,7 @@ from app.parsing import map_columns
 from app.schemas import SkuMetrics
 from app.verify import file_sha256
 
-EXPIRY_WARNING_DAYS = 60
-BLOCKING_DOCS = frozenset({"GST", "FSSAI", "PAN"})
-_SKU_KEY = re.compile(r"^(V00[1-4]):(.+)$")
+_SKU_KEY = re.compile(r"^(" + "|".join(ALLOWED_VENDORS) + r"):(.+)$")
 
 
 @dataclass(frozen=True)
@@ -178,7 +177,8 @@ def get_benchmarks(category: str) -> dict[str, Any]:
     benchmarks = load_benchmarks()
     if category not in benchmarks:
         raise MissingInput(f"unknown category {category!r}", fix=f"Use one of: {', '.join(benchmarks)}")
-    return {"category": category, **benchmarks[category]}
+    margin = policy.get().margins.categories.get(category)
+    return {"category": category, **benchmarks[category], "playbook": margin.model_dump() if margin else None}
 
 
 def get_metrics(vendor_id: str, target_margin_pct_offset: float = 0, moq: int | None = None) -> dict[str, Any]:
@@ -219,12 +219,16 @@ def get_metrics(vendor_id: str, target_margin_pct_offset: float = 0, moq: int | 
 
 
 def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str, Any]:
-    """Expiry and presence check of the vendor's compliance documents. ``today`` freezes the clock."""
+    """Expiry and presence check against the playbook's document rules. ``today`` freezes the clock."""
     check_vendor(vendor_id)
     now = _parse_today(today)
+    screening = policy.get().screening
+    rules = {r.type: r for r in screening.documents}
+    application = load_application(vendor_id)
+    vendor_categories = list(application.get("categories", []))
     docs: list[dict[str, Any]] = []
     problems: list[dict[str, Any]] = []
-    for doc in load_application(vendor_id).get("documents", []):
+    for doc in application.get("documents", []):
         declared = doc.get("status", "")
         valid_until = doc.get("valid_until") or ""
         if declared == "missing" or not doc.get("number"):
@@ -235,7 +239,7 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
             end = date.fromisoformat(valid_until)
             if end < now:
                 state = "expired"
-            elif end <= now + timedelta(days=EXPIRY_WARNING_DAYS):
+            elif end <= now + timedelta(days=screening.expiry_warning_days):
                 state = "expiring_soon"
             else:
                 state = "valid"
@@ -250,7 +254,8 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
         }
         docs.append(entry)
         if state != "valid":
-            blocking = doc["type"] in BLOCKING_DOCS and state in {"expired", "missing"}
+            rule = rules.get(doc["type"])
+            blocking = bool(rule and rule.blocking) and state in {"expired", "missing"}
             problems.append(
                 {
                     "type": doc["type"],
@@ -260,6 +265,14 @@ def check_documents(vendor_id: str, today: str | date | None = None) -> dict[str
                     + (f" (valid until {valid_until})" if valid_until else ""),
                 }
             )
+    if screening.absent_document_counts_as_missing:
+        listed = {d["type"] for d in docs}
+        for rule in screening.documents:
+            if rule.blocking and rule.type not in listed and policy.in_scope(rule.categories, vendor_categories):
+                docs.append({"type": rule.type, "number": "", "valid_until": "", "declared_status": "", "state": "missing"})
+                problems.append(
+                    {"type": rule.type, "state": "missing", "severity": "blocking", "detail": f"{rule.type} is missing (not listed in the application)"}
+                )
     return {
         "vendor_id": vendor_id,
         "today": now.isoformat(),
@@ -315,8 +328,8 @@ TOOLS: dict[str, Tool] = {
         ),
         Tool(
             "get_benchmarks",
-            "Category benchmarks: target and minimum margin, typical payment terms, average units per SKU, gaps.",
-            _schema({"category": {"type": "string", "description": "For example treats, cat litter, dog dry food"}}, ["category"]),
+            "Category benchmarks: average units per SKU, price bands and gaps, plus the playbook's target and minimum margin and payment terms.",
+            _schema({"category": {"type": "string", "description": "A category name from the vendor's application"}}, ["category"]),
             get_benchmarks,
         ),
         Tool(

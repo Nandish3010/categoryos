@@ -11,6 +11,7 @@
     "dog wet food",
     "treats"
   ],
+  "vendor_type": "d2c_brand",
   "documents": [
     {
       "type": "GST",

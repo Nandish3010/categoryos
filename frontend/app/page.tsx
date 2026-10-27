@@ -1,24 +1,54 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, XCircle } from "lucide-react";
 import Link from "next/link";
 import { BackendBanner } from "@/components/BackendBanner";
 import { Chip, Tag } from "@/components/Chip";
 import { Skeleton } from "@/components/Skeleton";
-import { fetchVendors, type Verdict, type VendorListItem } from "@/lib/api";
+import { fetchVendors, type VendorListItem } from "@/lib/api";
+import { vendorOutcome } from "@/lib/outcome";
+import { fetchLatestRun, fetchRun, screeningFailure } from "@/lib/runs";
 import { inrCompact } from "@/lib/format";
 import { useAsync } from "@/lib/useAsync";
+import { useEffect, useState } from "react";
 
-function outcome(v: VendorListItem): Verdict {
-  const c = v.summary.counts;
-  if ((c.list ?? 0) > 0) return "list";
-  if ((c.negotiate ?? 0) > 0) return "negotiate";
-  if ((c.needs_data ?? 0) > 0) return "needs_data";
-  return "reject";
+/** Vendor ids whose latest run failed screening. Best effort: a missing run just means "not failed". */
+function useScreeningFailures(ids: string[]): Set<string> {
+  const [failed, setFailed] = useState<Set<string>>(new Set());
+  const key = ids.join(",");
+  useEffect(() => {
+    if (!key) return;
+    const controller = new AbortController();
+    Promise.all(
+      key.split(",").map(async (id) => {
+        try {
+          const latest = await fetchLatestRun(id, controller.signal);
+          if (!latest?.run_id) return null;
+          const run = await fetchRun(latest.run_id, controller.signal);
+          return screeningFailure(run) ? id : null;
+        } catch {
+          return null;
+        }
+      }),
+    ).then((r) => {
+      if (!controller.signal.aborted) setFailed(new Set(r.filter((x): x is string => !!x)));
+    });
+    return () => controller.abort();
+  }, [key]);
+  return failed;
 }
 
-function VendorCard({ v, primary }: { v: VendorListItem; primary: boolean }) {
+export function VendorCard({
+  v,
+  primary,
+  screeningFailed = false,
+}: {
+  v: VendorListItem;
+  primary: boolean;
+  screeningFailed?: boolean;
+}) {
   const c = v.summary.counts;
+  const outcome = vendorOutcome(v.summary, screeningFailed);
   return (
     <Link
       href={`/vendors/${v.id}`}
@@ -34,7 +64,14 @@ function VendorCard({ v, primary }: { v: VendorListItem; primary: boolean }) {
           </h2>
           <div className="text-sm text-text-dim">{v.categories.join(" · ")}</div>
         </div>
-        <Chip verdict={outcome(v)} />
+        {outcome === "failed_screening" ? (
+          <Tag tone="bad" title="Screening failed: do not onboard">
+            <XCircle size={16} aria-hidden="true" />
+            Failed screening
+          </Tag>
+        ) : (
+          <Chip verdict={outcome} />
+        )}
       </div>
       <div className="mt-6 flex flex-wrap items-end justify-between gap-3">
         <div>
@@ -74,11 +111,17 @@ function SkeletonCard({ primary }: { primary: boolean }) {
 
 export default function VendorsBoard() {
   const { data, error, loading } = useAsync(fetchVendors, "vendors", { retryMs: 3000 });
+  const failedScreen = useScreeningFailures(data?.map((v) => v.id) ?? []);
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6">
       <header className="mb-6">
-        <div className="text-xl font-semibold tracking-tight">CategoryOS</div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="text-xl font-semibold tracking-tight">CategoryOS</div>
+          <Link href="/rules" className="inline-flex min-h-11 items-center rounded-card border border-border px-3 text-sm text-text-dim hover:bg-surface-2 hover:text-text">
+            Playbook
+          </Link>
+        </div>
         <p className="mt-1 text-sm text-text-dim">
           Vendor applications waiting for a decision. Open one to see the recommendation, move the
           levers and check every number.
@@ -93,7 +136,12 @@ export default function VendorsBoard() {
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2" aria-busy={loading}>
         {data
-          ? data.map((v) => <VendorCard key={v.id} v={v} primary={v.id === "V001"} />)
+          ? data.map((v) => <VendorCard
+                key={v.id}
+                v={v}
+                primary={v.id === "V001"}
+                screeningFailed={failedScreen.has(v.id)}
+              />)
           : [0, 1, 2, 3].map((i) => <SkeletonCard key={i} primary={i === 0} />)}
       </div>
     </main>

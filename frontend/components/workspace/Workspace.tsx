@@ -60,14 +60,18 @@ import { TracePanel } from "./TracePanel";
 
 type Delta = { from: number; to: number; capital: number };
 
-export function recommendation(data: LeverResponse): { title: string; sub: string } {
+export function recommendation(
+  data: LeverResponse,
+  screeningFailed = false,
+): { title: string; sub: string } {
   const total = data.skus.length;
   const c = data.summary.counts;
   const list = c.list ?? 0;
   const neg = c.negotiate ?? 0;
   const noun = total === 1 ? "SKU" : "SKUs";
-  const title =
-    list > 0
+  const title = screeningFailed
+    ? "Do not onboard: screening failed"
+    : list > 0
       ? `Recommend: onboard ${list} of ${total} ${noun}`
       : neg > 0
         ? `Recommend: negotiate before onboarding (${neg} of ${total} ${noun})`
@@ -311,7 +315,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
 
   const brand = vendor.data?.brand_name ?? null;
   const notFound = lever.error instanceof ApiError && lever.error.status === 404 && !data;
-  const rec = data ? recommendation(data) : null;
+  const rec = data ? recommendation(data, !!screenFail) : null;
   const summary = data?.summary;
   const overrideCount = Object.keys(overrides).length;
 

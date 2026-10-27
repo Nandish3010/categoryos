@@ -1,0 +1,352 @@
+# CategoryOS example playbook: electronics.
+# A complete alternative to config/policy.yaml that shows the engine is vertical-agnostic. It is NOT used by the demo.
+# To try it, copy it over config/policy.local.yaml (or PUT its content to /api/policy) on a backend with matching data.
+# Every key has the same meaning as in config/policy.yaml; see the comments there.
+version: 1
+business:
+  retailer: an Indian online consumer-electronics retailer
+  vertical: electronics
+onboarding:
+  required_application_fields:
+  - company_name
+  - brand_name
+  - contact_name
+  - contact_email
+  - city
+  - years_in_business
+  - categories
+  - documents
+  - proposed_terms
+  - vendor_type
+  required_terms:
+  - margin_offered_pct
+  - payment_terms_days
+  - moq_units
+  - marketing_support_inr
+  - launch_discount_pct
+  - returns_policy
+  vendor_types:
+    national_brand:
+      label: National brand
+      target_offset_pp: -2
+    d2c_brand:
+      label: D2C brand
+      target_offset_pp: 0
+    importer:
+      label: Importer / distributor
+      target_offset_pp: 1
+    private_label:
+      label: Private / white label
+      target_offset_pp: 6
+screening:
+  documents:
+  - type: GST
+    blocking: true
+    categories: all
+  - type: PAN
+    blocking: true
+    categories: all
+  - type: BIS registration
+    blocking: true
+    categories:
+    - audio
+    - mobile accessories
+    - smart home
+  - type: LMPC
+    blocking: true
+    categories: all
+  - type: Brand authorisation letter
+    blocking: false
+    categories: all
+  absent_document_counts_as_missing: true
+  expiry_warning_days: 60
+  fail_on:
+  - blocking_document
+  - prompt_injection
+  - safety_claim
+  claim_rules:
+  - type: safety_claim
+    severity: high
+    categories: all
+    patterns:
+    - fire[- ]?proof
+    - explosion[- ]proof
+    - shock[- ]?proof
+    - 100% safe
+    - overheat(?:ing)? protection guaranteed
+    examples:
+    - fireproof battery
+    - 100% safe charging
+  - type: unverifiable_superlative
+    severity: medium
+    categories: all
+    patterns:
+    - best
+    - '#1'
+    - number one
+    - fastest
+    - unbreakable
+    - military[- ]grade
+    - lifetime battery
+    - unmatched
+    examples:
+    - fastest charger
+    - military grade
+  - type: unsubstantiated_claim
+    severity: medium
+    categories:
+    - audio
+    - mobile accessories
+    patterns:
+    - studio[- ]quality
+    - lossless
+    - noise[- ]cancell?ing
+    - waterproof
+    - all[- ]day battery
+    examples:
+    - studio quality sound
+    - waterproof
+  injection_patterns:
+  - (?:ignore|disregard|override|bypass)\b[^.!?]{0,60}\b(?:rules?|instructions?|screening|guidelines?|prompt)
+  - note to (?:any |the )?(?:ai|llm|model|assistant|system)\b
+  - (?:approve|accept) all (?:skus?|products?)
+  data_quality_flags:
+  - mrp_missing
+  - pack_missing
+  - cost_missing
+  - hsn_missing
+taxonomy:
+  fallback_category: mobile accessories
+  segments: []
+  categories:
+  - name: smart home
+    patterns:
+    - smart (?:plug|bulb|camera|lock)
+    - wifi
+    - cctv
+    - \bplug\b
+    - bulb
+    subcategories:
+      cameras:
+      - camera
+      - cctv
+      lighting:
+      - bulb
+      plugs: []
+  - name: audio
+    patterns:
+    - earbuds?
+    - headphones?
+    - speaker
+    - earphones?
+    - neckband
+    - soundbar
+    subcategories:
+      earbuds:
+      - earbuds?
+      - earphones?
+      headphones:
+      - headphones?
+      - neckband
+      speakers: []
+  - name: computing accessories
+    patterns:
+    - keyboard
+    - mouse
+    - laptop stand
+    - usb hub
+    - webcam
+    - pen drive
+    - hard disk
+    subcategories:
+      input devices:
+      - keyboard
+      - mouse
+      storage:
+      - pen drive
+      - hard disk
+      other: []
+  - name: mobile accessories
+    patterns:
+    - charger
+    - cable
+    - power bank
+    - case
+    - screen guard
+    - tempered
+    - adapter
+    subcategories:
+      power:
+      - charger
+      - power bank
+      - adapter
+      cables:
+      - cable
+      protection: []
+research:
+  demand_min: 0.4
+  overlap_max: 0.6
+  freight_pct: 0.02
+  neutral_review_score: 0.6
+  keyword_matching:
+    generic_tokens:
+    - mobile
+    - phone
+    - wireless
+    - bluetooth
+    - usb
+    - for
+    - under
+    - and
+    - with
+    - the
+    - of
+    generic_weight: 0.5
+    stop_tokens:
+    - and
+    - for
+    - with
+    - the
+    - of
+    - a
+    - set
+    - x
+    - pack
+    - pc
+    - pcs
+    min_coverage: 0.7
+  fit_weights:
+    margin: 0.4
+    demand: 0.3
+    overlap: 0.2
+    review: 0.1
+  below_min_margin_action: reject
+  moq_flag_factor: 2.0
+margins:
+  categories:
+    mobile accessories:
+      target_pct: 30
+      min_pct: 22
+      payment_terms_days: 30
+    audio:
+      target_pct: 22
+      min_pct: 15
+      payment_terms_days: 45
+    smart home:
+      target_pct: 25
+      min_pct: 18
+      payment_terms_days: 45
+    computing accessories:
+      target_pct: 24
+      min_pct: 17
+      payment_terms_days: 30
+  brands: {}
+negotiation:
+  margin_ask: target
+  payment_terms_days: category
+  payment_longer_is_better: true
+  moq_max_factor: 2.0
+  marketing_min_pct_of_order: 0.1
+  launch_discount_min_pct: 3
+  defect_return_min_days: 10
+catalog:
+  title_max_chars: 80
+  bullets:
+    min: 3
+    max: 5
+  description_sentences:
+    min: 2
+    max: 3
+  required_attributes:
+    default:
+    - model_number
+    - warranty_months
+    - mrp
+    mobile accessories:
+    - model_number
+    - compatibility
+    - warranty_months
+    - mrp
+    audio:
+    - model_number
+    - connectivity
+    - battery_hours
+    - warranty_months
+    - mrp
+    smart home:
+    - model_number
+    - connectivity
+    - warranty_months
+    - mrp
+    computing accessories:
+    - model_number
+    - interface
+    - warranty_months
+    - mrp
+  label_licences:
+  - document: BIS registration
+    attribute: bis_registration
+    categories:
+    - audio
+    - mobile accessories
+    - smart home
+  label_checks:
+  - categories: all
+    require:
+    - net_quantity
+  hero_sku_count: 3
+  image_sizes:
+    packshot: 1024x1024
+    lifestyle: 1792x1024
+    campaign: 1792x1024
+  image_prompts:
+    packshot: Studio packshot of {brand} {name}, {pack}, retail packaging, front view, centred on a plain white background, soft shadow,
+      sharp focus, no extra text.
+    lifestyle: Bright lifestyle photograph featuring {brand} {name} in everyday use, natural light, shallow depth of field, no text.
+    campaign: 'Bright e-commerce launch banner for the brand {brand}: ''{campaign}''. Product-forward, clean layout, no small text.'
+    segmentation:
+      audio: audio device
+      mobile accessories: mobile accessory
+      smart home: smart home device
+      computing accessories: computer accessory
+      default: product
+launch:
+  launch_discount_days: 30
+  launch_week_days: 7
+  sell_through_review_day: 30
+  listing_lag_days: 2
+  platform_funded_discount_max_pct: 0
+  jbp_top_skus: 5
+  jbp_sections:
+  - Overview
+  - Targets
+  - Investments
+  - Promo calendar
+  - Commitments and next steps
+po:
+  gst_rate_default: 0.18
+  gst_rate_by_category:
+    audio: 0.18
+    smart home: 0.18
+  lead_days:
+    confirmed: 2
+    shipped: 5
+    received: 12
+  simulated_delay_days: 3
+  number_format: PO-{vendor}-{date}
+levers:
+  margin_offset:
+    min: -10
+    max: 10
+    step: 1
+  moq:
+    step: 50
+    max_factor: 2
+verifier:
+  tolerances:
+    pct: 0.01
+    inr: 1.0
+    units: 0
+    score: 0.5
+    ratio: 0.005
+    qty: 0

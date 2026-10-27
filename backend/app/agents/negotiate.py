@@ -10,17 +10,11 @@ import re
 from pathlib import Path
 from typing import Any
 
-from app import llm, media, prompts_exec, tools
+from app import llm, media, policy, prompts_exec, tools
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
-from app.constants import (
-    DEFECT_RETURN_MIN_DAYS,
-    LAUNCH_DISCOUNT_MIN_PCT,
-    MARKETING_MIN_PCT_OF_ORDER,
-    MOQ_FACTOR,
-)
-from app.data_loader import load_application, load_benchmarks, load_transcript
+from app.data_loader import load_application, load_transcript
 from app.errors import CategoryOSError
 from app.parsing import PARSER_VERSION
 from app.schemas import (
@@ -46,8 +40,19 @@ LABELS = {
 }
 UNITS = {"margin_pct": "pct", "payment_days": "days", "moq": "units", "marketing_inr": "inr", "launch_discount_pct": "pct", "returns": "days"}
 CLAIM_UNIT = {"margin_pct": "pct", "launch_discount_pct": "pct", "payment_days": "units", "moq": "units", "marketing_inr": "inr", "returns": "units"}
-HIGHER_IS_BETTER = {"margin_pct": True, "payment_days": True, "moq": False, "marketing_inr": True, "launch_discount_pct": True, "returns": True}
-_DAYS = re.compile(r"within\s+(\d+)\s+days", re.IGNORECASE)
+_DAYS = re.compile(r"within\s+(\d+)\s+days|(\d+)[- ]days?\b[^.;]*\bwindow", re.IGNORECASE)
+
+
+def active_terms() -> list[str]:
+    """The terms in the gap table: the playbook's onboarding.required_terms, in the fixed display order."""
+    wanted = {policy.TERM_KEY[t] for t in policy.get().onboarding.required_terms}
+    return [t for t in TERMS if t in wanted]
+
+
+def higher_is_better(term: str) -> bool:
+    if term == "payment_days":
+        return policy.get().negotiation.payment_longer_is_better
+    return term != "moq"
 
 
 def transcript_rel(vendor_id: str) -> str:
@@ -58,45 +63,58 @@ def wav_path(vendor_id: str) -> Path:
     return Path(settings.data_dir) / "vendors" / vendor_id / "call.wav"
 
 
-def required_terms(lever: LeverResponse, negotiate_skus: list[SkuMetrics], shortlisted: list[SkuMetrics]) -> dict[str, Any]:
-    """What we require, from the Decide engine's targets. Pure arithmetic over the lever."""
-    benchmarks = load_benchmarks()
+def required_terms(lever: LeverResponse, negotiate_skus: list[SkuMetrics], shortlisted: list[SkuMetrics], vendor_id: str | None = None) -> dict[str, Any]:
+    """What we require, from the playbook and the Decide engine's targets. Pure arithmetic over the lever."""
+    pol = policy.get()
     weight: dict[str, int] = {}
     for s in negotiate_skus:
         weight[s.category] = weight.get(s.category, 0) + max(s.alloc_units, 1)
     category = min(weight, key=lambda c: (-weight[c], c))
-    bench = benchmarks[category]
+    app = load_application(vendor_id or lever.vendor_id)
+    vendor_type, brand = app.get("vendor_type"), app.get("brand_name")
+    parts = policy.target_breakdown(category, vendor_type, brand, lever.target_margin_pct_offset)
+    effective_target = min(max(sum(parts.values()), 0.0), 95.0)
+    floor = policy.min_pct(category, vendor_type, brand)
+    neg = pol.negotiation
+    payment = pol.margins.categories[category].payment_terms_days if neg.payment_terms_days == "category" else neg.payment_terms_days
     monthly = sum(s.est_monthly_units for s in shortlisted)
     order_value = sum(s.alloc_units * (s.selling_price or 0.0) for s in shortlisted)
     return {
         "category": category,
-        "margin_pct": round(float(bench["target_margin_pct"]), 2),
-        "margin_min_pct": float(bench["min_margin_pct"]),
-        "payment_days": float(bench["typical_payment_terms_days"]),
-        "moq": float(int(MOQ_FACTOR * monthly)),
-        "marketing_inr": float(round(MARKETING_MIN_PCT_OF_ORDER * order_value)),
-        "launch_discount_pct": LAUNCH_DISCOUNT_MIN_PCT,
-        "returns": float(DEFECT_RETURN_MIN_DAYS),
+        "margin_pct": round(effective_target if neg.margin_ask == "target" else floor, 2),
+        "margin_min_pct": float(floor),
+        "margin_breakdown": parts,
+        "payment_days": float(payment),
+        "moq": float(int(neg.moq_max_factor * monthly)),
+        "marketing_inr": float(round(neg.marketing_min_pct_of_order * order_value)),
+        "launch_discount_pct": float(neg.launch_discount_min_pct),
+        "returns": float(neg.defect_return_min_days),
     }
+
+
+def return_days(text: str) -> float | None:
+    """Defect-return window in days from free text: 'within 7 days' or '60-day ... window'."""
+    match = _DAYS.search(text)
+    days = (match.group(1) or match.group(2)) if match else None
+    return float(days) if days else None
 
 
 def application_terms(vendor_id: str) -> dict[str, float | None]:
     terms = load_application(vendor_id)["proposed_terms"]
-    days = _DAYS.search(str(terms.get("returns_policy", "")))
     return {
         "margin_pct": terms.get("margin_offered_pct"),
         "payment_days": terms.get("payment_terms_days"),
         "moq": terms.get("moq_units"),
         "marketing_inr": terms.get("marketing_support_inr"),
         "launch_discount_pct": terms.get("launch_discount_pct"),
-        "returns": float(days.group(1)) if days else None,
+        "returns": return_days(str(terms.get("returns_policy", ""))),
     }
 
 
 def gap_table(application: dict[str, float | None], required: dict[str, Any], commitments: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     """One row per term. gap = offered - required; status is judged in the direction that is good for us."""
     rows = []
-    for term in TERMS:
+    for term in active_terms():
         commit = commitments.get(term)
         offered = commit["offered"] if commit else None
         need = required[term]
@@ -104,14 +122,14 @@ def gap_table(application: dict[str, float | None], required: dict[str, Any], co
         if offered is None:
             status = "not_stated"
         else:
-            ok = offered >= need if HIGHER_IS_BETTER[term] else offered <= need
+            ok = offered >= need if higher_is_better(term) else offered <= need
             status = "met" if ok else "gap"
         rows.append(
             {
                 "term": term,
                 "label": LABELS[term],
                 "unit": UNITS[term],
-                "direction": "higher" if HIGHER_IS_BETTER[term] else "lower",
+                "direction": "higher" if higher_is_better(term) else "lower",
                 "application": application.get(term),
                 "offered": offered,
                 "required": need,
@@ -209,7 +227,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     if not negotiate_skus:
         return _no_negotiation(lever)
     short = sl.shortlisted(lever, verdicts)
-    required = required_terms(lever, negotiate_skus, short)
+    required = required_terms(lever, negotiate_skus, short, vendor_id)
     application = application_terms(vendor_id)
     canonical = load_transcript(vendor_id)
     ctx.emit(

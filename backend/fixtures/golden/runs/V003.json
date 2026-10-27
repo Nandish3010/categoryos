@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "stage": "research"
   },
   {
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "stage": "po"
   }
  ],
@@ -54,7 +54,7 @@
     "args": {
      "vendor_id": "V003"
     },
-    "result_summary": "application{11}",
+    "result_summary": "application{12}",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -201,7 +201,7 @@
      "vendor_id": "V003"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=13d96cfa85bd",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=031784e95463",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -219,7 +219,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V003"
     },
-    "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -236,7 +236,7 @@
     "args": {
      "vendor_id": "V003"
     },
-    "result_summary": "application{11}",
+    "result_summary": "application{12}",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -287,7 +287,7 @@
     "args": {
      "category": "toys"
     },
-    "result_summary": "category=toys, target_margin_pct=40, min_margin_pct=32, typical_payment_terms_days=30, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2]",
+    "result_summary": "category=toys, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2], playbook{3}",
     "tool": "get_benchmarks"
    },
    "run_id": "run_recorded",
@@ -1617,8 +1617,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-    "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -1801,7 +1801,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -1996,7 +1996,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2167,6 +2167,12 @@
      "required": {
       "category": "accessories",
       "launch_discount_pct": 5.0,
+      "margin_breakdown": {
+       "brand_pp": 0.0,
+       "category_pct": 40.0,
+       "lever_pp": 0.0,
+       "vendor_type_pp": 0.0
+      },
       "margin_min_pct": 32.0,
       "margin_pct": 40.0,
       "marketing_inr": 12492.0,
@@ -2184,7 +2190,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -3136,8 +3142,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-    "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
@@ -3337,7 +3343,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -3401,7 +3407,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -3469,6 +3475,7 @@
      "gst_rate": 0.18,
      "lines": [
       {
+       "category": "toys",
        "code": "ST-101",
        "cost_source": "sheet",
        "line_total": 11590.0,
@@ -3477,6 +3484,7 @@
        "units": 95
       },
       {
+       "category": "accessories",
        "code": "ST-201",
        "cost_source": "sheet",
        "line_total": 18746.0,
@@ -3485,6 +3493,7 @@
        "units": 103
       },
       {
+       "category": "accessories",
        "code": "ST-202",
        "cost_source": "sheet",
        "line_total": 38608.0,
@@ -3493,6 +3502,7 @@
        "units": 127
       },
       {
+       "category": "accessories",
        "code": "ST-204",
        "cost_source": "sheet",
        "line_total": 13200.0,
@@ -3554,8 +3564,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-    "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
@@ -3582,9 +3592,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+  "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-26T20:06:12+00:00",
+  "recorded_at": "2026-10-27T02:33:49+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -3615,7 +3625,7 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=13d96cfa85bd",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=031784e95463",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -3633,7 +3643,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -3650,7 +3660,7 @@
       "args": {
        "vendor_id": "V003"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -3701,7 +3711,7 @@
       "args": {
        "category": "toys"
       },
-      "result_summary": "category=toys, target_margin_pct=40, min_margin_pct=32, typical_payment_terms_days=30, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2]",
+      "result_summary": "category=toys, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -5031,8 +5041,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-      "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+      "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+      "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -5215,7 +5225,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+      "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -5242,7 +5252,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "moq": 400,
    "offset": 0.0,
    "research": {
@@ -5859,8 +5869,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-    "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -5893,7 +5903,7 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=23d2d4b1ec40",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=d2713a3bfa18",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -5911,7 +5921,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -5928,7 +5938,7 @@
       "args": {
        "vendor_id": "V003"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -5979,7 +5989,7 @@
       "args": {
        "category": "toys"
       },
-      "result_summary": "category=toys, target_margin_pct=40, min_margin_pct=32, typical_payment_terms_days=30, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2]",
+      "result_summary": "category=toys, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -7309,8 +7319,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
-      "narrative_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
+      "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+      "narrative_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -7493,7 +7503,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
+      "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -7520,7 +7530,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
+   "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
    "moq": 400,
    "offset": 2.0,
    "research": {
@@ -8137,8 +8147,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
-    "narrative_hash": "23d2d4b1ec4053e24a22202c12daba235178c09c7d2583f5602dedf7472c42c2",
+    "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+    "narrative_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -8171,7 +8181,7 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=b3984790479a",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=da6f967d1ab4",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -8189,7 +8199,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -8206,7 +8216,7 @@
       "args": {
        "vendor_id": "V003"
       },
-      "result_summary": "application{11}",
+      "result_summary": "application{12}",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -8257,7 +8267,7 @@
       "args": {
        "category": "toys"
       },
-      "result_summary": "category=toys, target_margin_pct=40, min_margin_pct=32, typical_payment_terms_days=30, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2]",
+      "result_summary": "category=toys, avg_monthly_units_per_sku=29.4, sku_count=12, top_price_bands[3], gaps[2], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -9587,8 +9597,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
-      "narrative_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
+      "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+      "narrative_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -9771,7 +9781,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
+      "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -9798,7 +9808,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
+   "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
    "moq": 400,
    "offset": 4.0,
    "research": {
@@ -10415,8 +10425,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
-    "narrative_hash": "b3984790479ac5f39deeec9310218f0edaf16c02698bb43187ae4768c6aacacc",
+    "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+    "narrative_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -10992,8 +11002,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-   "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -11116,7 +11126,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -11142,7 +11152,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -11266,6 +11276,12 @@
     "required": {
      "category": "accessories",
      "launch_discount_pct": 5.0,
+     "margin_breakdown": {
+      "brand_pp": 0.0,
+      "category_pct": 40.0,
+      "lever_pp": 0.0,
+      "vendor_type_pp": 0.0
+     },
      "margin_min_pct": 32.0,
      "margin_pct": 40.0,
      "marketing_inr": 12492.0,
@@ -11283,7 +11299,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -11341,6 +11357,7 @@
     "gst_rate": 0.18,
     "lines": [
      {
+      "category": "toys",
       "code": "ST-101",
       "cost_source": "sheet",
       "line_total": 11590.0,
@@ -11349,6 +11366,7 @@
       "units": 95
      },
      {
+      "category": "accessories",
       "code": "ST-201",
       "cost_source": "sheet",
       "line_total": 18746.0,
@@ -11357,6 +11375,7 @@
       "units": 103
      },
      {
+      "category": "accessories",
       "code": "ST-202",
       "cost_source": "sheet",
       "line_total": 38608.0,
@@ -11365,6 +11384,7 @@
       "units": 127
      },
      {
+      "category": "accessories",
       "code": "ST-204",
       "cost_source": "sheet",
       "line_total": 13200.0,
@@ -11426,8 +11446,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-   "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -12047,8 +12067,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
-   "narrative_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -12221,7 +12241,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "13d96cfa85bd99b76026d11e9b86f772d6db4a0aacad7f32225a4d69ce4b7186",
+   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

@@ -1,0 +1,379 @@
+# CategoryOS example playbook: beauty.
+# A complete alternative to config/policy.yaml that shows the engine is vertical-agnostic. It is NOT used by the demo.
+# To try it, copy it over config/policy.local.yaml (or PUT its content to /api/policy) on a backend with matching data.
+# Every key has the same meaning as in config/policy.yaml; see the comments there.
+version: 1
+business:
+  retailer: an Indian online beauty and personal-care retailer
+  vertical: beauty
+onboarding:
+  required_application_fields:
+  - company_name
+  - brand_name
+  - contact_name
+  - contact_email
+  - city
+  - years_in_business
+  - categories
+  - documents
+  - proposed_terms
+  - vendor_type
+  required_terms:
+  - margin_offered_pct
+  - payment_terms_days
+  - moq_units
+  - marketing_support_inr
+  - launch_discount_pct
+  - returns_policy
+  vendor_types:
+    national_brand:
+      label: National brand
+      target_offset_pp: -4
+    d2c_brand:
+      label: D2C brand
+      target_offset_pp: 0
+    importer:
+      label: Importer / distributor
+      target_offset_pp: 2
+    private_label:
+      label: Private / white label
+      target_offset_pp: 10
+screening:
+  documents:
+  - type: GST
+    blocking: true
+    categories: all
+  - type: PAN
+    blocking: true
+    categories: all
+  - type: CDSCO cosmetics registration
+    blocking: true
+    categories:
+    - skincare
+    - haircare
+    - makeup
+    - fragrance
+  - type: Trademark
+    blocking: false
+    categories: all
+  absent_document_counts_as_missing: true
+  expiry_warning_days: 60
+  fail_on:
+  - blocking_document
+  - prompt_injection
+  - medical_claim
+  claim_rules:
+  - type: medical_claim
+    severity: high
+    categories: all
+    patterns:
+    - cures?
+    - heals?
+    - treats? (?:\w+ ){0,2}(?:acne|eczema|psoriasis|dermatitis|alopecia)
+    - removes? scars?
+    - clinically proven to (?:cure|treat)
+    - dermatologist[- ]prescribed
+    examples:
+    - cures acne
+    - treats eczema
+    - removes scars
+  - type: unverifiable_superlative
+    severity: medium
+    categories: all
+    patterns:
+    - best
+    - '#1'
+    - number one
+    - 100% (?:chemical[- ]free|natural|safe)
+    - miracle
+    - guaranteed
+    - instantly (?:younger|fairer)
+    examples:
+    - miracle cream
+    - 100% chemical free
+    - guaranteed fairness
+  - type: unsubstantiated_claim
+    severity: medium
+    categories:
+    - skincare
+    - haircare
+    patterns:
+    - anti[- ]ageing
+    - reverses? ageing
+    - boosts? collagen
+    - stops? hair fall
+    - dermatologically tested
+    examples:
+    - boosts collagen
+    - stops hair fall
+  injection_patterns:
+  - (?:ignore|disregard|override|bypass)\b[^.!?]{0,60}\b(?:rules?|instructions?|screening|guidelines?|prompt)
+  - note to (?:any |the )?(?:ai|llm|model|assistant|system)\b
+  - (?:approve|accept) all (?:skus?|products?)
+  data_quality_flags:
+  - mrp_missing
+  - pack_missing
+  - cost_missing
+  - hsn_missing
+taxonomy:
+  fallback_category: skincare
+  segments:
+  - name: skin_type
+    values:
+      all skin: []
+      oily:
+      - \boily\b
+      - acne
+      - mattifying
+      dry:
+      - \bdry\b
+      - hydrating
+      - moisturi[sz]
+      sensitive:
+      - sensitive
+      - fragrance[- ]free
+  categories:
+  - name: fragrance
+    patterns:
+    - perfume
+    - eau de
+    - deodorant
+    - body mist
+    - cologne
+    subcategories:
+      deodorant:
+      - deodorant
+      - roll[- ]on
+      perfume: []
+  - name: makeup
+    patterns:
+    - lipstick
+    - lip
+    - kajal
+    - eyeliner
+    - mascara
+    - foundation
+    - compact
+    - blush
+    - nail
+    subcategories:
+      lips:
+      - lip
+      eyes:
+      - kajal
+      - eyeliner
+      - mascara
+      face:
+      - foundation
+      - compact
+      - blush
+      nails:
+      - nail
+      other: []
+  - name: haircare
+    patterns:
+    - shampoo
+    - conditioner
+    - hair (?:oil|mask|serum)
+    - \bhair\b
+    subcategories:
+      shampoo:
+      - shampoo
+      conditioner:
+      - conditioner
+      oils and serums:
+      - oil
+      - serum
+      treatment: []
+  - name: skincare
+    patterns:
+    - cream
+    - serum
+    - moisturi[sz]er
+    - sunscreen
+    - face wash
+    - cleanser
+    - toner
+    - lotion
+    - \bspf\b
+    subcategories:
+      sun care:
+      - sunscreen
+      - spf
+      cleansers:
+      - face wash
+      - cleanser
+      serums:
+      - serum
+      moisturisers: []
+research:
+  demand_min: 0.4
+  overlap_max: 0.6
+  freight_pct: 0.04
+  neutral_review_score: 0.6
+  keyword_matching:
+    generic_tokens:
+    - beauty
+    - skin
+    - hair
+    - care
+    - women
+    - men
+    - for
+    - under
+    - and
+    - with
+    - the
+    - of
+    generic_weight: 0.5
+    stop_tokens:
+    - and
+    - for
+    - with
+    - the
+    - of
+    - a
+    - set
+    - x
+    - pack
+    - pc
+    - pcs
+    min_coverage: 0.7
+  fit_weights:
+    margin: 0.4
+    demand: 0.3
+    overlap: 0.2
+    review: 0.1
+  below_min_margin_action: negotiate
+  moq_flag_factor: 2.0
+margins:
+  categories:
+    skincare:
+      target_pct: 48
+      min_pct: 38
+      payment_terms_days: 45
+    haircare:
+      target_pct: 45
+      min_pct: 36
+      payment_terms_days: 45
+    makeup:
+      target_pct: 50
+      min_pct: 40
+      payment_terms_days: 45
+    fragrance:
+      target_pct: 42
+      min_pct: 33
+      payment_terms_days: 30
+  brands: {}
+negotiation:
+  margin_ask: target
+  payment_terms_days: category
+  payment_longer_is_better: true
+  moq_max_factor: 2.0
+  marketing_min_pct_of_order: 0.1
+  launch_discount_min_pct: 5
+  defect_return_min_days: 10
+catalog:
+  title_max_chars: 80
+  bullets:
+    min: 3
+    max: 5
+  description_sentences:
+    min: 2
+    max: 3
+  required_attributes:
+    default:
+    - pack
+    - mrp
+    skincare:
+    - skin_type
+    - key_ingredients
+    - pack_ml
+    - mrp
+    haircare:
+    - hair_type
+    - key_ingredients
+    - pack_ml
+    - mrp
+    makeup:
+    - shade
+    - finish
+    - pack
+    - mrp
+    fragrance:
+    - fragrance_family
+    - pack_ml
+    - mrp
+  label_licences:
+  - document: CDSCO cosmetics registration
+    attribute: cdsco_registration
+    categories:
+    - skincare
+    - haircare
+    - makeup
+    - fragrance
+  label_checks:
+  - categories:
+    - skincare
+    - haircare
+    - makeup
+    - fragrance
+    require:
+    - shelf_life
+    - net_quantity
+    - ingredients
+  hero_sku_count: 3
+  image_sizes:
+    packshot: 1024x1024
+    lifestyle: 1792x1024
+    campaign: 1792x1024
+  image_prompts:
+    packshot: Studio packshot of {brand} {name}, {pack}, retail packaging, front view, centred on a plain white background, soft shadow,
+      sharp focus, no extra text.
+    lifestyle: Bright lifestyle photograph featuring {brand} {name} in everyday use, natural light, shallow depth of field, no text.
+    campaign: 'Bright e-commerce launch banner for the brand {brand}: ''{campaign}''. Product-forward, clean layout, no small text.'
+    segmentation:
+      skincare: cream jar
+      haircare: shampoo bottle
+      makeup: makeup product
+      fragrance: perfume bottle
+      default: product
+launch:
+  launch_discount_days: 30
+  launch_week_days: 7
+  sell_through_review_day: 30
+  listing_lag_days: 2
+  platform_funded_discount_max_pct: 0
+  jbp_top_skus: 5
+  jbp_sections:
+  - Overview
+  - Targets
+  - Investments
+  - Promo calendar
+  - Commitments and next steps
+po:
+  gst_rate_default: 0.18
+  gst_rate_by_category:
+    fragrance: 0.28
+  lead_days:
+    confirmed: 2
+    shipped: 5
+    received: 12
+  simulated_delay_days: 3
+  number_format: PO-{vendor}-{date}
+levers:
+  margin_offset:
+    min: -10
+    max: 10
+    step: 1
+  moq:
+    step: 50
+    max_factor: 2
+verifier:
+  tolerances:
+    pct: 0.01
+    inr: 1.0
+    units: 0
+    score: 0.5
+    ratio: 0.005
+    qty: 0

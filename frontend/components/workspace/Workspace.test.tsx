@@ -27,7 +27,7 @@ async function setup(run: ReturnType<typeof snapshot>, extra: Parameters<typeof 
   const calls: Call[] = [];
   vi.stubGlobal("fetch", mockBackend({ run, calls, ...extra }));
   render(<Workspace vendorId="V001" />);
-  await screen.findByRole("heading", { name: /Recommend: onboard 1 of 2 SKUs/ });
+  await screen.findByRole("heading", { name: /Recommend: onboard 1 of 2 SKUs|Do not onboard: screening failed/ });
   return calls;
 }
 
@@ -96,6 +96,7 @@ describe("Workspace run wiring", () => {
     await setup(run);
     const banner = await screen.findByText(/Screening failed: Missing GST certificate/);
     expect(banner).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Do not onboard: screening failed" })).toBeInTheDocument();
     expect(screen.getByText("Locked — screening failed")).toBeInTheDocument();
     expect(screen.getByText("Prompt injection detected — ignored")).toBeInTheDocument();
     expect(screen.getByText(/ignore previous instructions/)).toBeInTheDocument();

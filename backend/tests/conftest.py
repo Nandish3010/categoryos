@@ -17,6 +17,7 @@ def isolated_settings(monkeypatch, tmp_path):
     monkeypatch.setattr(settings, "db_path", tmp_path / "test.db")
     monkeypatch.setattr(settings, "assets_dir", tmp_path / "assets")
     monkeypatch.setattr(settings, "sam_enabled", True)
+    monkeypatch.setattr(settings, "policy_local_path", tmp_path / "policy.local.yaml")
     monkeypatch.setattr(settings, "demo_today", "2026-10-27")
     monkeypatch.setattr(settings, "sse_heartbeat_s", 15.0)
     runner.reset_state()

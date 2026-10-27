@@ -92,6 +92,23 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
 
+## Configure the playbook
+
+Every rule a category manager would tune (margin targets per category, vendor-type and brand offsets, demand and overlap
+thresholds, compliance documents and claim rules, negotiation requirements, catalog and launch rules, PO tax and lead
+times, lever bounds, verifier tolerances, and the SKU taxonomy) lives in one file: `config/policy.yaml`. The backend reads
+it everywhere, and the model prompts are rendered from it, so no rule exists only in English or only in Python.
+
+* Edit it in the UI at `/rules` (Playbook), or by hand: UI edits go to `config/policy.local.yaml` (gitignored); the
+  effective playbook is the defaults deep-merged with that file. "Reset" deletes the override (or one section or field).
+* `GET /api/policy` returns the effective playbook, the defaults, which paths are overridden and a hash; `PUT /api/policy`
+  takes a partial. A rule change changes the metrics hash, so stale approvals are refused. Replay mode is read-only.
+* Nothing is pet-specific in code. `config/examples/beauty.yaml` and `config/examples/electronics.yaml` are complete
+  alternative playbooks (taxonomy, margins, documents such as CDSCO or BIS, claim rules, attributes, GST) that prove the
+  engine is vertical-agnostic. Copy one over `config/policy.local.yaml` to try it; the demo data stays pet.
+* Market facts (units per SKU, price bands) stay in `data/synthetic/category_benchmarks.json`; ops settings (spend caps,
+  rate limits, timeouts) stay in env.
+
 ## Deploy
 
 Backend on Modal (replay mode), frontend on Vercel. Step by step, including the Modal secret and the post-deploy smoke

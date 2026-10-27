@@ -209,3 +209,35 @@ class NarrativeUnavailable(CategoryOSError):
     problem = "Narrative available in live mode"
     cause = "Replay mode only holds recorded narratives for the preset margin offsets (0, +2, +4) at the vendor's default MOQ"
     fix = "Use a preset (0, +2, +4) or run live"
+
+
+class PolicyInvalid(CategoryOSError):
+    status = 422
+    code = "policy_invalid"
+    problem = "The playbook is invalid"
+    cause = "A value in the playbook failed validation"
+    fix = "Correct the field shown and save again"
+
+    def __init__(self, problem: str | None = None, *, cause: str | None = None, fix: str | None = None, code: str | None = None, errors: list[dict[str, str]] | None = None) -> None:
+        super().__init__(problem, cause=cause, fix=fix, code=code)
+        self.errors = errors or []
+
+    def to_dict(self, run_id: str | None = None) -> dict:  # type: ignore[override]
+        first = self.errors[0]["path"] if self.errors else None
+        return {**super().to_dict(run_id), "path": first, "errors": self.errors}
+
+
+class PolicyReadOnly(CategoryOSError):
+    status = 403
+    code = "policy_read_only"
+    problem = "The playbook is read-only in this mode"
+    cause = "Replay mode serves recorded runs, which were made under the default playbook"
+    fix = "Run the backend locally (MODEL_MODE=mock or live) to edit the playbook"
+
+
+class LeverOutOfRange(CategoryOSError):
+    status = 422
+    code = "lever_out_of_range"
+    problem = "A lever value is outside the playbook's allowed range"
+    cause = "The playbook bounds the what-if levers (levers.margin_offset, levers.moq)"
+    fix = "Pick a value inside the range, or widen it in the playbook"

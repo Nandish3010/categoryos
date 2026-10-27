@@ -39,6 +39,13 @@ export type VendorDetail = {
   proposed_terms?: Record<string, unknown>;
 };
 
+export type TargetBreakdown = {
+  category_pct: number;
+  vendor_type_pp: number;
+  brand_pp: number;
+  lever_pp: number;
+};
+
 export type SkuMetrics = {
   sku_key: string;
   code: string;
@@ -55,6 +62,8 @@ export type SkuMetrics = {
   overlap: number;
   flags: string[];
   target_pct: number;
+  /** Present when the backend explains the effective target. */
+  target_breakdown?: TargetBreakdown | null;
   margin_pct: number | null;
   est_gmv: number;
   verdict: Verdict;
@@ -115,6 +124,8 @@ export type ApiErrorBody = {
   problem: string;
   cause?: string;
   fix?: string;
+  /** Dotted policy path the error is about (playbook 422s). */
+  path?: string;
 };
 
 export class ApiError extends Error {
@@ -144,6 +155,7 @@ export function parseErrorBody(status: number, raw: unknown): ApiErrorBody {
         problem: inner.problem,
         cause: typeof inner.cause === "string" ? inner.cause : undefined,
         fix: typeof inner.fix === "string" ? inner.fix : undefined,
+        path: typeof inner.path === "string" ? inner.path : undefined,
       };
     }
     if (typeof r.detail === "string") {
@@ -154,14 +166,14 @@ export function parseErrorBody(status: number, raw: unknown): ApiErrorBody {
 }
 
 export async function request<T>(
-  method: "GET" | "POST",
+  method: "GET" | "POST" | "PUT",
   path: string,
   opts: { body?: unknown; signal?: AbortSignal } = {},
 ): Promise<T> {
   const { signal } = opts;
   const headers: Record<string, string> = {};
   if (opts.body !== undefined) headers["Content-Type"] = "application/json";
-  if (method === "POST") {
+  if (method !== "GET") {
     const key = getDemoKey();
     if (key) headers["X-Demo-Key"] = key;
   }
@@ -202,6 +214,9 @@ export async function request<T>(
 const get = <T>(path: string, signal?: AbortSignal) => request<T>("GET", path, { signal });
 export const post = <T>(path: string, body: unknown, signal?: AbortSignal) =>
   request<T>("POST", path, { body, signal });
+
+export const put = <T>(path: string, body: unknown, signal?: AbortSignal) =>
+  request<T>("PUT", path, { body, signal });
 
 export const fetchVendors = (signal?: AbortSignal) => get<VendorListItem[]>("/api/vendors", signal);
 

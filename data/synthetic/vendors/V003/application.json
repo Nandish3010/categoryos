@@ -10,6 +10,7 @@
     "toys",
     "accessories"
   ],
+  "vendor_type": "importer",
   "documents": [
     {
       "type": "GST",

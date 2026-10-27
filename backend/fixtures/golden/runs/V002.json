@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "stage": "research"
   },
   {
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "stage": "po"
   }
  ],
@@ -54,7 +54,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{11}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[18]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -215,7 +215,7 @@
      "vendor_id": "V002"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=2c7824d8d64a",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=27cc75565240",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -233,7 +233,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -250,7 +250,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{11}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[18]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -301,7 +301,7 @@
     "args": {
      "category": "treats"
     },
-    "result_summary": "category=treats, target_margin_pct=35, min_margin_pct=28, typical_payment_terms_days=21, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps…",
+    "result_summary": "category=treats, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps[3], playbook{3}",
     "tool": "get_benchmarks"
    },
    "run_id": "run_recorded",
@@ -1659,8 +1659,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-    "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -1842,7 +1842,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2036,7 +2036,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2111,7 +2111,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{11}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[18]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -2129,7 +2129,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -2167,7 +2167,7 @@
       "parser_version": "1.0",
       "raw_value": "If you take the full treats range, I can move to 21 percent.",
       "row": 4,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:margin_pct:4:0",
      "metric": "commit_margin_pct",
@@ -2204,7 +2204,7 @@
       "parser_version": "1.0",
       "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
       "row": 8,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:payment_days:8:1",
      "metric": "commit_payment_days",
@@ -2241,7 +2241,7 @@
       "parser_version": "1.0",
       "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
       "row": 10,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:moq:10:2",
      "metric": "commit_moq",
@@ -2278,7 +2278,7 @@
       "parser_version": "1.0",
       "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
       "row": 12,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:marketing_inr:12:3",
      "metric": "commit_marketing_inr",
@@ -2315,7 +2315,7 @@
       "parser_version": "1.0",
       "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
       "row": 14,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:launch_discount_pct:14:4",
      "metric": "commit_launch_discount_pct",
@@ -2352,7 +2352,7 @@
       "parser_version": "1.0",
       "raw_value": "Defect returns within 7 days stay as they are.",
       "row": 16,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:returns:16:5",
      "metric": "commit_returns",
@@ -2390,7 +2390,7 @@
        "parser_version": "1.0",
        "raw_value": "If you take the full treats range, I can move to 21 percent.",
        "row": 4,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:margin_pct:4:0",
       "metric": "commit_margin_pct",
@@ -2415,7 +2415,7 @@
        "parser_version": "1.0",
        "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
        "row": 8,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:payment_days:8:1",
       "metric": "commit_payment_days",
@@ -2440,7 +2440,7 @@
        "parser_version": "1.0",
        "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
        "row": 10,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:moq:10:2",
       "metric": "commit_moq",
@@ -2465,7 +2465,7 @@
        "parser_version": "1.0",
        "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
        "row": 12,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:marketing_inr:12:3",
       "metric": "commit_marketing_inr",
@@ -2490,7 +2490,7 @@
        "parser_version": "1.0",
        "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
        "row": 14,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:launch_discount_pct:14:4",
       "metric": "commit_launch_discount_pct",
@@ -2515,7 +2515,7 @@
        "parser_version": "1.0",
        "raw_value": "Defect returns within 7 days stay as they are.",
        "row": 16,
-       "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
       },
       "id": "V002:commit:returns:16:5",
       "metric": "commit_returns",
@@ -2726,6 +2726,12 @@
      "required": {
       "category": "treats",
       "launch_discount_pct": 5.0,
+      "margin_breakdown": {
+       "brand_pp": 0.0,
+       "category_pct": 35.0,
+       "lever_pp": 0.0,
+       "vendor_type_pp": 0.0
+      },
       "margin_min_pct": 28.0,
       "margin_pct": 35.0,
       "marketing_inr": 22196.0,
@@ -2751,7 +2757,7 @@
        },
        {
         "speaker": "buyer",
-        "text": "Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?",
+        "text": "Margin. You offered 17 percent, and our treats target is 35 percent. Where can you get to?",
         "turn": 3
        },
        {
@@ -2771,7 +2777,7 @@
        },
        {
         "speaker": "buyer",
-        "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard.",
+        "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We need at least 21 days.",
         "turn": 7
        },
        {
@@ -2840,7 +2846,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -3821,8 +3827,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-    "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
@@ -4022,7 +4028,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -4086,7 +4092,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -4154,6 +4160,7 @@
      "gst_rate": 0.18,
      "lines": [
       {
+       "category": "treats",
        "code": "MW-T01",
        "cost_source": "sheet",
        "line_total": 10064.0,
@@ -4162,6 +4169,7 @@
        "units": 68
       },
       {
+       "category": "treats",
        "code": "MW-T02",
        "cost_source": "sheet",
        "line_total": 16758.0,
@@ -4170,6 +4178,7 @@
        "units": 126
       },
       {
+       "category": "treats",
        "code": "MW-T03",
        "cost_source": "inferred",
        "line_total": 58587.21,
@@ -4178,6 +4187,7 @@
        "units": 253
       },
       {
+       "category": "cat litter",
        "code": "MW-L01",
        "cost_source": "inferred",
        "line_total": 28109.61,
@@ -4239,8 +4249,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-    "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
@@ -4267,9 +4277,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+  "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-26T20:06:12+00:00",
+  "recorded_at": "2026-10-27T02:33:49+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -4300,7 +4310,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=2c7824d8d64a",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=27cc75565240",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -4318,7 +4328,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -4335,7 +4345,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{11}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[18]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -4386,7 +4396,7 @@
       "args": {
        "category": "treats"
       },
-      "result_summary": "category=treats, target_margin_pct=35, min_margin_pct=28, typical_payment_terms_days=21, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps…",
+      "result_summary": "category=treats, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps[3], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -5744,8 +5754,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-      "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+      "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+      "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -5927,7 +5937,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+      "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -5954,7 +5964,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "moq": 800,
    "offset": 0.0,
    "research": {
@@ -6599,8 +6609,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-    "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -6633,7 +6643,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=5266fe3490b8",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=ad837024bea4",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -6651,7 +6661,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -6668,7 +6678,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{11}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[18]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -6719,7 +6729,7 @@
       "args": {
        "category": "treats"
       },
-      "result_summary": "category=treats, target_margin_pct=35, min_margin_pct=28, typical_payment_terms_days=21, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps…",
+      "result_summary": "category=treats, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps[3], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -8077,8 +8087,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
-      "narrative_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
+      "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+      "narrative_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -8260,7 +8270,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
+      "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -8287,7 +8297,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
+   "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
    "moq": 800,
    "offset": 2.0,
    "research": {
@@ -8932,8 +8942,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
-    "narrative_hash": "5266fe3490b8d4969478f537597897f82f21626862be8511f3ff9771d6d1fbc2",
+    "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+    "narrative_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -8966,7 +8976,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=da9dd0367e06",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=ff139007bda3",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -8984,7 +8994,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -9001,7 +9011,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{11}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[18]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -9052,7 +9062,7 @@
       "args": {
        "category": "treats"
       },
-      "result_summary": "category=treats, target_margin_pct=35, min_margin_pct=28, typical_payment_terms_days=21, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps…",
+      "result_summary": "category=treats, avg_monthly_units_per_sku=74.6, sku_count=16, top_price_bands[3], gaps[3], playbook{3}",
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
@@ -10410,8 +10420,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
-      "narrative_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
+      "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+      "narrative_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -10593,7 +10603,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
+      "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -10620,7 +10630,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
+   "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
    "moq": 800,
    "offset": 4.0,
    "research": {
@@ -11265,8 +11275,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
-    "narrative_hash": "da9dd0367e065299627c8cf0e3301c89b8c7097bcb687772144fe56e3a833d30",
+    "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+    "narrative_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -11871,8 +11881,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-   "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -12009,7 +12019,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -12035,7 +12045,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -12051,7 +12061,7 @@
       "parser_version": "1.0",
       "raw_value": "If you take the full treats range, I can move to 21 percent.",
       "row": 4,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:margin_pct:4:0",
      "metric": "commit_margin_pct",
@@ -12076,7 +12086,7 @@
       "parser_version": "1.0",
       "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
       "row": 8,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:payment_days:8:1",
      "metric": "commit_payment_days",
@@ -12101,7 +12111,7 @@
       "parser_version": "1.0",
       "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
       "row": 10,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:moq:10:2",
      "metric": "commit_moq",
@@ -12126,7 +12136,7 @@
       "parser_version": "1.0",
       "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
       "row": 12,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:marketing_inr:12:3",
      "metric": "commit_marketing_inr",
@@ -12151,7 +12161,7 @@
       "parser_version": "1.0",
       "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
       "row": 14,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:launch_discount_pct:14:4",
      "metric": "commit_launch_discount_pct",
@@ -12176,7 +12186,7 @@
       "parser_version": "1.0",
       "raw_value": "Defect returns within 7 days stay as they are.",
       "row": 16,
-      "sha256": "b16b454207704cd2769e1bf1a56f7ab83e83e0ee5d8c215ec659b54201e97aca"
+      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
      },
      "id": "V002:commit:returns:16:5",
      "metric": "commit_returns",
@@ -12387,6 +12397,12 @@
     "required": {
      "category": "treats",
      "launch_discount_pct": 5.0,
+     "margin_breakdown": {
+      "brand_pp": 0.0,
+      "category_pct": 35.0,
+      "lever_pp": 0.0,
+      "vendor_type_pp": 0.0
+     },
      "margin_min_pct": 28.0,
      "margin_pct": 35.0,
      "marketing_inr": 22196.0,
@@ -12412,7 +12428,7 @@
       },
       {
        "speaker": "buyer",
-       "text": "Margin. You offered 17 percent, and our treats category needs at least 28. Where can you get to?",
+       "text": "Margin. You offered 17 percent, and our treats target is 35 percent. Where can you get to?",
        "turn": 3
       },
       {
@@ -12432,7 +12448,7 @@
       },
       {
        "speaker": "buyer",
-       "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We pay on 45 days as standard.",
+       "text": "Understood, 21 percent margin is recorded. Next, payment terms. Your application says 15 days. We need at least 21 days.",
        "turn": 7
       },
       {
@@ -12501,7 +12517,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -12559,6 +12575,7 @@
     "gst_rate": 0.18,
     "lines": [
      {
+      "category": "treats",
       "code": "MW-T01",
       "cost_source": "sheet",
       "line_total": 10064.0,
@@ -12567,6 +12584,7 @@
       "units": 68
      },
      {
+      "category": "treats",
       "code": "MW-T02",
       "cost_source": "sheet",
       "line_total": 16758.0,
@@ -12575,6 +12593,7 @@
       "units": 126
      },
      {
+      "category": "treats",
       "code": "MW-T03",
       "cost_source": "inferred",
       "line_total": 58587.21,
@@ -12583,6 +12602,7 @@
       "units": 253
      },
      {
+      "category": "cat litter",
       "code": "MW-L01",
       "cost_source": "inferred",
       "line_total": 28109.61,
@@ -12644,8 +12664,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-   "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -13293,8 +13313,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
-   "narrative_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -13466,7 +13486,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "2c7824d8d64a6d15c96fd20f755912337eef76e46a7543a7e02e3e40cb5232bd",
+   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

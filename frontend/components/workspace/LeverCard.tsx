@@ -1,6 +1,7 @@
 "use client";
 
 import { pp } from "@/lib/format";
+import { useLeverBounds } from "@/lib/leverPolicy";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
 import { Slider } from "../Slider";
@@ -29,6 +30,7 @@ export function LeverCard({
   onMoq: (v: number | null) => void;
   onResetAll: () => void;
 }) {
+  const bounds = useLeverBounds();
   const changed = offset !== 0 || (moq != null && moq !== defaultMoq);
   return (
     <section aria-label="Levers" className="rounded-card border border-border bg-surface">
@@ -54,9 +56,9 @@ export function LeverCard({
         <Slider
           label="Target margin"
           value={offset}
-          min={OFFSET_MIN}
-          max={OFFSET_MAX}
-          step={1}
+          min={bounds.offsetMin}
+          max={bounds.offsetMax}
+          step={bounds.offsetStep}
           display={offset === 0 ? "category target" : `category target ${pp(offset)}`}
           valueText={
             offset === 0
@@ -77,8 +79,8 @@ export function LeverCard({
             label="MOQ"
             value={moq ?? defaultMoq}
             min={0}
-            max={Math.max(defaultMoq * 2, MOQ_STEP * 2)}
-            step={MOQ_STEP}
+            max={Math.max(defaultMoq * bounds.moqMaxFactor, bounds.moqStep * 2)}
+            step={bounds.moqStep}
             display={`${moq ?? defaultMoq} units`}
             valueText={`${moq ?? defaultMoq} units minimum order quantity`}
             onChange={onMoq}

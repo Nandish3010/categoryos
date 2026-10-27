@@ -10,6 +10,7 @@
     "treats",
     "cat litter"
   ],
+  "vendor_type": "d2c_brand",
   "documents": [
     {
       "type": "GST",

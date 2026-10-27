@@ -9,8 +9,9 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from app import policy
 from app.config import settings
-from app.constants import ALLOWED_VENDORS, GST_RATE, TOL
+from app.constants import ALLOWED_VENDORS
 from app.data_loader import load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
@@ -28,8 +29,9 @@ COMMIT_METRICS = {
     "commit_returns": "units",
 }
 EXTRACTION_METRICS = {"pack_qty": "qty"}
-_TRANSCRIPT = re.compile(r"^vendors/(V00[1-4])/call_transcript\.json$")
-_VENDOR_SHEET = re.compile(r"^vendors/(V00[1-4])/sku_sheet\.csv$")
+_VENDOR_ALT = "|".join(ALLOWED_VENDORS)
+_TRANSCRIPT = re.compile(rf"^vendors/({_VENDOR_ALT})/call_transcript\.json$")
+_VENDOR_SHEET = re.compile(rf"^vendors/({_VENDOR_ALT})/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
 METRIC_FILE = {
@@ -111,8 +113,9 @@ def _recompute_engine(claim: Claim) -> float:
         lever = apply_levers(build_base(vendor), float(params.get("offset", 0)), moq)
         if claim.metric in {"po_total", "po_grand_total"}:
             codes = [c for c in params.get("skus", "").split(",") if c]
-            subtotal = round(sum(s.alloc_units * (s.cost or 0.0) for s in lever.skus if s.code in codes), 2)
-            return subtotal if claim.metric == "po_total" else round(subtotal * (1 + GST_RATE), 2)
+            items = [(s.category, s.alloc_units * (s.cost or 0.0)) for s in lever.skus if s.code in codes]
+            subtotal = round(sum(a for _, a in items), 2)
+            return subtotal if claim.metric == "po_total" else round(subtotal + policy.gst_total(items), 2)
         return lever.summary.capital_at_risk_inr
     sku_key = claim.sku_key or claim.source_ref.key
     return compute_metric(sku_key.split(":", 1)[0], claim.metric, sku_key)
@@ -135,7 +138,7 @@ def _verify_extraction(claim: Claim, rel_file: str) -> Claim:
     parsed = _parse_cell(raw, claim.unit)
     if parsed is None:
         return _finish(claim, "rejected", f"cell {raw!r} could not be parsed as {claim.unit}")
-    if abs(parsed - claim.value) <= TOL[claim.unit]:
+    if abs(parsed - claim.value) <= policy.tol(claim.unit):
         return _finish(claim, "verified", None, parsed)
     return _finish(claim, "rejected", f"sheet cell {raw!r} parses to {parsed:g}, claim says {claim.value:g}", parsed)
 
@@ -187,7 +190,7 @@ def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
         return _finish(claim, "rejected", f"the quote does not appear verbatim in turn {ev.row} of the canonical transcript")
     stated = numbers_in(quote)
     value = claim.value * 100 if claim.unit == "pct" else claim.value
-    tol = TOL["pct"] * 100 if claim.unit == "pct" else TOL.get(claim.unit, 0.0)
+    tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
     if not any(abs(n - value) <= max(tol, 1e-9) for n in stated):
         shown = ", ".join(f"{n:g}" for n in stated) or "none"
         return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
@@ -216,7 +219,7 @@ def verify_claim(claim: Claim) -> Claim:
         recomputed = _recompute_engine(claim)
     except CategoryOSError as exc:
         return _finish(claim, "rejected", f"cannot recompute: {exc.problem}")
-    if abs(recomputed - claim.value) <= TOL[unit]:
+    if abs(recomputed - claim.value) <= policy.tol(unit):
         return _finish(claim, "verified", None, recomputed)
     return _finish(claim, "rejected", f"engine recomputed {recomputed:g}, claim says {claim.value:g}", recomputed)
 
@@ -320,7 +323,7 @@ def inject_fault(claims: list[Claim], metric: str | None = None) -> list[Claim]:
             wrong = claim.value + 0.17 if claim.value <= 0.8 else claim.value - 0.17
         else:
             wrong = _transpose(claim.value, claim.unit)
-        if abs(wrong - claim.value) <= 2 * TOL[claim.unit]:
+        if abs(wrong - claim.value) <= 2 * policy.tol(claim.unit):
             wrong = claim.value + (0.07 if claim.unit == "pct" else 111.0)
         text = claim.text
         if claim.unit == "ratio":
