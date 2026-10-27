@@ -1,0 +1,96 @@
+{
+  "fps": 30,
+  "total": 5325,
+  "scenes": [
+    {
+      "id": "a1-intro",
+      "act": 1,
+      "start": 0,
+      "frames": 225,
+      "voSec": 3.63941,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "a1-mid",
+      "act": 1,
+      "start": 225,
+      "frames": 510,
+      "voSec": 6.83542,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "a1-end",
+      "act": 1,
+      "start": 735,
+      "frames": 240,
+      "voSec": 3.604036,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "a2-slam",
+      "act": 2,
+      "start": 975,
+      "frames": 150,
+      "voSec": 2.738503,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "m1-call",
+      "act": 2,
+      "start": 1125,
+      "frames": 960,
+      "voSec": 29.730703,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "m2-verifier",
+      "act": 2,
+      "start": 2085,
+      "frames": 720,
+      "voSec": 19.972336,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "m3-vision",
+      "act": 2,
+      "start": 2805,
+      "frames": 840,
+      "voSec": 24.58,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "m4-run",
+      "act": 2,
+      "start": 3645,
+      "frames": 750,
+      "voSec": 15.669116,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "a3-week",
+      "act": 3,
+      "start": 4395,
+      "frames": 510,
+      "voSec": 5.139229,
+      "voLead": 0.35,
+      "source": "tts"
+    },
+    {
+      "id": "a3-close",
+      "act": 3,
+      "start": 4905,
+      "frames": 420,
+      "voSec": 6.685896,
+      "voLead": 0.35,
+      "source": "tts"
+    }
+  ]
+}

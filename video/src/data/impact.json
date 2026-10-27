@@ -1,0 +1,240 @@
+{
+  "basis": "research_estimate",
+  "measured_runs": 0,
+  "partly_measured_runs": 1,
+  "baseline_status": "research_estimate",
+  "in_scope_pct": 62.7,
+  "saved_pct": 32.7,
+  "potential_saved_pct": 34.6,
+  "target_pct": 33.3,
+  "meets_target": false,
+  "team_hours_per_month": 584.5,
+  "hours_saved_per_month": 191.1,
+  "roles": [
+    {
+      "role": "category_manager",
+      "label": "Category managers",
+      "headcount": 1,
+      "in_scope_pct": 53.4,
+      "saved_pct": 26.9
+    },
+    {
+      "role": "category_executive",
+      "label": "Category executives",
+      "headcount": 2,
+      "in_scope_pct": 67.4,
+      "saved_pct": 35.6
+    }
+  ],
+  "modules": [
+    {
+      "key": "new_vendor_onboarding",
+      "label": "New-vendor onboarding (Screen, Decide, Negotiate, Catalog, Launch packet)",
+      "status": "shipped",
+      "in_scope_pct": 18.5,
+      "saved_pct": 8.8,
+      "tasks": [
+        {
+          "task": "new_vendor_onboarding",
+          "label": "New vendor sourcing, screening, research, negotiation, terms",
+          "in_scope_pct": 100
+        },
+        {
+          "task": "catalog_create_qc",
+          "label": "Catalog create, QC and fix",
+          "in_scope_pct": 30
+        },
+        {
+          "task": "content_images",
+          "label": "Content and images coordination",
+          "in_scope_pct": 30
+        },
+        {
+          "task": "jbp_qbr",
+          "label": "JBP, annual plan and QBR",
+          "in_scope_pct": 20
+        },
+        {
+          "task": "po_replenishment",
+          "label": "PO raising, replenishment, fill-rate and PO follow-up",
+          "in_scope_pct": 10
+        },
+        {
+          "task": "compliance",
+          "label": "Compliance (licences, claims, recalls)",
+          "in_scope_pct": 30
+        }
+      ]
+    },
+    {
+      "key": "conditional_offer_evaluator",
+      "label": "Conditional-offer evaluator (probability, risk-adjusted value, counters)",
+      "status": "shipped",
+      "in_scope_pct": 0,
+      "saved_pct": 0,
+      "tasks": [
+        {
+          "task": "new_vendor_onboarding",
+          "label": "New vendor sourcing, screening, research, negotiation, terms",
+          "in_scope_pct": 0
+        }
+      ]
+    },
+    {
+      "key": "live_negotiation_copilot",
+      "label": "Live negotiation copilot (transcript, extraction, gap table, next ask)",
+      "status": "shipped",
+      "in_scope_pct": 0,
+      "saved_pct": 0,
+      "tasks": [
+        {
+          "task": "new_vendor_onboarding",
+          "label": "New vendor sourcing, screening, research, negotiation, terms",
+          "in_scope_pct": 0
+        }
+      ]
+    },
+    {
+      "key": "weekly_review_mis",
+      "label": "Weekly vendor-performance review and MIS generator",
+      "status": "shipped",
+      "in_scope_pct": 11.7,
+      "saved_pct": 7.6,
+      "tasks": [
+        {
+          "task": "vendor_scorecards",
+          "label": "Vendor scorecards and performance reviews",
+          "in_scope_pct": 100
+        },
+        {
+          "task": "reporting_mis",
+          "label": "Reporting, MIS and dashboards",
+          "in_scope_pct": 100
+        }
+      ]
+    },
+    {
+      "key": "price_increase_evaluator",
+      "label": "Existing-vendor price-increase evaluator (extract, margin maths, elasticity, sweetener value, counter and reply)",
+      "status": "shipped",
+      "in_scope_pct": 4.7,
+      "saved_pct": 2.3,
+      "tasks": [
+        {
+          "task": "price_increase_requests",
+          "label": "Existing-vendor cost and price-increase requests",
+          "in_scope_pct": 100
+        }
+      ]
+    },
+    {
+      "key": "po_followup",
+      "label": "PO follow-up and fill-rate chaser",
+      "status": "shipped",
+      "in_scope_pct": 7.5,
+      "saved_pct": 4.1,
+      "tasks": [
+        {
+          "task": "po_replenishment",
+          "label": "PO raising, replenishment, fill-rate and PO follow-up",
+          "in_scope_pct": 90
+        }
+      ]
+    },
+    {
+      "key": "catalog_qc_queue",
+      "label": "Catalog QC and fix queue on existing SKUs",
+      "status": "shipped",
+      "in_scope_pct": 9.1,
+      "saved_pct": 5,
+      "tasks": [
+        {
+          "task": "catalog_create_qc",
+          "label": "Catalog create, QC and fix",
+          "in_scope_pct": 70
+        }
+      ]
+    },
+    {
+      "key": "promotions_planner",
+      "label": "Promotions and event planner",
+      "status": "shipped",
+      "in_scope_pct": 7.7,
+      "saved_pct": 2.7,
+      "tasks": [
+        {
+          "task": "promotions",
+          "label": "Promotions, sale events, co-op marketing funding",
+          "in_scope_pct": 100
+        }
+      ]
+    },
+    {
+      "key": "competitor_monitor",
+      "label": "Competitor price monitor",
+      "status": "shipped",
+      "in_scope_pct": 3.7,
+      "saved_pct": 2.2,
+      "tasks": [
+        {
+          "task": "competitor_monitoring",
+          "label": "Competitor and price monitoring",
+          "in_scope_pct": 100
+        }
+      ]
+    },
+    {
+      "key": "inventory_health_module",
+      "label": "Inventory health and liquidation",
+      "status": "not_built",
+      "in_scope_pct": 4.7,
+      "saved_pct": 1.9,
+      "tasks": [
+        {
+          "task": "inventory_health",
+          "label": "Inventory health (ageing, liquidation, RTV)",
+          "in_scope_pct": 100
+        }
+      ]
+    }
+  ],
+  "onboarding": {
+    "typical_skus": 12,
+    "baseline_hours_per_vendor": 18.1,
+    "human_share_pct": null,
+    "saved_pct_basis": "research_estimate",
+    "vendors_per_month": 3.2,
+    "demand_hours_per_month": 57.9,
+    "team_hours_on_task_per_month": 62.4
+  },
+  "formula": "saved % of the week = sum over tasks of (share of the week the task takes x share of the task a shipped module covers x share of that time saved); the team figure weights category managers and executives by headcount. A module marked measured-by-runs uses the measured review reduction once runs are fully reviewed, else the table's estimate.",
+  "team": {
+    "category_managers": 1,
+    "category_executives": 2,
+    "work_hours_per_week": 45,
+    "weeks_per_month": 4.33,
+    "vendors_onboarded_per_month": 3.2,
+    "typical_skus_per_vendor": 12
+  },
+  "vendors": [
+    {
+      "vendor_id": "V001",
+      "run_id": "run_744961f968",
+      "baseline_minutes": 785,
+      "human_minutes": 0.031,
+      "measured_gates": 1,
+      "complete": false,
+      "reduction_pct": 100
+    },
+    {
+      "vendor_id": "V002",
+      "run_id": "run_968c5dca07",
+      "baseline_minutes": 605,
+      "human_minutes": 0,
+      "measured_gates": 0,
+      "complete": false,
+      "reduction_pct": null
+    }
+  ],
+  "mode": "replay"
+}
