@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "stage": "research"
   },
   {
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "stage": "po"
   }
  ],
@@ -2680,7 +2680,7 @@
      "vendor_id": "V001"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=725e318bf8b3",
+    "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=a0145cfad06a",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -2698,7 +2698,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V001"
     },
-    "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2, summary{7}, skus[12]",
+    "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6, summary{7}, skus[12]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -5179,8 +5179,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-    "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+    "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -5392,7 +5392,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -5616,7 +5616,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -5644,14 +5644,1248 @@
   },
   {
    "cost_usd": null,
+   "latency_ms": 180.0,
+   "model": null,
+   "payload": {
+    "args": {
+     "vendor_id": "V001"
+    },
+    "result_summary": "application{12}",
+    "tool": "get_application"
+   },
+   "run_id": "run_recorded",
+   "seq": 81,
+   "stage": "negotiate",
+   "t_rel_ms": 28080.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": 180.0,
+   "model": null,
+   "payload": {
+    "args": {
+     "target_margin_pct_offset": 0,
+     "vendor_id": "V001"
+    },
+    "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6, summary{7}, skus[12]",
+    "tool": "get_metrics"
+   },
+   "run_id": "run_recorded",
+   "seq": 82,
+   "stage": "negotiate",
+   "t_rel_ms": 28780.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": 0.0,
+   "latency_ms": 900.0,
+   "model": "muse-spark-1.3",
+   "payload": {
+    "input_tokens": 0,
+    "mode": "mock",
+    "output_tokens": 0,
+    "task": "deal_terms",
+    "tool_steps": 2
+   },
+   "run_id": "run_recorded",
+   "seq": 83,
+   "stage": "negotiate",
+   "t_rel_ms": 29880.0,
+   "type": "model_call"
+  },
+  {
+   "cost_usd": null,
    "latency_ms": null,
    "model": null,
    "payload": {
-    "claims": [],
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.02,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.02,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': value 2",
+     "unit": "pct",
+     "value": 0.02
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 84,
+   "stage": "negotiate",
+   "t_rel_ms": 30000.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 500000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:threshold",
+     "metric": "deal_term_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 500000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': threshold 500000",
+     "unit": "inr",
+     "value": 500000.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 85,
+   "stage": "negotiate",
+   "t_rel_ms": 30120.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 90.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:window_days",
+     "metric": "deal_term_window_days",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 90.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': window days 90",
+     "unit": "units",
+     "value": 90.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 86,
+   "stage": "negotiate",
+   "t_rel_ms": 30240.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 500000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier0_threshold",
+     "metric": "deal_term_tier0_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 500000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 threshold 500000",
+     "unit": "inr",
+     "value": 500000.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 87,
+   "stage": "negotiate",
+   "t_rel_ms": 30360.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.02,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier0_value",
+     "metric": "deal_term_tier0_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.02,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 value 2",
+     "unit": "pct",
+     "value": 0.02
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 88,
+   "stage": "negotiate",
+   "t_rel_ms": 30480.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 1000000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier1_threshold",
+     "metric": "deal_term_tier1_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 1000000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 threshold 1e+06",
+     "unit": "inr",
+     "value": 1000000.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 89,
+   "stage": "negotiate",
+   "t_rel_ms": 30600.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.04,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier1_value",
+     "metric": "deal_term_tier1_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.04,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 value 4",
+     "unit": "pct",
+     "value": 0.04
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 90,
+   "stage": "negotiate",
+   "t_rel_ms": 30720.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_probability:tier:0",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.8406,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:0",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of ₹5,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 84.1%",
+     "unit": "ratio",
+     "value": 0.8406
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 91,
+   "stage": "negotiate",
+   "t_rel_ms": 30840.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_probability:tier:1",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.1493,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:1",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of ₹10,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 14.9%",
+     "unit": "ratio",
+     "value": 0.1493
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 92,
+   "stage": "negotiate",
+   "t_rel_ms": 30960.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p10",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 454895.0173,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p10",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P10 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹4,54,895",
+     "unit": "inr",
+     "value": 454895.0173
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 93,
+   "stage": "negotiate",
+   "t_rel_ms": 31080.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p50",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 699459.4472,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p50",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P50 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹6,99,459",
+     "unit": "inr",
+     "value": 699459.4472
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 94,
+   "stage": "negotiate",
+   "t_rel_ms": 31200.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p90",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 1085965.212,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p90",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P90 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹10,85,965",
+     "unit": "inr",
+     "value": 1085965.212
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 95,
+   "stage": "negotiate",
+   "t_rel_ms": 31320.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:base",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 34.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "base",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Guaranteed base for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 34.0 points",
+     "unit": "pts",
+     "value": 34.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 96,
+   "stage": "negotiate",
+   "t_rel_ms": 31440.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:expected",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 35.9798,
+     "sku_key": null,
+     "source_ref": {
+      "column": "expected",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Risk-adjusted expected value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 36.0 points",
+     "unit": "pts",
+     "value": 35.9798
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 97,
+   "stage": "negotiate",
+   "t_rel_ms": 31560.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:counted",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 35.6812,
+     "sku_key": null,
+     "source_ref": {
+      "column": "counted",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Counted value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 35.7 points",
+     "unit": "pts",
+     "value": 35.6812
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 98,
+   "stage": "negotiate",
+   "t_rel_ms": 31680.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:required",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 27.3067,
+     "sku_key": null,
+     "source_ref": {
+      "column": "required",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Required for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 27.3 points",
+     "unit": "pts",
+     "value": 27.3067
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 99,
+   "stage": "negotiate",
+   "t_rel_ms": 31800.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "args": {
+     "terms": [
+      "t1"
+     ],
+     "vendor_id": "V001"
+    },
+    "deterministic": true,
+    "result_summary": "t1: accept (P 84.1%)",
+    "tool": "assess_deals"
+   },
+   "run_id": "run_recorded",
+   "seq": 100,
+   "stage": "negotiate",
+   "t_rel_ms": 32500.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claims": [
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 0.02,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:value",
+      "metric": "deal_term_value",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 0.02,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': value 2",
+      "unit": "pct",
+      "value": 0.02
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 500000.0,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:threshold",
+      "metric": "deal_term_threshold",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 500000.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': threshold 500000",
+      "unit": "inr",
+      "value": 500000.0
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 90.0,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:window_days",
+      "metric": "deal_term_window_days",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 90.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': window days 90",
+      "unit": "units",
+      "value": 90.0
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 500000.0,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:tier0_threshold",
+      "metric": "deal_term_tier0_threshold",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 500000.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 threshold 500000",
+      "unit": "inr",
+      "value": 500000.0
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 0.02,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:tier0_value",
+      "metric": "deal_term_tier0_value",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 0.02,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 value 2",
+      "unit": "pct",
+      "value": 0.02
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 1000000.0,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:tier1_threshold",
+      "metric": "deal_term_tier1_threshold",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 1000000.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 threshold 1e+06",
+      "unit": "inr",
+      "value": 1000000.0
+     },
+     {
+      "attempts": [],
+      "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
+       "header": "text",
+       "normalized_value": 0.04,
+       "page": null,
+       "parser_version": "1.0",
+       "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reread_value": null,
+       "row": 1,
+       "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+      },
+      "id": "V001:dealterm:t1:tier1_value",
+      "metric": "deal_term_tier1_value",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 0.04,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V001/application.json",
+       "key": "additional_term:1"
+      },
+      "status": "verified",
+      "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 value 4",
+      "unit": "pct",
+      "value": 0.04
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_probability:tier:0",
+      "metric": "deal_probability",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 0.8406,
+      "sku_key": null,
+      "source_ref": {
+       "column": "tier:0",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Chance of ₹5,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 84.1%",
+      "unit": "ratio",
+      "value": 0.8406
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_probability:tier:1",
+      "metric": "deal_probability",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 0.1493,
+      "sku_key": null,
+      "source_ref": {
+       "column": "tier:1",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Chance of ₹10,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 14.9%",
+      "unit": "ratio",
+      "value": 0.1493
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_percentile:p10",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 454895.0173,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p10",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "P10 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹4,54,895",
+      "unit": "inr",
+      "value": 454895.0173
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_percentile:p50",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 699459.4472,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p50",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "P50 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹6,99,459",
+      "unit": "inr",
+      "value": 699459.4472
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_percentile:p90",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 1085965.212,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p90",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "P90 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹10,85,965",
+      "unit": "inr",
+      "value": 1085965.212
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_pts:base",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 34.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "base",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Guaranteed base for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 34.0 points",
+      "unit": "pts",
+      "value": 34.0
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_pts:expected",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 35.9798,
+      "sku_key": null,
+      "source_ref": {
+       "column": "expected",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Risk-adjusted expected value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 36.0 points",
+      "unit": "pts",
+      "value": 35.9798
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_pts:counted",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 35.6812,
+      "sku_key": null,
+      "source_ref": {
+       "column": "counted",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Counted value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 35.7 points",
+      "unit": "pts",
+      "value": 35.6812
+     },
+     {
+      "attempts": [],
+      "evidence": null,
+      "id": "V001:deal:t1:deal_pts:required",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 27.3067,
+      "sku_key": null,
+      "source_ref": {
+       "column": "required",
+       "file": "vendors/V001/application.json",
+       "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+      },
+      "status": "verified",
+      "text": "Required for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 27.3 points",
+      "unit": "pts",
+      "value": 27.3067
+     }
+    ],
     "data": {
      "counter_offer": {
       "asks": [],
       "email_draft": ""
+     },
+     "deals": {
+      "assessments": [
+       {
+        "base_assumed": true,
+        "base_pts": 34.0,
+        "base_term_id": null,
+        "call": "Accept: counted 35.7% against 27.3% required (P of the first target 84.1%).",
+        "counted_bonus_pts": 1.6812,
+        "counted_pts": 35.6812,
+        "counters": [],
+        "decision": "accept",
+        "distribution": {
+         "bins": [
+          293145.8304,
+          336963.4699,
+          380781.1094,
+          424598.7488,
+          468416.3883,
+          512234.0277,
+          556051.6672,
+          599869.3067,
+          643686.9461,
+          687504.5856,
+          731322.225,
+          775139.8645,
+          818957.504,
+          862775.1434,
+          906592.7829,
+          950410.4223,
+          994228.0618,
+          1038045.7013,
+          1081863.3407,
+          1125680.9802,
+          1169498.6196,
+          1213316.2591,
+          1257133.8986,
+          1300951.538,
+          1344769.1775,
+          1388586.8169,
+          1432404.4564,
+          1476222.0959,
+          1520039.7353,
+          1563857.3748,
+          1607675.0142,
+          1651492.6537,
+          1695310.2932
+         ],
+         "density": [
+          0.0104,
+          0.0208,
+          0.0323,
+          0.04905,
+          0.05945,
+          0.0702,
+          0.0745,
+          0.08265,
+          0.0754,
+          0.07325,
+          0.0615,
+          0.0599,
+          0.05465,
+          0.0447,
+          0.0408,
+          0.0325,
+          0.0272,
+          0.0241,
+          0.0186,
+          0.01575,
+          0.01195,
+          0.0108,
+          0.00905,
+          0.0079,
+          0.00555,
+          0.004,
+          0.0035,
+          0.00285,
+          0.0025,
+          0.00185,
+          0.00095,
+          0.00135
+         ],
+         "mean": 743353.0719,
+         "metric": "gmv_inr",
+         "p10": 454895.0173,
+         "p50": 699459.4472,
+         "p90": 1085965.212,
+         "threshold": 500000.0,
+         "window_days": 90
+        },
+        "expected_bonus_pts": 1.9798,
+        "expected_pts": 35.9798,
+        "face_pts": 38.0,
+        "guaranteed_pts": 34.0,
+        "kind": "tiered",
+        "label": "back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days",
+        "net_pts": null,
+        "probability": 0.8406,
+        "quote": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+        "reasoning": [
+         "Demand over 90 days (ramped new listing, 45.0% forecast uncertainty): P10 ₹4,54,895, P50 ₹6,99,459, P90 ₹10,85,965.",
+         "P(₹5,00,000 in 90 days) = 84.1%; counts.",
+         "P(₹10,00,000 in 90 days) = 14.9%; under the 60% bar, counts as 0.",
+         "No base margin was stated with this bonus, so the 34.0% margin already counted for this vendor is the base.",
+         "Counted 34.0 base + 1.7 bonus = 35.7 points against 27.3 required."
+        ],
+        "recommended_counter": null,
+        "required_pts": 27.3067,
+        "shortfall_pts": 8.3745,
+        "source": "application",
+        "term": "back_margin_pct",
+        "term_id": "t1",
+        "tiers": [
+         {
+          "bonus_pts": 2.0,
+          "counted": true,
+          "incremental_pts": 2.0,
+          "probability": 0.8406,
+          "threshold": 500000.0
+         },
+         {
+          "bonus_pts": 4.0,
+          "counted": false,
+          "incremental_pts": 2.0,
+          "probability": 0.1493,
+          "threshold": 1000000.0
+         }
+        ],
+        "turn": 1
+       }
+      ],
+      "assumptions": {
+       "cost_of_capital_pct_annual": 14.0,
+       "cv": 0.45,
+       "cv_by_category": {},
+       "inventory_carrying_pct_monthly": 2.0,
+       "mc_draws": 20000,
+       "min_probability": 0.6,
+       "ramp_by_month": [
+        0.5,
+        0.75,
+        0.9,
+        1.0
+       ],
+       "seed": 42,
+       "sku_correlation": 0.5,
+       "value_basis": "risk_adjusted"
+      },
+      "base_terms": [],
+      "claim_status": {
+       "V001:deal:t1:deal_percentile:p10": "verified",
+       "V001:deal:t1:deal_percentile:p50": "verified",
+       "V001:deal:t1:deal_percentile:p90": "verified",
+       "V001:deal:t1:deal_probability:tier:0": "verified",
+       "V001:deal:t1:deal_probability:tier:1": "verified",
+       "V001:deal:t1:deal_pts:base": "verified",
+       "V001:deal:t1:deal_pts:counted": "verified",
+       "V001:deal:t1:deal_pts:expected": "verified",
+       "V001:deal:t1:deal_pts:required": "verified",
+       "V001:dealterm:t1:threshold": "verified",
+       "V001:dealterm:t1:tier0_threshold": "verified",
+       "V001:dealterm:t1:tier0_value": "verified",
+       "V001:dealterm:t1:tier1_threshold": "verified",
+       "V001:dealterm:t1:tier1_value": "verified",
+       "V001:dealterm:t1:value": "verified",
+       "V001:dealterm:t1:window_days": "verified"
+      },
+      "decision": "accept",
+      "headline": "Offer is acceptable on a risk-adjusted basis",
+      "mode": "mock",
+      "rejected_terms": [],
+      "talk": null,
+      "verification": {
+       "rejected": 0,
+       "total": 16,
+       "unverifiable": 0,
+       "verified": 16
+      }
      },
      "gap_table": [],
      "negotiated_skus": [],
@@ -5660,7 +6894,7 @@
      "transcript_source": "canonical"
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -5668,9 +6902,9 @@
     "summary": "No negotiation needed"
    },
    "run_id": "run_recorded",
-   "seq": 81,
+   "seq": 101,
    "stage": "negotiate",
-   "t_rel_ms": 27780.0,
+   "t_rel_ms": 32900.0,
    "type": "stage_result"
   },
   {
@@ -5681,9 +6915,9 @@
     "stage": "catalog"
    },
    "run_id": "run_recorded",
-   "seq": 82,
+   "seq": 102,
    "stage": "catalog",
-   "t_rel_ms": 28080.0,
+   "t_rel_ms": 33200.0,
    "type": "stage_started"
   },
   {
@@ -5708,9 +6942,9 @@
     "tool": "normalise_rows"
    },
    "run_id": "run_recorded",
-   "seq": 83,
+   "seq": 103,
    "stage": "catalog",
-   "t_rel_ms": 28780.0,
+   "t_rel_ms": 33900.0,
    "type": "tool_call"
   },
   {
@@ -5726,9 +6960,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 84,
+   "seq": 104,
    "stage": "catalog",
-   "t_rel_ms": 29880.0,
+   "t_rel_ms": 35000.0,
    "type": "model_call"
   },
   {
@@ -5743,9 +6977,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 85,
+   "seq": 105,
    "stage": "catalog",
-   "t_rel_ms": 30980.0,
+   "t_rel_ms": 36100.0,
    "type": "model_call"
   },
   {
@@ -5765,9 +6999,9 @@
     "tool": "read_documents"
    },
    "run_id": "run_recorded",
-   "seq": 86,
+   "seq": 106,
    "stage": "catalog",
-   "t_rel_ms": 31680.0,
+   "t_rel_ms": 36800.0,
    "type": "tool_call"
   },
   {
@@ -5783,9 +7017,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 87,
+   "seq": 107,
    "stage": "catalog",
-   "t_rel_ms": 32780.0,
+   "t_rel_ms": 37900.0,
    "type": "model_call"
   },
   {
@@ -5801,9 +7035,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 88,
+   "seq": 108,
    "stage": "catalog",
-   "t_rel_ms": 33880.0,
+   "t_rel_ms": 39000.0,
    "type": "model_call"
   },
   {
@@ -5819,9 +7053,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 89,
+   "seq": 109,
    "stage": "catalog",
-   "t_rel_ms": 34980.0,
+   "t_rel_ms": 40100.0,
    "type": "model_call"
   },
   {
@@ -5837,9 +7071,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 90,
+   "seq": 110,
    "stage": "catalog",
-   "t_rel_ms": 36080.0,
+   "t_rel_ms": 41200.0,
    "type": "model_call"
   },
   {
@@ -5855,9 +7089,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 91,
+   "seq": 111,
    "stage": "catalog",
-   "t_rel_ms": 37180.0,
+   "t_rel_ms": 42300.0,
    "type": "model_call"
   },
   {
@@ -5873,9 +7107,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 92,
+   "seq": 112,
    "stage": "catalog",
-   "t_rel_ms": 38280.0,
+   "t_rel_ms": 43400.0,
    "type": "model_call"
   },
   {
@@ -5922,9 +7156,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 93,
+   "seq": 113,
    "stage": "catalog",
-   "t_rel_ms": 38400.0,
+   "t_rel_ms": 43520.0,
    "type": "claim_checked"
   },
   {
@@ -5971,9 +7205,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 94,
+   "seq": 114,
    "stage": "catalog",
-   "t_rel_ms": 38520.0,
+   "t_rel_ms": 43640.0,
    "type": "claim_checked"
   },
   {
@@ -6020,9 +7254,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 95,
+   "seq": 115,
    "stage": "catalog",
-   "t_rel_ms": 38640.0,
+   "t_rel_ms": 43760.0,
    "type": "claim_checked"
   },
   {
@@ -6069,9 +7303,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 96,
+   "seq": 116,
    "stage": "catalog",
-   "t_rel_ms": 38760.0,
+   "t_rel_ms": 43880.0,
    "type": "claim_checked"
   },
   {
@@ -6118,9 +7352,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 97,
+   "seq": 117,
    "stage": "catalog",
-   "t_rel_ms": 38880.0,
+   "t_rel_ms": 44000.0,
    "type": "claim_checked"
   },
   {
@@ -6167,9 +7401,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 98,
+   "seq": 118,
    "stage": "catalog",
-   "t_rel_ms": 39000.0,
+   "t_rel_ms": 44120.0,
    "type": "claim_checked"
   },
   {
@@ -6191,9 +7425,9 @@
     "tool": "cross_check_documents"
    },
    "run_id": "run_recorded",
-   "seq": 99,
+   "seq": 119,
    "stage": "catalog",
-   "t_rel_ms": 39700.0,
+   "t_rel_ms": 44820.0,
    "type": "tool_call"
   },
   {
@@ -6235,9 +7469,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 100,
+   "seq": 120,
    "stage": "catalog",
-   "t_rel_ms": 39820.0,
+   "t_rel_ms": 44940.0,
    "type": "claim_checked"
   },
   {
@@ -6279,9 +7513,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 101,
+   "seq": 121,
    "stage": "catalog",
-   "t_rel_ms": 39940.0,
+   "t_rel_ms": 45060.0,
    "type": "claim_checked"
   },
   {
@@ -6323,9 +7557,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 102,
+   "seq": 122,
    "stage": "catalog",
-   "t_rel_ms": 40060.0,
+   "t_rel_ms": 45180.0,
    "type": "claim_checked"
   },
   {
@@ -6367,9 +7601,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 103,
+   "seq": 123,
    "stage": "catalog",
-   "t_rel_ms": 40180.0,
+   "t_rel_ms": 45300.0,
    "type": "claim_checked"
   },
   {
@@ -6411,9 +7645,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 104,
+   "seq": 124,
    "stage": "catalog",
-   "t_rel_ms": 40300.0,
+   "t_rel_ms": 45420.0,
    "type": "claim_checked"
   },
   {
@@ -6455,9 +7689,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 105,
+   "seq": 125,
    "stage": "catalog",
-   "t_rel_ms": 40420.0,
+   "t_rel_ms": 45540.0,
    "type": "claim_checked"
   },
   {
@@ -6499,9 +7733,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 106,
+   "seq": 126,
    "stage": "catalog",
-   "t_rel_ms": 40540.0,
+   "t_rel_ms": 45660.0,
    "type": "claim_checked"
   },
   {
@@ -6543,9 +7777,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 107,
+   "seq": 127,
    "stage": "catalog",
-   "t_rel_ms": 40660.0,
+   "t_rel_ms": 45780.0,
    "type": "claim_checked"
   },
   {
@@ -6587,9 +7821,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 108,
+   "seq": 128,
    "stage": "catalog",
-   "t_rel_ms": 40780.0,
+   "t_rel_ms": 45900.0,
    "type": "claim_checked"
   },
   {
@@ -6631,9 +7865,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 109,
+   "seq": 129,
    "stage": "catalog",
-   "t_rel_ms": 40900.0,
+   "t_rel_ms": 46020.0,
    "type": "claim_checked"
   },
   {
@@ -6675,9 +7909,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 110,
+   "seq": 130,
    "stage": "catalog",
-   "t_rel_ms": 41020.0,
+   "t_rel_ms": 46140.0,
    "type": "claim_checked"
   },
   {
@@ -6719,9 +7953,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 111,
+   "seq": 131,
    "stage": "catalog",
-   "t_rel_ms": 41140.0,
+   "t_rel_ms": 46260.0,
    "type": "claim_checked"
   },
   {
@@ -6763,9 +7997,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 112,
+   "seq": 132,
    "stage": "catalog",
-   "t_rel_ms": 41260.0,
+   "t_rel_ms": 46380.0,
    "type": "claim_checked"
   },
   {
@@ -9197,17 +10431,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-    "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+    "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
     "summary": "7 listings drafted, 10 compliance flag(s), classifier agreement 71.4%, 2 label(s) read, 1 label mismatch(es)"
    },
    "run_id": "run_recorded",
-   "seq": 113,
+   "seq": 133,
    "stage": "catalog",
-   "t_rel_ms": 41660.0,
+   "t_rel_ms": 46780.0,
    "type": "stage_result"
   },
   {
@@ -9218,9 +10452,9 @@
     "phase": "execute"
    },
    "run_id": "run_recorded",
-   "seq": 114,
+   "seq": 134,
    "stage": null,
-   "t_rel_ms": 42160.0,
+   "t_rel_ms": 47280.0,
    "type": "done"
   },
   {
@@ -9231,9 +10465,9 @@
     "stage": "marketing"
    },
    "run_id": "run_recorded",
-   "seq": 115,
+   "seq": 135,
    "stage": "marketing",
-   "t_rel_ms": 42460.0,
+   "t_rel_ms": 47580.0,
    "type": "stage_started"
   },
   {
@@ -9244,9 +10478,9 @@
     "stage": "jbp"
    },
    "run_id": "run_recorded",
-   "seq": 116,
+   "seq": 136,
    "stage": "jbp",
-   "t_rel_ms": 42760.0,
+   "t_rel_ms": 47880.0,
    "type": "stage_started"
   },
   {
@@ -9257,9 +10491,9 @@
     "stage": "po"
    },
    "run_id": "run_recorded",
-   "seq": 117,
+   "seq": 137,
    "stage": "po",
-   "t_rel_ms": 43060.0,
+   "t_rel_ms": 48180.0,
    "type": "stage_started"
   },
   {
@@ -9276,9 +10510,9 @@
     "tool": "build_po"
    },
    "run_id": "run_recorded",
-   "seq": 118,
+   "seq": 138,
    "stage": "po",
-   "t_rel_ms": 43760.0,
+   "t_rel_ms": 48880.0,
    "type": "tool_call"
   },
   {
@@ -9307,9 +10541,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 119,
+   "seq": 139,
    "stage": "po",
-   "t_rel_ms": 43880.0,
+   "t_rel_ms": 49000.0,
    "type": "claim_checked"
   },
   {
@@ -9338,9 +10572,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 120,
+   "seq": 140,
    "stage": "po",
-   "t_rel_ms": 44000.0,
+   "t_rel_ms": 49120.0,
    "type": "claim_checked"
   },
   {
@@ -9355,9 +10589,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 121,
+   "seq": 141,
    "stage": "jbp",
-   "t_rel_ms": 45100.0,
+   "t_rel_ms": 50220.0,
    "type": "model_call"
   },
   {
@@ -9372,9 +10606,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 122,
+   "seq": 142,
    "stage": "marketing",
-   "t_rel_ms": 46200.0,
+   "t_rel_ms": 51320.0,
    "type": "model_call"
   },
   {
@@ -9400,7 +10634,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -9408,9 +10642,9 @@
     "summary": "Campaign 'Highland Paws: Grain-Free, Made in Small Batches' with a 10% brand-funded launch discount"
    },
    "run_id": "run_recorded",
-   "seq": 123,
+   "seq": 143,
    "stage": "marketing",
-   "t_rel_ms": 46600.0,
+   "t_rel_ms": 51720.0,
    "type": "stage_result"
   },
   {
@@ -9464,7 +10698,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -9472,9 +10706,9 @@
     "summary": "JBP drafted: 7 SKUs, ₹3,46,327 monthly GMV target"
    },
    "run_id": "run_recorded",
-   "seq": 124,
+   "seq": 144,
    "stage": "jbp",
-   "t_rel_ms": 47000.0,
+   "t_rel_ms": 52120.0,
    "type": "stage_result"
   },
   {
@@ -9650,17 +10884,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-    "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+    "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
     "summary": "PO PO-V001-20261027: 7 lines, ₹2,21,233 including GST"
    },
    "run_id": "run_recorded",
-   "seq": 125,
+   "seq": 145,
    "stage": "po",
-   "t_rel_ms": 47400.0,
+   "t_rel_ms": 52520.0,
    "type": "stage_result"
   },
   {
@@ -9671,16 +10905,16 @@
     "phase": "launch"
    },
    "run_id": "run_recorded",
-   "seq": 126,
+   "seq": 146,
    "stage": null,
-   "t_rel_ms": 47900.0,
+   "t_rel_ms": 53020.0,
    "type": "done"
   }
  ],
  "meta": {
-  "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+  "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T03:14:37+00:00",
+  "recorded_at": "2026-10-27T03:21:59+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -9711,7 +10945,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=725e318bf8b3",
+      "result_summary": "counts={'list': 7, 'negotiate': 0, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=a0145cfad06a",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -9729,7 +10963,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -12210,8 +13444,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-      "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+      "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+      "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -12423,7 +13657,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+      "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -12450,7 +13684,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "moq": 150,
    "offset": 0.0,
    "research": {
@@ -13470,8 +14704,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-    "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+    "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+    "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -13504,7 +14738,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 6, 'negotiate': 1, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=51274256dc2e",
+      "result_summary": "counts={'list': 6, 'negotiate': 1, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=a57574a1791f",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -13522,7 +14756,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -16010,8 +17244,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
-      "narrative_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
+      "metrics_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
+      "narrative_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -16223,7 +17457,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
+      "metrics_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -16250,7 +17484,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
+   "metrics_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
    "moq": 150,
    "offset": 2.0,
    "research": {
@@ -17277,8 +18511,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
-    "narrative_hash": "51274256dc2ec185e635e39ab7285b6ff0a32ffba0f2568e981e2f1c0cb50c17",
+    "metrics_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
+    "narrative_hash": "a57574a1791f78195f5d33a340f9fb40b2e1fd5cae581688587f3ea84e741278",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -17311,7 +18545,7 @@
        "vendor_id": "V001"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 5, 'negotiate': 2, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=a987387d74b7",
+      "result_summary": "counts={'list': 5, 'negotiate': 2, 'reject': 5, 'needs_data': 0}, capital_at_risk_inr=194985, metrics_hash=23cccf339468",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -17329,7 +18563,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V001"
       },
-      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2, summary{7}, skus[12]",
+      "result_summary": "vendor_id=V001, target_margin_pct_offset=0, metrics_hash=a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6, summary{7}, skus[12]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -19823,8 +21057,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
-      "narrative_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
+      "metrics_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
+      "narrative_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -20036,7 +21270,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
+      "metrics_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -20063,7 +21297,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
+   "metrics_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
    "moq": 150,
    "offset": 4.0,
    "research": {
@@ -21096,8 +22330,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
-    "narrative_hash": "a987387d74b7595e6f5c26cd6290faed24eac1f5ca2c74e1acd0e897efbff5b9",
+    "metrics_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
+    "narrative_hash": "23cccf33946809305cb7f4034e7fe9036a8803c528e352bf02d579cde244233f",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -23531,8 +24765,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-   "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+   "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -25244,7 +26478,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -25270,7 +26504,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -25278,11 +26512,585 @@
    "summary": "Campaign 'Highland Paws: Grain-Free, Made in Small Batches' with a 10% brand-funded launch discount"
   },
   "negotiate": {
-   "claims": [],
+   "claims": [
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.02,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.02,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': value 2",
+     "unit": "pct",
+     "value": 0.02
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 500000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:threshold",
+     "metric": "deal_term_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 500000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': threshold 500000",
+     "unit": "inr",
+     "value": 500000.0
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 90.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:window_days",
+     "metric": "deal_term_window_days",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 90.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': window days 90",
+     "unit": "units",
+     "value": 90.0
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 500000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier0_threshold",
+     "metric": "deal_term_tier0_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 500000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 threshold 500000",
+     "unit": "inr",
+     "value": 500000.0
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.02,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier0_value",
+     "metric": "deal_term_tier0_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.02,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier0 value 2",
+     "unit": "pct",
+     "value": 0.02
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 1000000.0,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier1_threshold",
+     "metric": "deal_term_tier1_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 1000000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 threshold 1e+06",
+     "unit": "inr",
+     "value": 1000000.0
+    },
+    {
+     "attempts": [],
+     "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
+      "header": "text",
+      "normalized_value": 0.04,
+      "page": null,
+      "parser_version": "1.0",
+      "raw_value": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+      "reread_value": null,
+      "row": 1,
+      "sha256": "fcc4aaf600fb222c2fe2b978bc8fc14beeb0a1c52e7dba36c16752b2267fa5c4"
+     },
+     "id": "V001:dealterm:t1:tier1_value",
+     "metric": "deal_term_tier1_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.04,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V001/application.json",
+      "key": "additional_term:1"
+     },
+     "status": "verified",
+     "text": "V001 offer 'back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days': tier1 value 4",
+     "unit": "pct",
+     "value": 0.04
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_probability:tier:0",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.8406,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:0",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of ₹5,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 84.1%",
+     "unit": "ratio",
+     "value": 0.8406
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_probability:tier:1",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.1493,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:1",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of ₹10,00,000 in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 14.9%",
+     "unit": "ratio",
+     "value": 0.1493
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p10",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 454895.0173,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p10",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P10 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹4,54,895",
+     "unit": "inr",
+     "value": 454895.0173
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p50",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 699459.4472,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p50",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P50 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹6,99,459",
+     "unit": "inr",
+     "value": 699459.4472
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_percentile:p90",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 1085965.212,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p90",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "P90 of GMV in 90 days for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: ₹10,85,965",
+     "unit": "inr",
+     "value": 1085965.212
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:base",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 34.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "base",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Guaranteed base for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 34.0 points",
+     "unit": "pts",
+     "value": 34.0
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:expected",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 35.9798,
+     "sku_key": null,
+     "source_ref": {
+      "column": "expected",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Risk-adjusted expected value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 36.0 points",
+     "unit": "pts",
+     "value": 35.9798
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:counted",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 35.6812,
+     "sku_key": null,
+     "source_ref": {
+      "column": "counted",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Counted value of back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 35.7 points",
+     "unit": "pts",
+     "value": 35.6812
+    },
+    {
+     "attempts": [],
+     "evidence": null,
+     "id": "V001:deal:t1:deal_pts:required",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 27.3067,
+     "sku_key": null,
+     "source_ref": {
+      "column": "required",
+      "file": "vendors/V001/application.json",
+      "key": "V001?offset=0&moq=150#{\"base\":null,\"base_margin_pct\":34,\"base_moq\":150.0,\"base_payment_days\":45,\"codes\":[\"HP-D01\",\"HP-D02\",\"HP-D05\",\"HP-D06\",\"HP-D07\",\"HP-W02\",\"HP-W03\"],\"term\":{\"base_of\":null,\"condition\":{\"metric\":\"gmv_inr\",\"scope\":[],\"threshold\":500000.0,\"window_days\":90},\"days\":null,\"id\":\"t1\",\"kind\":\"tiered\",\"quote\":\"we add 2 points of back margin on all SKUs once your GMV on our range exceeds \\u20b95,00,000 in a 90-day period, and 4 points once it exceeds \\u20b910,00,000 in the same period\",\"scope\":[],\"source\":\"application\",\"term\":\"back_margin_pct\",\"tiers\":[{\"threshold\":500000.0,\"value\":2.0},{\"threshold\":1000000.0,\"value\":4.0}],\"turn\":1,\"unit\":\"pct\",\"units\":null,\"value\":2.0}}"
+     },
+     "status": "verified",
+     "text": "Required for back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days: 27.3 points",
+     "unit": "pts",
+     "value": 27.3067
+    }
+   ],
    "data": {
     "counter_offer": {
      "asks": [],
      "email_draft": ""
+    },
+    "deals": {
+     "assessments": [
+      {
+       "base_assumed": true,
+       "base_pts": 34.0,
+       "base_term_id": null,
+       "call": "Accept: counted 35.7% against 27.3% required (P of the first target 84.1%).",
+       "counted_bonus_pts": 1.6812,
+       "counted_pts": 35.6812,
+       "counters": [],
+       "decision": "accept",
+       "distribution": {
+        "bins": [
+         293145.8304,
+         336963.4699,
+         380781.1094,
+         424598.7488,
+         468416.3883,
+         512234.0277,
+         556051.6672,
+         599869.3067,
+         643686.9461,
+         687504.5856,
+         731322.225,
+         775139.8645,
+         818957.504,
+         862775.1434,
+         906592.7829,
+         950410.4223,
+         994228.0618,
+         1038045.7013,
+         1081863.3407,
+         1125680.9802,
+         1169498.6196,
+         1213316.2591,
+         1257133.8986,
+         1300951.538,
+         1344769.1775,
+         1388586.8169,
+         1432404.4564,
+         1476222.0959,
+         1520039.7353,
+         1563857.3748,
+         1607675.0142,
+         1651492.6537,
+         1695310.2932
+        ],
+        "density": [
+         0.0104,
+         0.0208,
+         0.0323,
+         0.04905,
+         0.05945,
+         0.0702,
+         0.0745,
+         0.08265,
+         0.0754,
+         0.07325,
+         0.0615,
+         0.0599,
+         0.05465,
+         0.0447,
+         0.0408,
+         0.0325,
+         0.0272,
+         0.0241,
+         0.0186,
+         0.01575,
+         0.01195,
+         0.0108,
+         0.00905,
+         0.0079,
+         0.00555,
+         0.004,
+         0.0035,
+         0.00285,
+         0.0025,
+         0.00185,
+         0.00095,
+         0.00135
+        ],
+        "mean": 743353.0719,
+        "metric": "gmv_inr",
+        "p10": 454895.0173,
+        "p50": 699459.4472,
+        "p90": 1085965.212,
+        "threshold": 500000.0,
+        "window_days": 90
+       },
+       "expected_bonus_pts": 1.9798,
+       "expected_pts": 35.9798,
+       "face_pts": 38.0,
+       "guaranteed_pts": 34.0,
+       "kind": "tiered",
+       "label": "back margin slabs: 2% above ₹5,00,000, 4% above ₹10,00,000 in 90 days",
+       "net_pts": null,
+       "probability": 0.8406,
+       "quote": "we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period",
+       "reasoning": [
+        "Demand over 90 days (ramped new listing, 45.0% forecast uncertainty): P10 ₹4,54,895, P50 ₹6,99,459, P90 ₹10,85,965.",
+        "P(₹5,00,000 in 90 days) = 84.1%; counts.",
+        "P(₹10,00,000 in 90 days) = 14.9%; under the 60% bar, counts as 0.",
+        "No base margin was stated with this bonus, so the 34.0% margin already counted for this vendor is the base.",
+        "Counted 34.0 base + 1.7 bonus = 35.7 points against 27.3 required."
+       ],
+       "recommended_counter": null,
+       "required_pts": 27.3067,
+       "shortfall_pts": 8.3745,
+       "source": "application",
+       "term": "back_margin_pct",
+       "term_id": "t1",
+       "tiers": [
+        {
+         "bonus_pts": 2.0,
+         "counted": true,
+         "incremental_pts": 2.0,
+         "probability": 0.8406,
+         "threshold": 500000.0
+        },
+        {
+         "bonus_pts": 4.0,
+         "counted": false,
+         "incremental_pts": 2.0,
+         "probability": 0.1493,
+         "threshold": 1000000.0
+        }
+       ],
+       "turn": 1
+      }
+     ],
+     "assumptions": {
+      "cost_of_capital_pct_annual": 14.0,
+      "cv": 0.45,
+      "cv_by_category": {},
+      "inventory_carrying_pct_monthly": 2.0,
+      "mc_draws": 20000,
+      "min_probability": 0.6,
+      "ramp_by_month": [
+       0.5,
+       0.75,
+       0.9,
+       1.0
+      ],
+      "seed": 42,
+      "sku_correlation": 0.5,
+      "value_basis": "risk_adjusted"
+     },
+     "base_terms": [],
+     "claim_status": {
+      "V001:deal:t1:deal_percentile:p10": "verified",
+      "V001:deal:t1:deal_percentile:p50": "verified",
+      "V001:deal:t1:deal_percentile:p90": "verified",
+      "V001:deal:t1:deal_probability:tier:0": "verified",
+      "V001:deal:t1:deal_probability:tier:1": "verified",
+      "V001:deal:t1:deal_pts:base": "verified",
+      "V001:deal:t1:deal_pts:counted": "verified",
+      "V001:deal:t1:deal_pts:expected": "verified",
+      "V001:deal:t1:deal_pts:required": "verified",
+      "V001:dealterm:t1:threshold": "verified",
+      "V001:dealterm:t1:tier0_threshold": "verified",
+      "V001:dealterm:t1:tier0_value": "verified",
+      "V001:dealterm:t1:tier1_threshold": "verified",
+      "V001:dealterm:t1:tier1_value": "verified",
+      "V001:dealterm:t1:value": "verified",
+      "V001:dealterm:t1:window_days": "verified"
+     },
+     "decision": "accept",
+     "headline": "Offer is acceptable on a risk-adjusted basis",
+     "mode": "mock",
+     "rejected_terms": [],
+     "talk": null,
+     "verification": {
+      "rejected": 0,
+      "total": 16,
+      "unverifiable": 0,
+      "verified": 16
+     }
     },
     "gap_table": [],
     "negotiated_skus": [],
@@ -25291,7 +27099,7 @@
     "transcript_source": "canonical"
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -25467,8 +27275,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-   "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+   "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -26491,8 +28299,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
-   "narrative_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
+   "narrative_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -26694,7 +28502,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "725e318bf8b30d128d22d9c99bc01ba7ca7f02decf4ec8027ba3778c08bbdcd2",
+   "metrics_hash": "a0145cfad06a82c53f80511579edb8bbbe45da983a6ec337afcfdad81ca30bd6",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

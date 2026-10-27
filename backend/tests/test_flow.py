@@ -102,7 +102,7 @@ def test_v002_negotiation_gap_table_and_verified_quotes(client):
     _, stages = run_to_catalog(client, "V002")
     neg = stages["negotiate"]
     data = neg["data"]
-    assert data["transcript_source"] == "canonical" and len(data["transcript"]["turns"]) == 18
+    assert data["transcript_source"] == "canonical" and len(data["transcript"]["turns"]) == 22
     table = {r["term"]: r for r in data["gap_table"]}
     assert set(table) == {"margin_pct", "payment_days", "moq", "marketing_inr", "launch_discount_pct", "returns"}
     assert table["margin_pct"]["application"] == 17 and table["margin_pct"]["offered"] == 21
@@ -112,7 +112,9 @@ def test_v002_negotiation_gap_table_and_verified_quotes(client):
     assert table["marketing_inr"]["offered"] == 50000 and table["marketing_inr"]["status"] == "met"
     assert table["launch_discount_pct"]["status"] == "met" and table["returns"]["status"] == "met"
     assert all(r["verification"] == "verified" for r in data["gap_table"])
-    assert len(neg["claims"]) == 6 and all(c["status"] == "verified" and c["origin"] == "model_extraction" for c in neg["claims"])
+    commits = [c for c in neg["claims"] if ":commit:" in c["id"]]
+    assert len(commits) == 6 and all(c["status"] == "verified" and c["origin"] == "model_extraction" for c in commits)
+    assert all(c["status"] == "verified" for c in neg["claims"])  # the deal evaluator's claims verify too
     assert {r["term"] for r in data["refusals"]} >= {"margin_pct", "sale_or_return"}
     assert all(r["quote_verified"] for r in data["refusals"])
     assert data["counter_offer"]["asks"] and "Priya" in data["counter_offer"]["email_draft"]

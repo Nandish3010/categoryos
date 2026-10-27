@@ -25,7 +25,7 @@ class SKU(BaseModel):
 
 
 StageId = Literal["intake", "research", "shortlist", "negotiate", "catalog", "marketing", "jbp", "po"]
-Unit = Literal["pct", "inr", "units", "score", "ratio", "qty"]
+Unit = Literal["pct", "inr", "units", "score", "ratio", "qty", "pts"]
 Verdict = Literal["list", "negotiate", "reject", "needs_data"]
 CostSource = Literal["sheet", "inferred", "missing"]
 ClaimOrigin = Literal["engine", "model_extraction", "vision_extraction", "injected_test"]
@@ -378,6 +378,66 @@ class MarketingFinal(BaseModel):
     discount_ask: DiscountAsk
 
 
+# ---------- Deal evaluator: contingent offers (extracted by the model, valued by app.deals) ----------
+
+DealKind = Literal[
+    "base", "conditional", "tiered", "rebate", "free_goods", "exclusivity",
+    "payment_for_discount", "moq_for_discount", "sell_or_return", "price_protection",
+]
+DealTermName = Literal[
+    "margin_pct", "back_margin_pct", "discount_pct", "marketing_pct", "marketing_inr",
+    "free_goods_pct", "returnable_pct", "exclusivity_months", "price_protection_days",
+]
+DealMetric = Literal["units", "gmv_inr", "sell_through_pct"]
+
+
+class DealCondition(BaseModel):
+    """What the vendor wants in return: sell ``threshold`` (units | gmv_inr | sell_through_pct) within ``window_days``."""
+
+    metric: DealMetric
+    threshold: float
+    window_days: int
+    scope: list[str] = Field(default_factory=list)  # SKU codes; empty means every SKU we list
+
+
+class DealTier(BaseModel):
+    threshold: float
+    value: float
+
+
+class DealTerm(BaseModel):
+    id: str
+    kind: DealKind
+    term: DealTermName
+    value: float
+    unit: Literal["pct", "inr", "units", "days", "months"] = "pct"
+    condition: DealCondition | None = None
+    tiers: list[DealTier] = Field(default_factory=list)  # slabs: the bonus at each threshold (not cumulative)
+    scope: list[str] = Field(default_factory=list)  # SKU codes the term applies to; empty means all
+    base_of: str | None = None  # id of the base term this bonus sits on top of
+    days: float | None = None  # payment_for_discount: pay within this many days; sell_or_return: the window
+    units: float | None = None  # moq_for_discount: the first-order quantity the vendor requires
+    quote: str
+    turn: int  # transcript turn, or 1-based index into application.proposed_terms.additional_terms
+    source: Literal["transcript", "application"] = "transcript"
+
+
+class DealExtraction(BaseModel):
+    terms: list[DealTerm] = Field(default_factory=list)
+
+
+class DealTalk(BaseModel):
+    talk_track: str = ""
+    email_paragraph: str = ""
+
+
+class TurnExtraction(BaseModel):
+    """Live copilot: what ONE new call turn changed (commitments, refusals, conditional terms)."""
+
+    commitments: list[Commitment] = Field(default_factory=list)
+    refusals: list[Refusal] = Field(default_factory=list)
+    deal_terms: list[DealTerm] = Field(default_factory=list)
+
 # ---------- Document vision (muse-spark-1.3 with images) ----------
 
 
@@ -406,3 +466,21 @@ class RereadItem(BaseModel):
 
 class VisionReread(BaseModel):
     reads: list[RereadItem] = Field(default_factory=list)
+
+
+# ---------- live copilot request bodies ----------
+
+
+class StartCallBody(BaseModel):
+    mode: Literal["simulate", "live"] = "simulate"
+    speed: float = Field(default=1.0, ge=0.25, le=20)
+
+
+class TurnBody(BaseModel):
+    call_id: str
+    speaker: Literal["buyer", "vendor", "auto"] = "auto"
+    text: str = Field(min_length=1, max_length=2000)
+
+
+class EndCallBody(BaseModel):
+    call_id: str

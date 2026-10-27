@@ -114,9 +114,24 @@ def load_application(vendor_id: str) -> dict[str, Any]:
     return _json(str(_vendor_dir(vendor_id) / "application.json"))
 
 
+_TRANSCRIPT_OVERRIDES: dict[str, list[dict[str, Any]]] = {}
+
+
+def set_transcript_override(vendor_id: str, turns: list[dict[str, Any]]) -> None:
+    """A finished live call becomes the canonical transcript for this process: Negotiate and the verifier read it."""
+    check_vendor(vendor_id)
+    _TRANSCRIPT_OVERRIDES[vendor_id] = [dict(t) for t in turns]
+
+
+def clear_transcript_overrides() -> None:
+    _TRANSCRIPT_OVERRIDES.clear()
+
+
 def load_transcript(vendor_id: str) -> list[dict[str, Any]] | None:
     """Canonical call transcript (speaker turns) for vendors that have one, else None."""
     check_vendor(vendor_id)
+    if vendor_id in _TRANSCRIPT_OVERRIDES:
+        return _TRANSCRIPT_OVERRIDES[vendor_id]
     path = _vendor_dir(vendor_id) / "call_transcript.json"
     return _json(str(path)) if path.exists() else None
 

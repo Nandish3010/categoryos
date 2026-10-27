@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [
+      {
+        "term": "launch_discount_pct",
+        "offered": 5,
+        "turn": 14,
+        "transcript_quote": "I can give a 5 percent launch discount for the first 30 days."
+      }
+    ],
+    "refusals": [],
+    "deal_terms": []
+  }
+}

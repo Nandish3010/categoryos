@@ -218,6 +218,24 @@ negotiation:                     # Negotiate: what we require from a vendor
   marketing_min_pct_of_order: 0.10   # required launch marketing support, as a share of first-order retail value
   launch_discount_min_pct: 5     # required vendor-funded launch discount (%)
   defect_return_min_days: 7      # shortest acceptable defect-return window (days)
+  cost_of_capital_pct_annual: 14        # price of paying earlier: a "pay in 15 days for 2% off" trade nets the discount less this rate x days brought forward
+  inventory_carrying_pct_monthly: 2     # monthly cost of holding extra stock (% of its cost), used when a vendor offers a discount for a bigger MOQ
+  forecast:                      # how the deal evaluator estimates the chance of hitting a vendor's sales target
+    ramp_by_month: [0.5, 0.75, 0.9, 1.0]   # share of steady-state monthly units a NEW listing sells in month 1, 2, 3, ...; the last value repeats
+    cv: 0.45                     # uncertainty of a SKU's demand over the window (coefficient of variation, lognormal)
+    cv_by_category: {}           # optional per-category cv, e.g. {treats: 0.55}
+    sku_correlation: 0.5         # share of demand noise shared by all SKUs (0 independent, 1 move together)
+    mc_draws: 20000              # Monte Carlo draws
+    seed: 42                     # fixed seed: the same inputs always give the same probability
+  contingent:                    # conditional offers: "X% bonus if you sell Y units in N days", tiers, rebates
+    min_probability: 0.6         # a conditional bonus counts only when P(earn it) is at least this
+    value_basis: risk_adjusted   # risk_adjusted: count probability x bonus (when over the bar); guaranteed_only: count no conditional bonus
+    dead_stock_horizon_days: 180 # unsold stock after this many days is dead (MOQ-for-discount and sale-or-return trades)
+    dead_stock_writeoff_pct: 100 # share of the cost of dead stock that is lost
+    counter_window_days: [30, 45, 60, 90, 120, 180, 270, 365]   # windows tried when proposing a longer or shorter condition window
+    threshold_round_units: 10    # counter thresholds are rounded down to this many units
+    threshold_round_inr: 5000    # ... to this many rupees
+    threshold_round_pct: 1       # ... to this many points of sell-through
 
 catalog:                         # Catalog: listing copy, compliance, images
   title_max_chars: 80            # listing titles are cut to this length
@@ -280,7 +298,7 @@ levers:                          # Research: bounds of the what-if sliders (the 
   moq: {step: 50, max_factor: 2}                # MOQ slider step, and the largest MOQ as a multiple of the vendor's proposal
 
 verifier:                        # all stages: how closely a claim must match the recomputed value
-  tolerances: {pct: 0.01, inr: 1.0, units: 0, score: 0.5, ratio: 0.005, qty: 0}
+  tolerances: {pct: 0.01, inr: 1.0, units: 0, score: 0.5, ratio: 0.005, qty: 0, pts: 0.05}
   max_self_corrections: 2        # when a document-reading claim (cost, MRP, a commitment) is rejected, the agent gets the source value and may retry this many times (0 = off)
 
 impact:                          # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
@@ -335,6 +353,8 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     other: {label: "Other (admin, travel, learning)", category_manager_pct: 6, category_executive_pct: 1, saved_pct: 0}
   modules:                       # register a new module here, then add its task coverage below
     new_vendor_onboarding: {label: "New-vendor onboarding (Screen, Decide, Negotiate, Catalog, Launch packet)", status: shipped, measured_from_runs: true}
+    conditional_offer_evaluator: {label: "Conditional-offer evaluator (probability, risk-adjusted value, counters)", status: shipped}   # part of the onboarding Negotiate stage; its time is the baseline's conditional_offer_eval
+    live_negotiation_copilot: {label: "Live negotiation copilot (transcript, extraction, gap table, next ask)", status: shipped}   # covers the calls and notes in negotiation_calls
     weekly_review_mis: {label: "Weekly vendor-performance review and MIS generator", status: not_built}
     price_increase_evaluator: {label: "Existing-vendor price-increase evaluator", status: not_built}
     po_followup: {label: "PO follow-up and fill-rate chaser", status: not_built}
@@ -349,6 +369,10 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     - {module: new_vendor_onboarding, task: jbp_qbr, in_scope_pct: 20}              # first-year plan for new vendors
     - {module: new_vendor_onboarding, task: po_replenishment, in_scope_pct: 10}     # first PO
     - {module: new_vendor_onboarding, task: compliance, in_scope_pct: 30}           # at onboarding
+    # The two Negotiate modules take over time that new_vendor_onboarding already counts at 100% of its task, so they add no
+    # share of their own (0): registering them keeps the module list honest without counting the same hours twice.
+    - {module: conditional_offer_evaluator, task: new_vendor_onboarding, in_scope_pct: 0}
+    - {module: live_negotiation_copilot, task: new_vendor_onboarding, in_scope_pct: 0}
     - {module: weekly_review_mis, task: vendor_scorecards, in_scope_pct: 100}
     - {module: weekly_review_mis, task: reporting_mis, in_scope_pct: 100}
     - {module: price_increase_evaluator, task: price_increase_requests, in_scope_pct: 100}

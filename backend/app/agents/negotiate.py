@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from app import llm, media, policy, prompts_exec, selfcorrect, tools
+from app.agents import dealflow
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
@@ -220,14 +221,43 @@ async def _asr(ctx: RunContext, vendor_id: str, canonical: str) -> dict[str, Any
     return {"text": result.text, "similarity_pct": diff.similarity_pct, "changes": diff.changes, "audio_hours": round(result.hours, 6)}
 
 
+async def _with_deals(
+    ctx: RunContext, result: StageResult, lever: LeverResponse, short: list[SkuMetrics], application: dict[str, float | None],
+    commitments: dict[str, dict[str, Any]],
+) -> StageResult:
+    """Deal evaluator: value the vendor's conditional offers (if any) and attach them to the Negotiate result."""
+    margin = commitments["margin_pct"]["offered"] if "margin_pct" in commitments else application.get("margin_pct")
+    days = commitments["payment_days"]["offered"] if "payment_days" in commitments else application.get("payment_days")
+    outcome = await dealflow.run(ctx, ctx.vendor_id, lever, {s.code for s in short}, base_margin_pct=margin, base_payment_days=days)
+    if outcome is None:
+        return result
+    data = dict(result.data)
+    outcome.data["claim_status"] = {c.id: c.status for c in outcome.claims}
+    data["deals"] = outcome.data
+    summary = result.summary
+    if outcome.report is not None and outcome.report.assessments:
+        asks = list(data.get("counter_offer", {}).get("asks", []))
+        for a in outcome.report.assessments:
+            if a.decision == "reject_structure" and a.recommended_counter is not None:
+                asks.append(f"Conditional offer ({a.label}): {a.counters[a.recommended_counter].text}")
+        data["counter_offer"] = {**data.get("counter_offer", {"email_draft": ""}), "asks": asks}
+        if result.summary != "No negotiation needed":
+            summary += "; conditional offer " + {
+                "reject_structure": "rejected, counter ready",
+                "accept": "accepted as likely",
+                "needs_human": "needs a human",
+            }.get(outcome.report.decision, "not valued")
+    return result.model_copy(update={"data": data, "claims": [*result.claims, *outcome.claims], "summary": summary})
+
+
 async def run(ctx: RunContext, research: StageResult) -> StageResult:
     vendor_id = ctx.vendor_id
     lever = sl.research_lever(vendor_id, research)
     verdicts = sl.effective_verdicts(research, lever)
     negotiate_skus = sl.shortlisted(lever, verdicts, only="negotiate")
-    if not negotiate_skus:
-        return _no_negotiation(lever)
     short = sl.shortlisted(lever, verdicts)
+    if not negotiate_skus:
+        return await _with_deals(ctx, _no_negotiation(lever), lever, short, application_terms(vendor_id), {})
     required = required_terms(lever, negotiate_skus, short, vendor_id)
     application = application_terms(vendor_id)
     canonical = load_transcript(vendor_id)
@@ -244,7 +274,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     names = [s.code for s in negotiate_skus]
     if canonical is None:
         table = gap_table(application, required, {})
-        return StageResult(
+        result = StageResult(
             stage=STAGE,
             status="done",
             summary="No call transcript on file: the gap table compares the application terms with what we require",
@@ -261,6 +291,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
             },
             metrics_hash=lever.metrics_hash,
         )
+        return await _with_deals(ctx, result, lever, short, application, {})
 
     canonical_text = " ".join(t["text"] for t in canonical)
     asr = await _asr(ctx, vendor_id, canonical_text)
@@ -319,7 +350,10 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     text = f"{met} of {len(table)} terms meet our requirement, {gaps} fall short"
     if rejected:
         text += f"; {rejected} commitment(s) failed verification and were not counted"
-    return StageResult(stage=STAGE, status="done", summary=text, data=data, claims=summary.claims, metrics_hash=lever.metrics_hash)
+    result = StageResult(stage=STAGE, status="done", summary=text, data=data, claims=summary.claims, metrics_hash=lever.metrics_hash)
+    return await _with_deals(ctx, result, lever, short, application, commitments)
+
+
 
 
 async def _verify_commitments(ctx: RunContext, vendor_id: str, final: NegotiateFinal, messages: list[dict[str, Any]], previous: str) -> VerifySummary:

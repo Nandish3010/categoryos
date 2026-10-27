@@ -116,7 +116,7 @@ export type Claim = {
   text: string;
   value: number;
   metric: string;
-  unit: "pct" | "inr" | "units" | "score" | "ratio" | "qty";
+  unit: "pct" | "inr" | "units" | "score" | "ratio" | "qty" | "pts";
   sku_key?: string | null;
   status: ClaimStatus;
   recomputed?: number | null;

@@ -11,11 +11,14 @@ import {
   type NegotiateData,
   type TranscriptTurn,
 } from "@/lib/stages";
+import { dealNote, readDeals, type DealAssessment } from "@/lib/deals";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
 import { CopyButton } from "../CopyButton";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
+import { DealEvaluator, DecisionChip } from "./DealEvaluator";
+import { LiveCall } from "./LiveCall";
 
 type Selection = { turn: number; quote: string; term: string } | null;
 
@@ -43,7 +46,23 @@ export function splitQuote(text: string, quote: string): [string, string, string
   return [text.slice(0, at), quote, text.slice(at + quote.length)];
 }
 
-function GapTable({ gaps, selected, onSelect }: { gaps: GapRow[]; selected: Selection; onSelect: (s: Selection) => void }) {
+export function GapTable({
+  gaps,
+  selected,
+  onSelect,
+  deals,
+  onOpenDeal,
+  flash = [],
+}: {
+  gaps: GapRow[];
+  selected: Selection;
+  onSelect: (s: Selection) => void;
+  deals: DealAssessment[];
+  onOpenDeal: (id: string) => void;
+  /** Terms that changed on the latest live-call turn. */
+  flash?: string[];
+}) {
+  const attachAt = gaps.some((g) => g.term === "margin_pct") ? "margin_pct" : gaps[0]?.term;
   return (
     <section aria-label="Gap table" className="rounded-card border border-border bg-surface">
       <PanelHeader title="Terms: application vs call vs our requirement" />
@@ -61,15 +80,15 @@ function GapTable({ gaps, selected, onSelect }: { gaps: GapRow[]; selected: Sele
             </tr>
           </thead>
           <tbody>
-            {gaps.map((g) => {
+            {gaps.flatMap((g) => {
               const isSel = selected?.term === g.term;
               const clickable = g.offered != null && g.turn != null;
-              return (
+              const row = (
                 <tr
                   key={g.term}
                   data-term={g.term}
                   data-status={g.status}
-                  className={`h-10 border-b border-border last:border-b-0 ${isSel ? "bg-accent/10" : ""}`}
+                  className={`h-10 border-b border-border last:border-b-0 ${isSel ? "bg-accent/10" : ""} ${flash.includes(g.term) ? "flash-amber" : ""}`}
                 >
                   <th scope="row" className="px-3 text-left font-normal">{g.label}</th>
                   <td className="num px-3 text-right text-text-dim">{termValue(g.application, g.unit)}</td>
@@ -105,6 +124,28 @@ function GapTable({ gaps, selected, onSelect }: { gaps: GapRow[]; selected: Sele
                   </td>
                 </tr>
               );
+              const notes =
+                g.term === attachAt
+                  ? deals.map((a) => (
+                      <tr key={`deal-${a.termId}`} data-deal-note={a.termId} data-decision={a.decision} className="border-b border-border bg-surface-2/60">
+                        <td colSpan={6} className="px-3 py-2">
+                          <div className="flex flex-wrap items-center gap-2 text-sm">
+                            <span className="text-xs font-medium uppercase tracking-wide text-text-dim">Conditional offer</span>
+                            <span className="num">{dealNote(a)}</span>
+                            <DecisionChip decision={a.decision} />
+                            <button
+                              type="button"
+                              onClick={() => onOpenDeal(a.termId)}
+                              className="ml-auto inline-flex min-h-8 items-center text-xs text-accent hover:underline"
+                            >
+                              See the probability and counters
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : [];
+              return [row, ...notes];
             })}
           </tbody>
         </table>
@@ -233,10 +274,32 @@ function CounterOffer({ data }: { data: NegotiateData }) {
   );
 }
 
-export function NegotiateView({ stage }: { stage: StageResult | undefined | null }) {
+export function NegotiateReview({ stage }: { stage: StageResult | undefined | null }) {
   const [selected, setSelected] = useState<Selection>(null);
+  const [dealOpen, setDealOpen] = useState<Record<string, boolean>>({});
   const data = readNegotiate(stage);
+  const deals = readDeals(stage);
   const status = stage?.status ?? "pending";
+  const isOpen = (a: DealAssessment) => dealOpen[a.termId] ?? (a.decision !== "accept" || (deals?.assessments.length ?? 0) === 1);
+  const toggleDeal = (id: string) => {
+    const a = deals?.assessments.find((x) => x.termId === id);
+    if (a) setDealOpen((m) => ({ ...m, [id]: !isOpen(a) }));
+  };
+  const openDeal = (id: string) => {
+    setDealOpen((m) => ({ ...m, [id]: true }));
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`deal-${id}`);
+      if (el && typeof el.scrollIntoView === "function") el.scrollIntoView({ block: "start", behavior: "smooth" });
+    });
+  };
+  const evaluator = deals ? (
+    <DealEvaluator
+      deals={deals}
+      isOpen={isOpen}
+      onToggle={toggleDeal}
+      onShowQuote={(turn, quote) => setSelected({ turn, quote, term: "deal" })}
+    />
+  ) : null;
 
   if (status === "locked") {
     return (
@@ -274,13 +337,16 @@ export function NegotiateView({ stage }: { stage: StageResult | undefined | null
   }
   if (!data.gaps.length) {
     return (
-      <section aria-label="Negotiate" className="rounded-card border border-border bg-surface p-4 text-sm">
-        <div className="flex items-center gap-2">
-          <CircleHelp size={16} aria-hidden="true" />
-          <span className="font-medium">{stage?.summary || "No negotiation needed"}</span>
-        </div>
-        <p className="mt-1 text-text-dim">No SKU needed negotiating, so there is no call to review.</p>
-      </section>
+      <div className="flex flex-col gap-4" data-testid="negotiate-view">
+        <section aria-label="Negotiate" className="rounded-card border border-border bg-surface p-4 text-sm">
+          <div className="flex items-center gap-2">
+            <CircleHelp size={16} aria-hidden="true" />
+            <span className="font-medium">{stage?.summary || "No negotiation needed"}</span>
+          </div>
+          <p className="mt-1 text-text-dim">No SKU needed negotiating, so there is no call to review.</p>
+        </section>
+        {evaluator}
+      </div>
     );
   }
 
@@ -296,10 +362,42 @@ export function NegotiateView({ stage }: { stage: StageResult | undefined | null
         </p>
         <p className="mt-1 text-xs text-text-dim">Click an offered value to highlight where it was said on the call.</p>
       </section>
-      <GapTable gaps={data.gaps} selected={selected} onSelect={setSelected} />
+      {evaluator}
+      <GapTable gaps={data.gaps} selected={selected} onSelect={setSelected} deals={deals?.assessments ?? []} onOpenDeal={openDeal} />
       <TranscriptPanel data={data} selected={selected} quoteTurns={quoteTurns} />
       <Refusals data={data} />
       <CounterOffer data={data} />
+    </div>
+  );
+}
+
+
+/** Negotiate: review the call transcript the pipeline read, or run a live call (simulated or on the microphone). */
+export function NegotiateView({ stage, vendorId }: { stage: StageResult | undefined | null; vendorId?: string }) {
+  const [view, setView] = useState<"review" | "live">("review");
+  if (!vendorId) return <NegotiateReview stage={stage} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <div role="tablist" aria-label="Negotiate view" className="flex gap-1 self-start rounded-card border border-border bg-surface p-1">
+        {(
+          [
+            ["review", "Call review"],
+            ["live", "Live call"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            role="tab"
+            type="button"
+            aria-selected={view === id}
+            onClick={() => setView(id)}
+            className={`min-h-8 rounded-chip px-3 text-sm ${view === id ? "bg-accent/15 font-medium text-accent" : "text-text-dim hover:text-text"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {view === "live" ? <LiveCall vendorId={vendorId} /> : <NegotiateReview stage={stage} />}
     </div>
   );
 }

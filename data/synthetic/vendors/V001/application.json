@@ -50,7 +50,10 @@
     "moq_units": 150,
     "marketing_support_inr": 250000,
     "launch_discount_pct": 10,
-    "returns_policy": "Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window"
+    "returns_policy": "Full credit for damaged / near-expiry (<90 days shelf life) stock; 60-day sell-through return window",
+    "additional_terms": [
+      "Tiered back margin: we add 2 points of back margin on all SKUs once your GMV on our range exceeds ₹5,00,000 in a 90-day period, and 4 points once it exceeds ₹10,00,000 in the same period."
+    ]
   },
   "pitch": "We make small-batch, high-protein grain-free dog food with single-source chicken and salmon, tested by a vet nutritionist. Our Bengaluru repeat rate is 62% and we want to bring our range to a platform with national reach. We are happy to fund launch marketing and trade at a healthy margin."
 }

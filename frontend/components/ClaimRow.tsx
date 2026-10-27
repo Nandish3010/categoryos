@@ -3,9 +3,10 @@ import type { Claim } from "@/lib/api";
 import { inrExact } from "@/lib/format";
 import { Tag } from "./Chip";
 
-export function formatClaimValue(value: number | string | null | undefined, unit: Claim["unit"]): string {
+export function formatClaimValue(value: number | string | null | undefined, unit: Claim["unit"], metric?: string): string {
   if (value == null || value === "") return "—";
   if (typeof value === "string") return value;
+  if (metric === "deal_probability") return value < 0.001 ? "<0.1%" : `${(value * 100).toFixed(1)}%`;
   switch (unit) {
     case "inr":
       return inrExact(value);
@@ -17,7 +18,10 @@ export function formatClaimValue(value: number | string | null | undefined, unit
     case "qty":
       return `${Math.round(value * 1000) / 1000}`;
     case "ratio":
-      return value.toFixed(2); // 0-1 scores (demand, overlap), shown as the backend sees them
+      // 0-1 scores (demand, overlap) print as the backend sees them; a deal probability reads as a percent
+      return value.toFixed(2);
+    case "pts":
+      return `${value.toFixed(1)} pts`;
     default:
       return String(Math.round(value * 100) / 100);
   }
@@ -100,7 +104,7 @@ export function ClaimRow({ claim, onHover }: { claim: Claim; onHover?: (claim: C
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="num text-xs text-text-dim">
-              {formatClaimValue(claim.value, claim.unit)}
+              {formatClaimValue(claim.value, claim.unit, claim.metric)}
               {claim.status === "verified"
                 ? vision
                   ? " · matches the re-read of the crop"
@@ -128,8 +132,8 @@ export function ClaimRow({ claim, onHover }: { claim: Claim; onHover?: (claim: C
           ) : rejected ? (
             <div className="mt-2 rounded-chip border border-bad/40 bg-bad/10 p-2 text-sm text-bad">
               <span className="num">
-                Agent said {formatClaimValue(claim.value, claim.unit)} {"·"} Sheet says{" "}
-                {formatClaimValue(sheetValue, claim.unit)}
+                Agent said {formatClaimValue(claim.value, claim.unit, claim.metric)} {"·"} Sheet says{" "}
+                {formatClaimValue(sheetValue, claim.unit, claim.metric)}
               </span>
               {claim.evidence?.raw_value ? (
                 <div className="mt-0.5 text-xs text-text-dim">

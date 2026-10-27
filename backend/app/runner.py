@@ -10,13 +10,13 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from app import impact, registry, replay, store
+from app import copilot, impact, registry, replay, store
 from app.agents import catalog, decide, launch, negotiate, screen
 from app.agents import shortlist as sl
 from app.agents.context import RunContext, Sequencer
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
-from app.data_loader import check_vendor
+from app.data_loader import check_vendor, clear_transcript_overrides
 from app.errors import (
     CategoryOSError,
     NarrativeUnavailable,
@@ -71,6 +71,8 @@ def reset_state() -> None:
     _states.clear()
     replay.reset_sessions()
     replay.forget()
+    copilot.reset()
+    clear_transcript_overrides()
 
 
 # ---------- the pure generator ----------
