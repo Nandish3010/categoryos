@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [
+      {
+        "term": "payment_days",
+        "offered": 30,
+        "turn": 8,
+        "transcript_quote": "But I can do 30 days if the order is confirmed in writing this week."
+      }
+    ],
+    "refusals": [],
+    "deal_terms": []
+  }
+}
