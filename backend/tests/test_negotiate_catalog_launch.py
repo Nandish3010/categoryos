@@ -316,6 +316,17 @@ def sam_text(h=8, w=8, enc="!", box=True, lo=2, hi=6):
     return head + f"x=0 y=0 data={h},{w},{enc}{payload}"
 
 
+def box_sam_text(enc="!", x1=16, y1=16, x2=47, y2=47):
+    """Live shape: the mask raster covers the (inclusive) box only. Ones, with a hole so coverage stays under the cut-off."""
+    w, h = x2 - x1 + 1, y2 - y1 + 1
+    flat = [0 if w // 4 <= x < 3 * w // 4 and h // 4 <= y < 3 * h // 4 else 1 for y in range(h) for x in range(w)]
+    if enc == "!":
+        packed = bytes(sum(bit << (7 - i) for i, bit in enumerate(flat[k:k + 8])) for k in range(0, len(flat), 8))
+    else:
+        packed = zlib.compress(bytes(flat))
+    return f"<0f>1 <|box;x1={x1};y1={y1};x2={x2};y2={y2};w=64;h=64|><|mask;x=0;y=0;data={h},{w},{enc}{base64.b85encode(packed).decode()}|>"
+
+
 @pytest.fixture
 def live(monkeypatch):
     monkeypatch.setattr(settings, "model_api_key", "test-key")
@@ -341,7 +352,7 @@ def test_image_request_shape_and_ledger(live):
 
 @pytest.mark.parametrize("enc", ["!", "~"])
 def test_sam_request_shape_cutout_and_ledger(live, enc):
-    live.responses.text = sam_text(enc=enc)
+    live.responses.text = box_sam_text(enc=enc)
     cut, spend = _drive(media.segment(png(), "bag of dog food"))
     call = live.responses.calls[0]
     assert call["model"] == "sam-3.1" and call["stream"] is True
@@ -349,8 +360,8 @@ def test_sam_request_shape_cutout_and_ledger(live, enc):
     assert call["input"][0]["role"] == "user" and parts[0] == {"type": "input_text", "text": "bag of dog food"}
     assert parts[1]["type"] == "input_image" and parts[1]["image_url"].startswith("data:image/png;base64,")
     img = Image.open(io.BytesIO(cut))
-    assert img.mode == "RGBA" and img.size == (32, 32)  # cropped to the 4x4 mask scaled to the 64px image
-    assert img.getpixel((16, 16))[3] == 255
+    assert img.mode == "RGBA" and img.size == (32, 32)  # the 32x32 box-sized mask placed at the box corner, cropped to its extent
+    assert img.getpixel((0, 0))[3] == 255 and img.getpixel((16, 16))[3] == 0
     assert spend.cost_usd == pytest.approx(0.0025) and spent("sam-3.1")["usd"] == pytest.approx(0.0025)
 
 

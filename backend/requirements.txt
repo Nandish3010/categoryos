@@ -77,6 +77,8 @@ markdown-it-py==4.2.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
+meta-sam-parser==0.1.0
+    # via categoryos-backend
 multidict==7.2.1
     # via
     #   aiohttp

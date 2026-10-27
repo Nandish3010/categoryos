@@ -35,7 +35,7 @@ Then open http://localhost:3000/vendors/V001.
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
 | `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
 | Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
-| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded: cutouts need Meta's optional `meta-sam-parser` package (not installed by default), otherwise the box token is used |
+| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded and decoded with Meta's `meta-sam-parser` (pinned `==0.1.0`, a regular dependency), so real cutouts and panel regions work; the mask raster covers the box only and is placed at the box corner. The SAM License applies to that dependency. If decoding fails the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
 
@@ -74,7 +74,9 @@ Negotiate is transcript-first: the vendor call is transcribed and the commitment
 `make contract` (spends a few cents; needs `MODEL_API_KEY` and `BASETEN_API_KEY`) makes one tiny real call per external contract
 (chat, reasoning-token limit, structured output, tool calling, vision, SAM 3.1, muse-image, ASR, Baseten), through the app's own
 gateway code, and saves the scrubbed raw responses to `backend/fixtures/contract/`. `backend/tests/test_contract_fixtures.py`
-replays those through the parsers offline. `make contract ONLY="chat sam"` runs a subset.
+replays those through the parsers offline (the recorded SAM mask is decoded through `meta-sam-parser`). `make contract ONLY="chat sam"` runs a subset.
+
+SAM 3.1 returns the mask raster for the matched box only (live-verified: a 760x1100 label with box 18,261..737,1006 gave a 746x720 mask), so the app pastes it at the box corner plus the token's `x`/`y`. Decoding uses Meta's official `meta-sam-parser` from PyPI, pinned to 0.1.0; the SAM License applies to that dependency.
 
 ## Measured eval
 
