@@ -279,6 +279,11 @@ def test_every_proposed_value_is_a_verified_claim_and_a_misread_pack_was_correct
     assert any(t["type"] == "self_correction" for t in r["trace"])
 
 
+def test_claim_ids_are_unique_in_the_queue():
+    ids = [c["id"] for c in gen()["claims"]]
+    assert len(ids) == len(set(ids))
+
+
 def test_model_rewrites_can_be_switched_off():
     policy.save_overrides({"catalog_qc": {"model_rewrites": False}})
     r = gen()

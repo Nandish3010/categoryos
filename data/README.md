@@ -88,3 +88,12 @@ SKU, median = our price) and the mock model fixtures under `backend/fixtures/moc
 | PR-001 | E006 Groomwell | 4% on five SKUs, raw-material index +3% (+2 pt tolerance), 39 days notice, "extra 2% marketing support if you take the full revision" | accept |
 | PR-002 | E004 Tailwind Play | 8-12% on SKUs already under target, "absorb half if you commit 1,500 units/month" (we sell about 600) | counter at 4.4-5.0%, sweetener counted at 0 |
 | PR-003 | E003 NutriPaws | 15% with 15 days notice; passing it on puts us 15% above competitors. The mock model first misreads one cost (189.75 as 819.75): the verifier catches it and the agent corrects it | delay to 25 Nov, then counter at 4.7% |
+
+## Live catalog (Run: Catalog fixes)
+
+`cd backend && uv run python ../data/generate_catalog_live.py` (`make data-catalog`; seed 42, byte-identical on re-run) writes the
+live catalog of the existing vendors E001 to E006 under `data/synthetic/ops/`: `catalog_live.csv` (38 listings, 2 of them
+near-duplicates), `vendor_price_list.csv` (an old list, the latest list and one future-dated row), `catalog_licences.json` (FSSAI
+records, some expired) and `catalog_labels/` (three pack-label photos plus `manifest.json`; Pillow and PyYAML needed, reusing the
+label canvas of `generate_docs.py`). The matching mock vision fixtures go to `backend/fixtures/mock/ops/docs_E00x_label_*.json`
+(copy them to `fixtures/golden/ops/`). The planted issues are listed at the top of the generator. It only reads `ops/skus.csv`.

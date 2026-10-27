@@ -163,7 +163,7 @@ async def generate(inject: bool = False) -> dict[str, Any]:
         )
     listings.sort(key=lambda r: (-r["top_score"], r["listing_id"]))
 
-    all_claims = [*scan.claims, *claims]
+    all_claims = list({c.id: c for c in [*scan.claims, *claims]}.values())  # a label reading backs both its label fix and its comparison
     n = lambda status: sum(1 for c in all_claims if c.status == status)
     mode = llm.resolve_mode(STAGE)
     trace = fg.drain(run)
