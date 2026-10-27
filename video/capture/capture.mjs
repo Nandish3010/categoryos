@@ -17,6 +17,7 @@ const FLOWS = {
     await t.wait(900);
     // verifier: Test the verifier opens the injected wrong claim that gets rejected
     t.mark('verifier');
+    await t.box('verifierCard', p.getByText('HP-D01 cost is'));
     await t.clickBtn('Test the verifier').catch(() => {});
     await t.wait(3200);
     t.mark('lever');
@@ -35,6 +36,7 @@ const FLOWS = {
     await t.scroll(380, 900);
     await t.wait(2400); // price-list mismatch row
     t.mark('scans');
+    await t.box('priceRow', p.getByText(/Price per unit reads/));
     await t.clickText('Show the scans with what was read').catch(() => {});
     await t.wait(2200);
     for (const n of await p.getByRole('tab').allInnerTexts().catch(() => [])) {
@@ -60,10 +62,14 @@ const FLOWS = {
     await t.wait(2600);
     t.mark('mismatch');
     await t.clickBtn('View the label').catch(() => {});
-    await t.wait(1500);
+    await t.wait(1800);
     t.mark('panel');
+    await t.wait(1500);
     await t.scroll(320, 900);
-    await t.wait(3200);
+    await t.wait(1200);
+    t.mark('panelSettled'); // layout is stable from here: measure and ring the protein row
+    await t.box('proteinRow', p.locator('tr', { hasText: 'Mismatch' }));
+    await t.wait(4500);
     t.mark('done');
   },
   // V002: intake scan (FSSAI expiry) -> negotiate live call (simulated) -> deal evaluator -> say next
@@ -76,6 +82,9 @@ const FLOWS = {
     t.mark('intake');
     await t.clickText('Screening passed').catch(() => {});
     await t.wait(1500);
+    t.mark('intakeOpen');
+    await t.box('fssaiRow', p.getByText(/Valid until reads 2026-11-30/));
+    await t.box('gstCard', p.getByText(/Valid from on GST registration/));
     await t.clickText('Show the scans with what was read').catch(() => {});
     await t.wait(3200);
     t.mark('fssai');
@@ -91,13 +100,20 @@ const FLOWS = {
     await t.clickBtn('Simulate call');
     await t.until(() => p.getByTestId('dont-accept').isVisible(), 120000, 300);
     t.mark('reject');
+    await t.box('condOffer', p.getByText('Conditional offer', { exact: true }));
+    await t.box('gap', p.getByText('Terms: application vs call vs our requirement'));
     await t.wait(900);
     await p.getByTestId('dont-accept').scrollIntoViewIfNeeded().catch(() => {});
     await t.wait(3000);
     t.mark('sayNext');
     await t.until(async () => /Last suggestion/.test(await p.getByTestId('next-ask').innerText()), 25000, 500);
     await p.getByTestId('next-ask').scrollIntoViewIfNeeded().catch(() => {});
-    await t.wait(3200);
+    await t.wait(1500);
+    t.mark('settled'); // call ended and scrolled: layout is stable from here
+    await t.wait(2500); // let any smooth scrolling finish before measuring
+    await t.box('banner', p.getByTestId('dont-accept'));
+    await t.box('say', p.getByTestId('next-ask'));
+    await t.wait(3000);
     t.mark('done');
   },
   // The Run pages, playbook, bring-your-own

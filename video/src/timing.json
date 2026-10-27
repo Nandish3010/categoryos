@@ -52,7 +52,7 @@
       "act": 2,
       "start": 2085,
       "frames": 720,
-      "voSec": 19.972336,
+      "voSec": 22.626757,
       "voLead": 0.35,
       "source": "tts"
     },
@@ -88,7 +88,7 @@
       "act": 3,
       "start": 4905,
       "frames": 420,
-      "voSec": 6.685896,
+      "voSec": 6.684399,
       "voLead": 0.35,
       "source": "tts"
     }

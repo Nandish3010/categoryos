@@ -58,7 +58,7 @@ export const Slam: React.FC = () => {
       {zt > 0 ? (
         <AbsoluteFill style={{ transform: `scale(${scale})`, transformOrigin: '61% 52%', opacity: Math.min(1, zt * 2.2), filter: zt < 0.95 ? `blur(${(1 - zt) * 8}px)` : undefined }}>
           <TiltFrame lf={lf - SLAM} enter={0} tilt={1 + (1 - zt) * 3}>
-            <ScreenView src="v1" from={vt('v1', 'decided', 0.5)} lf={lf} frames={sc.frames} />
+            <ScreenView src="v1" from={vt('v1', 'decided', 0.5)} lf={lf - SLAM} frames={sc.frames - SLAM} focus={{ x: 480, y: 250, w: 880, h: 260 }} zoomIn={36} />
           </TiltFrame>
         </AbsoluteFill>
       ) : null}

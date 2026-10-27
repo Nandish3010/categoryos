@@ -52,7 +52,8 @@ export async function record(browser, name, fn) {
   const dir = path.join(RAW, `_tmp_${name}`);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+  // Headless Chrome's screencast frame is 87 px shorter than the viewport, so ask for 1080+87 to get exact 1920x1080 frames.
+  const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 + 87 }, deviceScaleFactor: 1 });
   await ctx.addInitScript(CURSOR_JS);
   // dismiss the judges' guided tour (frontend/lib/tour.ts: categoryos.tour.v1 === 'done')
   await ctx.addInitScript("try { localStorage.setItem('categoryos.tour.v1', 'done'); } catch (e) {}");
@@ -67,8 +68,8 @@ export async function record(browser, name, fn) {
   });
   await cdp.send('Page.startScreencast', { format: 'jpeg', quality: 92, maxWidth: 1920, maxHeight: 1080, everyNthFrame: 1 });
   const t0 = Date.now();
-  const marks = {};
-  const kit = makeKit(page, (n) => { marks[n] = Date.now() - t0; });
+  const marks = { boxes: {} };
+  const kit = makeKit(page, (n) => { marks[n] = Date.now() - t0; }, marks.boxes);
   try {
     await fn(page, kit);
   } catch (e) {
@@ -94,10 +95,14 @@ export async function record(browser, name, fn) {
   console.log(`[${name}] ${(marks.end / 1000).toFixed(1)}s`, marks);
 }
 
-function makeKit(p, mark) {
+function makeKit(p, mark, boxes) {
   let cx = 960, cy = 540;
   const kit = {
     mark,
+    /** Record the on-screen box (video px) of an element, so scenes can ring it wherever the live layout puts it. */
+    async box(name, loc) {
+      try { const b = await loc.first().boundingBox({ timeout: 4000 }); if (b) boxes[name] = { x: Math.round(b.x), y: Math.round(b.y), w: Math.round(b.width), h: Math.round(b.height) }; } catch (e) { console.log('box miss', name); }
+    },
     wait: (ms) => p.waitForTimeout(ms),
     async moveTo(x, y, steps = 28) {
       for (let i = 1; i <= steps; i++) {

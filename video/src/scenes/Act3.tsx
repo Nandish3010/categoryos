@@ -7,7 +7,7 @@ import { IMPACT, MODELS, URL } from '../config';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 const ROWS = 8;
-const TASKS = ['Vendor emails', 'Sheets', 'Vendor calls', 'Licence checks', 'Price chasing', 'Catalog fixes', 'Reports', 'Follow-ups'];
+const TASKS = ['Emails', 'Sheets', 'Calls', 'Licences', 'Chasing', 'Catalog', 'Reports', 'Follow-ups'];
 const GOOD = ['Strategy', 'Vendors', 'Growth'];
 const CELL_W = 214, CELL_H = 70, GAP = 6, GX = MARGIN_X + 30, GY = 232;
 

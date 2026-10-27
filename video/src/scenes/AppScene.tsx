@@ -13,6 +13,7 @@ export type Seg = {
   big?: { text: string; sub?: string; color?: string; at?: number; y?: number; align?: 'left' | 'right' | 'center' };
   meera?: { pose: Pose; side: 'left' | 'right'; text?: string; at?: number; dur?: number; h?: number };
   tag?: string; // small label chip (montage)
+  note?: string; // provenance note, shown briefly
   whip?: boolean;
 };
 
@@ -37,6 +38,7 @@ const Overlay: React.FC<{ s: Seg; frames: number }> = ({ s, frames }) => {
       {s.big ? <BigChip lf={lf} at={s.big.at ?? 30} end={frames - 4} text={s.big.text} sub={s.big.sub} color={s.big.color} y={s.big.y ?? 118} align={s.big.align} /> : null}
       {s.meera ? <MeeraPop pose={s.meera.pose} side={s.meera.side} lf={lf} at={s.meera.at ?? 14} end={Math.min(frames - 10, (s.meera.at ?? 14) + (s.meera.dur ?? 70))} text={s.meera.text} h={s.meera.h} /> : null}
       {s.tag ? <TagChip lf={lf} text={s.tag} /> : null}
+      {s.note ? <NoteChip lf={lf} text={s.note} end={frames} /> : null}
     </>
   );
 };
@@ -46,6 +48,15 @@ const TagChip: React.FC<{ lf: number; text: string }> = ({ lf, text }) => {
   return (
     <div style={{ position: 'absolute', left: 150, top: 44, zIndex: 36, opacity: p, transform: `translateY(${(1 - p) * -14}px)` }}>
       <div style={{ background: C.blue, color: '#0F1117', fontFamily: display, fontWeight: 700, fontSize: 40, padding: '8px 26px', borderRadius: 999, boxShadow: '0 10px 30px rgba(0,0,0,.4)' }}>{text}</div>
+    </div>
+  );
+};
+
+const NoteChip: React.FC<{ lf: number; text: string; end: number }> = ({ lf, text, end }) => {
+  const p = prog(lf, 4, 16) * (1 - prog(lf, end - 8, end));
+  return (
+    <div style={{ position: 'absolute', left: 150, top: 44, zIndex: 36, opacity: p }}>
+      <div style={{ background: 'rgba(15,17,23,.9)', border: `2px solid ${C.green}`, color: C.text, fontFamily: body, fontWeight: 500, fontSize: 30, padding: '6px 22px', borderRadius: 999 }}>{text}</div>
     </div>
   );
 };

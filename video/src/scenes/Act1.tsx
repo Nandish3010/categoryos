@@ -237,7 +237,7 @@ export const Act1Visual: React.FC<{ f: number }> = ({ f }) => {
   const { t } = useTimes();
   const wps = React.useMemo(() => waypoints(t), [t]);
   const ms = meeraState(f, wps);
-  const bigClock = 1 - prog(f, 20, 44, E.inOut);
+  const bigClock = 1 - prog(f, 34, 58, E.inOut);
   const stF = t.stations.map(sec);
   const buriedF = sec(t.buried);
   const frozen = f > sec(t.freeze);
@@ -255,7 +255,7 @@ export const Act1Visual: React.FC<{ f: number }> = ({ f }) => {
     <AbsoluteFill style={{ background: 'radial-gradient(1200px 800px at 50% 40%, #2c1613 0%, #1a0f0c 55%, #0d0706 100%)', overflow: 'hidden', fontFamily: body }}>
       <div style={{ position: 'absolute', inset: 0, transform: `translateX(${camX}px) scale(${cam})`, transformOrigin: '50% 70%' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, top: FLOOR - 12, height: 90, background: 'linear-gradient(180deg,#3a211c,#1a0f0c)' }} />
-        <div style={{ opacity: 1 - 0.78 * prog(f, sec(t.freeze), sec(t.freeze) + 12) }}>
+        <div style={{ opacity: 1 - 0.92 * prog(f, sec(t.freeze), sec(t.freeze) + 12) }}>
         <Inbox f={f} at={stF[0]} />
         <Sheet f={f} at={stF[1]} />
         <Phone f={f} at={stF[2]} />

@@ -2,18 +2,21 @@ import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
 import { Act1Visual } from './Act1';
 import { Meera } from '../components/Meera';
-import { Focus, ScreenView, Src, vt } from '../components/AppParts';
+import { Callout, Focus, ScreenView, Src, vt } from '../components/AppParts';
 import { body, C, display, E, FPS, pop, prog } from '../theme';
 import { baselineTag, chaosCaption, IMPACT } from '../config';
 import { act1Times } from '../act1Timing.js';
 import { sceneOf } from '../theme';
+import { bx, FB, focusOn, ring, union } from '../boxes';
 
 const SEG = (s: number) => Math.round(s * FPS);
 export const X_FRAMES = SEG(30);
 const SQ = 1080;
+const banner = bx('v2', 'banner', FB.banner), say = bx('v2', 'say', FB.say), gstC = bx('v2', 'gstCard', FB.gstCard), protein = bx('v1label', 'proteinRow', FB.proteinRow);
+const gstRing = { x: gstC.x - 28, y: gstC.y - 14, w: 270, h: 300, color: C.yellow };
 
 /** A 1080x1080 window onto a recorded screen, zoomed on a region. */
-const Shot: React.FC<{ src: Src; mark: string; d?: number; focus: Focus; zoom: number; frames: number; ring?: { x: number; y: number; w: number; h: number; color: string } }> = ({ src, mark, d = 0, focus, zoom, frames, ring }) => {
+const Shot: React.FC<{ src: Src; mark: string; d?: number; focus: Focus; zoom: number; frames: number; ring?: Callout }> = ({ src, mark, d = 0, focus, zoom, frames, ring }) => {
   const lf = useCurrentFrame();
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: '#0a0a0a' }}>
@@ -60,7 +63,7 @@ const Montage: React.FC = () => {
     <AbsoluteFill>
       {items.map((it, i) => (
         <Sequence key={it.mark} from={i * SEG(0.9)} durationInFrames={SEG(0.9)}>
-          <Shot src="montage" mark={it.mark} d={0.6} focus={{ x: 400, y: 80, w: 1200, h: 800 }} zoom={0.95} frames={SEG(0.9)} />
+          <Shot src="montage" mark={it.mark} d={0.6} focus={{ x: 400, y: 60, w: 760, h: 760 }} zoom={1.4} frames={SEG(0.9)} />
           <Cap text={it.tag} color={C.blue} at={1} />
         </Sequence>
       ))}
@@ -78,7 +81,7 @@ const WeekBack: React.FC = () => {
         <div style={{ fontFamily: body, fontWeight: 500, fontSize: 52, color: C.text }}>of a category team's week, back</div>
         <div style={{ display: 'inline-block', marginTop: 16, background: C.yellow, color: '#10131a', fontWeight: 700, fontSize: 38, padding: '8px 26px', borderRadius: 999 }}>modelled, not measured</div>
       </div>
-      <Meera pose="relaxed" x={540} y={1040} h={560} z={5} />
+      <Meera pose="relaxed" x={540} y={1050} h={440} z={5} />
     </AbsoluteFill>
   );
 };
@@ -102,19 +105,19 @@ export const XCut: React.FC = () => (
   <AbsoluteFill style={{ background: C.bg }}>
     <Sequence from={0} durationInFrames={SEG(4.6)}><ChaosPart /></Sequence>
     <Sequence from={SEG(4.6)} durationInFrames={SEG(4.2)}>
-      <Shot src="v2" mark="reject" d={0.8} focus={{ x: 470, y: 325, w: 900, h: 235 }} zoom={1.15} frames={SEG(4.2)} ring={{ x: 480, y: 332, w: 880, h: 71, color: C.red }} />
+      <Shot src="v2" mark="settled" d={0.2} focus={focusOn(union(banner, say), 900, 300)} zoom={1.15} frames={SEG(4.2)} ring={ring(banner, C.red)} />
       <Cap text="P(hit) < 0.1%" sub="Reject the structure" color={C.red} />
     </Sequence>
     <Sequence from={SEG(8.8)} durationInFrames={SEG(3.4)}>
-      <Shot src="v2" mark="sayNext" d={0.4} focus={{ x: 470, y: 415, w: 900, h: 145 }} zoom={1.15} frames={SEG(3.4)} ring={{ x: 480, y: 422, w: 880, h: 131, color: C.green }} />
+      <Shot src="v2" mark="settled" d={0.4} focus={focusOn(union(banner, say), 900, 300)} zoom={1.15} frames={SEG(3.4)} ring={ring(say, C.green)} />
       <Cap text="Say next: 250 units" sub="60.5% likely, worth 27.1%, or 22% guaranteed" color={C.green} />
     </Sequence>
     <Sequence from={SEG(12.2)} durationInFrames={SEG(3.6)}>
-      <Shot src="v1" mark="decided" d={3} focus={{ x: 1560, y: 110, w: 350, h: 260 }} zoom={2.6} frames={SEG(3.6)} ring={{ x: 1620, y: 118, w: 282, h: 236, color: C.green }} />
-      <Cap text={'₹965.50 → ₹956.50'} sub="caught and corrected" color={C.yellow} />
+      <Shot src="v2" mark="intakeOpen" d={0.3} focus={focusOn(gstRing, 360, 300)} zoom={2.6} frames={SEG(3.6)} ring={gstRing} />
+      <Cap text="01 APR 2023 vs 2025" sub="two reads disagree: flagged, not guessed" color={C.yellow} />
     </Sequence>
     <Sequence from={SEG(15.8)} durationInFrames={SEG(3.2)}>
-      <Shot src="v1label" mark="catalog" d={0.5} focus={{ x: 870, y: 880, w: 480, h: 130 }} zoom={1.9} frames={SEG(3.2)} ring={{ x: 877, y: 888, w: 465, h: 50, color: C.red }} />
+      <Shot src="v1label" mark="panelSettled" d={0.1} focus={{ x: protein.x, y: protein.y - 80, w: 850, h: 700 }} zoom={1.2} frames={SEG(3.2)} ring={ring(protein, C.red, 4)} />
       <Cap text="Label 30% vs sheet 32%" sub="caught before listing" color={C.red} />
     </Sequence>
     <Sequence from={SEG(19)} durationInFrames={SEG(4.5)}><Montage /></Sequence>

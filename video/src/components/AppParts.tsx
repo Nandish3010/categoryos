@@ -8,7 +8,7 @@ import v2m from '../../captures/v2.json';
 import mm from '../../captures/montage.json';
 import im from '../../captures/impact.json';
 
-export const MARKS = { v1: v1m, v1label: v1lm, v2: v2m, montage: mm, impact: im } as Record<string, Record<string, number>>;
+export const MARKS = { v1: v1m, v1label: v1lm, v2: v2m, montage: mm, impact: im } as unknown as Record<string, Record<string, number>>;
 export type Src = 'v1' | 'v1label' | 'v2' | 'montage' | 'impact';
 
 /** Video-time (seconds) of a recorded mark + delta. */

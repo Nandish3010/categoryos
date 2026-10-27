@@ -7,7 +7,7 @@ export const DASH_LEN = 14; // frames
 export function act1Times(introSec, midSec, endSec) {
   const I = introSec;
   const M = I + midSec;
-  const stations = [1.9, I + 0.5, I + 2.9, I + 5.3, I + 7.7];
+  const stations = [1.7, I + 0.5, I + 2.9, I + 5.3, I + 7.7];
   const pre = (DASH_PRE + DASH_LEN + 3) / 30;
   const dashStart = stations.map((t, i) => (i === 0 ? t - 1.05 : t - pre));
   const t4 = stations[4];
