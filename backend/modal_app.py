@@ -34,7 +34,7 @@ image_env = {
     "LEDGER_PATH": f"{STATE_DIR}/ledger.json",
     "STATE_DIR": f"{STATE_DIR}/sandbox",  # uploaded sandbox vendors (24 h TTL) live on the Volume, never in the image
     "SAMPLES_DIR": SAMPLES_DIR,
-    "TRUST_FORWARDED_FOR": "false",  # set true only once you have confirmed Modal's proxy sets X-Forwarded-For
+    "TRUST_FORWARDED_FOR": os.environ.get("TRUST_FORWARDED_FOR", "false"),  # true only once Modal's proxy is confirmed to set X-Forwarded-For (per-IP public budget)
 }
 if os.environ.get("FRONTEND_ORIGIN"):
     image_env["FRONTEND_ORIGIN"] = os.environ["FRONTEND_ORIGIN"]
