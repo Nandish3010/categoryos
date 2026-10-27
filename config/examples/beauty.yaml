@@ -377,3 +377,28 @@ verifier:
     score: 0.5
     ratio: 0.005
     qty: 0
+  max_self_corrections: 2        # when a document-reading claim (cost, MRP, a commitment) is rejected, the agent gets the source value and may retry this many times (0 = off)
+
+impact:                          # Impact meter: PLACEHOLDER baselines. Replace them with your measured times, then set baseline_status to measured
+  baseline_status: placeholder   # placeholder | measured: the UI labels every figure derived from the baselines accordingly
+  baseline_minutes:              # human minutes per task today (per vendor, or per SKU where named so). PLACEHOLDERS
+    screening: 30
+    market_research: 120
+    shortlist: 90
+    negotiation_prep: 90
+    negotiation_followup: 60
+    catalog_listing_per_sku: 20
+    image_brief_per_sku: 10
+    marketing_brief: 60
+    jbp_draft: 120
+    po_raise: 30
+    po_followup: 45
+  team:                          # PLACEHOLDERS: used only for the team projection
+    category_managers: 6
+    vendors_onboarded_per_month: 8
+    share_of_week_on_these_tasks_pct: 45
+    work_hours_per_week: 40
+    weeks_per_month: 4.33
+  max_review_minutes: 120        # a review gap longer than this counts as this many minutes (the reviewer walked away)
+  assumed_review_share_pct: 10   # PLACEHOLDER: human review as a share of baseline, used until a run is fully reviewed
+  target_reduction_pct: 33.3     # the team view compares the projected saving with this goal

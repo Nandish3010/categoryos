@@ -410,6 +410,44 @@ class Tolerances(M):
 
 class Verifier(M):
     tolerances: Tolerances = F(label="Tolerances", help="How closely a claim must match the recomputed value.", used_in=["research", "negotiate", "catalog", "po"])
+    max_self_corrections: int = F(2, "Self-corrections", "When the verifier rejects something the agent read from a document, the agent is told what the source says and may retry this many times before the claim is left unresolved. 0 turns self-correction off.", unit="retries", min=0, max=5, step=1, used_in=["research", "negotiate", "catalog"])
+
+
+def _minutes(label: str, default: float, help: str = "") -> Any:
+    return F(default, label, help, unit="min", min=0, max=6000, step=5, used_in=["impact"])
+
+
+class BaselineMinutes(M):
+    """Human minutes each task takes today. The shipped values are placeholders: replace them with your measured times."""
+
+    screening: float = _minutes("Screening", 30, "Check the application, documents and claims for one vendor.")
+    market_research: float = _minutes("Market research", 120, "Competitor prices, demand and catalog overlap for one vendor.")
+    shortlist: float = _minutes("Shortlist", 90, "Turn the research into a SKU shortlist with margins.")
+    negotiation_prep: float = _minutes("Negotiation prep", 90, "Prepare the asks and the gap table for the vendor call.")
+    negotiation_followup: float = _minutes("Negotiation follow-up and recap", 60, "Write up the call and the counter-offer.")
+    catalog_listing_per_sku: float = _minutes("Catalog listing, per SKU", 20, "Title, bullets, description and attributes for one SKU.")
+    image_brief_per_sku: float = _minutes("Image brief, per SKU", 10, "Brief the image or photo shoot for one SKU.")
+    marketing_brief: float = _minutes("Marketing brief", 60, "Campaign brief and launch discount ask.")
+    jbp_draft: float = _minutes("JBP draft", 120, "Joint business plan draft.")
+    po_raise: float = _minutes("PO raise", 30, "Raise the first purchase order.")
+    po_followup: float = _minutes("PO follow-up", 45, "Chase confirmation and shipping.")
+
+
+class Team(M):
+    category_managers: int = F(6, "Category managers", "People on the category team (placeholder).", min=1, max=1000, step=1, used_in=["impact"])
+    vendors_onboarded_per_month: float = F(8, "Vendors onboarded per month", "New vendors the team takes from application to PO each month (placeholder).", min=0, max=10000, step=1, used_in=["impact"])
+    share_of_week_on_these_tasks_pct: float = F(45, "Share of the week on these tasks", "Share of a category manager's week spent on the tasks above (placeholder).", unit="%", min=0, max=100, step=1, used_in=["impact"])
+    work_hours_per_week: float = F(40, "Working hours per week", "Used to turn the team's week into hours.", unit="h", min=1, max=100, step=1, used_in=["impact"])
+    weeks_per_month: float = F(4.33, "Weeks per month", unit="weeks", min=1, max=5, step=0.01, used_in=["impact"])
+
+
+class Impact(M):
+    baseline_status: Literal["placeholder", "measured"] = F("placeholder", "Baseline status", "placeholder: the times and team numbers here are guesses and the UI says so. Set to measured once you have replaced them with your own.", used_in=["impact"], options=["placeholder", "measured"])
+    baseline_minutes: BaselineMinutes = F(label="Baseline minutes per task", help="How long the category team spends today. Placeholders until you replace them.", used_in=["impact"])
+    team: Team = F(label="Team", used_in=["impact"])
+    max_review_minutes: float = F(120, "Longest review counted", "A review gap longer than this is capped (the reviewer walked away); the cap is shown.", unit="min", min=1, max=1440, step=5, used_in=["impact"])
+    assumed_review_share_pct: float = F(10, "Assumed review share", "Used for the team projection until at least one run has been fully reviewed: human review time as a share of the baseline (placeholder).", unit="%", min=0, max=100, step=1, used_in=["impact"])
+    target_reduction_pct: float = F(33.3, "Workload target", "The goal the team view is compared with: cut category-team workload by this much.", unit="%", min=0, max=100, step=0.1, used_in=["impact"])
 
 
 class Policy(M):
@@ -426,6 +464,7 @@ class Policy(M):
     po: Po = F(label="Purchase order", used_in=["po"])
     levers: Levers = F(label="Levers", used_in=["research"])
     verifier: Verifier = F(label="Verifier", used_in=["research", "negotiate", "catalog", "po"])
+    impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
 
     @model_validator(mode="after")
     def _cross(self) -> "Policy":
