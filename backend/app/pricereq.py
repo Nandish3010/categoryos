@@ -136,6 +136,7 @@ class LineResult(BaseModel):
     counter_cost: float | None = None
     counter_basis: Literal["absorb", "pass_through"] | None = None
     reasons: list[str] = Field(default_factory=list)
+    why: str = ""  # one line for the table: the decisive figures behind the decision
     scenarios: list[Scenario] = Field(default_factory=list)  # status quo is the baseline each delta is against
     recommended: str = ""  # label of the scenario the decision leads to
 
@@ -668,7 +669,32 @@ def _line(
     elif d in ("accept", "pass_through"):
         counter_cost = round(sku.cost * (1 + p_eff / 100), 2)
     out = out.model_copy(update={"decision": d, "then_decision": then if d == "delay" else None, "counter_pct": counter, "counter_basis": basis, "counter_cost": counter_cost, "reasons": reasons})
+    out = out.model_copy(update={"why": _why_line(out, ceiling, justified)})
     return _with_scenarios(out, e, sku, p, p_eff, months, support_pts)
+
+
+def _why_line(out: LineResult, ceiling: float | None, justified: bool | None) -> str:
+    """One line of decisive engine figures for the lines table, e.g. 'margin stays 38.4% vs 38% target; index justifies up to 5.0%'."""
+    nm, tgt, flr = out.new_margin_pct, out.target_margin_pct, out.floor_margin_pct
+    d = out.then_decision if out.decision == "delay" else out.decision
+    index = "" if ceiling is None else (f"; index justifies up to {pct_text(ceiling)}" if justified else f"; index justifies only {pct_text(ceiling)}")
+    if nm is None or tgt is None:
+        return out.reasons[0] if out.reasons else ""
+    if d == "accept":
+        head = f"margin stays {pct_text(nm)} vs {tgt:g}% target" if nm >= tgt else f"margin falls to {pct_text(nm)}, above the {flr:g}% floor (target {tgt:g}%)"
+    elif d == "pass_through":
+        gap = "" if out.gap_if_passed_pct is None else f", {pct_text(out.gap_if_passed_pct)} vs competitors"
+        head = f"absorbing leaves margin at {pct_text(nm)} vs {tgt:g}% target; pass on {pct_text(out.retail_rise_pct or 0.0)}{gap}"
+    elif d == "accept_partial" and out.counter_pct is not None:
+        how = "absorbing it holds the floor" if out.counter_basis == "absorb" else "passing it on fits the gap and volume rules"
+        head = f"asked {pct_text(out.effective_pct or 0.0)} takes margin to {pct_text(nm)}; counter {pct_text(out.counter_pct)} ({how})"
+    elif d == "delist":
+        head = f"margin would fall to {pct_text(nm)} and passing it on breaks the gap or volume rules"
+    else:
+        return out.reasons[0] if out.reasons else ""
+    if out.decision == "delay":
+        head += f"; ask for {out.ask_effective_date}"
+    return head + index
 
 
 def _decide(

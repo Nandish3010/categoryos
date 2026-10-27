@@ -165,6 +165,10 @@ taxonomy:
       storage:
       - pen drive
       - hard disk
+      stands:
+      - stand
+      hubs:
+      - hub
       other: []
   - name: mobile accessories
     patterns:

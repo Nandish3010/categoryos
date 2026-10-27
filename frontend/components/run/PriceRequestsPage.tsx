@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, Mail, Send, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ApiError } from "@/lib/api";
 import { parseDeals } from "@/lib/deals";
 import {
@@ -138,7 +138,7 @@ export function LinesTable({ lines }: { lines: PrLine[] }) {
       rowKey={(l) => l.sku_code}
       renderExpanded={(l) => (
         <details>
-          <summary className="cursor-pointer text-xs text-text-dim">Why: {l.sku_code}</summary>
+          <summary className="cursor-pointer text-xs text-text-dim">Why: {l.why || l.reasons[0] || l.sku_code}</summary>
           <ul className="mt-1 list-disc pl-5 text-xs text-text-dim">
             {l.reasons.map((r) => (
               <li key={r}>{r}</li>
@@ -151,17 +151,40 @@ export function LinesTable({ lines }: { lines: PrLine[] }) {
   );
 }
 
+/** Absorbing and the recommendation are the same figures when every line is accepted as asked: say so once. */
+function noRetailChange(d: PrDetail): string | null {
+  const i = d.evaluation.impact;
+  const same = (a: { gmv_delta: number; margin_delta: number }, b: { gmv_delta: number; margin_delta: number }) => a.gmv_delta === b.gmv_delta && a.margin_delta === b.margin_delta;
+  if (!same(i.absorb, i.recommended)) return null;
+  const lines = d.evaluation.lines.filter((l) => l.new_margin_pct != null);
+  if (lines.length === 0 || !lines.every((l) => l.decision === "accept")) return null;
+  const aboveTarget = lines.every((l) => l.target_margin_pct != null && (l.new_margin_pct as number) >= l.target_margin_pct);
+  return aboveTarget ? "No retail change needed: absorbing keeps margin above target" : "No retail change needed: absorbing keeps margin above the floor";
+}
+
 function Impact({ d }: { d: PrDetail }) {
   const i = d.evaluation.impact;
+  const unchanged = noRetailChange(d);
   return (
     <section aria-label="Impact" className="rounded-card border border-border bg-surface">
       <PanelHeader title={`Next ${i.horizon_days} days`} right="GMV and margin versus today" />
-      <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-4">
-        <Stat label="Margin if we absorb it" value={<span className="text-bad">{signedInr(i.absorb.margin_delta)}</span>} hint={`GMV ${signedInr(i.absorb.gmv_delta)}`} />
-        <Stat label="Margin if we pass it on" value={signedInr(i.pass_through.margin_delta)} hint={`GMV ${signedInr(i.pass_through.gmv_delta)} (elasticity)`} />
-        <Stat label="Margin with our decision" value={<span className="text-ok">{signedInr(i.recommended.margin_delta)}</span>} hint={`GMV ${signedInr(i.recommended.gmv_delta)}`} />
-        <Stat label="Baseline margin" value={signedInr(i.baseline_margin_inr).replace("+", "")} hint={`on GMV ${signedInr(i.baseline_gmv).replace("+", "")}`} />
-      </div>
+      {unchanged ? (
+        <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-4" data-testid="impact-unchanged">
+          <div className="col-span-2 md:col-span-2">
+            <p className="text-sm font-medium text-ok">{unchanged}</p>
+            <p className="mt-1 text-xs text-text-dim">Absorbing the revision and our decision are the same here, so there is nothing to compare.</p>
+          </div>
+          <Stat label="Margin with our decision" value={<span className="text-ok">{signedInr(i.recommended.margin_delta)}</span>} hint={`GMV ${signedInr(i.recommended.gmv_delta)}`} />
+          <Stat label="Baseline margin" value={signedInr(i.baseline_margin_inr).replace("+", "")} hint={`on GMV ${signedInr(i.baseline_gmv).replace("+", "")}`} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-4">
+          <Stat label="Margin if we absorb it" value={<span className="text-bad">{signedInr(i.absorb.margin_delta)}</span>} hint={`GMV ${signedInr(i.absorb.gmv_delta)}`} />
+          <Stat label="Margin if we pass it on" value={signedInr(i.pass_through.margin_delta)} hint={`GMV ${signedInr(i.pass_through.gmv_delta)} (elasticity)`} />
+          <Stat label="Margin with our decision" value={<span className="text-ok">{signedInr(i.recommended.margin_delta)}</span>} hint={`GMV ${signedInr(i.recommended.gmv_delta)}`} />
+          <Stat label="Baseline margin" value={signedInr(i.baseline_margin_inr).replace("+", "")} hint={`on GMV ${signedInr(i.baseline_gmv).replace("+", "")}`} />
+        </div>
+      )}
     </section>
   );
 }
@@ -200,7 +223,6 @@ function ApprovalBar({ d, onDone }: { d: PrDetail; onDone: (s: PrStatus) => void
   const [body, setBody] = useState(d.reply.body);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<ApiError | null>(null);
-  useEffect(() => setBody(d.reply.body), [d.reply.body]);
   const status = d.status;
   async function act(fn: () => Promise<PrStatus>) {
     setBusy(true);
@@ -370,7 +392,7 @@ export function RequestDetail({ d, onStatus }: { d: PrDetail; onStatus: (s: PrSt
 
       <Sweeteners d={d} />
       <Impact d={d} />
-      <ApprovalBar key={d.request.id + d.reply.body.length} d={d} onDone={onStatus} />
+      <ApprovalBar key={`${d.request.id}:${d.reply.body}`} d={d} onDone={onStatus} />
     </div>
   );
 }

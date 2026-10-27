@@ -1,0 +1,40 @@
+vendor_sku_ref,marketplace,title,price,rating,review_count,est_monthly_sales
+LL-S01,GlowMart,Dewdrop Vitamin C Serum 30 ml,749,3.9,400,60
+LL-S01,ShopNest,Petal Lab Vitamin C Serum 30 ml,779,4.0,1550,135
+LL-S01,KartKing,Glow Theory Vitamin C Serum 30 ml,829,4.1,630,210
+LL-S02,GlowMart,Dewdrop Niacinamide 10% Serum 30 ml,599,4.0,1090,110
+LL-S02,ShopNest,Petal Lab Niacinamide 10% Serum 30 ml,629,4.1,2240,185
+LL-S02,KartKing,Glow Theory Niacinamide 10% Serum 30 ml,689,4.2,1320,85
+LL-M01,GlowMart,Dewdrop Hydrating Gel Moisturiser 50 g,469,4.1,1780,160
+LL-M01,ShopNest,Petal Lab Hydrating Gel Moisturiser 50 g,479,4.2,860,60
+LL-M01,KartKing,Glow Theory Hydrating Gel Moisturiser 50 g,519,4.3,2010,135
+LL-U01,GlowMart,Dewdrop Sunscreen SPF 50 PA+++ 50 g,549,4.2,400,210
+LL-U01,ShopNest,Petal Lab Sunscreen SPF 50 PA+++ 50 g,579,4.3,1550,110
+LL-U01,KartKing,Glow Theory Sunscreen SPF 50 PA+++ 50 g,629,3.9,630,185
+LL-C01,GlowMart,Dewdrop Foaming Face Wash 100 ml,319,4.3,1090,85
+LL-C01,ShopNest,Petal Lab Foaming Face Wash 100 ml,339,3.9,2240,160
+LL-C01,KartKing,Glow Theory Foaming Face Wash 100 ml,369,4.0,1320,60
+LL-H01,GlowMart,Dewdrop Onion Hair Oil 200 ml,359,3.9,1780,135
+LL-H01,ShopNest,Petal Lab Onion Hair Oil 200 ml,379,4.0,860,210
+LL-H01,KartKing,Glow Theory Onion Hair Oil 200 ml,409,4.1,2010,110
+LL-H02,GlowMart,Dewdrop Anti-Dandruff Shampoo 250 ml,419,4.0,400,185
+LL-H02,ShopNest,Petal Lab Anti-Dandruff Shampoo 250 ml,439,4.1,1550,85
+LL-H02,KartKing,Glow Theory Anti-Dandruff Shampoo 250 ml,479,4.2,630,160
+LL-K01,GlowMart,Dewdrop Matte Lipstick 4 g,369,4.1,1090,60
+LL-K01,ShopNest,Petal Lab Matte Lipstick 4 g,389,4.2,2240,135
+LL-K01,KartKing,Glow Theory Matte Lipstick 4 g,419,4.3,1320,210
+LL-K02,GlowMart,Dewdrop Waterproof Kajal 0.35 g,229,4.2,1780,110
+LL-K02,ShopNest,Petal Lab Waterproof Kajal 0.35 g,239,4.3,860,185
+LL-K02,KartKing,Glow Theory Waterproof Kajal 0.35 g,259,3.9,2010,85
+LL-S03,GlowMart,Dewdrop Retinol Night Cream 50 g,849,4.3,400,160
+LL-S03,ShopNest,Petal Lab Retinol Night Cream 50 g,879,3.9,1550,60
+LL-S03,KartKing,Glow Theory Retinol Night Cream 50 g,949,4.0,630,135
+LL-F01,GlowMart,Dewdrop Eau de Parfum Oud 50 ml,1199,3.9,1090,210
+LL-F01,ShopNest,Petal Lab Eau de Parfum Oud 50 ml,1249,4.0,2240,110
+LL-F01,KartKing,Glow Theory Eau de Parfum Oud 50 ml,1349,4.1,1320,185
+LL-F02,GlowMart,Dewdrop Vanilla Body Mist 150 ml,349,4.0,1780,85
+LL-F02,ShopNest,Petal Lab Vanilla Body Mist 150 ml,379,4.1,860,160
+LL-F02,KartKing,Glow Theory Vanilla Body Mist 150 ml,419,4.2,2010,60
+LL-S04,GlowMart,Dewdrop Clay Face Mask 100 g,499,4.1,400,135
+LL-S04,ShopNest,Petal Lab Clay Face Mask 100 g,529,4.2,1550,210
+LL-S04,KartKing,Glow Theory Clay Face Mask 100 g,569,4.3,630,110

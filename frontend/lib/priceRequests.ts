@@ -71,6 +71,7 @@ export type PrLine = {
   counter_cost: number | null;
   counter_basis: "absorb" | "pass_through" | null;
   reasons: string[];
+  why?: string;
   scenarios: PrScenario[];
   recommended: string;
 };

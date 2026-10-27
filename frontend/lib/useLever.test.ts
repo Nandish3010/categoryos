@@ -36,6 +36,24 @@ describe("useLever", () => {
   beforeEach(() => vi.useFakeTimers());
   afterEach(() => vi.useRealTimers());
 
+  it("sends the first request of a page load at once, then debounces slider moves", async () => {
+    const fetcher = vi.fn<LeverFetcher>(async (_v, offset) => resp(offset));
+    const { rerender } = renderHook(({ o }) => useLever("V001", o, null, fetcher), { initialProps: { o: 0 } });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1); // no 150 ms wait before the first paint of the decision
+    rerender({ o: 2 });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(100);
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1); // now debounced
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60);
+    });
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
   it("debounces rapid changes into one request", async () => {
     const fetcher = vi.fn<LeverFetcher>(async (_v, offset) => resp(offset));
     const { rerender } = renderHook(({ o }) => useLever("V001", o, null, fetcher), {
