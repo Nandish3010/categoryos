@@ -10,6 +10,7 @@ import {
 import { getDemoKey } from "./demoKey";
 import { readScanned, type Scanned } from "./docs";
 import type { RunImpact } from "./impact";
+import type { Provenance } from "./provenance";
 
 export const STAGE_IDS = [
   "intake",
@@ -54,6 +55,8 @@ export type RunSnapshot = {
   stages: Partial<Record<StageId, StageResult>>;
   /** Recorded human review time against the by-hand baseline (absent on older backends). */
   impact?: RunImpact | null;
+  /** Replay runs: where the recorded run came from (live or scripted). */
+  provenance?: Provenance | null;
 };
 
 export type TraceEventType =
