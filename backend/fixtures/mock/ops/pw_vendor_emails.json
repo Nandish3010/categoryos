@@ -1,0 +1,98 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_price_watch_summary",
+        "args": {}
+      },
+      {
+        "tool": "get_vendor_contacts",
+        "args": {}
+      }
+    ],
+    "final": {
+      "emails": [
+        {
+          "vendor_id": "E005",
+          "subject": "Price parity on Clumping Bentonite Unscented 10 kg",
+          "body": "Hi Sanjay,\n\nOn MarketB, Clumping Bentonite Unscented 10 kg is listed at ₹566 on your own storefront, 12.0% under our price, for 9 days. That breaks price parity and sits under the ₹624 minimum advertised price. Please restore parity by Friday; we will not follow the lower price down.\n\nThanks",
+          "figures": [
+            {
+              "metric": "pw_vendor_price",
+              "key": "E005:LT-01?mp=MarketB",
+              "value": 566.0,
+              "shown": "₹566",
+              "text": "Clumping Bentonite Unscented 10 kg: vendor price on MarketB"
+            },
+            {
+              "metric": "pw_parity_below_pct",
+              "key": "E005:LT-01?mp=MarketB",
+              "value": 0.1198,
+              "shown": "12.0%",
+              "text": "Clumping Bentonite Unscented 10 kg: vendor under our price"
+            },
+            {
+              "metric": "pw_parity_days",
+              "key": "E005:LT-01?mp=MarketB",
+              "value": 9.0,
+              "shown": "9",
+              "text": "Clumping Bentonite Unscented 10 kg: days under parity"
+            },
+            {
+              "metric": "pw_map_price",
+              "key": "E005:LT-01?mp=MarketB",
+              "value": 624.0,
+              "shown": "₹624",
+              "text": "Clumping Bentonite Unscented 10 kg: minimum advertised price"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E001",
+          "subject": "Price protection request: Chicken & Rice Adult 3 kg",
+          "body": "Hi Anil,\n\nA competitor on MarketA has been 6.9% under our price on Chicken & Rice Adult 3 kg for 9 days. Matching would take our margin to 15.5%, under the 20.0% floor. Could you share price protection of ₹41 a unit for the next period?\n\nThanks",
+          "figures": [
+            {
+              "metric": "pw_below_pct",
+              "key": "E001:BK-01?mp=MarketA",
+              "value": 0.0694,
+              "shown": "6.9%",
+              "text": "Chicken & Rice Adult 3 kg: competitor under our price on MarketA"
+            },
+            {
+              "metric": "pw_streak_days",
+              "key": "E001:BK-01?mp=MarketA",
+              "value": 9.0,
+              "shown": "9",
+              "text": "Chicken & Rice Adult 3 kg: days under us in a row on MarketA"
+            },
+            {
+              "metric": "pw_margin_after_match_pct",
+              "key": "E001:BK-01",
+              "value": 0.1546,
+              "shown": "15.5%",
+              "text": "Chicken & Rice Adult 3 kg: margin after a match"
+            },
+            {
+              "metric": "pw_floor_pct",
+              "key": "E001:BK-01",
+              "value": 0.2,
+              "shown": "20.0%",
+              "text": "Chicken & Rice Adult 3 kg: margin floor"
+            },
+            {
+              "metric": "pw_protection_ask_unit_inr",
+              "key": "E001:BK-01",
+              "value": 40.8,
+              "shown": "₹41",
+              "text": "Chicken & Rice Adult 3 kg: price protection per unit"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

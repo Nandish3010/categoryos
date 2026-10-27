@@ -1,0 +1,36 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_funding_replies",
+        "args": {
+          "event_id": "payday"
+        }
+      }
+    ],
+    "final": {
+      "readings": [
+        {
+          "reply_id": "F007",
+          "stance": "offer",
+          "summary": "Purrline funds a smaller share for the Payday Sale.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": [
+            {
+              "share_pct": 20,
+              "scope": [],
+              "threshold_units": null,
+              "window_days": null,
+              "banner_top_n": null,
+              "quote": "For the Payday Sale we can fund 20% of the markdown"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

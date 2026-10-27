@@ -1,0 +1,145 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_price_watch_summary",
+        "args": {}
+      }
+    ],
+    "final": {
+      "headline": "Match one price, ask one vendor for protection, flag one parity breach; leave the one-day blip and the slow slide alone.",
+      "narrative": "Match: Oatmeal Pet Shampoo 250 ml has been 9.0% under our price on MarketB for 6 days. Matching at ₹292 keeps the margin at 34.9%, above the 30.0% floor, and earns ₹2,357 more over the horizon than holding.\n\nAsk the vendor: Chicken & Rice Adult 3 kg has been 6.9% under our price on MarketA for 9 days. Matching would take the margin to 15.5%, under the 20.0% floor, so we ask Barkley & Co for price protection of ₹41 a unit instead of cutting alone.\n\nBreach: Litterly sells Clumping Bentonite Unscented 10 kg at ₹566 on MarketB, 12.0% under our price for 9 days and under the ₹624 minimum advertised price. We do not follow it down; the message asks for parity.\n\nLeave alone: Training Bites 60 g dipped 13.9% under us on MarketC for a single day. Matching that blip would have cost ₹2,987 of margin for nothing, so we hold and re-check tomorrow. A competitor price on Squeaky Plush Duck is falling 0.73 points a day but has not crossed the undercut threshold; we watch it.",
+      "figures": [
+        {
+          "metric": "pw_below_pct",
+          "key": "E006:GW-01?mp=MarketB",
+          "value": 0.0903,
+          "shown": "9.0%",
+          "text": "Oatmeal Pet Shampoo 250 ml: competitor under our price on MarketB"
+        },
+        {
+          "metric": "pw_streak_days",
+          "key": "E006:GW-01?mp=MarketB",
+          "value": 6.0,
+          "shown": "6",
+          "text": "Oatmeal Pet Shampoo 250 ml: days under us in a row on MarketB"
+        },
+        {
+          "metric": "pw_match_price",
+          "key": "E006:GW-01",
+          "value": 292.0,
+          "shown": "₹292",
+          "text": "Oatmeal Pet Shampoo 250 ml: match price"
+        },
+        {
+          "metric": "pw_margin_after_match_pct",
+          "key": "E006:GW-01",
+          "value": 0.3493,
+          "shown": "34.9%",
+          "text": "Oatmeal Pet Shampoo 250 ml: margin after a match"
+        },
+        {
+          "metric": "pw_floor_pct",
+          "key": "E006:GW-01",
+          "value": 0.3,
+          "shown": "30.0%",
+          "text": "Oatmeal Pet Shampoo 250 ml: margin floor"
+        },
+        {
+          "metric": "pw_margin_impact_inr",
+          "key": "E006:GW-01",
+          "value": 2357.21,
+          "shown": "₹2,357",
+          "text": "Oatmeal Pet Shampoo 250 ml: margin impact of matching over holding"
+        },
+        {
+          "metric": "pw_below_pct",
+          "key": "E001:BK-01?mp=MarketA",
+          "value": 0.0694,
+          "shown": "6.9%",
+          "text": "Chicken & Rice Adult 3 kg: competitor under our price on MarketA"
+        },
+        {
+          "metric": "pw_streak_days",
+          "key": "E001:BK-01?mp=MarketA",
+          "value": 9.0,
+          "shown": "9",
+          "text": "Chicken & Rice Adult 3 kg: days under us in a row on MarketA"
+        },
+        {
+          "metric": "pw_margin_after_match_pct",
+          "key": "E001:BK-01",
+          "value": 0.1546,
+          "shown": "15.5%",
+          "text": "Chicken & Rice Adult 3 kg: margin after a match"
+        },
+        {
+          "metric": "pw_floor_pct",
+          "key": "E001:BK-01",
+          "value": 0.2,
+          "shown": "20.0%",
+          "text": "Chicken & Rice Adult 3 kg: margin floor"
+        },
+        {
+          "metric": "pw_protection_ask_unit_inr",
+          "key": "E001:BK-01",
+          "value": 40.8,
+          "shown": "₹41",
+          "text": "Chicken & Rice Adult 3 kg: price protection per unit"
+        },
+        {
+          "metric": "pw_vendor_price",
+          "key": "E005:LT-01?mp=MarketB",
+          "value": 566.0,
+          "shown": "₹566",
+          "text": "Clumping Bentonite Unscented 10 kg: vendor price on MarketB"
+        },
+        {
+          "metric": "pw_parity_below_pct",
+          "key": "E005:LT-01?mp=MarketB",
+          "value": 0.1198,
+          "shown": "12.0%",
+          "text": "Clumping Bentonite Unscented 10 kg: vendor under our price"
+        },
+        {
+          "metric": "pw_parity_days",
+          "key": "E005:LT-01?mp=MarketB",
+          "value": 9.0,
+          "shown": "9",
+          "text": "Clumping Bentonite Unscented 10 kg: days under parity"
+        },
+        {
+          "metric": "pw_map_price",
+          "key": "E005:LT-01?mp=MarketB",
+          "value": 624.0,
+          "shown": "₹624",
+          "text": "Clumping Bentonite Unscented 10 kg: minimum advertised price"
+        },
+        {
+          "metric": "pw_below_pct",
+          "key": "E003:NP-04?mp=MarketC",
+          "value": 0.1386,
+          "shown": "13.9%",
+          "text": "Training Bites 60 g: competitor under our price on MarketC"
+        },
+        {
+          "metric": "pw_margin_impact_inr",
+          "key": "E003:NP-04",
+          "value": -2986.82,
+          "shown": "₹-2,987",
+          "text": "Training Bites 60 g: margin impact of matching over holding"
+        },
+        {
+          "metric": "pw_trend_pts_per_day",
+          "key": "E004:TW-02?mp=MarketC",
+          "value": 0.73,
+          "shown": "0.73",
+          "text": "Squeaky Plush Duck: competitor price falling per day"
+        }
+      ]
+    }
+  }
+}

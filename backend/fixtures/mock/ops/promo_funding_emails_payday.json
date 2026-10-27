@@ -1,0 +1,163 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_vendor_funding",
+        "args": {
+          "event_id": "payday"
+        }
+      },
+      {
+        "tool": "get_vendor_contacts",
+        "args": {}
+      }
+    ],
+    "final": {
+      "emails": [
+        {
+          "vendor_id": "E001",
+          "subject": "Payday Sale: funding with Barkley & Co",
+          "body": "Hi Anil,\n\nFor the sale we would like Barkley & Co to fund 50.5% of the markdown on the SKUs we are promoting, worth ₹18,657.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E001",
+              "value": 0.5047,
+              "shown": "50.5%",
+              "text": "Barkley & Co: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "payday:E001",
+              "value": 18657.23,
+              "shown": "₹18,657",
+              "text": "Barkley & Co: funding asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E002",
+          "subject": "Payday Sale: funding with Purrline Foods",
+          "body": "Hi Rakesh,\n\nThank you for the offer. It is worth ₹9,434 to us, 39.6% of the ₹23,800 we asked for on those SKUs. Could you raise the share to 50.5% of the markdown?\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_offer_counted_inr",
+              "key": "payday:E002?share=20",
+              "value": 9433.58,
+              "shown": "₹9,434",
+              "text": "Purrline Foods: offer value counted"
+            },
+            {
+              "metric": "promo_offer_covers_ask_pct",
+              "key": "payday:E002?share=20",
+              "value": 0.3964,
+              "shown": "39.6%",
+              "text": "Purrline Foods: share of the ask covered"
+            },
+            {
+              "metric": "promo_offer_ask_inr",
+              "key": "payday:E002?share=20",
+              "value": 23800.02,
+              "shown": "₹23,800",
+              "text": "Purrline Foods: ask on the SKUs the offer covers"
+            },
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E002",
+              "value": 0.5046,
+              "shown": "50.5%",
+              "text": "Purrline Foods: share of the markdown asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E003",
+          "subject": "Payday Sale: funding with NutriPaws",
+          "body": "Hi Meera,\n\nFor the sale we would like NutriPaws to fund 30.0% of the markdown on the SKUs we are promoting, worth ₹1,501.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E003",
+              "value": 0.3,
+              "shown": "30.0%",
+              "text": "NutriPaws: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "payday:E003",
+              "value": 1501.12,
+              "shown": "₹1,501",
+              "text": "NutriPaws: funding asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E004",
+          "subject": "Payday Sale: funding with Tailwind Play",
+          "body": "Hi Vikram,\n\nFor the sale we would like Tailwind Play to fund 32.9% of the markdown on the SKUs we are promoting, worth ₹3,299.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E004",
+              "value": 0.3293,
+              "shown": "32.9%",
+              "text": "Tailwind Play: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "payday:E004",
+              "value": 3298.51,
+              "shown": "₹3,299",
+              "text": "Tailwind Play: funding asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E005",
+          "subject": "Payday Sale: funding with Litterly",
+          "body": "Hi Sanjay,\n\nFor the sale we would like Litterly to fund 45.0% of the markdown on the SKUs we are promoting, worth ₹6,316.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E005",
+              "value": 0.45,
+              "shown": "45.0%",
+              "text": "Litterly: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "payday:E005",
+              "value": 6316.18,
+              "shown": "₹6,316",
+              "text": "Litterly: funding asked"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E006",
+          "subject": "Payday Sale: funding with Groomwell",
+          "body": "Hi Neha,\n\nFor the sale we would like Groomwell to fund 30.0% of the markdown on the SKUs we are promoting, worth ₹9,523.\n\nCould you confirm by Friday?\n\nThanks",
+          "figures": [
+            {
+              "metric": "promo_vendor_ask_share_pct",
+              "key": "payday:E006",
+              "value": 0.3,
+              "shown": "30.0%",
+              "text": "Groomwell: share of the markdown asked"
+            },
+            {
+              "metric": "promo_vendor_ask_inr",
+              "key": "payday:E006",
+              "value": 9523.42,
+              "shown": "₹9,523",
+              "text": "Groomwell: funding asked"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

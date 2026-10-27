@@ -484,3 +484,65 @@ class UnknownCatalogLabel(CategoryOSError):
     def __init__(self, name: str) -> None:
         super().__init__(f"unknown label: {name!r}")
         self.name = name
+
+
+class PromoDataMissing(CategoryOSError):
+    status = 500
+    code = "promo_data_missing"
+    problem = "The promotions data files are missing or unreadable"
+    cause = "data/synthetic/ops/promo_vendor_replies.json was not generated"
+    fix = "Run python3 data/generate_promotions.py from the repo root"
+
+
+class UnknownPromoEvent(CategoryOSError):
+    status = 404
+    code = "unknown_promo_event"
+    cause = "The event id is not in the playbook's promotions.events calendar"
+    fix = "List the events with GET /api/ops/promotions and use one of their ids"
+
+    def __init__(self, event_id: str) -> None:
+        super().__init__(f"unknown promotion event: {event_id!r}")
+        self.event_id = event_id
+
+
+class PromoPlanDecided(CategoryOSError):
+    status = 409
+    code = "promo_plan_decided"
+    problem = "This event plan was already decided"
+    cause = "The plan was approved or rejected; a decision is final until the server resets"
+    fix = "Open the outbox to see what was queued, or reset the demo"
+
+
+class PromoPlanEmpty(CategoryOSError):
+    status = 409
+    code = "promo_plan_empty"
+    problem = "There is nothing to approve in this event plan"
+    cause = "No SKU made the plan, or none of the SKUs named is in it"
+    fix = "Loosen the playbook's promotions rules, or pick SKUs that are in the plan"
+
+
+class PriceWatchDataMissing(CategoryOSError):
+    status = 500
+    code = "price_watch_data_missing"
+    problem = "The price snapshot files are missing or unreadable"
+    cause = "data/synthetic/ops/price_snapshots.csv, price_watch_map.csv or price_watch_meta.json was not generated"
+    fix = "Run python3 data/generate_price_watch.py from the repo root"
+
+
+class UnknownPriceWatchAction(CategoryOSError):
+    status = 404
+    code = "unknown_price_watch_action"
+    cause = "The action id is not in the current price-watch list (the playbook or the data changed, or the server restarted)"
+    fix = "Reload GET /api/ops/price-watch and use one of its action ids"
+
+    def __init__(self, action_id: str) -> None:
+        super().__init__(f"unknown price-watch action: {action_id!r}")
+        self.action_id = action_id
+
+
+class PriceWatchActionDecided(CategoryOSError):
+    status = 409
+    code = "price_watch_action_decided"
+    problem = "This price-watch action was already decided"
+    cause = "It was approved or rejected; a decision is final until the server resets"
+    fix = "Open the outbox to see what was queued, or reset the demo"

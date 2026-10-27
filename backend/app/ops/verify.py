@@ -65,6 +65,17 @@ def verify_ops_claim(claim: Claim) -> Claim:
 
     if catalog_verify.handles(claim):
         return catalog_verify.verify_catalog_claim(claim)
+    from app.ops.pricewatch import (
+        claims as pw_claims,  # the competitor price monitor owns pw_* claims
+    )
+    from app.ops.promotions import (
+        verify as promo_verify,  # the promotions planner owns promo_* claims
+    )
+
+    if pw_claims.handles(claim):
+        return pw_claims.verify(claim)
+    if promo_verify.handles(claim):
+        return promo_verify.verify_promo_claim(claim)
     rel = claim.source_ref.file
     if rel not in allowed_files():
         return _finish(claim, "rejected", f"unknown source: {rel!r} is not an allowlisted ops data file")

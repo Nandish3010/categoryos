@@ -328,7 +328,62 @@ price_requests:                  # Price requests: how an existing vendor's pric
       - {above_pct: 10, approver: head_of_category, label: Head of category}
     decision_floor: {pass_through: category_manager, delist: head_of_category}   # these decisions need at least this approver whatever the size
 
-impact:                          # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
+promotions:                      # Run: promotions and event planner (ops_promotions). Python plans; the model only writes the brief and vendor emails from the engine's numbers
+  events:                        # the sale calendar: one row per event
+    - {id: festive, name: Festive Sale, start: "2026-11-06", end: "2026-11-12", traffic_lift_pct: 10, banner_slots: 3}
+    - {id: payday, name: Payday Sale, start: "2026-11-28", end: "2026-11-30", traffic_lift_pct: 6, banner_slots: 2}
+  uplift:                        # units sold during the event = baseline x (1 - discount) ^ elasticity, capped
+    default_elasticity: -3.0     # promo elasticity is steeper than everyday price elasticity (price_requests.elasticity)
+    by_category: {dog dry food: -3.8, dog wet food: -4.0, cat dry food: -3.8, cat wet food: -4.0, treats: -3.4, cat litter: -3.2, grooming: -3.4, toys: -3.8, accessories: -3.4}
+    max_multiplier: 4.0          # demand cannot grow without limit
+    pull_forward_pct: 15         # share of the extra units that would have sold anyway after the event
+  discount:
+    steps_pct: [5, 10, 15, 20, 25, 30]   # depths tried per SKU
+    max_pct: 25                  # no SKU is planned deeper than this
+    floor_below_regular_pp: 5    # during the event the margin after funding may sit this far under the category's regular floor
+  stock:
+    safety_buffer_pct: 10        # event demand x (1 + this) when checking for stock-outs
+    baseline_cover_days: 14      # if an order placed today can still land before the event, normal replenishment keeps at least this much cover until it starts
+    min_cover_days: 3            # fewer days of baseline cover than this at the event start: leave the SKU out
+    receiving_buffer_days: 2     # a stock-up PO must land this many days before the event
+    pack_round_units: 10         # PO quantities round up to this
+    max_stock_up_cover_days: 45  # a stock-up never takes cover beyond this many days
+  funding:
+    target_share_pct: 30         # the share of the markdown we ask a vendor to fund
+    target_share_by_category: {dog dry food: 50, dog wet food: 50, cat dry food: 50, cat wet food: 50, cat litter: 45}   # thin everyday margins need more support
+    max_ask_share_pct: 60        # a depth needing more than this to hold the margin floor is not planned
+    banner_slot_cost_inr: 5000   # what a guaranteed top-banner slot costs us; charged against a vendor's funding offer
+  cannibalisation:
+    similarity_threshold: 0.5    # near-duplicate = same vendor, name similarity at or above this
+    max_price_gap_pct: 25        # ... and prices within this %
+    cannibalised_share_pct: 30   # share of a promoted SKU's extra units taken from a sibling that is not on promo
+  candidates:
+    max_skus_per_event: 24
+    min_incremental_margin_inr: 250   # leave out a SKU whose net extra margin is below this
+
+price_watch:                     # Run: competitor price monitor (ops_price_watch). Daily snapshots from 3 marketplaces
+  window_days: 30
+  undercut:
+    threshold_pct: 3             # a competitor price at least this % below ours is an undercut
+    min_sustained_days: 3        # ... and it is sustained after this many consecutive latest days; fewer is a blip (never matched)
+    trend_window_days: 7
+    trend_min_slope_pct_per_day: 0.5   # a competitor falling this % a day over the window is a trend: watched, not yet matched
+  parity:                        # vendor selling cheaper elsewhere
+    tolerance_pct: 3
+    min_days: 3
+    enforce_map: true            # also flag a vendor price under the minimum advertised price on file
+  match:
+    allow: true
+    max_cut_pct: 12              # a cut bigger than this goes to a person
+    price_round_inr: 1           # match price = competitor price rounded up to this
+    margin_buffer_pp: 0          # margin after a match must stay at the category floor plus this
+    comparison_share_pct: 70     # share of demand that compares prices and so reacts to a gap
+    like_for_like_elasticity: -5.0   # units change by (our price / competitor price) ^ this for those shoppers: the pack is identical, so far steeper than everyday elasticity
+    elasticity_by_category: {}   # optional per-category override, e.g. {treats: -6}
+    horizon_days: 30
+  ask_price_protection: true     # when a match would break the floor, ask the vendor to fund the gap
+
+impact:                        # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
   baseline_status: research_estimate   # research_estimate | measured: the UI labels every figure derived from the numbers below accordingly
   baseline_minutes:              # by-hand minutes to onboard one new vendor of about 12 SKUs (about 1,085 min). Per-SKU steps scale with the shortlist
     screening: 45
@@ -386,8 +441,8 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     price_increase_evaluator: {label: "Existing-vendor price-increase evaluator (extract, margin maths, elasticity, sweetener value, counter and reply)", status: shipped}
     po_followup: {label: "PO follow-up and fill-rate chaser", status: shipped}
     catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: shipped}
-    promotions_planner: {label: "Promotions and event planner", status: not_built}
-    competitor_monitor: {label: "Competitor price monitor", status: not_built}
+    promotions_planner: {label: "Promotions and event planner", status: shipped}
+    competitor_monitor: {label: "Competitor price monitor", status: shipped}
     inventory_health_module: {label: "Inventory health and liquidation", status: not_built}
   coverage:                      # module, task, and the share of that task's time the module takes over
     - {module: new_vendor_onboarding, task: new_vendor_onboarding, in_scope_pct: 100}

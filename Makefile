@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests data-catalog lint live record smoke requirements eval
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -66,3 +66,14 @@ requirements:
 smoke:
 	@test -n "$(URL)" || (echo "usage: make smoke URL=<backend url> [FRONTEND_URL=<frontend url>]" >&2; exit 2)
 	scripts/smoke_deployed.sh "$(URL)" $(FRONTEND_URL)
+
+# Vendor funding replies for the promotions planner, and daily price snapshots for the competitor price monitor (deterministic, stdlib only).
+data-promotions:
+	python3 data/generate_promotions.py
+
+data-price-watch:
+	python3 data/generate_price_watch.py
+
+# Rebuild the mock model fixtures of those two modules from the engines (after changing the playbook knobs or the data).
+fixtures-run:
+	cd backend && PYTHONPATH=. uv run python ../scripts/build_run_fixtures.py

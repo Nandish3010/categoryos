@@ -41,6 +41,8 @@ export const SECTIONS = [
   { id: "verifier", label: "Verifier" },
   { id: "operations", label: "Operations (Run)" },
   { id: "catalog_qc", label: "Catalog QC (Run)" },
+  { id: "promotions", label: "Promotions (Run)" },
+  { id: "price_watch", label: "Price watch (Run)" },
   { id: "impact", label: "Impact" },
 ] as const;
 

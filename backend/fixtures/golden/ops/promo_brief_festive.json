@@ -1,0 +1,173 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_event_plan",
+        "args": {
+          "event_id": "festive"
+        }
+      },
+      {
+        "tool": "get_stock_risks",
+        "args": {
+          "event_id": "festive"
+        }
+      },
+      {
+        "tool": "get_vendor_funding",
+        "args": {
+          "event_id": "festive"
+        }
+      }
+    ],
+    "final": {
+      "headline": "Put 24 SKUs on promo for the Festive Sale, with ₹139,702 of vendor funding asked.",
+      "brief": "We promote 24 SKUs. They sell ₹1,706,454 of GMV over the event and add ₹35,820 of margin after the units pulled forward and the sales taken from near-duplicates. Holding the promo margin floor needs ₹139,702 of vendor funding, which lifts the plan's margin to 21.9%.\n\nChicken & Tuna Adult 1.2 kg would run out on day 5 of the event at 19.9% off, the deepest discount that pays. Its vendor cannot land fresh stock in time, so the plan caps it at 10.1%. Paw Balm 50 g can be restocked in time: the plan adds a stock-up PO of 30 units. Stock-up POs for the event cost ₹25,850 in all.\n\nBarkley & Co offers half the markdown on a sales target the range has only a 3.6% chance of reaching, so the offer counts as ₹0; we counter with a longer window. The offer from Purrline Foods counts for ₹27,448, 60.0% of our ask on its SKUs; we ask for a bigger share. The offer from NutriPaws counts for ₹3,107, 85.5% of our ask on its SKUs; we ask for a softer condition. The offer from Tailwind Play counts for ₹4,419, 120.2% of our ask on its SKUs; that covers our ask. Litterly declined to fund the event. The offer from Groomwell counts for ₹3,952, 36.8% of our ask on its SKUs; we ask for a bigger share.",
+      "figures": [
+        {
+          "metric": "promo_event_planned_skus",
+          "key": "festive",
+          "value": 24.0,
+          "shown": "24",
+          "text": "festive: SKUs on promo"
+        },
+        {
+          "metric": "promo_event_gmv_inr",
+          "key": "festive",
+          "value": 1706453.62,
+          "shown": "₹1,706,454",
+          "text": "festive: GMV of the SKUs on promo"
+        },
+        {
+          "metric": "promo_event_incremental_margin_inr",
+          "key": "festive",
+          "value": 35820.46,
+          "shown": "₹35,820",
+          "text": "festive: net extra margin"
+        },
+        {
+          "metric": "promo_event_funding_ask_inr",
+          "key": "festive",
+          "value": 139702.12,
+          "shown": "₹139,702",
+          "text": "festive: funding asked"
+        },
+        {
+          "metric": "promo_event_margin_at_ask_pct",
+          "key": "festive",
+          "value": 0.2189,
+          "shown": "21.9%",
+          "text": "festive: margin if funded as asked"
+        },
+        {
+          "metric": "promo_deep_discount_pct",
+          "key": "festive:E002:PL-02?view=deep",
+          "value": 0.1993,
+          "shown": "19.9%",
+          "text": "Chicken & Tuna Adult 1.2 kg: deep discount"
+        },
+        {
+          "metric": "promo_deep_stockout_day",
+          "key": "festive:E002:PL-02?view=deep",
+          "value": 5.0,
+          "shown": "5",
+          "text": "Chicken & Tuna Adult 1.2 kg: deep option runs out on day"
+        },
+        {
+          "metric": "promo_discount_pct",
+          "key": "festive:E002:PL-02",
+          "value": 0.1005,
+          "shown": "10.1%",
+          "text": "Chicken & Tuna Adult 1.2 kg: discount"
+        },
+        {
+          "metric": "promo_stock_up_qty",
+          "key": "festive:E006:GW-03",
+          "value": 30.0,
+          "shown": "30",
+          "text": "Paw Balm 50 g: stock-up units"
+        },
+        {
+          "metric": "promo_event_stock_up_inr",
+          "key": "festive",
+          "value": 25850.0,
+          "shown": "₹25,850",
+          "text": "festive: stock-up cost"
+        },
+        {
+          "metric": "promo_offer_probability_pct",
+          "key": "festive:E001?share=50&thr=3400&banner=3",
+          "value": 0.0359,
+          "shown": "3.6%",
+          "text": "Barkley & Co: chance of the sales condition"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "festive:E001?share=50&thr=3400&banner=3",
+          "value": 0.0,
+          "shown": "₹0",
+          "text": "Barkley & Co: offer value counted"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "festive:E002?share=30",
+          "value": 27447.53,
+          "shown": "₹27,448",
+          "text": "Purrline Foods: offer value counted"
+        },
+        {
+          "metric": "promo_offer_covers_ask_pct",
+          "key": "festive:E002?share=30",
+          "value": 0.6,
+          "shown": "60.0%",
+          "text": "Purrline Foods: share of the ask covered"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "festive:E003?share=35&thr=1150",
+          "value": 3106.59,
+          "shown": "₹3,107",
+          "text": "NutriPaws: offer value counted"
+        },
+        {
+          "metric": "promo_offer_covers_ask_pct",
+          "key": "festive:E003?share=35&thr=1150",
+          "value": 0.8547,
+          "shown": "85.5%",
+          "text": "NutriPaws: share of the ask covered"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "festive:E004?share=40&scope=TW-01+TW-02",
+          "value": 4419.06,
+          "shown": "₹4,419",
+          "text": "Tailwind Play: offer value counted"
+        },
+        {
+          "metric": "promo_offer_covers_ask_pct",
+          "key": "festive:E004?share=40&scope=TW-01+TW-02",
+          "value": 1.2017,
+          "shown": "120.2%",
+          "text": "Tailwind Play: share of the ask covered"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "festive:E006?share=25&banner=3&scope=GW-01+GW-03",
+          "value": 3952.07,
+          "shown": "₹3,952",
+          "text": "Groomwell: offer value counted"
+        },
+        {
+          "metric": "promo_offer_covers_ask_pct",
+          "key": "festive:E006?share=25&banner=3&scope=GW-01+GW-03",
+          "value": 0.3679,
+          "shown": "36.8%",
+          "text": "Groomwell: share of the ask covered"
+        }
+      ]
+    }
+  }
+}
