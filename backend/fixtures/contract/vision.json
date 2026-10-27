@@ -1,0 +1,152 @@
+{
+  "contract": "vision",
+  "model": "muse-spark-1.3-contributor",
+  "status": "PASS",
+  "note": "kind=licence_certificate legible=True fields=['holder_name', 'licence_number', 'valid_from', 'valid_until'] bbox_ok=True",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "client.chat.completions.create": [
+      {
+        "request_params": {
+          "model": "muse-spark-1.3-contributor",
+          "max_tokens": 3000,
+          "reasoning_effort": "low",
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "VisionExtraction",
+              "schema": {
+                "$defs": {
+                  "VisionField": {
+                    "description": "One value the vision model read off a page. ``value`` is the text exactly as printed.",
+                    "properties": {
+                      "name": {
+                        "title": "Name",
+                        "type": "string"
+                      },
+                      "value": {
+                        "title": "Value",
+                        "type": "string"
+                      },
+                      "bbox": {
+                        "items": {
+                          "type": "number"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4,
+                        "title": "Bbox",
+                        "type": "array"
+                      },
+                      "confidence": {
+                        "title": "Confidence",
+                        "type": "number"
+                      },
+                      "sku_code": {
+                        "anyOf": [
+                          {
+                            "type": "string"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ],
+                        "title": "Sku Code"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "value",
+                      "bbox",
+                      "confidence",
+                      "sku_code"
+                    ],
+                    "title": "VisionField",
+                    "type": "object",
+                    "additionalProperties": false
+                  }
+                },
+                "properties": {
+                  "kind": {
+                    "title": "Kind",
+                    "type": "string"
+                  },
+                  "legible": {
+                    "title": "Legible",
+                    "type": "boolean"
+                  },
+                  "fields": {
+                    "items": {
+                      "$ref": "#/$defs/VisionField"
+                    },
+                    "title": "Fields",
+                    "type": "array"
+                  },
+                  "notes": {
+                    "title": "Notes",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "legible",
+                  "fields",
+                  "notes"
+                ],
+                "title": "VisionExtraction",
+                "type": "object",
+                "additionalProperties": false
+              },
+              "strict": true
+            }
+          }
+        },
+        "events": null,
+        "response": {
+          "id": "chatcmpl-01a17e5f-3539-75d3-b4cc-da409a9d62f0",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "{\"fields\":[{\"bbox\":[0.386,0.252,0.694,0.277],\"confidence\":0.99,\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"FSSAI-DEMO-0001\"},{\"bbox\":[0.39,0.333,0.859,0.36],\"confidence\":0.99,\"name\":\"holder_name\",\"sku_code\":null,\"value\":\"Highland Paws Nutrition Pvt Ltd\"},{\"bbox\":[0.395,0.571,0.594,0.597],\"confidence\":0.99,\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"16 AUG 2022\"},{\"bbox\":[0.398,0.634,0.595,0.66],\"confidence\":0.99,\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"15 AUG 2027\"}],\"kind\":\"licence_certificate\",\"legible\":true,\"notes\":\"Document is marked 'SAMPLE DOCUMENT - FICTIONAL - NOT A REAL LICENCE' with 'SAMPLE' watermark; footer states 'This is a computer-generated sample for software testing.'\"}",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1793121531,
+          "model": "muse-spark-1.3-contributor",
+          "object": "chat.completion",
+          "metadata": null,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 873,
+            "prompt_tokens": 1898,
+            "total_tokens": 2771,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 635,
+              "rejected_prediction_tokens": null,
+              "text_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": null,
+              "cached_tokens": 0,
+              "image_tokens": null,
+              "text_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}
