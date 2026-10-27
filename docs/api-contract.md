@@ -329,6 +329,34 @@ Cached catalog and campaign images. `file` is `<SKU code>-packshot|cutout|lifest
 (traversal, other extensions, unknown vendor) is `404 asset_not_found`. In mock/replay a missing file for a real SKU is drawn
 as a labelled placeholder on demand. Open (no key).
 
+## Bring your own vendor (sandbox)
+
+Sandbox vendors are `U-` plus 8 lowercase alphanumerics (`^(V00[1-9]|U-[a-z0-9]{8})$` is the id pattern). They live under `STATE_DIR` for
+`UPLOAD_TTL_HOURS` (24), never in the repo, and then read as `404 unknown_vendor`. Every existing vendor route works for them
+(`/api/vendors/{id}`, `decide/metrics`, `claims`, `runs`, `replan`, `docs`); runs cover Screen and Decide, approving research locks the
+later stages. Each vendor uses the playbook of its chosen starter (`pet` = the effective playbook, `beauty`, `electronics` = `config/examples`).
+
+### `GET /api/uploads/options`
+Starters (`id, label, vertical, vendor_types, required_documents, document_kinds, has_sample, has_market_data`), `limits`
+(`sheet_mb, rows, documents, document_mb, ttl_hours`), and the `llm_mode` / `mode_label` a new upload would get.
+
+### `POST /api/uploads` (multipart) -> `201 SandboxInfo`
+Fields: `starter` (pet|beauty|electronics), `sample` (beauty|electronics: use the bundled sample instead of a sheet), `sheet` (csv/xlsx),
+`application` (json file) or the form fields `company_name, brand_name, vendor_type, categories, margin_offered_pct, payment_terms_days,
+moq_units, marketing_support_inr, launch_discount_pct, returns_policy, pitch`, and parallel lists `documents` / `doc_kinds` / `doc_declares`.
+Content is sniffed, not trusted by name. Errors use the usual `{code, problem, cause, fix}`: `upload_invalid` 422, `upload_too_large` 413,
+`upload_wrong_type` 415, `rate_limited` 429, `sandbox_full` 503, `unknown_sample` 404.
+`SandboxInfo`: `id, starter, llm_mode (rules_only|mock|live), mode_label, expires_at, ttl_remaining_s, application_provided, market_stubs,
+sku_count, warnings[], documents[{name, kind, title, status (read|not_read), reason}], url`. `GET /api/vendors/{id}` returns the same under
+`sandbox` (plus `skus_without_market_data`).
+
+Model stages: `rules_only` means no model call at all (free, always available); `mock` is the server's canned stand-in; `live` needs a valid
+`X-Demo-Key` or the caller's per-IP daily budget (`UPLOAD_LIVE_BUDGET_USD_PER_IP`, default 0.50), and the global `MAX_SPEND_USD` cap always applies.
+SKUs whose category has no benchmark (or a vendor with no search-demand rows) get verdict `needs_data` with an explanation instead of a guess.
+
+### `GET /api/uploads/samples/{name}/sku_sheet.csv`, `GET /api/vendors/{id}/export.csv`
+The sample sheet, and the verdict table as CSV with every text cell neutralised against spreadsheet formulas.
+
 ## Scanned documents
 
 Playbook section `documents` decides which document kinds are read (`kinds`, each read in `intake` or `catalog`), which fields
