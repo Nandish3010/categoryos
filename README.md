@@ -36,14 +36,56 @@ CategoryOS takes a vendor from application to a launch-ready order in four phase
 | Execute | 5 Catalog |
 | Launch | 6 Marketing, 7 JBP, 8 PO (shown as one "Launch packet" screen) |
 
-Two features carry the product:
+These features carry the product:
 
 - **Live what-if lever.** Drag target margin and MOQ and the shortlist re-scores instantly, showing capital at risk, days of cover and GMV. The numbers come from deterministic Python over the data, not from a model.
-- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell; mismatches are caught and removed before they reach the page.
+- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell. When the agent read a number wrong, it is told what the source says and tries again (up to `verifier.max_self_corrections`, default 2); the UI shows "Caught → corrected" with the attempts. A claim that never gets right is removed before it reaches the page.
+- **The impact meter.** The app records how long a person actually spends reviewing each stage (from "ready for review" to approve) and counts their edits, then compares that with the playbook's by-hand baselines (`impact`: research estimates, not measured, until you replace them with your own time diary). The vendor workspace has a per-vendor drawer; the vendors board has a team projection that shows the share of the team's week in scope of the shipped modules, the share saved, and every module as shipped or not yet built, labelled estimate or measured.
 
 - **Document vision.** Vendor documents arrive as scans and photos. muse-spark-1.3 reads the licence certificates, label photos and price-list PDF with bounding boxes; SAM 3.1 segments a label's nutrition and claims panel and the crop is read a second time; the verifier binds every reading to the page pixels and to that second read (new claim origin `vision_extraction`, evidence `{doc, page, bbox, crop_sha256}`); cross-document checks compare certificate vs application, label vs SKU sheet vs listing copy, and price list vs sheet. Screen treats the scanned certificate as ground truth over the declared status. Which documents, fields, pairs and tolerances: the playbook `documents` section. The synthetic scans (all marked SAMPLE) come from `data/generate_docs.py` (`make data-docs`).
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
+
+## Measured eval
+
+`make eval` runs three checks and writes `eval/results/*.json`: the **verifier** against planted errors (digit
+transposition, decimal shift, kg vs g, Rs vs paise, wrong row, wrong column, rounding beyond tolerance, spelled-out
+numbers) with matched correct controls; the **extraction agent** through two models, graded by the verifier and the
+self-correction loop; and **prompt injection** variants hidden in vendor text. It defaults to mock (free): the verifier
+and injection checks run real code on synthetic data; the model comparison is not shown until a live run exists (the mock results keep scripted stand-ins in eval/results, never model names). `--live` runs the models
+(needs `MODEL_MODE=live`, keys, credits). The table below is injected by `scripts/measure.py` and always names its mode.
+
+<!-- eval:start -->
+**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data. No model was called, so there are no model results here. Seed 42, run 2026-10-27.
+
+**Verifier** (no model; synthetic sheet, planted errors, matched correct controls)
+
+| Error class | Planted | Caught | Recall | Recall (error above tolerance) | False positives (of matched controls) | Precision |
+|---|---|---|---|---|---|---|
+| Digit transposition | 25 | 23 | 92% | 100% (23/23) | 0 of 25 | 100% |
+| Decimal shift | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| kg vs g (or L vs ml) | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Rs vs paise | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Wrong row | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Wrong column | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Rounding beyond tolerance | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Spelled-out number | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| **All** | 200 | 198 | 99.0% | 100.0% | 0 of 200 | 100.0% |
+
+Misses are errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages), which the verifier accepts by design.
+
+Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run
+
+**Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)
+
+| Detector | Injections caught | Benign texts wrongly flagged |
+|---|---|---|
+| Regex guard (playbook `screening.injection_patterns`) | 9/30 (30%) | 0/30 (0%) |
+| Model | not run (mock) | not run (mock) |
+| Regex + model | 9/30 (30%) | |
+
+The model layer is measured in the live run.
+<!-- eval:end -->
 
 ## Meta models used
 
@@ -139,7 +181,8 @@ All code and data in this repository were created from October 26, 2026 onward, 
 backend/    FastAPI app, agents, metrics, verifier, fixtures, tests
 frontend/   Next.js app (vendors board, vendor workspace)
 data/       Synthetic data and generate.py (see data/README.md)
-scripts/    deploy.md and smoke_deployed.sh
+eval/       Measured eval (verifier, agent, injection) and its results
+scripts/    deploy.md, smoke_deployed.sh and measure.py (make eval)
 Makefile    setup, demo, test, lint, record, smoke, data and other targets
 ```
 
