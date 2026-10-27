@@ -426,6 +426,34 @@ the pipeline off or the vendor filed nothing of that stage):
 Trace: `tool_call` `read_documents` and `cross_check_documents` (deterministic), `model_call` with `task` `doc_extract`,
 `segment_panel`, `doc_reread_panel` or `doc_reread_fields` (and `document`), then `claim_checked` per vision claim.
 
+## Live call (negotiation copilot)
+
+A call is a session in process memory (like replay sessions: gone on restart, at most 50). One pipeline serves every call:
+audio chunk (live) or canonical turn (simulate) -> transcription -> a turn -> incremental extraction on a vendor turn
+(`muse-spark`, task `copilot_<VID>_t<n>`, output `TurnExtraction {commitments, refusals, deal_terms}`) -> every quote verified
+verbatim against the call's own turns -> gap table and deal evaluator recomputed -> next ask -> SSE.
+
+| Route | Notes |
+|---|---|
+| `POST /api/vendors/{id}/call` body `{mode: "simulate"\|"live", speed?: 0.25..20}` -> `202 {call_id, mode}` | `simulate` streams the canonical transcript (V002; others `422 no_call_script`) with realistic pacing through the same pipeline from the mock fixtures, free in mock and replay (demo key only when some stage is live). `live` needs live mode (`409 live_call_unavailable` otherwise) and ALWAYS the demo key. |
+| `POST /api/vendors/{id}/call/chunks` multipart `call_id`, `speaker: buyer\|vendor\|auto`, `audio` (16 kHz mono 16-bit WAV, about 6 s) -> `{turn, state}` | live calls only (`409 call_not_accepting_input` on a simulation). `415 unsupported_audio` without a RIFF/WAVE header, `413 chunk_too_large` above `CALL_CHUNK_MAX_BYTES`. Transcribes with `muse-voice-transcribe-1.0` (`POST {base}/asr/transcribe`, existing `media.transcribe`). |
+| `POST /api/vendors/{id}/call/turns` `{call_id, speaker, text}` -> `{turn, state}` | a typed line through the same pipeline (live calls) |
+| `POST /api/vendors/{id}/call/end` `{call_id}` -> snapshot | ends the call. A live call's transcript becomes the canonical transcript for the vendor (in process), so Negotiate verifies commitments against it. |
+| `GET /api/vendors/{id}/call/{call_id}` | `{call_id, vendor_id, mode, ended, turns, state, last_seq, spend_usd}` |
+| `GET /api/vendors/{id}/call/{call_id}/events` | SSE, `event: call`, `id` = seq, `Last-Event-ID` resumes; closes after `ended` |
+
+Errors keep the typed shape: `call_not_found` 404, `call_ended` 409, `call_budget_exceeded` 429 (the per-call spend budget,
+config `CALL_BUDGET_USD`, default 2.00; it is config, not playbook), plus the codes above.
+
+SSE event `{seq, call_id, type, t_ms, payload}`: `started {mode, state, budget_usd}`, `turn {turn: {turn, speaker, text, source: simulated|asr|typed}}`,
+`extraction {turn, model, mode, cost_usd, latency_ms}`, `state {state, changed: {gap_terms[], deal_ids[]}, turn}`, `error {code, problem, cause, fix, turn?}`,
+`ended {turns, canonical, spend_usd, state}`. `state` is shaped like the Negotiate stage's `data` (`gap_table`, `commitments`, `refusals`, `required`,
+`application_terms`, `transcript.turns`, `deals` as in `data.deals` without a talk track, `verification`) plus
+`next_ask: {kind: reject_conditional|hold|gap|ask_term|done|listen, line, reason, term, deal_id?}` and `spend_usd`.
+`next_ask` comes from the playbook rules and the engine's numbers (no model): a conditional offer that fails the deal evaluator
+comes first ("Don't accept: <0.1% chance"), then the gap with the largest shortfall (for margin, trading the vendor's wish for
+faster payment when the application asks for it, priced at `negotiation.cost_of_capital_pct_annual`).
+
 ## Other routes (unchanged)
 
 `GET /health`, `/api/stages`, `/api/mode`, `/api/vendors`, `/api/vendors/{id}`,

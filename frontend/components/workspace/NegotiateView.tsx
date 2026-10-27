@@ -11,13 +11,14 @@ import {
   type NegotiateData,
   type TranscriptTurn,
 } from "@/lib/stages";
-import { dealNote, readDeals, type DealAssessment, type DealsData } from "@/lib/deals";
+import { dealNote, readDeals, type DealAssessment } from "@/lib/deals";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
 import { CopyButton } from "../CopyButton";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
 import { DealEvaluator, DecisionChip } from "./DealEvaluator";
+import { LiveCall } from "./LiveCall";
 
 type Selection = { turn: number; quote: string; term: string } | null;
 
@@ -45,18 +46,21 @@ export function splitQuote(text: string, quote: string): [string, string, string
   return [text.slice(0, at), quote, text.slice(at + quote.length)];
 }
 
-function GapTable({
+export function GapTable({
   gaps,
   selected,
   onSelect,
   deals,
   onOpenDeal,
+  flash = [],
 }: {
   gaps: GapRow[];
   selected: Selection;
   onSelect: (s: Selection) => void;
   deals: DealAssessment[];
   onOpenDeal: (id: string) => void;
+  /** Terms that changed on the latest live-call turn. */
+  flash?: string[];
 }) {
   const attachAt = gaps.some((g) => g.term === "margin_pct") ? "margin_pct" : gaps[0]?.term;
   return (
@@ -84,7 +88,7 @@ function GapTable({
                   key={g.term}
                   data-term={g.term}
                   data-status={g.status}
-                  className={`h-10 border-b border-border last:border-b-0 ${isSel ? "bg-accent/10" : ""}`}
+                  className={`h-10 border-b border-border last:border-b-0 ${isSel ? "bg-accent/10" : ""} ${flash.includes(g.term) ? "flash-amber" : ""}`}
                 >
                   <th scope="row" className="px-3 text-left font-normal">{g.label}</th>
                   <td className="num px-3 text-right text-text-dim">{termValue(g.application, g.unit)}</td>
@@ -270,7 +274,7 @@ function CounterOffer({ data }: { data: NegotiateData }) {
   );
 }
 
-export function NegotiateView({ stage }: { stage: StageResult | undefined | null }) {
+export function NegotiateReview({ stage }: { stage: StageResult | undefined | null }) {
   const [selected, setSelected] = useState<Selection>(null);
   const [dealOpen, setDealOpen] = useState<Record<string, boolean>>({});
   const data = readNegotiate(stage);
@@ -363,6 +367,37 @@ export function NegotiateView({ stage }: { stage: StageResult | undefined | null
       <TranscriptPanel data={data} selected={selected} quoteTurns={quoteTurns} />
       <Refusals data={data} />
       <CounterOffer data={data} />
+    </div>
+  );
+}
+
+
+/** Negotiate: review the call transcript the pipeline read, or run a live call (simulated or on the microphone). */
+export function NegotiateView({ stage, vendorId }: { stage: StageResult | undefined | null; vendorId?: string }) {
+  const [view, setView] = useState<"review" | "live">("review");
+  if (!vendorId) return <NegotiateReview stage={stage} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <div role="tablist" aria-label="Negotiate view" className="flex gap-1 self-start rounded-card border border-border bg-surface p-1">
+        {(
+          [
+            ["review", "Call review"],
+            ["live", "Live call"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            role="tab"
+            type="button"
+            aria-selected={view === id}
+            onClick={() => setView(id)}
+            className={`min-h-8 rounded-chip px-3 text-sm ${view === id ? "bg-accent/15 font-medium text-accent" : "text-text-dim hover:text-text"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {view === "live" ? <LiveCall vendorId={vendorId} /> : <NegotiateReview stage={stage} />}
     </div>
   );
 }
