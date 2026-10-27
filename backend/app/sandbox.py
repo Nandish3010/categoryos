@@ -10,6 +10,7 @@ Model modes of a sandbox vendor (``llm_mode`` in its meta):
 The engine, screening guards and verifier are the same ones the built-in vendors use."""
 
 import asyncio
+import csv
 import hashlib
 import json
 import logging
@@ -203,9 +204,22 @@ def build_application(vid: str, app_in: ApplicationIn | None, pol: policy.Policy
     )
 
 
-def _copy_market(starter: str, dest: Path) -> bool:
-    """Copy the starter's market stubs (benchmarks, search demand, catalog) into the vendor's own folder, filling the
-    files a stub set may omit with empty ones. False when the starter ships none (the shared pet data is used)."""
+def _copy_listings(source: Path, target: Path, vendor_id: str) -> None:
+    """Competitor listings are keyed ``<vendor id>:<sku code>``. A stub file names its SKUs by code alone (a sandbox
+    vendor's id does not exist until the upload), so each bare code is scoped to this vendor as it is copied."""
+    with source.open(newline="", encoding="utf-8") as f:
+        rows = list(csv.reader(f))
+    for row in rows[1:]:
+        if row and ":" not in row[0]:
+            row[0] = f"{vendor_id}:{row[0]}"
+    with target.open("w", newline="", encoding="utf-8") as f:
+        csv.writer(f, lineterminator="\n").writerows(rows)
+
+
+def _copy_market(starter: str, dest: Path, vendor_id: str) -> bool:
+    """Copy the starter's market stubs (benchmarks, search demand, catalog, competitor listings) into the vendor's own
+    folder, filling the files a stub set may omit with empty ones. False when the starter ships none (the shared pet
+    data is used)."""
     src = Path(settings.samples_dir) / starter / "market"
     if not (src / "category_benchmarks.json").is_file():
         return False
@@ -213,7 +227,9 @@ def _copy_market(starter: str, dest: Path) -> bool:
         target = dest / rel
         target.parent.mkdir(parents=True, exist_ok=True)
         source = src / rel
-        if source.is_file():
+        if source.is_file() and rel.endswith("competitor_listings.csv"):
+            _copy_listings(source, target, vendor_id)
+        elif source.is_file():
             shutil.copyfile(source, target)
         elif rel.endswith("competitor_listings.csv"):
             target.write_text("vendor_sku_ref,marketplace,title,price,rating,review_count,est_monthly_sales\n", encoding="utf-8")
@@ -303,7 +319,7 @@ def create(
             (tmp / "docs" / name).write_bytes(data)
         if manifest:
             (tmp / "docs" / "manifest.json").write_text(json.dumps({"documents": manifest}), encoding="utf-8")
-        has_market = _copy_market(starter, tmp / "data")
+        has_market = _copy_market(starter, tmp / "data", vid)
         now = time.time()
         meta = {
             "id": vid,

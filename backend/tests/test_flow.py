@@ -78,6 +78,32 @@ def test_full_mock_flow(client, vendor_id):
     assert seqs == sorted(seqs) and len(set(seqs)) == len(seqs)
 
 
+def test_research_is_never_visible_in_review_before_its_shortlist_mirror(client, monkeypatch):
+    """Regression for the flake in test_full_mock_flow: the shortlist mirror used to be saved after research, so a reader
+    polling in between saw research=review with shortlist=pending. A slow shortlist write makes that window wide."""
+    import asyncio
+
+    from app import store
+
+    real_save = store.save_stage
+
+    async def slow_shortlist(run_id, result):
+        if result.stage == "shortlist":
+            await asyncio.sleep(0.3)
+        await real_save(run_id, result)
+
+    monkeypatch.setattr(store, "save_stage", slow_shortlist)
+    run_id = client.post("/api/vendors/V001/runs").json()["run_id"]
+    deadline = time.time() + 15
+    while time.time() < deadline:
+        stages = stages_of(client, run_id)
+        if stages["research"]["status"] in SETTLED:
+            assert stages["shortlist"]["status"] == "review"
+            return
+        time.sleep(0.005)
+    raise AssertionError("research never settled")
+
+
 def all_events(client, run_id):
     """The stream ends at each `done`; resume with Last-Event-ID until only the synthetic tail is left."""
     events, last = [], 0

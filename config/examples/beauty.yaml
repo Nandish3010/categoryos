@@ -196,10 +196,16 @@ taxonomy:
     - toner
     - lotion
     - \bspf\b
+    - face mask
+    - sheet mask
+    - peel[- ]off
     subcategories:
       sun care:
       - sunscreen
       - spf
+      masks:
+      - \bmask\b
+      - peel[- ]off
       cleansers:
       - face wash
       - cleanser

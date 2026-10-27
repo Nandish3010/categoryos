@@ -47,6 +47,7 @@ export function useLever(
     seq: 0,
   });
   const reqId = useRef(0);
+  const answered = useRef(false); // the first request of a page load goes out at once: nobody is mid-drag yet
   const fetcherRef = useRef(fetcher);
   useEffect(() => {
     fetcherRef.current = fetcher;
@@ -60,6 +61,7 @@ export function useLever(
         .current(vendorId, offset, moq, controller.signal)
         .then((data) => {
           if (id !== reqId.current) return; // stale
+          answered.current = true;
           setState((s) => ({
             data,
             error: null,
@@ -78,7 +80,7 @@ export function useLever(
             settledKey: key,
           }));
         });
-    }, debounceMs);
+    }, answered.current ? debounceMs : 0);
     return () => {
       clearTimeout(timer);
       controller.abort();

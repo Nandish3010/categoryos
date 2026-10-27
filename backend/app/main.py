@@ -50,14 +50,22 @@ from app.schemas import (
 from app.verify import VerifySummary, engine_claims, inject_fault, verify_all
 
 
+def warm_caches() -> None:
+    """Pay the one-time costs (market data, playbook, per-vendor metrics and claim verification) before the first request,
+    so the first page load of the demo is as fast as the hundredth. Deterministic and free: no model calls."""
+    for vendor_id in ALLOWED_VENDORS:
+        lever = apply_levers(build_base(vendor_id))
+        verify_all(engine_claims(vendor_id, lever))
+    policy.policy_hash()
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     if settings.model_mode == "replay":
         replay.load_all()  # problems are logged; affected vendors fall back to the mock fixtures, degraded
     if not replay.pure_replay():
         await store.init()
-    for vendor_id in ALLOWED_VENDORS:
-        apply_levers(build_base(vendor_id))
+    warm_caches()
     sandbox.cleanup()  # expired sandbox vendors from a previous run of the server
     sweeper = asyncio.create_task(sandbox.cleanup_loop())
     yield
