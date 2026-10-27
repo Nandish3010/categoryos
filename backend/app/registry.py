@@ -120,6 +120,7 @@ def scope_for(vendor_id: str) -> scope.Scope | None:
         llm_mode=str(meta.get("llm_mode", "rules_only")),
         ip_key=str(meta.get("ip_key", "")),
         market_dir=str(market) if (market / "category_benchmarks.json").exists() else None,
+        public=bool(meta.get("public_live", False)) and bool(meta.get("ip_key")),
     )
 
 

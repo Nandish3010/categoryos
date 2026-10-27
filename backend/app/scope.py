@@ -17,6 +17,7 @@ class Scope:
     llm_mode: str  # rules_only | mock | live
     ip_key: str  # hashed client address: the per-IP budget bucket
     market_dir: str | None = None  # the vendor's own market stubs, when its starter ships them
+    public: bool = False  # live via the public live budget (no demo key): spend is charged to app.public_live
 
 
 _current: contextvars.ContextVar[Scope | None] = contextvars.ContextVar("categoryos_scope", default=None)

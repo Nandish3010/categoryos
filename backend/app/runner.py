@@ -393,7 +393,8 @@ async def get_run_view(run_id: str) -> dict:
     stages = {
         sid: (stored.get(sid) or StageResult(stage=sid, status="pending")).model_dump(mode="json") for sid in STAGE_IDS
     }
-    return {**run, "stages": stages, "impact": await run_impact(run_id)}
+    prov = replay.provenance(run["vendor_id"]) if run.get("mode") == "replay" else None
+    return {**run, "stages": stages, "impact": await run_impact(run_id), "provenance": prov}
 
 
 # ---------- impact meter ----------
