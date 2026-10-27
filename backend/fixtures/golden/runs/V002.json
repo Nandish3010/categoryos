@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "stage": "research"
   },
   {
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "stage": "po"
   }
  ],
@@ -164,6 +164,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -212,6 +213,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -260,6 +262,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -308,6 +311,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -356,6 +360,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -404,6 +409,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -452,6 +458,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -500,6 +507,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -548,6 +556,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -596,6 +605,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -644,6 +654,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -787,6 +798,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -823,6 +835,7 @@
       "value": -1061.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -859,6 +872,7 @@
       "value": 34.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -895,6 +909,7 @@
       "value": -1305.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -931,6 +946,7 @@
       "value": 1251.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -967,6 +983,7 @@
       "value": 148.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -1003,6 +1020,7 @@
       "value": 133.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -1039,6 +1057,7 @@
       "value": 171.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -1075,6 +1094,7 @@
       "value": 186.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -1111,6 +1131,7 @@
       "value": 447.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -1147,6 +1168,7 @@
       "value": 596.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -2116,7 +2138,7 @@
      "vendor_id": "V002"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=4f385075cfbb",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=beeeb85a863a",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -2134,7 +2156,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -2234,6 +2256,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2277,6 +2300,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:price_gap_pct",
      "metric": "price_gap_pct",
@@ -2307,6 +2331,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:demand_score",
      "metric": "demand_score",
@@ -2337,6 +2362,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:overlap",
      "metric": "overlap",
@@ -2367,6 +2393,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2410,6 +2437,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:price_gap_pct",
      "metric": "price_gap_pct",
@@ -2440,6 +2468,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:demand_score",
      "metric": "demand_score",
@@ -2470,6 +2499,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:overlap",
      "metric": "overlap",
@@ -2500,6 +2530,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2543,6 +2574,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:price_gap_pct",
      "metric": "price_gap_pct",
@@ -2573,6 +2605,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:demand_score",
      "metric": "demand_score",
@@ -2603,6 +2636,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:overlap",
      "metric": "overlap",
@@ -2633,6 +2667,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2676,6 +2711,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:price_gap_pct",
      "metric": "price_gap_pct",
@@ -2706,6 +2742,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:demand_score",
      "metric": "demand_score",
@@ -2736,6 +2773,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:overlap",
      "metric": "overlap",
@@ -2766,6 +2804,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:capital_at_risk_inr",
      "metric": "capital_at_risk_inr",
@@ -2796,6 +2835,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2839,6 +2879,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2882,6 +2923,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2925,6 +2967,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -2969,6 +3012,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3000,6 +3044,7 @@
       "value": 0.2066
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -3018,6 +3063,7 @@
       "value": 0.0258
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:demand_score",
       "metric": "demand_score",
@@ -3036,6 +3082,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:overlap",
       "metric": "overlap",
@@ -3054,6 +3101,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3085,6 +3133,7 @@
       "value": 0.1815
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:price_gap_pct",
       "metric": "price_gap_pct",
@@ -3103,6 +3152,7 @@
       "value": 0.0592
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:demand_score",
       "metric": "demand_score",
@@ -3121,6 +3171,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:overlap",
       "metric": "overlap",
@@ -3139,6 +3190,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3170,6 +3222,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:price_gap_pct",
       "metric": "price_gap_pct",
@@ -3188,6 +3241,7 @@
       "value": 0.0717
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:demand_score",
       "metric": "demand_score",
@@ -3206,6 +3260,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:overlap",
       "metric": "overlap",
@@ -3224,6 +3279,7 @@
       "value": 0.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3255,6 +3311,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -3273,6 +3330,7 @@
       "value": 0.0156
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:demand_score",
       "metric": "demand_score",
@@ -3291,6 +3349,7 @@
       "value": 0.8
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:overlap",
       "metric": "overlap",
@@ -3309,6 +3368,7 @@
       "value": 0.4286
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:capital_at_risk_inr",
       "metric": "capital_at_risk_inr",
@@ -3327,6 +3387,7 @@
       "value": 188588.3272
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3358,6 +3419,7 @@
       "value": 148.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3389,6 +3451,7 @@
       "value": 133.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3420,6 +3483,7 @@
       "value": 199.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -3632,6 +3696,11 @@
       }
      ],
      "replanned": false,
+     "self_correction": {
+      "corrected": [],
+      "max": 2,
+      "unresolved": []
+     },
      "struck": [],
      "summary": {
       "capital_at_risk_inr": 188588.3272,
@@ -3656,8 +3725,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-    "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+    "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -3839,7 +3908,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -4033,7 +4102,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -4126,7 +4195,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -4158,6 +4227,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4201,6 +4271,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4244,6 +4315,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4287,6 +4359,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4330,6 +4403,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4373,6 +4447,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -4417,6 +4492,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4448,6 +4524,7 @@
       "value": 0.21
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4479,6 +4556,7 @@
       "value": 30.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4510,6 +4588,7 @@
       "value": 500.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4541,6 +4620,7 @@
       "value": 50000.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4572,6 +4652,7 @@
       "value": 0.05
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -4915,7 +4996,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -5081,6 +5162,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -5129,6 +5211,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -5201,6 +5284,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5244,6 +5328,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5287,6 +5372,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5330,6 +5416,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5373,6 +5460,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5416,6 +5504,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5459,6 +5548,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5502,6 +5592,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -5546,6 +5637,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5577,6 +5669,7 @@
       "value": 199.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5608,6 +5701,7 @@
       "value": 60.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5639,6 +5733,7 @@
       "value": 179.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5670,6 +5765,7 @@
       "value": 60.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5701,6 +5797,7 @@
       "value": 299.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5732,6 +5829,7 @@
       "value": 30.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5763,6 +5861,7 @@
       "value": 649.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -5794,6 +5893,7 @@
       "value": 6000.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -5830,6 +5930,7 @@
       "value": 60.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -6669,8 +6770,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-    "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+    "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
@@ -6759,6 +6860,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:po_total",
      "metric": "po_total",
@@ -6789,6 +6891,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": null,
      "id": "V002:po_grand_total",
      "metric": "po_grand_total",
@@ -6870,7 +6973,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -6934,7 +7037,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -6954,6 +7057,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:po_total",
       "metric": "po_total",
@@ -6972,6 +7076,7 @@
       "value": 113518.82
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:po_grand_total",
       "metric": "po_grand_total",
@@ -7091,8 +7196,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-    "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+    "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
@@ -7119,9 +7224,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+  "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T03:16:43+00:00",
+  "recorded_at": "2026-10-27T03:21:05+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -7152,7 +7257,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=4f385075cfbb",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=beeeb85a863a",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -7170,7 +7275,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -7270,6 +7375,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7313,6 +7419,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -7343,6 +7450,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:demand_score",
        "metric": "demand_score",
@@ -7373,6 +7481,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:overlap",
        "metric": "overlap",
@@ -7403,6 +7512,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7446,6 +7556,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:price_gap_pct",
        "metric": "price_gap_pct",
@@ -7476,6 +7587,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:demand_score",
        "metric": "demand_score",
@@ -7506,6 +7618,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:overlap",
        "metric": "overlap",
@@ -7536,6 +7649,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7579,6 +7693,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:price_gap_pct",
        "metric": "price_gap_pct",
@@ -7609,6 +7724,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:demand_score",
        "metric": "demand_score",
@@ -7639,6 +7755,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:overlap",
        "metric": "overlap",
@@ -7669,6 +7786,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7712,6 +7830,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -7742,6 +7861,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:demand_score",
        "metric": "demand_score",
@@ -7772,6 +7892,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:overlap",
        "metric": "overlap",
@@ -7802,6 +7923,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:capital_at_risk_inr",
        "metric": "capital_at_risk_inr",
@@ -7832,6 +7954,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7875,6 +7998,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7918,6 +8042,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -7961,6 +8086,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -8005,6 +8131,7 @@
      "payload": {
       "claims": [
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8036,6 +8163,7 @@
         "value": 0.2066
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -8054,6 +8182,7 @@
         "value": 0.0258
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:demand_score",
         "metric": "demand_score",
@@ -8072,6 +8201,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:overlap",
         "metric": "overlap",
@@ -8090,6 +8220,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8121,6 +8252,7 @@
         "value": 0.1815
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:price_gap_pct",
         "metric": "price_gap_pct",
@@ -8139,6 +8271,7 @@
         "value": 0.0592
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:demand_score",
         "metric": "demand_score",
@@ -8157,6 +8290,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:overlap",
         "metric": "overlap",
@@ -8175,6 +8309,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8206,6 +8341,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:price_gap_pct",
         "metric": "price_gap_pct",
@@ -8224,6 +8360,7 @@
         "value": 0.0717
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:demand_score",
         "metric": "demand_score",
@@ -8242,6 +8379,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:overlap",
         "metric": "overlap",
@@ -8260,6 +8398,7 @@
         "value": 0.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8291,6 +8430,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -8309,6 +8449,7 @@
         "value": 0.0156
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:demand_score",
         "metric": "demand_score",
@@ -8327,6 +8468,7 @@
         "value": 0.8
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:overlap",
         "metric": "overlap",
@@ -8345,6 +8487,7 @@
         "value": 0.4286
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:capital_at_risk_inr",
         "metric": "capital_at_risk_inr",
@@ -8363,6 +8506,7 @@
         "value": 188588.3272
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8394,6 +8538,7 @@
         "value": 148.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8425,6 +8570,7 @@
         "value": 133.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8456,6 +8602,7 @@
         "value": 199.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -8668,6 +8815,11 @@
         }
        ],
        "replanned": true,
+       "self_correction": {
+        "corrected": [],
+        "max": 2,
+        "unresolved": []
+       },
        "struck": [],
        "summary": {
         "capital_at_risk_inr": 188588.3272,
@@ -8692,8 +8844,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-      "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+      "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+      "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -8875,7 +9027,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+      "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -8902,12 +9054,13 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "moq": 800,
    "offset": 0.0,
    "research": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -8939,6 +9092,7 @@
       "value": 0.2066
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -8957,6 +9111,7 @@
       "value": 0.0258
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:demand_score",
       "metric": "demand_score",
@@ -8975,6 +9130,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:overlap",
       "metric": "overlap",
@@ -8993,6 +9149,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9024,6 +9181,7 @@
       "value": 0.1815
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:price_gap_pct",
       "metric": "price_gap_pct",
@@ -9042,6 +9200,7 @@
       "value": 0.0592
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:demand_score",
       "metric": "demand_score",
@@ -9060,6 +9219,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:overlap",
       "metric": "overlap",
@@ -9078,6 +9238,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9109,6 +9270,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:price_gap_pct",
       "metric": "price_gap_pct",
@@ -9127,6 +9289,7 @@
       "value": 0.0717
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:demand_score",
       "metric": "demand_score",
@@ -9145,6 +9308,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:overlap",
       "metric": "overlap",
@@ -9163,6 +9327,7 @@
       "value": 0.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9194,6 +9359,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -9212,6 +9378,7 @@
       "value": 0.0156
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:demand_score",
       "metric": "demand_score",
@@ -9230,6 +9397,7 @@
       "value": 0.8
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:overlap",
       "metric": "overlap",
@@ -9248,6 +9416,7 @@
       "value": 0.4286
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:capital_at_risk_inr",
       "metric": "capital_at_risk_inr",
@@ -9266,6 +9435,7 @@
       "value": 188588.3272
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9297,6 +9467,7 @@
       "value": 148.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9328,6 +9499,7 @@
       "value": 133.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9359,6 +9531,7 @@
       "value": 199.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -9571,6 +9744,11 @@
       }
      ],
      "replanned": true,
+     "self_correction": {
+      "corrected": [],
+      "max": 2,
+      "unresolved": []
+     },
      "struck": [],
      "summary": {
       "capital_at_risk_inr": 188588.3272,
@@ -9595,8 +9773,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-    "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+    "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+    "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -9629,7 +9807,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=5b301bc5e018",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=70982625ed7d",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -9647,7 +9825,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -9747,6 +9925,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -9790,6 +9969,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -9820,6 +10000,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:demand_score",
        "metric": "demand_score",
@@ -9850,6 +10031,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:overlap",
        "metric": "overlap",
@@ -9880,6 +10062,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -9923,6 +10106,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:price_gap_pct",
        "metric": "price_gap_pct",
@@ -9953,6 +10137,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:demand_score",
        "metric": "demand_score",
@@ -9983,6 +10168,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:overlap",
        "metric": "overlap",
@@ -10013,6 +10199,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10056,6 +10243,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:price_gap_pct",
        "metric": "price_gap_pct",
@@ -10086,6 +10274,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:demand_score",
        "metric": "demand_score",
@@ -10116,6 +10305,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:overlap",
        "metric": "overlap",
@@ -10146,6 +10336,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10189,6 +10380,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -10219,6 +10411,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:demand_score",
        "metric": "demand_score",
@@ -10249,6 +10442,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:overlap",
        "metric": "overlap",
@@ -10279,6 +10473,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:capital_at_risk_inr",
        "metric": "capital_at_risk_inr",
@@ -10309,6 +10504,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10352,6 +10548,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10395,6 +10592,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10438,6 +10636,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -10482,6 +10681,7 @@
      "payload": {
       "claims": [
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10513,6 +10713,7 @@
         "value": 0.2066
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -10531,6 +10732,7 @@
         "value": 0.0258
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:demand_score",
         "metric": "demand_score",
@@ -10549,6 +10751,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:overlap",
         "metric": "overlap",
@@ -10567,6 +10770,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10598,6 +10802,7 @@
         "value": 0.1815
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:price_gap_pct",
         "metric": "price_gap_pct",
@@ -10616,6 +10821,7 @@
         "value": 0.0592
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:demand_score",
         "metric": "demand_score",
@@ -10634,6 +10840,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:overlap",
         "metric": "overlap",
@@ -10652,6 +10859,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10683,6 +10891,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:price_gap_pct",
         "metric": "price_gap_pct",
@@ -10701,6 +10910,7 @@
         "value": 0.0717
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:demand_score",
         "metric": "demand_score",
@@ -10719,6 +10929,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:overlap",
         "metric": "overlap",
@@ -10737,6 +10948,7 @@
         "value": 0.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10768,6 +10980,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -10786,6 +10999,7 @@
         "value": 0.0156
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:demand_score",
         "metric": "demand_score",
@@ -10804,6 +11018,7 @@
         "value": 0.8
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:overlap",
         "metric": "overlap",
@@ -10822,6 +11037,7 @@
         "value": 0.4286
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:capital_at_risk_inr",
         "metric": "capital_at_risk_inr",
@@ -10840,6 +11056,7 @@
         "value": 188588.3272
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10871,6 +11088,7 @@
         "value": 148.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10902,6 +11120,7 @@
         "value": 133.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -10933,6 +11152,7 @@
         "value": 199.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -11145,6 +11365,11 @@
         }
        ],
        "replanned": true,
+       "self_correction": {
+        "corrected": [],
+        "max": 2,
+        "unresolved": []
+       },
        "struck": [],
        "summary": {
         "capital_at_risk_inr": 188588.3272,
@@ -11169,8 +11394,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
-      "narrative_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
+      "metrics_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
+      "narrative_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -11352,7 +11577,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
+      "metrics_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -11379,12 +11604,13 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
+   "metrics_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
    "moq": 800,
    "offset": 2.0,
    "research": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11416,6 +11642,7 @@
       "value": 0.2066
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -11434,6 +11661,7 @@
       "value": 0.0258
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:demand_score",
       "metric": "demand_score",
@@ -11452,6 +11680,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:overlap",
       "metric": "overlap",
@@ -11470,6 +11699,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11501,6 +11731,7 @@
       "value": 0.1815
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:price_gap_pct",
       "metric": "price_gap_pct",
@@ -11519,6 +11750,7 @@
       "value": 0.0592
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:demand_score",
       "metric": "demand_score",
@@ -11537,6 +11769,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:overlap",
       "metric": "overlap",
@@ -11555,6 +11788,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11586,6 +11820,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:price_gap_pct",
       "metric": "price_gap_pct",
@@ -11604,6 +11839,7 @@
       "value": 0.0717
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:demand_score",
       "metric": "demand_score",
@@ -11622,6 +11858,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:overlap",
       "metric": "overlap",
@@ -11640,6 +11877,7 @@
       "value": 0.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11671,6 +11909,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -11689,6 +11928,7 @@
       "value": 0.0156
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:demand_score",
       "metric": "demand_score",
@@ -11707,6 +11947,7 @@
       "value": 0.8
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:overlap",
       "metric": "overlap",
@@ -11725,6 +11966,7 @@
       "value": 0.4286
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:capital_at_risk_inr",
       "metric": "capital_at_risk_inr",
@@ -11743,6 +11985,7 @@
       "value": 188588.3272
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11774,6 +12017,7 @@
       "value": 148.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11805,6 +12049,7 @@
       "value": 133.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -11836,6 +12081,7 @@
       "value": 199.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -12048,6 +12294,11 @@
       }
      ],
      "replanned": true,
+     "self_correction": {
+      "corrected": [],
+      "max": 2,
+      "unresolved": []
+     },
      "struck": [],
      "summary": {
       "capital_at_risk_inr": 188588.3272,
@@ -12072,8 +12323,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
-    "narrative_hash": "5b301bc5e018f06436508d86c62fb9843ed06eca60f03ddf48ec191aec50628f",
+    "metrics_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
+    "narrative_hash": "70982625ed7d5c31c456c56575fbcc7cdcb1f1ce56e4e35d9eea5ffbcd377629",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -12106,7 +12357,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=06f73513d1be",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=2c6c5e003902",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -12124,7 +12375,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -12224,6 +12475,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12267,6 +12519,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -12297,6 +12550,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:demand_score",
        "metric": "demand_score",
@@ -12327,6 +12581,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T01:overlap",
        "metric": "overlap",
@@ -12357,6 +12612,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12400,6 +12656,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:price_gap_pct",
        "metric": "price_gap_pct",
@@ -12430,6 +12687,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:demand_score",
        "metric": "demand_score",
@@ -12460,6 +12718,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T02:overlap",
        "metric": "overlap",
@@ -12490,6 +12749,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12533,6 +12793,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:price_gap_pct",
        "metric": "price_gap_pct",
@@ -12563,6 +12824,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:demand_score",
        "metric": "demand_score",
@@ -12593,6 +12855,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-T03:overlap",
        "metric": "overlap",
@@ -12623,6 +12886,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12666,6 +12930,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:price_gap_pct",
        "metric": "price_gap_pct",
@@ -12696,6 +12961,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:demand_score",
        "metric": "demand_score",
@@ -12726,6 +12992,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:MW-L01:overlap",
        "metric": "overlap",
@@ -12756,6 +13023,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": null,
        "id": "V002:capital_at_risk_inr",
        "metric": "capital_at_risk_inr",
@@ -12786,6 +13054,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12829,6 +13098,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12872,6 +13142,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12915,6 +13186,7 @@
      "model": null,
      "payload": {
       "claim": {
+       "attempts": [],
        "evidence": {
         "as_of": null,
         "bbox": null,
@@ -12959,6 +13231,7 @@
      "payload": {
       "claims": [
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -12990,6 +13263,7 @@
         "value": 0.2066
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -13008,6 +13282,7 @@
         "value": 0.0258
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:demand_score",
         "metric": "demand_score",
@@ -13026,6 +13301,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T01:overlap",
         "metric": "overlap",
@@ -13044,6 +13320,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13075,6 +13352,7 @@
         "value": 0.1815
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:price_gap_pct",
         "metric": "price_gap_pct",
@@ -13093,6 +13371,7 @@
         "value": 0.0592
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:demand_score",
         "metric": "demand_score",
@@ -13111,6 +13390,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T02:overlap",
         "metric": "overlap",
@@ -13129,6 +13409,7 @@
         "value": 0.5
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13160,6 +13441,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:price_gap_pct",
         "metric": "price_gap_pct",
@@ -13178,6 +13460,7 @@
         "value": 0.0717
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:demand_score",
         "metric": "demand_score",
@@ -13196,6 +13479,7 @@
         "value": 0.925
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-T03:overlap",
         "metric": "overlap",
@@ -13214,6 +13498,7 @@
         "value": 0.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13245,6 +13530,7 @@
         "value": 0.1368
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:price_gap_pct",
         "metric": "price_gap_pct",
@@ -13263,6 +13549,7 @@
         "value": 0.0156
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:demand_score",
         "metric": "demand_score",
@@ -13281,6 +13568,7 @@
         "value": 0.8
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:MW-L01:overlap",
         "metric": "overlap",
@@ -13299,6 +13587,7 @@
         "value": 0.4286
        },
        {
+        "attempts": [],
         "evidence": null,
         "id": "V002:capital_at_risk_inr",
         "metric": "capital_at_risk_inr",
@@ -13317,6 +13606,7 @@
         "value": 188588.3272
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13348,6 +13638,7 @@
         "value": 148.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13379,6 +13670,7 @@
         "value": 133.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13410,6 +13702,7 @@
         "value": 199.0
        },
        {
+        "attempts": [],
         "evidence": {
          "as_of": null,
          "bbox": null,
@@ -13622,6 +13915,11 @@
         }
        ],
        "replanned": true,
+       "self_correction": {
+        "corrected": [],
+        "max": 2,
+        "unresolved": []
+       },
        "struck": [],
        "summary": {
         "capital_at_risk_inr": 188588.3272,
@@ -13646,8 +13944,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
-      "narrative_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
+      "metrics_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
+      "narrative_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -13829,7 +14127,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
+      "metrics_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -13856,12 +14154,13 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
+   "metrics_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
    "moq": 800,
    "offset": 4.0,
    "research": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -13893,6 +14192,7 @@
       "value": 0.2066
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -13911,6 +14211,7 @@
       "value": 0.0258
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:demand_score",
       "metric": "demand_score",
@@ -13929,6 +14230,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T01:overlap",
       "metric": "overlap",
@@ -13947,6 +14249,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -13978,6 +14281,7 @@
       "value": 0.1815
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:price_gap_pct",
       "metric": "price_gap_pct",
@@ -13996,6 +14300,7 @@
       "value": 0.0592
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:demand_score",
       "metric": "demand_score",
@@ -14014,6 +14319,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T02:overlap",
       "metric": "overlap",
@@ -14032,6 +14338,7 @@
       "value": 0.5
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14063,6 +14370,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:price_gap_pct",
       "metric": "price_gap_pct",
@@ -14081,6 +14389,7 @@
       "value": 0.0717
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:demand_score",
       "metric": "demand_score",
@@ -14099,6 +14408,7 @@
       "value": 0.925
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-T03:overlap",
       "metric": "overlap",
@@ -14117,6 +14427,7 @@
       "value": 0.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14148,6 +14459,7 @@
       "value": 0.1368
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:price_gap_pct",
       "metric": "price_gap_pct",
@@ -14166,6 +14478,7 @@
       "value": 0.0156
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:demand_score",
       "metric": "demand_score",
@@ -14184,6 +14497,7 @@
       "value": 0.8
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:MW-L01:overlap",
       "metric": "overlap",
@@ -14202,6 +14516,7 @@
       "value": 0.4286
      },
      {
+      "attempts": [],
       "evidence": null,
       "id": "V002:capital_at_risk_inr",
       "metric": "capital_at_risk_inr",
@@ -14220,6 +14535,7 @@
       "value": 188588.3272
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14251,6 +14567,7 @@
       "value": 148.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14282,6 +14599,7 @@
       "value": 133.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14313,6 +14631,7 @@
       "value": 199.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": null,
        "bbox": null,
@@ -14525,6 +14844,11 @@
       }
      ],
      "replanned": true,
+     "self_correction": {
+      "corrected": [],
+      "max": 2,
+      "unresolved": []
+     },
      "struck": [],
      "summary": {
       "capital_at_risk_inr": 188588.3272,
@@ -14549,8 +14873,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
-    "narrative_hash": "06f73513d1bed46b78ff128385f2d9b3ca89093a247f8ce05fb19d8eb6c46882",
+    "metrics_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
+    "narrative_hash": "2c6c5e00390260f956c345caa75a23d36b89f75135de6ac466c9b14685c5b511",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -14562,6 +14886,7 @@
   "catalog": {
    "claims": [
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14593,6 +14918,7 @@
      "value": 199.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14624,6 +14950,7 @@
      "value": 60.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14655,6 +14982,7 @@
      "value": 179.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14686,6 +15014,7 @@
      "value": 60.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14717,6 +15046,7 @@
      "value": 299.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14748,6 +15078,7 @@
      "value": 30.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14779,6 +15110,7 @@
      "value": 649.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -14810,6 +15142,7 @@
      "value": 6000.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -14846,6 +15179,7 @@
      "value": 60.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15685,8 +16019,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-   "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+   "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -15695,6 +16029,7 @@
   "intake": {
    "claims": [
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15731,6 +16066,7 @@
      "value": -1061.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15767,6 +16103,7 @@
      "value": 34.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15803,6 +16140,7 @@
      "value": -1305.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15839,6 +16177,7 @@
      "value": 1251.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15875,6 +16214,7 @@
      "value": 148.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15911,6 +16251,7 @@
      "value": 133.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15947,6 +16288,7 @@
      "value": 171.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -15983,6 +16325,7 @@
      "value": 186.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -16019,6 +16362,7 @@
      "value": 447.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -16055,6 +16399,7 @@
      "value": 596.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -17041,7 +17386,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -17067,7 +17412,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -17077,6 +17422,7 @@
   "negotiate": {
    "claims": [
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17108,6 +17454,7 @@
      "value": 0.21
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17139,6 +17486,7 @@
      "value": 30.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17170,6 +17518,7 @@
      "value": 500.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17201,6 +17550,7 @@
      "value": 50000.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17232,6 +17582,7 @@
      "value": 0.05
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17575,7 +17926,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -17585,6 +17936,7 @@
   "po": {
    "claims": [
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:po_total",
      "metric": "po_total",
@@ -17603,6 +17955,7 @@
      "value": 113518.82
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:po_grand_total",
      "metric": "po_grand_total",
@@ -17722,8 +18075,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-   "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+   "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -17732,6 +18085,7 @@
   "research": {
    "claims": [
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17763,6 +18117,7 @@
      "value": 0.2066
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:price_gap_pct",
      "metric": "price_gap_pct",
@@ -17781,6 +18136,7 @@
      "value": 0.0258
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:demand_score",
      "metric": "demand_score",
@@ -17799,6 +18155,7 @@
      "value": 0.5
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T01:overlap",
      "metric": "overlap",
@@ -17817,6 +18174,7 @@
      "value": 0.5
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17848,6 +18206,7 @@
      "value": 0.1815
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:price_gap_pct",
      "metric": "price_gap_pct",
@@ -17866,6 +18225,7 @@
      "value": 0.0592
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:demand_score",
      "metric": "demand_score",
@@ -17884,6 +18244,7 @@
      "value": 0.925
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T02:overlap",
      "metric": "overlap",
@@ -17902,6 +18263,7 @@
      "value": 0.5
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -17933,6 +18295,7 @@
      "value": 0.1368
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:price_gap_pct",
      "metric": "price_gap_pct",
@@ -17951,6 +18314,7 @@
      "value": 0.0717
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:demand_score",
      "metric": "demand_score",
@@ -17969,6 +18333,7 @@
      "value": 0.925
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-T03:overlap",
      "metric": "overlap",
@@ -17987,6 +18352,7 @@
      "value": 0.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -18018,6 +18384,7 @@
      "value": 0.1368
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:price_gap_pct",
      "metric": "price_gap_pct",
@@ -18036,6 +18403,7 @@
      "value": 0.0156
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:demand_score",
      "metric": "demand_score",
@@ -18054,6 +18422,7 @@
      "value": 0.8
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:MW-L01:overlap",
      "metric": "overlap",
@@ -18072,6 +18441,7 @@
      "value": 0.4286
     },
     {
+     "attempts": [],
      "evidence": null,
      "id": "V002:capital_at_risk_inr",
      "metric": "capital_at_risk_inr",
@@ -18090,6 +18460,7 @@
      "value": 188588.3272
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -18121,6 +18492,7 @@
      "value": 148.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -18152,6 +18524,7 @@
      "value": 133.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -18183,6 +18556,7 @@
      "value": 199.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": null,
       "bbox": null,
@@ -18395,6 +18769,11 @@
      }
     ],
     "replanned": false,
+    "self_correction": {
+     "corrected": [],
+     "max": 2,
+     "unresolved": []
+    },
     "struck": [],
     "summary": {
      "capital_at_risk_inr": 188588.3272,
@@ -18419,8 +18798,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
-   "narrative_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
+   "narrative_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -18592,7 +18971,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "4f385075cfbbae87eb02bb5fb4fa57cc883c29dd42266ee0c7755bc61d3a0f56",
+   "metrics_hash": "beeeb85a863a2cc179b26981117fb83f5874cc02fdf80afebb6e6cdf33f1ae2d",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

@@ -1,6 +1,8 @@
 import { ChevronRight, PanelRight } from "lucide-react";
 import Link from "next/link";
 import type { ClaimsResponse, ModeResponse } from "@/lib/api";
+import type { RunImpact } from "@/lib/impact";
+import { ImpactChip } from "./ImpactPanel";
 import { ModeChip } from "./ModeChip";
 
 const PHASES = ["Screen", "Decide", "Execute", "Launch"] as const;
@@ -21,6 +23,9 @@ export function TopBar({
   onToggleDrawer,
   phase = "Decide",
   onPhase,
+  impact = null,
+  impactOpen = false,
+  onToggleImpact,
 }: {
   vendorId: string;
   brand: string | null;
@@ -30,6 +35,10 @@ export function TopBar({
   /** Phase of the stage whose view is showing. */
   phase?: string;
   onPhase?: (phase: (typeof PHASES)[number]) => void;
+  /** Recorded review time for this vendor's run; the chip shows once a run exists. */
+  impact?: RunImpact | null;
+  impactOpen?: boolean;
+  onToggleImpact?: () => void;
 }) {
   return (
     <header className="sticky top-0 z-40 flex h-12 items-center gap-3 border-b border-border bg-bg px-4">
@@ -68,6 +77,7 @@ export function TopBar({
       </ol>
 
       <div className="ml-auto flex items-center gap-2 min-[900px]:ml-0">
+        {impact && onToggleImpact ? <ImpactChip impact={impact} open={impactOpen} onToggle={onToggleImpact} /> : null}
         <Link href="/rules" className="inline-flex h-8 items-center rounded-chip px-2 text-sm text-text-dim hover:text-text">
           Playbook
         </Link>

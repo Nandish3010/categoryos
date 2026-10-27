@@ -2,7 +2,7 @@
 
 import { ChevronDown, ChevronRight, ShieldCheck } from "lucide-react";
 import { ApiError, type ClaimsResponse } from "@/lib/api";
-import { ClaimRow } from "../ClaimRow";
+import { ClaimRow, isCorrected } from "../ClaimRow";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
 import { Tag } from "../Chip";
@@ -27,8 +27,12 @@ export function VerifierCard({
   const shown = injectOn && injected ? injected : base;
   const unavailable = baseError instanceof ApiError && baseError.status === 404;
   const sorted = shown
-    ? [...shown.claims].sort((a, b) => Number(b.status === "rejected") - Number(a.status === "rejected"))
+    ? [...shown.claims].sort(
+        (a, b) =>
+          Number(b.status === "rejected") - Number(a.status === "rejected") || Number(isCorrected(b)) - Number(isCorrected(a)),
+      )
     : [];
+  const correctedCount = shown ? shown.claims.filter(isCorrected).length : 0;
 
   return (
     <section aria-label="Verifier" className="rounded-card border border-border bg-surface">
@@ -69,6 +73,7 @@ export function VerifierCard({
           <div className="border-t border-border px-4 py-2 text-xs text-text-dim">
             <span className="num">
               {shown.verified} verified
+              {correctedCount > 0 ? ` · ${correctedCount} caught and corrected` : ""}
               {shown.rejected > 0 ? ` · ${shown.rejected} rejected and removed` : ""}
               {shown.unverifiable > 0 ? ` · ${shown.unverifiable} unverifiable` : ""}
             </span>
