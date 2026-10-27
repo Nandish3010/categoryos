@@ -7,6 +7,7 @@ from typing import Annotated, Any
 from fastapi import Depends, FastAPI, File, Form, Header, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
+from pydantic import BaseModel
 
 from app import (
     copilot,
@@ -21,6 +22,7 @@ from app import (
     store,
     uploads,
 )
+from app.agents import pricereq as price_requests
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
@@ -565,3 +567,51 @@ async def export_verdicts(vendor_id: str) -> Response:
         row = [s.code, s.name, s.category, s.verdict, s.mrp, s.cost, s.margin_pct, s.target_pct, s.demand_score, s.overlap, "; ".join(s.reasons)]
         w.writerow([uploads.csv_safe(c) if isinstance(c, str) else c for c in row])
     return Response(buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{vendor_id}_verdicts.csv"'})
+
+
+# ---------- existing-vendor price-increase requests ----------
+
+
+class PriceRequestBody(BaseModel):
+    vendor_id: str
+    email: str
+    price_list: str = ""
+    sender: str = ""
+    subject: str = ""
+    received_at: str | None = None
+
+
+class PriceDecisionBody(BaseModel):
+    role: str
+    email_body: str | None = None
+    note: str | None = None
+
+
+@app.get("/api/price-requests")
+async def list_price_requests() -> dict[str, Any]:
+    """The inbox: requests from existing vendors waiting for a decision (no model call)."""
+    return {"requests": [price_requests.request_row(r) for r in price_requests.inbox()]}
+
+
+@app.post("/api/price-requests", status_code=201, dependencies=[Depends(require_demo_key_if_live)])
+async def submit_price_request(body: PriceRequestBody) -> dict[str, Any]:
+    req = price_requests.submit(body.vendor_id, body.email, body.price_list, body.sender, body.subject, body.received_at)
+    return price_requests.request_row(req)
+
+
+@app.get("/api/price-requests/{request_id}", dependencies=[Depends(require_demo_key_if_live)])
+async def get_price_request(request_id: str) -> dict[str, Any]:
+    """Extraction (quote-checked, self-corrected), the engine's per-SKU numbers and decisions, sweetener value, approval tier,
+    counter-offer and the reply draft. The numbers follow the live playbook."""
+    return await price_requests.view(price_requests.get_request(request_id))
+
+
+@app.post("/api/price-requests/{request_id}/approve", dependencies=[Depends(require_demo_key_if_live)])
+async def approve_price_request(request_id: str, body: PriceDecisionBody) -> dict[str, Any]:
+    """A person approves at their role: the reply is recorded as sent. Sending is simulated, nothing leaves the backend."""
+    return await price_requests.decide(price_requests.get_request(request_id), "approve", body.role, body.email_body, body.note)
+
+
+@app.post("/api/price-requests/{request_id}/reject", dependencies=[Depends(require_demo_key_if_live)])
+async def reject_price_request(request_id: str, body: PriceDecisionBody) -> dict[str, Any]:
+    return await price_requests.decide(price_requests.get_request(request_id), "reject", body.role, None, body.note)

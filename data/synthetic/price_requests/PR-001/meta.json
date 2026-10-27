@@ -1,0 +1,9 @@
+{
+  "vendor_id": "E006",
+  "received_at": "2026-10-23",
+  "sender": "Neha Bhatt <care@groomwell.example>",
+  "subject": "Price revision - Groomwell w.e.f. 1st Dec 2026",
+  "story": "reasonable: 4% on healthy-margin SKUs, justified by the index, enough notice, a harmless sweetener",
+  "id": "PR-001",
+  "price_list": "price_list.csv"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "subject": "Re: Price revision - Groomwell w.e.f. 1st Dec 2026",
+    "body": "Dear Neha,\n\nThank you for your note on the revised prices. We are pleased to accept the 4.0% revision from 1 December 2026 on all five lines: GW-01 at ₹197.60, GW-03 at ₹135.20, GW-04 at ₹109.20, GW-05 at ₹166.40 and GW-06 at ₹93.60.\n\nWe also note the extra 2% marketing support you offered with the full revision and will plan activity against it.\n\nPlease confirm the new rates in writing so that we can update our system.\n\nRegards,\nCategory team"
+  }
+}
