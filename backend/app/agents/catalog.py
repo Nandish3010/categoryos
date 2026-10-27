@@ -11,7 +11,7 @@ import asyncio
 import re
 from typing import Any
 
-from app import llm, media, policy, prompts_exec
+from app import docs, llm, media, policy, prompts_exec
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
@@ -209,6 +209,59 @@ def attribute_claims(vendor_id: str, sku: SkuMetrics, attributes: dict[str, Any]
     return claims
 
 
+# ---------- (c2) scanned labels ----------
+
+
+def label_rows(findings: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """One row per label field: what the pack prints next to what the SKU sheet and the listing copy say."""
+    rows: dict[str, dict[str, Any]] = {}
+    for f in findings:
+        if f["status"] not in {"match", "mismatch", "unreliable"} or not f["field"]:
+            continue
+        row = rows.setdefault(
+            f["field"],
+            {"field": f["field"], "label": f["field_label"], "label_value": f["document_value"], "sheet": None, "listing": None,
+             "status": "match", "severity": f["severity"], "claim_id": f["claim_id"], "claim_status": f["claim_status"],
+             "page": f["page"], "bbox": f["bbox"], "doc": f["doc"], "unreliable": False},
+        )
+        if f["status"] == "unreliable":
+            row["unreliable"] = True
+            continue
+        key = "sheet" if f["other_label"] == "SKU sheet" else "listing"
+        row[key] = {"value": f["other_value"], "status": f["status"], "source": f["other_source"], "check": f["check"]}
+        if f["status"] == "mismatch":
+            row["status"] = "mismatch"
+            row["severity"] = max((row["severity"], f["severity"]), key=lambda x: docs.SEVERITY_ORDER[x])
+    return list(rows.values())
+
+
+def apply_labels(scan: docs.DocScan, prepared: list[tuple[SkuMetrics, dict[str, Any], list[Claim]]]) -> dict[str, dict[str, Any]]:
+    """Per SKU: the label's readings and comparison rows. Mismatches become high-visibility compliance flags, and the
+    playbook's claim rules run over the text printed on the label, as they do over the listing copy."""
+    out: dict[str, dict[str, Any]] = {}
+    for sku, copy, _ in prepared:
+        doc = next((d for d in scan.documents if d.sku_code == sku.code and d.kind == "product_label"), None)
+        if doc is None:
+            continue
+        findings = [f for f in scan.findings if f["sku_code"] == sku.code and f["doc"] == doc.file]
+        for f in findings:
+            if f["status"] in {"mismatch", "injection"}:
+                copy["compliance_flags"].append({"rule": "label_mismatch" if f["status"] == "mismatch" else "document_injection", "text": f["message"], "severity": f["severity"], "source": "label"})
+        text = " | ".join(x.raw for x in doc.fields if x.type == "text" and x.trusted)
+        for rule in policy.get().screening.claim_rules:
+            if policy.in_scope(rule.categories, sku.category):
+                for m in policy.claim_regex(rule).finditer(text):
+                    flag = {"rule": rule.type, "text": f"{m.group(0)} (label)", "severity": rule.severity, "source": "label"}
+                    if not any(f["rule"] == flag["rule"] and f["text"].startswith(m.group(0)) for f in copy["compliance_flags"]):
+                        copy["compliance_flags"].append(flag)
+        out[sku.code] = {
+            "doc": doc.file, "title": doc.entry.get("title") or doc.label, "url": docs.doc_url(scan.vendor_id, doc.file),
+            "pages": doc.pages, "panel": doc.panel, "error": doc.error, "rows": label_rows(findings),
+            "fields": [f.public() for f in doc.fields],
+        }
+    return out
+
+
 # ---------- (d) images ----------
 
 
@@ -368,6 +421,9 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
         all_claims += claims
         prepared.append((s, copy, claims))
 
+    scan = await docs.run(ctx, vendor_id, STAGE, sku_codes={s.code for s in skus}, copies={s.code: copy for s, copy, _ in prepared})
+    labels = apply_labels(scan, prepared) if scan else {}
+
     sem = asyncio.Semaphore(4)
 
     async def make_images(s: SkuMetrics, title: str) -> dict[str, Any]:
@@ -415,18 +471,29 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
                 "corrections": corrections,
                 "images": imgs,
                 "hero": s.code in heroes,
+                "label_check": labels.get(s.code),
             }
         )
+    scan_claims = scan.claims if scan else []
     flag_count = sum(len(i["copy"]["compliance_flags"]) for i in sku_out)
     pct = round(100 * sum(1 for a in agree if a) / len(agree), 1) if agree else None
     text = f"{len(sku_out)} listings drafted, {flag_count} compliance flag(s)"
     text += f", classifier agreement {pct:g}%" if pct is not None else ", classified by rules"
+    if labels:
+        mismatches = sum(1 for lab in labels.values() for r in lab["rows"] if r["status"] == "mismatch")
+        text += f", {len(labels)} label(s) read" + (f", {mismatches} label mismatch(es)" if mismatches else "")
     data = {
         "skus": sku_out,
         "classifier_agreement_pct": pct,
         "hero_skus": heroes,
         "image_mode": "live" if live else "placeholder",
-        "verification": {"total": summary.total, "verified": summary.verified, "rejected": summary.rejected, "unverifiable": summary.unverifiable},
+        "scanned_documents": scan.to_data() if scan else docs.disabled_data(),
+        "verification": {
+            "total": summary.total + len(scan_claims),
+            "verified": summary.verified + sum(c.status == "verified" for c in scan_claims),
+            "rejected": summary.rejected + sum(c.status == "rejected" for c in scan_claims),
+            "unverifiable": summary.unverifiable + sum(c.status == "unverifiable" for c in scan_claims),
+        },
     }
     return StageResult(
         stage=STAGE,
@@ -434,7 +501,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
         summary=text,
         data=data,
         needs_approval=True,
-        claims=summary.claims,
+        claims=[*summary.claims, *scan_claims],
         metrics_hash=lever.metrics_hash,
         narrative_hash=lever.metrics_hash,
     )

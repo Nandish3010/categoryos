@@ -50,7 +50,7 @@
       ],
       "decision": "pass",
       "reasons": [
-        "All compliance documents are valid, including FSSAI to November 2027.",
+        "The FSSAI scan shows an earlier expiry than the application declares; the scan is the truth, so the licence is expiring soon and a renewal is needed.",
         "One dental claim needs evidence but is not a cure claim.",
         "Three cost cells and one pack size are blank; a call transcript exists to settle commercial terms."
       ]

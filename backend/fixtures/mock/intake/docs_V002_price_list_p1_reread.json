@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "price",
+        "value": "148.00",
+        "sku_code": "MW-T01"
+      },
+      {
+        "name": "price",
+        "value": "133.00",
+        "sku_code": "MW-T02"
+      },
+      {
+        "name": "price",
+        "value": "171.00",
+        "sku_code": "MW-T04"
+      },
+      {
+        "name": "price",
+        "value": "186.00",
+        "sku_code": "MW-T05"
+      },
+      {
+        "name": "price",
+        "value": "447.00",
+        "sku_code": "MW-L02"
+      },
+      {
+        "name": "price",
+        "value": "596.00",
+        "sku_code": "MW-L03"
+      },
+      {
+        "name": "price",
+        "value": "522.00",
+        "sku_code": "MW-L05"
+      }
+    ]
+  }
+}

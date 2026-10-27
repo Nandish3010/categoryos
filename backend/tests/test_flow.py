@@ -190,7 +190,8 @@ def test_catalog_contract_and_classifier_agreement(client):
     # attribute claims (mrp, pack) are verified against the sheet cells
     claims = {c["id"]: c for c in stages["catalog"]["claims"]}
     assert claims["V001:HP-D01:mrp:catalog"]["status"] == "verified" and claims["V001:HP-D01:pack_qty:catalog"]["status"] == "verified"
-    assert all(c["origin"] == "model_extraction" for c in claims.values())
+    assert all(c["origin"] in {"model_extraction", "vision_extraction"} for c in claims.values())
+    assert {c["origin"] for c in claims.values() if c["id"].endswith(":catalog")} == {"model_extraction"}
     assert "HP-D07" in skus and "mrp" not in skus["HP-D07"]["copy"]["attributes"]  # the sheet has no MRP for it
 
 

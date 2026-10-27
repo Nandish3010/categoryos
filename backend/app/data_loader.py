@@ -197,3 +197,41 @@ def _keywords(root: str) -> tuple[Keyword, ...]:
 
 def load_keywords() -> tuple[Keyword, ...]:
     return _keywords(_root())
+
+
+# ---------- scanned documents (vendors/<VID>/docs) ----------
+
+
+def _docs_dir(vendor_id: str) -> Path:
+    return Path(_root()) / "vendors" / vendor_id / "docs"
+
+
+def load_doc_manifest(vendor_id: str) -> list[dict[str, Any]]:
+    """The vendor's uploaded documents: ``[{file, kind, title, pages, declares?, sku_code?}]``.
+
+    ``kind`` and ``declares`` are what the vendor said the file is (vendor-supplied, untrusted). Empty when the
+    vendor uploaded nothing."""
+    check_vendor(vendor_id)
+    path = _docs_dir(vendor_id) / "manifest.json"
+    if not path.exists():
+        return []
+    items = _json(str(path)).get("documents", [])
+    return [d for d in items if isinstance(d, dict) and d.get("file") and d.get("kind")]
+
+
+def doc_files(vendor_id: str) -> set[str]:
+    """Every file name the manifest vouches for: documents and their page images."""
+    names: set[str] = set()
+    for d in load_doc_manifest(vendor_id):
+        names.add(str(d["file"]))
+        names.update(str(p) for p in d.get("pages", []))
+    return names
+
+
+def doc_path(vendor_id: str, name: str) -> Path | None:
+    """Path-safe lookup: a plain file name that the vendor's manifest lists, inside the vendor's docs folder."""
+    if vendor_id not in ALLOWED_VENDORS or name != Path(name).name or name not in doc_files(vendor_id):
+        return None
+    folder = _docs_dir(vendor_id).resolve()
+    path = (folder / name).resolve()
+    return path if path.parent == folder and path.is_file() else None

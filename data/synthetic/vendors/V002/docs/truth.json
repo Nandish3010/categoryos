@@ -1,0 +1,406 @@
+{
+  "note": "What is really printed on each page. For tests and fixtures only; the pipeline never reads this file.",
+  "documents": [
+    {
+      "file": "fssai_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "fssai_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "FSSAI-DEMO-0002",
+              "px": [
+                327,
+                304,
+                564,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3964,
+                0.2559,
+                0.6791,
+                0.2808
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "Mewsli Cat Care LLP",
+              "px": [
+                327,
+                395,
+                586,
+                420
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3939,
+                0.333,
+                0.7028,
+                0.3592
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "01 DEC 2023",
+              "px": [
+                327,
+                672,
+                496,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3865,
+                0.5677,
+                0.5882,
+                0.5913
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "30 NOV 2026",
+              "px": [
+                327,
+                764,
+                498,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.384,
+                0.6456,
+                0.5881,
+                0.6693
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "gst_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "gst_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "GST-DEMO-0002",
+              "px": [
+                327,
+                304,
+                544,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.384,
+                0.256,
+                0.6427,
+                0.2792
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "Mewsli Cat Care LLP",
+              "px": [
+                327,
+                395,
+                586,
+                420
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3857,
+                0.3326,
+                0.6944,
+                0.3572
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "01 APR 2023",
+              "px": [
+                327,
+                672,
+                492,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3908,
+                0.5685,
+                0.5877,
+                0.5911
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "31 MAR 2030",
+              "px": [
+                327,
+                764,
+                499,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3926,
+                0.6464,
+                0.5977,
+                0.669
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "price_list.pdf",
+      "kind": "price_list",
+      "pages": [
+        {
+          "file": "price_list.p1.png",
+          "width": 900,
+          "height": 1280,
+          "fields": [
+            {
+              "name": "price",
+              "value": "148.00",
+              "px": [
+                697,
+                295,
+                773,
+                316
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.7744,
+                0.2305,
+                0.8589,
+                0.2469
+              ]
+            },
+            {
+              "name": "price",
+              "value": "133.00",
+              "px": [
+                697,
+                361,
+                773,
+                382
+              ],
+              "sku_code": "MW-T02",
+              "bbox": [
+                0.7744,
+                0.282,
+                0.8589,
+                0.2984
+              ]
+            },
+            {
+              "name": "price",
+              "value": "171.00",
+              "px": [
+                697,
+                427,
+                773,
+                448
+              ],
+              "sku_code": "MW-T04",
+              "bbox": [
+                0.7744,
+                0.3336,
+                0.8589,
+                0.35
+              ]
+            },
+            {
+              "name": "price",
+              "value": "186.00",
+              "px": [
+                697,
+                493,
+                773,
+                514
+              ],
+              "sku_code": "MW-T05",
+              "bbox": [
+                0.7744,
+                0.3852,
+                0.8589,
+                0.4016
+              ]
+            },
+            {
+              "name": "price",
+              "value": "447.00",
+              "px": [
+                697,
+                559,
+                773,
+                580
+              ],
+              "sku_code": "MW-L02",
+              "bbox": [
+                0.7744,
+                0.4367,
+                0.8589,
+                0.4531
+              ]
+            },
+            {
+              "name": "price",
+              "value": "596.00",
+              "px": [
+                697,
+                625,
+                773,
+                646
+              ],
+              "sku_code": "MW-L03",
+              "bbox": [
+                0.7744,
+                0.4883,
+                0.8589,
+                0.5047
+              ]
+            },
+            {
+              "name": "price",
+              "value": "522.00",
+              "px": [
+                697,
+                691,
+                773,
+                712
+              ],
+              "sku_code": "MW-L05",
+              "bbox": [
+                0.7744,
+                0.5398,
+                0.8589,
+                0.5563
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "label_MW-T01.jpg",
+      "kind": "product_label",
+      "pages": [
+        {
+          "file": "label_MW-T01.jpg",
+          "width": 760,
+          "height": 1100,
+          "fields": [
+            {
+              "name": "product_name",
+              "value": "Tuna Creamy Lick Treat",
+              "px": [
+                37,
+                181,
+                345,
+                211
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.0403,
+                0.1652,
+                0.4462,
+                0.1973
+              ]
+            },
+            {
+              "name": "claims_text",
+              "value": "No grain. Lickable tuna puree.",
+              "px": [
+                45,
+                659,
+                344,
+                684
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.0618,
+                0.5996,
+                0.4557,
+                0.6271
+              ]
+            },
+            {
+              "name": "net_quantity",
+              "value": "60 g",
+              "px": [
+                227,
+                739,
+                284,
+                767
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.3031,
+                0.6733,
+                0.3787,
+                0.6997
+              ]
+            },
+            {
+              "name": "mrp",
+              "value": "Rs. 199",
+              "px": [
+                227,
+                787,
+                315,
+                810
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.3042,
+                0.7165,
+                0.4205,
+                0.7388
+              ]
+            },
+            {
+              "name": "fssai_number",
+              "value": "FSSAI-DEMO-0002",
+              "px": [
+                227,
+                835,
+                427,
+                856
+              ],
+              "sku_code": "MW-T01",
+              "bbox": [
+                0.3053,
+                0.7583,
+                0.5689,
+                0.7806
+              ]
+            }
+          ],
+          "panel": [
+            0.0305,
+            0.2399,
+            0.9734,
+            0.9146
+          ]
+        }
+      ]
+    }
+  ]
+}

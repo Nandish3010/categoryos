@@ -43,16 +43,18 @@ Three features carry the product:
 
 - **Deal evaluator for conditional offers.** A vendor says "15% base margin, plus 20% marketing support if you sell 2,000 units in 90 days". The agent reads the structure; Python simulates demand (ramped new listing, fixed-seed Monte Carlo), gives the probability of hitting the target, prices the offer risk-adjusted in margin points, and rejects the structure with concrete counters (a target we can reach, a guaranteed base) when the chance is poor. Every number is a claim the verifier recomputes, and every assumption lives in the playbook (`negotiation.forecast`, `negotiation.contingent`).
 
+- **Document vision.** Vendor documents arrive as scans and photos. muse-spark-1.3 reads the licence certificates, label photos and price-list PDF with bounding boxes; SAM 3.1 segments a label's nutrition and claims panel and the crop is read a second time; the verifier binds every reading to the page pixels and to that second read (new claim origin `vision_extraction`, evidence `{doc, page, bbox, crop_sha256}`); cross-document checks compare certificate vs application, label vs SKU sheet vs listing copy, and price list vs sheet. Screen treats the scanned certificate as ground truth over the declared status. Which documents, fields, pairs and tolerances: the playbook `documents` section. The synthetic scans (all marked SAMPLE) come from `data/generate_docs.py` (`make data-docs`).
+
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
 ## Meta models used
 
 | Model | What it does here | Where (file) | Without it |
 |---|---|---|---|
-| `muse-spark-1.3` | Reasoning, extraction and narrative for all agents | `backend/app/agents/*` (planned) | No agent output; only deterministic metrics remain |
+| `muse-spark-1.3` | Reasoning, extraction and narrative for all agents; vision: reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/agents/*`, `backend/app/docs.py` | No agent output; only deterministic metrics remain. Without vision, declared document status is used |
 | `muse-spark-1.3-contributor` | Cheaper model for development iteration | `backend/app/llm.py` (planned) | Dev loops use the main model and cost more |
 | Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets | `backend/app/agents/catalog.py` (planned) | Falls back to a deterministic keyword classifier |
-| `sam-3.1` | Packshot cutouts | `backend/app/agents/catalog.py` (planned) | Original packshot shown with a label |
+| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/agents/catalog.py`, `backend/app/docs.py`, `backend/app/media.py` | Original packshot shown with a label; label fields are read from their own boxes instead of the panel |
 | `muse-image-1.0` | Packshots and lifestyle images | `backend/app/agents/catalog.py`, `backend/app/agents/launch.py` (planned) | Catalog and launch cards have no generated imagery |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call | `backend/app/agents/negotiate.py` (planned) | Uses the stored transcript fixture, with a banner |
 
@@ -105,6 +107,7 @@ it everywhere, and the model prompts are rendered from it, so no rule exists onl
   effective playbook is the defaults deep-merged with that file. "Reset" deletes the override (or one section or field).
 * `GET /api/policy` returns the effective playbook, the defaults, which paths are overridden and a hash; `PUT /api/policy`
   takes a partial. A rule change changes the metrics hash, so stale approvals are refused. Replay mode is read-only.
+* Document vision is playbook-driven too: `documents` lists which scanned documents are read, which fields, which pairs are cross-checked and how closely they must agree, and `catalog.label_panel_prompt` is the phrase SAM uses to find a label's panel.
 * Nothing is pet-specific in code. `config/examples/beauty.yaml` and `config/examples/electronics.yaml` are complete
   alternative playbooks (taxonomy, margins, documents such as CDSCO or BIS, claim rules, attributes, GST) that prove the
   engine is vertical-agnostic. Copy one over `config/policy.local.yaml` to try it; the demo data stays pet.

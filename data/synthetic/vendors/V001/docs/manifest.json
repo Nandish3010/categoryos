@@ -1,0 +1,48 @@
+{
+  "documents": [
+    {
+      "file": "fssai_certificate.jpg",
+      "kind": "licence_certificate",
+      "title": "FSSAI licence certificate (scan)",
+      "pages": [
+        "fssai_certificate.jpg"
+      ],
+      "declares": "FSSAI"
+    },
+    {
+      "file": "gst_certificate.jpg",
+      "kind": "licence_certificate",
+      "title": "GST registration certificate (scan)",
+      "pages": [
+        "gst_certificate.jpg"
+      ],
+      "declares": "GST"
+    },
+    {
+      "file": "price_list.pdf",
+      "kind": "price_list",
+      "title": "Supplier price list (PDF)",
+      "pages": [
+        "price_list.p1.png"
+      ]
+    },
+    {
+      "file": "label_HP-D01.jpg",
+      "kind": "product_label",
+      "title": "Pack label HP-D01 (photo)",
+      "pages": [
+        "label_HP-D01.jpg"
+      ],
+      "sku_code": "HP-D01"
+    },
+    {
+      "file": "label_HP-D02.jpg",
+      "kind": "product_label",
+      "title": "Pack label HP-D02 (photo)",
+      "pages": [
+        "label_HP-D02.jpg"
+      ],
+      "sku_code": "HP-D02"
+    }
+  ]
+}

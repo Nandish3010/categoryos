@@ -93,13 +93,20 @@ export type Claim = {
   status: ClaimStatus;
   recomputed?: number | null;
   reason?: string | null;
-  origin: "engine" | "model_extraction" | "injected_test";
+  origin: "engine" | "model_extraction" | "vision_extraction" | "injected_test";
   source_ref: { file: string; key: string; column?: string | null };
   evidence?: {
     row?: number | null;
     header?: string | null;
     raw_value?: string | null;
     normalized_value?: number | string | null;
+    /** vision_extraction: where on which scan the value was read, and the second read of that region. */
+    doc?: string | null;
+    page?: number | null;
+    bbox?: [number, number, number, number] | number[] | null;
+    crop_sha256?: string | null;
+    reread_value?: string | null;
+    as_of?: string | null;
   } | null;
 };
 
