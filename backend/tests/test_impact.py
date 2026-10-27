@@ -56,10 +56,14 @@ RUN = {"run_id": "run_x", "vendor_id": "V001", "mode": "mock"}
 
 def test_baseline_scales_per_sku_tasks_and_sums_the_playbook_minutes():
     rows = {t["task"]: t for t in impact.tasks(7)}
-    assert rows["catalog_listing_per_sku"]["total_minutes"] == 7 * 20 and rows["catalog_listing_per_sku"]["per_sku"] is True
-    assert rows["jbp_draft"]["total_minutes"] == 120 and rows["jbp_draft"]["per_sku"] is False
-    assert impact.baseline_minutes(7) == 855  # 30+120+90 + 90+60+140+70 + 60+120+30+45
-    assert impact.baseline_minutes(0) == 855 - 7 * 30
+    assert rows["catalog_listing_per_sku"]["total_minutes"] == 7 * 25 and rows["catalog_listing_per_sku"]["per_sku"] is True
+    assert rows["marketing_jbp_draft"]["total_minutes"] == 60 and rows["marketing_jbp_draft"]["per_sku"] is False
+    assert impact.baseline_minutes(7) == 785  # 45+140+30 + 60+110+30+175+70+35 + 60+30
+    assert impact.baseline_minutes(0) == 785 - 7 * 60
+
+
+def test_the_research_report_totals_1085_minutes_for_a_twelve_sku_vendor():
+    assert impact.baseline_minutes(12) == 1085
 
 
 def test_every_task_sits_behind_exactly_one_gate_and_gates_cover_all_baselines():
@@ -69,21 +73,30 @@ def test_every_task_sits_behind_exactly_one_gate_and_gates_cover_all_baselines()
 
 
 def test_changing_the_playbook_changes_the_baseline():
-    policy.save_overrides({"impact": {"baseline_minutes": {"jbp_draft": 240}}})
+    policy.save_overrides({"impact": {"baseline_minutes": {"marketing_jbp_draft": 240}}})
     try:
-        assert impact.baseline_minutes(7) == 855 + 120
+        assert impact.baseline_minutes(7) == 785 + 180
     finally:
         policy.reset()
 
 
-def test_baselines_are_placeholders_until_the_playbook_says_otherwise():
-    assert policy.get().impact.baseline_status == "placeholder"
+def test_baselines_are_labelled_research_estimates_and_cite_the_report():
+    assert policy.get().impact.baseline_status == "research_estimate"
     hints = policy.schema_hints()
-    assert "placeholder" in hints["impact.baseline_minutes"]["help"].lower()
+    for path in ("impact.baseline_minutes", "impact.baseline_minutes.screening", "impact.team", "impact.workload"):
+        assert "Research estimate (not measured)" in hints[path]["help"] or "research_estimate" in hints[path]["help"] or "docs/research/category-manager-workload.md" in hints[path]["help"]
+    assert "docs/research/category-manager-workload.md" in hints["impact.baseline_minutes.screening"]["help"]
     assert hints["impact.baseline_minutes.screening"]["unit"] == "min"
     assert hints["verifier.max_self_corrections"]["max"] == 5
     block = impact.for_run(RUN, [], [], [], 7)
-    assert block["baseline_status"] == "placeholder"
+    assert block["baseline_status"] == "research_estimate"
+
+
+def test_a_coverage_row_must_name_a_registered_module_and_task():
+    with pytest.raises(Exception, match="unknown module"):
+        policy.save_overrides({"impact": {"coverage": [{"module": "nope", "task": "reporting_mis", "in_scope_pct": 50}]}})
+    with pytest.raises(Exception, match="unknown task"):
+        policy.save_overrides({"impact": {"coverage": [{"module": "weekly_review_mis", "task": "nope", "in_scope_pct": 50}]}})
 
 
 # ---------- per run ----------
@@ -91,7 +104,7 @@ def test_baselines_are_placeholders_until_the_playbook_says_otherwise():
 
 def test_nothing_measured_until_a_person_approves():
     block = impact.for_run(RUN, [], [{"stage": "research", "kind": "review_started", "created_at": at(0)}], [], 7)
-    assert block["basis"] == "baseline_estimate" and block["measured_gates"] == 0 and block["reduction_pct"] is None
+    assert block["basis"] == "research_estimate" and block["measured_gates"] == 0 and block["reduction_pct"] is None
     assert block["complete"] is False and block["human_minutes"] == 0
     assert [g["status"] for g in block["gates"]] == ["pending"] * 3
 
@@ -101,11 +114,11 @@ def test_review_time_runs_from_review_started_to_approve_and_the_reduction_is_on
     approvals = [{"stage": "research", "action": "approve", "created_at": at(600)}]
     block = impact.for_run(RUN, approvals, marks, [], 7)
     gate = block["gates"][0]
-    assert gate["review_seconds"] == 600 and gate["counted_minutes"] == 10 and gate["baseline_minutes"] == 240
+    assert gate["review_seconds"] == 600 and gate["counted_minutes"] == 10 and gate["baseline_minutes"] == 215
     assert block["measured_gates"] == 1 and block["basis"] == "measured" and block["complete"] is False
-    assert block["baseline_measured_minutes"] == 240 and block["human_minutes"] == 10
-    assert block["reduction_pct"] == 95.8  # 1 - 10/240
-    assert block["baseline_minutes"] == 855
+    assert block["baseline_measured_minutes"] == 215 and block["human_minutes"] == 10
+    assert block["reduction_pct"] == 95.3  # 1 - 10/215
+    assert block["baseline_minutes"] == 785
 
 
 def test_a_long_gap_is_capped_and_says_so():
@@ -126,45 +139,101 @@ def test_complete_run_sums_every_gate():
     marks = [{"stage": g, "kind": "review_started", "created_at": at(0)} for g in impact.GATES]
     approvals = [{"stage": g, "action": "approve", "created_at": at(300)} for g in impact.GATES]
     block = impact.for_run(RUN, approvals, marks, [], 7)
-    assert block["complete"] is True and block["human_minutes"] == 15 and block["baseline_minutes"] == 855
-    assert block["reduction_pct"] == round(100 * (1 - 15 / 855), 1)
+    assert block["complete"] is True and block["human_minutes"] == 15 and block["baseline_minutes"] == 785
+    assert block["reduction_pct"] == round(100 * (1 - 15 / 785), 1)
 
 
 # ---------- team rollup ----------
 
 
-def test_rollup_without_measurements_uses_the_assumed_share_and_says_so():
-    out = impact.rollup([], {"V001": 600, "V002": 600})
-    assert out["basis"] == "baseline_estimate" and out["measured_runs"] == 0 and out["baseline_status"] == "placeholder"
-    assert out["human_share_pct"] == 10.0 and out["baseline_hours_per_vendor"] == 10.0
-    assert out["demand_hours_per_month"] == 80.0  # 8 vendors x 10 h
-    assert out["hours_saved_per_month"] == 72.0  # x (1 - 10%)
-    assert out["workload_hours_per_month"] == 1039.2  # 6 managers x 40 h x 4.33 weeks
-    assert out["pct_of_workload"] == 6.9 and out["pct_of_task_time"] == 90.0
-    assert out["task_capacity_hours_per_month"] == 467.6 and out["demand_vs_capacity_pct"] == 17.1
-    assert out["target_pct"] == 33.3 and out["meets_target"] is False
-    assert "vendors per month" in out["formula"]
+def module(out, key):
+    return next(m for m in out["modules"] if m["key"] == key)
 
 
-def test_rollup_uses_measured_runs_when_there_are_complete_ones():
+def test_rollup_reproduces_the_research_reports_coverage_numbers():
+    out = impact.rollup([])
+    assert out["basis"] == "research_estimate" and out["measured_runs"] == 0 and out["baseline_status"] == "research_estimate"
+    cm, ce = out["roles"]
+    assert (cm["in_scope_pct"], cm["saved_pct"]) == (17.8, 8.2)  # report: about 18% in scope, about 8% saved
+    assert (ce["in_scope_pct"], ce["saved_pct"]) == (18.8, 9.1)  # about 19%, about 9%
+    assert out["in_scope_pct"] == 18.5 and out["saved_pct"] == 8.8  # team: about 19% in scope, about 9% saved
+    assert out["meets_target"] is False and out["target_pct"] == 33.3
+    assert out["potential_saved_pct"] == 34.6  # every module built: the report's "about 34%"
+    assert out["team_hours_per_month"] == round(3 * 45 * 4.33, 1) and "share of the week" in out["formula"]
+    assert out["onboarding"]["baseline_hours_per_vendor"] == 18.1 and out["onboarding"]["saved_pct_basis"] == "research_estimate"
+    assert out["onboarding"]["demand_hours_per_month"] == 57.9 and out["onboarding"]["human_share_pct"] is None
+
+
+def test_each_module_reports_whether_it_is_shipped_and_what_it_covers():
+    out = impact.rollup([])
+    status = {m["key"]: m["status"] for m in out["modules"]}
+    assert status["new_vendor_onboarding"] == "shipped" and status["weekly_review_mis"] == "not_built"
+    assert [m["key"] for m in out["modules"] if m["status"] == "shipped"] == ["new_vendor_onboarding"]
+    assert module(out, "weekly_review_mis")["saved_pct"] == 7.6  # the report's rank 1, team pts 7.6
+    assert module(out, "price_increase_evaluator")["saved_pct"] == 2.3
+    tasks = {t["task"] for t in module(out, "new_vendor_onboarding")["tasks"]}
+    assert {"new_vendor_onboarding", "catalog_create_qc", "compliance"} <= tasks
+
+
+def test_only_shipped_modules_count_and_registering_a_module_changes_the_total():
+    policy.save_overrides({"impact": {"modules": {"weekly_review_mis": {"status": "shipped"}}}})
+    try:
+        out = impact.rollup([])
+    finally:
+        policy.reset()
+    assert out["saved_pct"] == round(8.8 + 7.6, 1) or abs(out["saved_pct"] - 16.4) < 0.2
+    assert module(out, "weekly_review_mis")["status"] == "shipped"
+
+
+def test_a_new_module_registers_with_its_own_coverage():
+    policy.save_overrides({
+        "impact": {
+            "modules": {"price_chaser": {"label": "Price chaser", "status": "shipped"}},
+            "coverage": [*[c.model_dump() for c in policy.get().impact.coverage], {"module": "price_chaser", "task": "pricing_margin", "in_scope_pct": 50}],
+        }
+    })
+    try:
+        out = impact.rollup([])
+    finally:
+        policy.reset()
+    assert module(out, "price_chaser")["status"] == "shipped" and module(out, "price_chaser")["saved_pct"] == round((6 + 2 * 5) / 3 * 0.5 * 0.25, 1)
+    assert out["saved_pct"] > 8.8
+
+
+def test_overlapping_modules_on_one_task_are_capped_at_the_whole_task():
+    rows = [{"module": "new_vendor_onboarding", "task": "reporting_mis", "in_scope_pct": 80}, {"module": "weekly_review_mis", "task": "reporting_mis", "in_scope_pct": 80}]
+    policy.save_overrides({"impact": {"modules": {"weekly_review_mis": {"status": "shipped"}}, "coverage": rows}})
+    try:
+        out = impact.rollup([])
+    finally:
+        policy.reset()
+    assert out["in_scope_pct"] == round((8 + 2 * 9) / 3, 1)  # 100% of the reporting task, not 160%
+
+
+def test_measured_runs_replace_the_estimate_for_modules_marked_measured_by_runs():
     marks = [{"stage": g, "kind": "review_started", "created_at": at(0)} for g in impact.GATES]
     approvals = [{"stage": g, "action": "approve", "created_at": at(2400)} for g in impact.GATES]  # 40 min a gate
     block = impact.for_run(RUN, approvals, marks, [], 7)
     partial = impact.for_run({**RUN, "run_id": "run_y", "vendor_id": "V002"}, approvals[:1], marks[:1], [], 7)
-    out = impact.rollup([block, partial], {"V001": 855, "V002": 855})
+    out = impact.rollup([block, partial])
     assert out["basis"] == "measured" and out["measured_runs"] == 1 and out["partly_measured_runs"] == 1
-    assert out["human_share_pct"] == round(100 * 120 / 855, 2)
-    assert out["hours_saved_per_month"] == round(8 * 14.25 * (1 - 120 / 855), 1)
+    assert out["onboarding"]["human_share_pct"] == round(100 * 120 / 785, 1) and out["onboarding"]["saved_pct_basis"] == "measured"
+    # onboarding now saves 1 - 120/785 of the covered time instead of the table's 45%
+    assert out["saved_pct"] > impact.rollup([])["saved_pct"]
 
 
-def test_rollup_can_meet_the_target_with_other_team_numbers():
-    policy.save_overrides({"impact": {"team": {"vendors_onboarded_per_month": 30, "category_managers": 3}}})
+def test_the_target_comparison_follows_the_saving():
+    policy.save_overrides({"impact": {"target_reduction_pct": 5}})
     try:
-        out = impact.rollup([], {"V001": 855})
+        assert impact.rollup([])["meets_target"] is True
     finally:
         policy.reset()
-    assert out["demand_hours_per_month"] == 30 * 14.25 and out["workload_hours_per_month"] == round(3 * 40 * 4.33, 1)
-    assert out["meets_target"] is True and out["demand_vs_capacity_pct"] > 100
+
+
+def test_the_workload_table_columns_each_sum_to_one_hundred():
+    wl = policy.get().impact.workload
+    assert round(sum(t.category_manager_pct for t in wl.values()), 6) == 100
+    assert round(sum(t.category_executive_pct for t in wl.values()), 6) == 100
 
 
 # ---------- through the API ----------
@@ -174,7 +243,7 @@ def test_run_view_carries_the_impact_block_and_the_clock_starts_at_review(client
     run_id = start(client, "V001")
     clock.advance(600)
     view = client.get(f"/api/runs/{run_id}").json()
-    assert view["impact"]["measured_gates"] == 0 and view["impact"]["basis"] == "baseline_estimate"
+    assert view["impact"]["measured_gates"] == 0 and view["impact"]["basis"] == "research_estimate"
     ok = client.post(f"/api/runs/{run_id}/stages/research/approve", json={"metrics_hash": research_hash(client, run_id)})
     assert ok.status_code == 200
     gate = client.get(f"/api/runs/{run_id}").json()["impact"]["gates"][0]
@@ -201,11 +270,12 @@ def test_a_replan_does_not_restart_the_review_clock(client, clock):
     assert client.get(f"/api/runs/{run_id}").json()["impact"]["gates"][0]["review_seconds"] == 300
 
 
-def test_team_endpoint_before_any_run_is_a_baseline_estimate(client):
+def test_team_endpoint_before_any_run_is_a_research_estimate(client):
     out = client.get("/api/impact").json()
-    assert out["basis"] == "baseline_estimate" and out["measured_runs"] == 0 and out["vendors"] == []
-    assert out["baseline_status"] == "placeholder" and out["mode"] == "mock"
-    assert out["baseline_hours_per_vendor"] > 0 and out["pct_of_workload"] is not None
+    assert out["basis"] == "research_estimate" and out["measured_runs"] == 0 and out["vendors"] == []
+    assert out["baseline_status"] == "research_estimate" and out["mode"] == "mock"
+    assert out["in_scope_pct"] == 18.5 and out["saved_pct"] == 8.8
+    assert {m["status"] for m in out["modules"]} == {"shipped", "not_built"}
 
 
 def test_team_endpoint_lists_runs_with_measurements(client, clock):
@@ -214,7 +284,7 @@ def test_team_endpoint_lists_runs_with_measurements(client, clock):
     client.post(f"/api/runs/{run_id}/stages/research/approve", json={"metrics_hash": research_hash(client, run_id)})
     out = client.get("/api/impact").json()
     assert [v["vendor_id"] for v in out["vendors"]] == ["V001"] and out["vendors"][0]["measured_gates"] == 1
-    assert out["basis"] == "baseline_estimate" and out["partly_measured_runs"] == 1  # one gate is not a finished run
+    assert out["basis"] == "research_estimate" and out["partly_measured_runs"] == 1  # one gate is not a finished run
 
 
 def test_replay_sessions_record_the_same_marks():

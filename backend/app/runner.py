@@ -399,8 +399,7 @@ async def team_impact() -> dict:
         run_id = await latest_run(vendor_id)
         if run_id is not None:
             blocks.append(await run_impact(run_id))
-    baselines = {v: impact.baseline_minutes(_shortlisted(v)) for v in ALLOWED_VENDORS}
-    return {**impact.rollup(blocks, baselines), "mode": "replay" if replay.pure_replay() else settings.effective_mode}
+    return {**impact.rollup(blocks), "mode": "replay" if replay.pure_replay() else settings.effective_mode}
 
 
 def check_stage(stage: str) -> str:

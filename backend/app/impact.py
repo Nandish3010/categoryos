@@ -3,13 +3,14 @@
 Human time is *recorded*: the clock starts when a stage reaches "review" (a ``review_started`` mark)
 and stops when a person approves it (the ``approve`` row). Edits are the verdict overrides and re-plans the person
 made while reviewing. Baselines (how long the same work takes by hand) come from the playbook's ``impact`` section and
-are placeholders until the team replaces them; every figure derived from them says so.
+are research estimates (docs/research/category-manager-workload.md), not measurements, until the team replaces them;
+every figure derived from them says so.
 
 The three approval gates cover the work behind them:
 
 * ``research``: screening, market research, shortlist (everything before the first approval)
-* ``catalog``:  negotiation prep and follow-up, catalog listings, image briefs (negotiate and catalog are reviewed here)
-* ``po``:       marketing brief, JBP draft, PO raise and follow-up (the launch packet)
+* ``catalog``:  negotiation prep, calls and offer evaluation, catalog listings, images, compliance (negotiate and catalog are reviewed here)
+* ``po``:       marketing and JBP draft, first PO (the launch packet)
 
 Pure arithmetic lives here; reading the run's rows lives in ``runner``.
 """
@@ -21,16 +22,16 @@ from app import policy
 
 TASK_GATE: dict[str, str] = {
     "screening": "research",
-    "market_research": "research",
+    "market_research_per_sku": "research",
     "shortlist": "research",
     "negotiation_prep": "catalog",
-    "negotiation_followup": "catalog",
+    "negotiation_calls": "catalog",
+    "conditional_offer_eval": "catalog",
     "catalog_listing_per_sku": "catalog",
-    "image_brief_per_sku": "catalog",
-    "marketing_brief": "po",
-    "jbp_draft": "po",
-    "po_raise": "po",
-    "po_followup": "po",
+    "image_content_per_sku": "catalog",
+    "compliance_per_sku": "catalog",
+    "marketing_jbp_draft": "po",
+    "first_po_draft": "po",
 }
 GATES: dict[str, str] = {
     "research": "Decision review",
@@ -128,7 +129,7 @@ def for_run(
         "measured_gates": len(measured),
         "total_gates": len(gates),
         "complete": len(measured) == len(gates),
-        "basis": "measured" if measured else "baseline_estimate",
+        "basis": "measured" if measured else "research_estimate",
         "edits": sum(g["edits"] for g in gates),
         "overrides": sum(g["overrides"] for g in gates),
         "replans": sum(g["replans"] for g in gates),
@@ -137,46 +138,105 @@ def for_run(
 
 
 FORMULA = (
-    "hours saved per month = vendors per month x baseline hours per vendor x (1 - human review share); "
-    "% of workload = hours saved / (category managers x hours per week x weeks per month)"
+    "saved % of the week = sum over tasks of (share of the week the task takes x share of the task a shipped module covers "
+    "x share of that time saved); the team figure weights category managers and executives by headcount. A module marked "
+    "measured-by-runs uses the measured review reduction once runs are fully reviewed, else the table's estimate."
 )
 
 
-def rollup(blocks: list[dict[str, Any]], vendor_baselines: dict[str, float]) -> dict[str, Any]:
-    """Team view. ``blocks`` are the per-run impact blocks of the latest run per vendor (runs that exist);
-    ``vendor_baselines`` maps every vendor to its baseline minutes (from the engine's shortlist, no run needed)."""
+def _cover(rows: list[Any], workload: dict[str, Any], modules: dict[str, Any], measured_saved: float | None, role_field: str) -> tuple[float, float]:
+    """(in-scope, saved) as % of one role's week for these coverage rows. Rows on one task add up (capped at 100)."""
+    by_task: dict[str, list[tuple[float, float]]] = {}
+    for r in rows:
+        task = workload[r.task]
+        frac = task.saved_pct / 100
+        if modules[r.module].measured_from_runs and measured_saved is not None:
+            frac = measured_saved
+        by_task.setdefault(r.task, []).append((r.in_scope_pct, frac))
+    in_scope = saved = 0.0
+    for task_key, parts in by_task.items():
+        share = getattr(workload[task_key], role_field)
+        cover = min(100.0, sum(c for c, _ in parts))
+        weight = sum(c for c, _ in parts)
+        frac = sum(c * f for c, f in parts) / weight if weight else 0.0
+        in_scope += share * cover / 100
+        saved += share * cover / 100 * frac
+    return in_scope, saved
+
+
+def rollup(blocks: list[dict[str, Any]]) -> dict[str, Any]:
+    """Team view. ``blocks`` are the per-run impact blocks of the latest run per vendor (runs that exist)."""
     pol = policy.get().impact
     team = pol.team
-    mean_baseline_h = (sum(vendor_baselines.values()) / len(vendor_baselines) / 60) if vendor_baselines else 0.0
     complete = [b for b in blocks if b["complete"]]
-    if complete:
-        share = sum(b["human_minutes"] for b in complete) / sum(b["baseline_minutes"] for b in complete)
-        basis = "measured"
-    else:
-        share = pol.assumed_review_share_pct / 100
-        basis = "baseline_estimate"
-    demand_h = team.vendors_onboarded_per_month * mean_baseline_h
-    saved_h = demand_h * (1 - share)
-    workload_h = team.category_managers * team.work_hours_per_week * team.weeks_per_month
-    capacity_h = workload_h * team.share_of_week_on_these_tasks_pct / 100
+    share = sum(b["human_minutes"] for b in complete) / sum(b["baseline_minutes"] for b in complete) if complete else None
+    measured_saved = None if share is None else 1 - share
+    roles = [
+        ("category_manager", "Category managers", team.category_managers, "category_manager_pct"),
+        ("category_executive", "Category executives", team.category_executives, "category_executive_pct"),
+    ]
+    heads = sum(r[2] for r in roles)
+    shipped = [r for r in pol.coverage if pol.modules[r.module].status == "shipped"]
+
+    def team_pts(rows: list[Any]) -> tuple[float, float]:
+        if not heads:
+            return 0.0, 0.0
+        parts = [(n, *_cover(rows, pol.workload, pol.modules, measured_saved, field)) for _, _, n, field in roles]
+        return sum(n * i for n, i, _ in parts) / heads, sum(n * s for n, _, s in parts) / heads
+
+    in_scope, saved = team_pts(shipped)
+    _, potential = team_pts(list(pol.coverage))
+    week_h = heads * team.work_hours_per_week
+    month_h = week_h * team.weeks_per_month
+    typical_h = baseline_minutes(team.typical_skus_per_vendor) / 60
+    onboarding_task = pol.workload.get("new_vendor_onboarding")
+    task_h = (
+        sum(n * team.work_hours_per_week * getattr(onboarding_task, field) / 100 for _, _, n, field in roles) * team.weeks_per_month
+        if onboarding_task
+        else 0.0
+    )
+    human_share = share if share is not None else None
+    modules = []
+    for key, mod in pol.modules.items():
+        rows = [r for r in pol.coverage if r.module == key]
+        i, sv = team_pts(rows)
+        modules.append(
+            {
+                "key": key,
+                "label": mod.label,
+                "status": mod.status,
+                "in_scope_pct": round(i, 1),
+                "saved_pct": round(sv, 1),
+                "tasks": [{"task": r.task, "label": pol.workload[r.task].label, "in_scope_pct": r.in_scope_pct} for r in rows],
+            }
+        )
     return {
-        "basis": basis,
+        "basis": "measured" if complete else "research_estimate",
         "measured_runs": len(complete),
         "partly_measured_runs": sum(1 for b in blocks if b["measured_gates"] and not b["complete"]),
         "baseline_status": pol.baseline_status,
-        "human_share_pct": round(share * 100, 2),
-        "baseline_hours_per_vendor": round(mean_baseline_h, 2),
-        "human_hours_per_vendor": round(mean_baseline_h * share, 2),
-        "vendors_per_month": team.vendors_onboarded_per_month,
-        "demand_hours_per_month": round(demand_h, 1),
-        "hours_saved_per_month": round(saved_h, 1),
-        "workload_hours_per_month": round(workload_h, 1),
-        "task_capacity_hours_per_month": round(capacity_h, 1),
-        "pct_of_workload": round(100 * saved_h / workload_h, 1) if workload_h else None,
-        "pct_of_task_time": round(100 * saved_h / demand_h, 1) if demand_h else None,
-        "demand_vs_capacity_pct": round(100 * demand_h / capacity_h, 1) if capacity_h else None,
+        "in_scope_pct": round(in_scope, 1),
+        "saved_pct": round(saved, 1),
+        "potential_saved_pct": round(potential, 1),
         "target_pct": pol.target_reduction_pct,
-        "meets_target": bool(workload_h) and 100 * saved_h / workload_h >= pol.target_reduction_pct,
+        "meets_target": saved >= pol.target_reduction_pct,
+        "team_hours_per_month": round(month_h, 1),
+        "hours_saved_per_month": round(month_h * saved / 100, 1),
+        "roles": [
+            {"role": k, "label": lbl, "headcount": n, "in_scope_pct": round(_cover(shipped, pol.workload, pol.modules, measured_saved, f)[0], 1),
+             "saved_pct": round(_cover(shipped, pol.workload, pol.modules, measured_saved, f)[1], 1)}
+            for k, lbl, n, f in roles
+        ],
+        "modules": modules,
+        "onboarding": {
+            "typical_skus": team.typical_skus_per_vendor,
+            "baseline_hours_per_vendor": round(typical_h, 1),
+            "human_share_pct": None if human_share is None else round(human_share * 100, 1),
+            "saved_pct_basis": "measured" if complete else "research_estimate",
+            "vendors_per_month": team.vendors_onboarded_per_month,
+            "demand_hours_per_month": round(team.vendors_onboarded_per_month * typical_h, 1),
+            "team_hours_on_task_per_month": round(task_h, 1),
+        },
         "formula": FORMULA,
         "team": team.model_dump(mode="json"),
         "vendors": [

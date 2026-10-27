@@ -352,26 +352,79 @@ verifier:
     qty: 0
   max_self_corrections: 2        # when a document-reading claim (cost, MRP, a commitment) is rejected, the agent gets the source value and may retry this many times (0 = off)
 
-impact:                          # Impact meter: PLACEHOLDER baselines. Replace them with your measured times, then set baseline_status to measured
-  baseline_status: placeholder   # placeholder | measured: the UI labels every figure derived from the baselines accordingly
-  baseline_minutes:              # human minutes per task today (per vendor, or per SKU where named so). PLACEHOLDERS
-    screening: 30
-    market_research: 120
-    shortlist: 90
-    negotiation_prep: 90
-    negotiation_followup: 60
-    catalog_listing_per_sku: 20
-    image_brief_per_sku: 10
-    marketing_brief: 60
-    jbp_draft: 120
-    po_raise: 30
-    po_followup: 45
-  team:                          # PLACEHOLDERS: used only for the team projection
-    category_managers: 6
-    vendors_onboarded_per_month: 8
-    share_of_week_on_these_tasks_pct: 45
-    work_hours_per_week: 40
+impact:                          # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
+  baseline_status: research_estimate   # research_estimate | measured: the UI labels every figure derived from the numbers below accordingly
+  baseline_minutes:              # by-hand minutes to onboard one new vendor of about 12 SKUs (about 1,085 min). Per-SKU steps scale with the shortlist
+    screening: 45
+    market_research_per_sku: 20
+    shortlist: 30
+    negotiation_prep: 60
+    negotiation_calls: 110
+    conditional_offer_eval: 30
+    catalog_listing_per_sku: 25
+    image_content_per_sku: 10
+    compliance_per_sku: 5
+    marketing_jbp_draft: 60
+    first_po_draft: 30
+  recurring_minutes:             # by-hand minutes for recurring tasks future modules would take over (reference)
+    price_increase_request: 90
+    weekly_review_pack: 240
+    vendor_scorecard: 75
+    po_chase: 15
+    fill_rate_reconciliation: 45
+    catalog_fix_per_sku: 12
+    promotion_event_plan: 480
+    qbr_jbp_deck: 600
+    competitor_price_sweep: 30
+    inventory_ageing_review: 180
+  team:                          # the team the saving is measured against
+    category_managers: 1
+    category_executives: 2
+    work_hours_per_week: 45
     weeks_per_month: 4.33
+    vendors_onboarded_per_month: 3.2   # 0.5 to 1 a week
+    typical_skus_per_vendor: 12
+  workload:                      # task -> share of each role's week (columns sum to 100) and the share of the task's time automation saves
+    new_vendor_onboarding: {label: "New vendor sourcing, screening, research, negotiation, terms", category_manager_pct: 14, category_executive_pct: 9, saved_pct: 45}
+    assortment_planning: {label: "Assortment planning and SKU add/drop", category_manager_pct: 7, category_executive_pct: 5, saved_pct: 30}
+    price_increase_requests: {label: "Existing-vendor cost and price-increase requests", category_manager_pct: 6, category_executive_pct: 4, saved_pct: 50}
+    pricing_margin: {label: "Pricing and margin management", category_manager_pct: 6, category_executive_pct: 5, saved_pct: 25}
+    catalog_create_qc: {label: "Catalog create, QC and fix", category_manager_pct: 3, category_executive_pct: 18, saved_pct: 55}
+    content_images: {label: "Content and images coordination", category_manager_pct: 2, category_executive_pct: 6, saved_pct: 45}
+    promotions: {label: "Promotions, sale events, co-op marketing funding", category_manager_pct: 9, category_executive_pct: 7, saved_pct: 35}
+    jbp_qbr: {label: "JBP, annual plan and QBR", category_manager_pct: 6, category_executive_pct: 2, saved_pct: 50}
+    po_replenishment: {label: "PO raising, replenishment, fill-rate and PO follow-up", category_manager_pct: 5, category_executive_pct: 10, saved_pct: 55}
+    inventory_health: {label: "Inventory health (ageing, liquidation, RTV)", category_manager_pct: 4, category_executive_pct: 5, saved_pct: 40}
+    vendor_scorecards: {label: "Vendor scorecards and performance reviews", category_manager_pct: 3, category_executive_pct: 3, saved_pct: 65}
+    compliance: {label: "Compliance (licences, claims, recalls)", category_manager_pct: 2, category_executive_pct: 4, saved_pct: 40}
+    reporting_mis: {label: "Reporting, MIS and dashboards", category_manager_pct: 8, category_executive_pct: 9, saved_pct: 65}
+    meetings: {label: "Internal meetings, escalations, alignment", category_manager_pct: 14, category_executive_pct: 5, saved_pct: 5}
+    competitor_monitoring: {label: "Competitor and price monitoring", category_manager_pct: 3, category_executive_pct: 4, saved_pct: 60}
+    reviews_triage: {label: "Customer reviews and complaints triage", category_manager_pct: 2, category_executive_pct: 3, saved_pct: 50}
+    other: {label: "Other (admin, travel, learning)", category_manager_pct: 6, category_executive_pct: 1, saved_pct: 0}
+  modules:                       # register a new module here, then add its task coverage below
+    new_vendor_onboarding: {label: "New-vendor onboarding (Screen, Decide, Negotiate, Catalog, Launch packet)", status: shipped, measured_from_runs: true}
+    weekly_review_mis: {label: "Weekly vendor-performance review and MIS generator", status: not_built}
+    price_increase_evaluator: {label: "Existing-vendor price-increase evaluator", status: not_built}
+    po_followup: {label: "PO follow-up and fill-rate chaser", status: not_built}
+    catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: not_built}
+    promotions_planner: {label: "Promotions and event planner", status: not_built}
+    competitor_monitor: {label: "Competitor price monitor", status: not_built}
+    inventory_health_module: {label: "Inventory health and liquidation", status: not_built}
+  coverage:                      # module, task, and the share of that task's time the module takes over
+    - {module: new_vendor_onboarding, task: new_vendor_onboarding, in_scope_pct: 100}
+    - {module: new_vendor_onboarding, task: catalog_create_qc, in_scope_pct: 30}    # creation only
+    - {module: new_vendor_onboarding, task: content_images, in_scope_pct: 30}
+    - {module: new_vendor_onboarding, task: jbp_qbr, in_scope_pct: 20}              # first-year plan for new vendors
+    - {module: new_vendor_onboarding, task: po_replenishment, in_scope_pct: 10}     # first PO
+    - {module: new_vendor_onboarding, task: compliance, in_scope_pct: 30}           # at onboarding
+    - {module: weekly_review_mis, task: vendor_scorecards, in_scope_pct: 100}
+    - {module: weekly_review_mis, task: reporting_mis, in_scope_pct: 100}
+    - {module: price_increase_evaluator, task: price_increase_requests, in_scope_pct: 100}
+    - {module: po_followup, task: po_replenishment, in_scope_pct: 90}
+    - {module: catalog_qc_queue, task: catalog_create_qc, in_scope_pct: 70}
+    - {module: promotions_planner, task: promotions, in_scope_pct: 100}
+    - {module: competitor_monitor, task: competitor_monitoring, in_scope_pct: 100}
+    - {module: inventory_health_module, task: inventory_health, in_scope_pct: 100}
   max_review_minutes: 120        # a review gap longer than this counts as this many minutes (the reviewer walked away)
-  assumed_review_share_pct: 10   # PLACEHOLDER: human review as a share of baseline, used until a run is fully reviewed
-  target_reduction_pct: 33.3     # the team view compares the projected saving with this goal
+  target_reduction_pct: 33.3     # the team view compares the saving with this goal
