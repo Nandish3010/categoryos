@@ -546,3 +546,30 @@ class PriceWatchActionDecided(CategoryOSError):
     problem = "This price-watch action was already decided"
     cause = "It was approved or rejected; a decision is final until the server resets"
     fix = "Open the outbox to see what was queued, or reset the demo"
+
+
+class InventoryHealthDataMissing(CategoryOSError):
+    status = 500
+    code = "inventory_health_data_missing"
+    problem = "The inventory health data files are missing or unreadable"
+    cause = "data/synthetic/ops/inventory_terms.csv, inventory_legacy.csv or inventory_health_meta.json was not generated"
+    fix = "Run python3 data/generate_inventory_health.py from the repo root"
+
+
+class UnknownInventoryAction(CategoryOSError):
+    status = 404
+    code = "unknown_inventory_action"
+    cause = "The action id is not in the current inventory health list (the playbook or the data changed, or the server restarted)"
+    fix = "Reload GET /api/ops/inventory-health and use one of its action ids"
+
+    def __init__(self, action_id: str) -> None:
+        super().__init__(f"unknown inventory health action: {action_id!r}")
+        self.action_id = action_id
+
+
+class InventoryActionDecided(CategoryOSError):
+    status = 409
+    code = "inventory_action_decided"
+    problem = "This inventory action was already decided"
+    cause = "It was approved or rejected; a decision is final until the server resets"
+    fix = "Open the outbox to see what was queued, or reset the demo"

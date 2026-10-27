@@ -1083,6 +1083,7 @@ class InvLiquidate(M):
     discount_excess_pct: float = F(15, "Excess stock discount", "Promo discount on stock above the healthy cover band.", unit="%", min=0, max=90, step=1, used_in=_INV)
     floor_pct_of_cost: float = F(60, "Never below", "A liquidation price is never set under this % of cost, whatever the discount.", unit="%", min=0, max=200, step=5, used_in=_INV)
     uplift_multiplier: float = F(2.0, "Sales lift on promo", "Daily sales on a liquidation promo are this multiple of the normal rate (sets the days to clear).", min=1, max=20, step=0.1, used_in=_INV)
+    max_clear_days: float = F(90, "Longest sensible promo", "A promo that would take longer than this to clear the stock is not counted as a recovery: a return to the vendor is preferred when its window is open.", unit="days", min=1, max=730, step=5, used_in=_INV)
     price_round_inr: float = F(1, "Round price to", "Liquidation prices are rounded to a multiple of this.", unit="INR", min=0.01, max=1000, step=0.5, used_in=_INV)
 
 

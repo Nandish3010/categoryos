@@ -414,6 +414,7 @@ inventory_health:                # Run: weekly inventory health review (ops_inve
     discount_excess_pct: 15
     floor_pct_of_cost: 60        # a liquidation price is never under this % of cost
     uplift_multiplier: 2.0       # daily sales on the promo = this x the normal rate (sets days to clear)
+    max_clear_days: 90           # a promo that would take longer than this to clear the stock does not beat a return to the vendor
     price_round_inr: 1
 
 impact:                        # Impact meter. RESEARCH ESTIMATES (not measured) from docs/research/category-manager-workload.md; replace with a time diary of your own team, then set baseline_status to measured
@@ -476,7 +477,7 @@ impact:                        # Impact meter. RESEARCH ESTIMATES (not measured)
     catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: shipped}
     promotions_planner: {label: "Promotions and event planner", status: shipped}
     competitor_monitor: {label: "Competitor price monitor", status: shipped}
-    inventory_health_module: {label: "Inventory health and liquidation", status: not_built}
+    inventory_health_module: {label: "Inventory health and liquidation", status: shipped}
   coverage:                      # module, task, and the share of that task's time the module takes over
     - {module: new_vendor_onboarding, task: new_vendor_onboarding, in_scope_pct: 100}
     - {module: new_vendor_onboarding, task: catalog_create_qc, in_scope_pct: 30}    # creation only

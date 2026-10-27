@@ -15,6 +15,9 @@ from pathlib import Path
 from typing import Any
 
 from app.ops.data import load as load_ops
+from app.ops.inventory_health import agent as iag
+from app.ops.inventory_health import claims as ihc
+from app.ops.inventory_health import engine as ihe
 from app.ops.pricewatch import claims as pwc
 from app.ops.pricewatch import engine as pwe
 from app.ops.promotions import agent as pag
@@ -110,6 +113,66 @@ def price_watch() -> None:
             },
         },
     )
+
+
+# ---------------------------------------------------------------- inventory health
+
+
+def inventory_health() -> None:
+    r = ihe.analyse()
+    acts = r["actions"]
+
+    def by(a: dict[str, Any]) -> dict[str, Any]:
+        return {c.metric: c for c in ihc.action_claims(a)}
+
+    def pick(rec: str) -> dict[str, Any]:
+        return next(a for a in acts if a["recommendation"] == rec)
+
+    reorder, expedite, pause, rtv, liq = pick("reorder"), pick("expedite_po"), pick("pause_po"), pick("return_to_vendor"), pick("liquidate")
+    o, e, p, t, q = by(reorder), by(expedite), by(pause), by(rtv), by(liq)
+    figs = [
+        o["ih_run_out_day"], o["ih_reorder_qty"], o["ih_reorder_cost_inr"],
+        e["ih_run_out_day"], e["ih_short_days"],
+        p["ih_pause_units"], p["ih_pause_cover_without_days"],
+        t["ih_clear_units"], t["ih_rtv_credit_inr"], t["ih_rtv_days_left"],
+        q["ih_liq_price_inr"], q["ih_liq_recovery_inr"],
+    ]
+    narrative = "\n\n".join(
+        [
+            f"Order now: {reorder['name']} runs out in {S(o['ih_run_out_day'])} days. Order {S(o['ih_reorder_qty'])} units ({S(o['ih_reorder_cost_inr'])} at cost) so the stock lasts until the next review. "
+            f"{expedite['name']} runs out in {S(e['ih_run_out_day'])} days and its PO is late, which means about {S(e['ih_short_days'])} days out of stock unless {expedite['brand']} ships it now.",
+            f"Overstock: {pause['name']} already has {S(p['ih_pause_cover_without_days'])} days of cover without its open PO. Pause the {S(p['ih_pause_units'])} units on it. "
+            f"{rtv['name']}: return {S(t['ih_clear_units'])} units for {S(t['ih_rtv_credit_inr'])} of credit while the window has {S(t['ih_rtv_days_left'])} days left. "
+            f"{liq['name']} has no return route; clear it on a promo at {S(q['ih_liq_price_inr'])} a unit to recover {S(q['ih_liq_recovery_inr'])}.",
+        ]
+    )
+    notes = []
+    for a, m, text in (
+        (reorder, o, f"Stock ends in {S(o['ih_run_out_day'])} days, inside the vendor's lead time. Raise the order for {S(o['ih_reorder_qty'])} units today."),
+        (expedite, e, f"The PO is past its promised date and the stock ends in {S(e['ih_run_out_day'])} days. Chase the vendor to ship now rather than ordering more."),
+        (pause, p, f"Without the open PO there are still {S(p['ih_pause_cover_without_days'])} days of cover. Hold the {S(p['ih_pause_units'])} units."),
+        (rtv, t, f"The vendor takes this back under sell-or-return for {S(t['ih_rtv_credit_inr'])} of credit, with {S(t['ih_rtv_days_left'])} days left in the window."),
+        (liq, q, f"No return route: promote at {S(q['ih_liq_price_inr'])} a unit to recover {S(q['ih_liq_recovery_inr'])}."),
+    ):
+        used = [c for c in m.values() if S(c) in text]
+        notes.append({"action_id": a["id"], "rationale": text, "figures": [fig(c) for c in used]})
+    write(
+        "ih_brief",
+        {
+            "steps": [{"tool": "get_inventory_summary", "args": {}}],
+            "final": {
+                "headline": "Reorder two SKUs, chase two late POs, pause one overbuy, and clear the stuck stock by return or promo.",
+                "narrative": narrative,
+                "figures": [fig(c) for c in figs],
+                "notes": notes,
+            },
+        },
+    )
+    mails = []
+    for vid in iag.vendors_to_message(acts):
+        d = iag.template_email(vid, acts)
+        mails.append({"vendor_id": d.vendor_id, "subject": d.subject, "body": d.body, "figures": [f.model_dump() for f in d.figures]})
+    write("ih_vendor_emails", {"steps": [{"tool": "get_inventory_summary", "args": {}}, {"tool": "get_vendor_contacts", "args": {}}], "final": {"emails": mails}})
 
 
 # ---------------------------------------------------------------- promotions
@@ -233,5 +296,6 @@ def emails(ev: Any, plan: dict[str, Any], vendors: list[Any]) -> dict[str, Any]:
 
 if __name__ == "__main__":
     price_watch()
+    inventory_health()
     promotions()
     print(f"wrote fixtures to {OUT}")

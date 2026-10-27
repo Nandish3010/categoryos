@@ -1,0 +1,233 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_inventory_summary",
+        "args": {}
+      }
+    ],
+    "final": {
+      "headline": "Reorder two SKUs, chase two late POs, pause one overbuy, and clear the stuck stock by return or promo.",
+      "narrative": "Order now: Peanut Butter Biscuits 400 g runs out in 0.38 days. Order 1,800 units (₹594,000 at cost) so the stock lasts until the next review. Clumping Bentonite 5 kg runs out in 4.98 days and its PO is late, which means about 2.02 days out of stock unless Litterly ships it now.\n\nOverstock: Collapsible Travel Bowl already has 30.03 days of cover without its open PO. Pause the 300 units on it. Training Bites (old pack): return 240 units for ₹15,048 of credit while the window has 66 days left. Oatmeal Shampoo (old label) has no return route; clear it on a promo at ₹113 a unit to recover ₹20,340.",
+      "figures": [
+        {
+          "metric": "ih_run_out_day",
+          "key": "E003:NP-03",
+          "value": 0.38,
+          "shown": "0.38",
+          "text": "Peanut Butter Biscuits 400 g: days until the stock runs out"
+        },
+        {
+          "metric": "ih_reorder_qty",
+          "key": "E003:NP-03",
+          "value": 1800.0,
+          "shown": "1,800",
+          "text": "Peanut Butter Biscuits 400 g: units to order"
+        },
+        {
+          "metric": "ih_reorder_cost_inr",
+          "key": "E003:NP-03",
+          "value": 594000.0,
+          "shown": "₹594,000",
+          "text": "Peanut Butter Biscuits 400 g: cost of the order"
+        },
+        {
+          "metric": "ih_run_out_day",
+          "key": "E005:LT-05",
+          "value": 4.98,
+          "shown": "4.98",
+          "text": "Clumping Bentonite 5 kg: days until the stock runs out"
+        },
+        {
+          "metric": "ih_short_days",
+          "key": "E005:LT-05",
+          "value": 2.02,
+          "shown": "2.02",
+          "text": "Clumping Bentonite 5 kg: days out of stock"
+        },
+        {
+          "metric": "ih_pause_units",
+          "key": "E004:TW-06",
+          "value": 300.0,
+          "shown": "300",
+          "text": "Collapsible Travel Bowl: units on the PO to pause"
+        },
+        {
+          "metric": "ih_pause_cover_without_days",
+          "key": "E004:TW-06",
+          "value": 30.03,
+          "shown": "30.03",
+          "text": "Collapsible Travel Bowl: days of cover without the PO"
+        },
+        {
+          "metric": "ih_clear_units",
+          "key": "E003:NP-91",
+          "value": 240.0,
+          "shown": "240",
+          "text": "Training Bites (old pack): units to clear"
+        },
+        {
+          "metric": "ih_rtv_credit_inr",
+          "key": "E003:NP-91",
+          "value": 15048.0,
+          "shown": "₹15,048",
+          "text": "Training Bites (old pack): vendor credit for returning them"
+        },
+        {
+          "metric": "ih_rtv_days_left",
+          "key": "E003:NP-91",
+          "value": 66.0,
+          "shown": "66",
+          "text": "Training Bites (old pack): days left in the sell-or-return window"
+        },
+        {
+          "metric": "ih_liq_price_inr",
+          "key": "E006:GW-91",
+          "value": 113.0,
+          "shown": "₹113",
+          "text": "Oatmeal Shampoo (old label): promo price"
+        },
+        {
+          "metric": "ih_liq_recovery_inr",
+          "key": "E006:GW-91",
+          "value": 20340.0,
+          "shown": "₹20,340",
+          "text": "Oatmeal Shampoo (old label): cash recovered by the promo"
+        }
+      ],
+      "notes": [
+        {
+          "action_id": "ih:stock_out:NP-03",
+          "rationale": "Stock ends in 0.38 days, inside the vendor's lead time. Raise the order for 1,800 units today.",
+          "figures": [
+            {
+              "metric": "ih_cover_days",
+              "key": "E003:NP-03",
+              "value": 0.38,
+              "shown": "0.38",
+              "text": "Peanut Butter Biscuits 400 g: days of cover on hand"
+            },
+            {
+              "metric": "ih_run_out_day",
+              "key": "E003:NP-03",
+              "value": 0.38,
+              "shown": "0.38",
+              "text": "Peanut Butter Biscuits 400 g: days until the stock runs out"
+            },
+            {
+              "metric": "ih_reorder_qty",
+              "key": "E003:NP-03",
+              "value": 1800.0,
+              "shown": "1,800",
+              "text": "Peanut Butter Biscuits 400 g: units to order"
+            }
+          ]
+        },
+        {
+          "action_id": "ih:stock_out:LT-05",
+          "rationale": "The PO is past its promised date and the stock ends in 4.98 days. Chase the vendor to ship now rather than ordering more.",
+          "figures": [
+            {
+              "metric": "ih_cover_days",
+              "key": "E005:LT-05",
+              "value": 4.98,
+              "shown": "4.98",
+              "text": "Clumping Bentonite 5 kg: days of cover on hand"
+            },
+            {
+              "metric": "ih_lead_time_days",
+              "key": "E005:LT-05",
+              "value": 8.0,
+              "shown": "8",
+              "text": "Clumping Bentonite 5 kg: vendor lead time"
+            },
+            {
+              "metric": "ih_run_out_day",
+              "key": "E005:LT-05",
+              "value": 4.98,
+              "shown": "4.98",
+              "text": "Clumping Bentonite 5 kg: days until the stock runs out"
+            }
+          ]
+        },
+        {
+          "action_id": "ih:overbuy:TW-06",
+          "rationale": "Without the open PO there are still 30.03 days of cover. Hold the 300 units.",
+          "figures": [
+            {
+              "metric": "ih_inbound_units",
+              "key": "E004:TW-06",
+              "value": 300.0,
+              "shown": "300",
+              "text": "Collapsible Travel Bowl: units on open POs"
+            },
+            {
+              "metric": "ih_pause_units",
+              "key": "E004:TW-06",
+              "value": 300.0,
+              "shown": "300",
+              "text": "Collapsible Travel Bowl: units on the PO to pause"
+            },
+            {
+              "metric": "ih_pause_cover_without_days",
+              "key": "E004:TW-06",
+              "value": 30.03,
+              "shown": "30.03",
+              "text": "Collapsible Travel Bowl: days of cover without the PO"
+            },
+            {
+              "metric": "ih_moq_units",
+              "key": "E004:TW-06",
+              "value": 300.0,
+              "shown": "300",
+              "text": "Collapsible Travel Bowl: vendor minimum order quantity"
+            }
+          ]
+        },
+        {
+          "action_id": "ih:dead:NP-91",
+          "rationale": "The vendor takes this back under sell-or-return for ₹15,048 of credit, with 66 days left in the window.",
+          "figures": [
+            {
+              "metric": "ih_rtv_credit_inr",
+              "key": "E003:NP-91",
+              "value": 15048.0,
+              "shown": "₹15,048",
+              "text": "Training Bites (old pack): vendor credit for returning them"
+            },
+            {
+              "metric": "ih_rtv_days_left",
+              "key": "E003:NP-91",
+              "value": 66.0,
+              "shown": "66",
+              "text": "Training Bites (old pack): days left in the sell-or-return window"
+            }
+          ]
+        },
+        {
+          "action_id": "ih:dead:GW-91",
+          "rationale": "No return route: promote at ₹113 a unit to recover ₹20,340.",
+          "figures": [
+            {
+              "metric": "ih_liq_price_inr",
+              "key": "E006:GW-91",
+              "value": 113.0,
+              "shown": "₹113",
+              "text": "Oatmeal Shampoo (old label): promo price"
+            },
+            {
+              "metric": "ih_liq_recovery_inr",
+              "key": "E006:GW-91",
+              "value": 20340.0,
+              "shown": "₹20,340",
+              "text": "Oatmeal Shampoo (old label): cash recovered by the promo"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
