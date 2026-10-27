@@ -55,6 +55,16 @@ class Evidence(BaseModel):
     as_of: str | None = None  # ISO date the expiry arithmetic of a date claim was done against
 
 
+class ClaimAttempt(BaseModel):
+    """One try at a model-extraction claim. attempt 0 is the agent's first answer; later ones follow verifier feedback."""
+
+    attempt: int
+    value: float
+    status: ClaimStatus
+    reason: str | None = None
+    recomputed: float | None = None
+
+
 class Claim(BaseModel):
     id: str
     text: str
@@ -68,6 +78,8 @@ class Claim(BaseModel):
     status: ClaimStatus = "pending"
     recomputed: float | None = None
     reason: str | None = None
+    # Set only when the verifier rejected the agent's first answer: the timeline of attempts, oldest first.
+    attempts: list[ClaimAttempt] = Field(default_factory=list)
 
 
 class BaseSku(BaseModel):
@@ -167,7 +179,18 @@ class StageResult(BaseModel):
 
 
 TraceType = Literal[
-    "stage_started", "tool_call", "model_call", "claim_checked", "stage_result", "degraded", "error", "done"
+    "stage_started",
+    "tool_call",
+    "model_call",
+    "claim_checked",
+    "claim_rejected",
+    "self_correction",
+    "claim_verified",
+    "claim_unresolved",
+    "stage_result",
+    "degraded",
+    "error",
+    "done",
 ]
 
 
@@ -232,6 +255,22 @@ class DecideFinal(BaseModel):
     rationale_per_sku: list[SkuRationale]
     counter_offer: CounterOffer
     extractions: list[Extraction] = Field(default_factory=list)
+
+
+class ClaimFix(BaseModel):
+    """The agent's corrected answer to one rejected claim. Which fields it fills depends on the claim:
+    a sheet extraction gives value (+ row, header); a negotiation commitment gives value (+ turn, transcript_quote)."""
+
+    claim_id: str
+    value: float
+    row: int | None = None
+    header: str | None = None
+    turn: int | None = None
+    transcript_quote: str | None = None
+
+
+class FixFinal(BaseModel):
+    fixes: list[ClaimFix] = Field(default_factory=list)
 
 
 # ---------- request bodies ----------

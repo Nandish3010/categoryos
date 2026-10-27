@@ -77,6 +77,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -125,6 +126,7 @@
    "model": null,
    "payload": {
     "claim": {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -268,6 +270,7 @@
    "payload": {
     "claims": [
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -304,6 +307,7 @@
       "value": -1305.0
      },
      {
+      "attempts": [],
       "evidence": {
        "as_of": "2026-10-27",
        "bbox": [
@@ -857,9 +861,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "f47c98b24d031aed2140a72b20307c0a1619f3c495c127fa7927a32060cbcf08",
+  "metrics_hash": "f99193b03f6342e51dedfb2feca442a408491c45ef3387cc0662fa0613ed9735",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T02:57:39+00:00",
+  "recorded_at": "2026-10-27T03:14:38+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -879,6 +883,7 @@
   "intake": {
    "claims": [
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [
@@ -915,6 +920,7 @@
      "value": -1305.0
     },
     {
+     "attempts": [],
      "evidence": {
       "as_of": "2026-10-27",
       "bbox": [

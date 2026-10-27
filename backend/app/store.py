@@ -1,5 +1,5 @@
 """SQLite persistence (stdlib sqlite3, run in a worker thread). One short-lived connection per call,
-so it is safe across threads. Tables: runs, events, stage_results, approvals, overrides."""
+so it is safe across threads. Tables: runs, events, stage_results, approvals, overrides, marks (review clock, re-plans)."""
 
 import asyncio
 import json
@@ -54,8 +54,15 @@ CREATE TABLE IF NOT EXISTS overrides (
     note TEXT,
     created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS marks (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    run_id TEXT NOT NULL,
+    stage TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
 """
-TABLES = ("runs", "events", "stage_results", "approvals", "overrides")
+TABLES = ("runs", "events", "stage_results", "approvals", "overrides", "marks")
 
 
 def now_iso() -> str:
@@ -156,6 +163,10 @@ def _add_override(run_id: str, stage: str, sku_code: str, verdict: str, note: st
     )
 
 
+def _add_mark(run_id: str, stage: str, kind: str) -> None:
+    _exec("INSERT INTO marks (run_id, stage, kind, created_at) VALUES (?, ?, ?, ?)", (run_id, stage, kind, now_iso()))
+
+
 def _list_table(table: str, run_id: str) -> list[dict[str, Any]]:
     with closing(_connect()) as conn:
         conn.row_factory = sqlite3.Row
@@ -220,3 +231,12 @@ async def list_approvals(run_id: str) -> list[dict[str, Any]]:
 
 async def list_overrides(run_id: str) -> list[dict[str, Any]]:
     return await asyncio.to_thread(_list_table, "overrides", run_id)
+
+
+async def add_mark(run_id: str, stage: str, kind: str) -> None:
+    """A timestamped note for the impact meter: kind is review_started or replan."""
+    await asyncio.to_thread(_add_mark, run_id, stage, kind)
+
+
+async def list_marks(run_id: str) -> list[dict[str, Any]]:
+    return await asyncio.to_thread(_list_table, "marks", run_id)

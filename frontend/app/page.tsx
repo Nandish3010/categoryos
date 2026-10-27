@@ -4,8 +4,10 @@ import { ArrowRight, XCircle } from "lucide-react";
 import Link from "next/link";
 import { BackendBanner } from "@/components/BackendBanner";
 import { Chip, Tag } from "@/components/Chip";
+import { ImpactTeam } from "@/components/ImpactTeam";
 import { Skeleton } from "@/components/Skeleton";
 import { fetchVendors, type VendorListItem } from "@/lib/api";
+import { fetchTeamImpact } from "@/lib/impact";
 import { vendorOutcome } from "@/lib/outcome";
 import { fetchLatestRun, fetchRun, screeningFailure } from "@/lib/runs";
 import { inrCompact } from "@/lib/format";
@@ -112,6 +114,7 @@ function SkeletonCard({ primary }: { primary: boolean }) {
 export default function VendorsBoard() {
   const { data, error, loading } = useAsync(fetchVendors, "vendors", { retryMs: 3000 });
   const failedScreen = useScreeningFailures(data?.map((v) => v.id) ?? []);
+  const impact = useAsync(fetchTeamImpact, "team-impact");
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6">
@@ -133,6 +136,8 @@ export default function VendorsBoard() {
           <BackendBanner error={error} cached={data != null} retrying />
         </div>
       ) : null}
+
+      {impact.data ? <ImpactTeam impact={impact.data} /> : null}
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2" aria-busy={loading}>
         {data

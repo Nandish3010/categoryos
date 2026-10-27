@@ -79,30 +79,53 @@ def rejected_extractions(result):
     return [c for c in result.claims if c.origin == "model_extraction" and c.status == "rejected"]
 
 
-def test_decide_v001_has_exactly_one_rejected_extraction_and_its_sentence_is_struck():
+def test_decide_v001_catches_the_transposed_cost_and_the_agent_corrects_it():
+    """The planted mistake (₹965.50 for a cell that says Rs. 956.50) is caught, the agent is told, and the corrected value
+    replaces it in the narrative. Nothing is struck."""
     result, events = run_agent(decide.run, "V001")
     assert result.stage == "research" and result.status == "review" and result.needs_approval
+    assert rejected_extractions(result) == []
+    claim = next(c for c in result.claims if c.id == "V001:HP-D01:cost:extracted")
+    assert claim.status == "verified" and claim.value == 956.5 and claim.recomputed == 956.5
+    assert [(a.attempt, a.value, a.status) for a in claim.attempts] == [(0, 965.5, "rejected"), (1, 956.5, "verified")]
+    assert "Rs. 956.50" in claim.attempts[0].reason
+    why = next(r["why"] for r in result.data["rationale_per_sku"] if r["code"] == "HP-D01")
+    assert "₹956.50" in why and "965.5" not in why and "Margin 35.8%" in why
+    assert result.data["struck"] == []
+    assert result.data["self_correction"] == {"max": 2, "corrected": [claim.id], "unresolved": []}
+    ex = next(e for e in result.data["extractions"] if e["claim_id"] == claim.id)
+    assert ex["value"] == 956.5 and ex["original_value"] == 965.5 and ex["status"] == "verified"
+    assert result.data["verification"]["rejected"] == 0
+    assert result.data["verification"]["verified"] == result.data["verification"]["total"]
+    # the trace tells the story in order
+    story = [e.type for e in events if e.type in {"claim_rejected", "self_correction", "claim_verified", "claim_unresolved"}]
+    assert story == ["claim_rejected", "self_correction", "claim_verified"]
+    fb = next(e for e in events if e.type == "self_correction").payload["feedback"][0]
+    assert fb.startswith("Claim V001:HP-D01:cost:extracted rejected: you said ₹965.50") and fb.endswith("Re-read and correct.")
+    checked = [e for e in events if e.type == "claim_checked"]
+    assert len(checked) == len(result.claims)
+
+
+def test_decide_with_self_correction_off_keeps_the_old_strike_behaviour():
+    from app import policy
+
+    policy.save_overrides({"verifier": {"max_self_corrections": 0}})
+    try:
+        result, events = run_agent(decide.run, "V001")
+    finally:
+        policy.reset()
     bad = rejected_extractions(result)
-    assert len(bad) == 1
-    claim = bad[0]
-    assert claim.sku_key == "V001:HP-D01" and claim.metric == "cost" and claim.value == 965.5
-    assert claim.recomputed == 956.5 and "Rs. 956.50" in claim.reason
-    assert claim.evidence.row == 2 and claim.evidence.header == "Cost to Us"
-    # the sentence quoting the wrong number is gone from the narrative and logged
+    assert len(bad) == 1 and bad[0].value == 965.5 and bad[0].recomputed == 956.5
     why = next(r["why"] for r in result.data["rationale_per_sku"] if r["code"] == "HP-D01")
     assert "965.5" not in why and "Margin 35.8%" in why
     struck = result.data["struck"]
     assert len(struck) == 1 and "₹965.50" in struck[0]["sentence"] and struck[0]["where"] == "rationale:HP-D01"
     assert struck[0]["claimed_value"] == 965.5 and struck[0]["sheet_value"] == 956.5
-    # every other claim, engine and extraction, verified; rejected claims are never hidden
+    assert [e.type for e in events if e.type in {"claim_rejected", "self_correction", "claim_verified", "claim_unresolved"}] == [
+        "claim_rejected",
+        "claim_unresolved",
+    ]
     assert result.data["verification"]["rejected"] == 1
-    assert result.data["verification"]["verified"] == result.data["verification"]["total"] - 1
-    assert sum(1 for c in result.claims if c.origin == "model_extraction" and c.status == "verified") == 5
-    checked = [e for e in events if e.type == "claim_checked"]
-    assert len(checked) == len(result.claims)
-    assert sum(1 for e in checked if e.payload["claim"]["status"] == "rejected") == 1
-    statuses = {e["status"] for e in result.data["extractions"]}
-    assert statuses == {"verified", "rejected"}
 
 
 @pytest.mark.parametrize("vendor_id", ["V002", "V003", "V004"])

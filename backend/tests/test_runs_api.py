@@ -74,7 +74,7 @@ def test_latest_run(client):
 def test_get_run_has_all_eight_stages(client):
     run_id, _ = start(client, "V001")
     body = client.get(f"/api/runs/{run_id}").json()
-    assert set(body) == {"run_id", "vendor_id", "mode", "created_at", "stages"}
+    assert set(body) == {"run_id", "vendor_id", "mode", "created_at", "stages", "impact"}
     assert body["run_id"] == run_id and body["vendor_id"] == "V001" and body["mode"] == "mock"
     assert list(body["stages"]) == STAGE_IDS
     stages = body["stages"]
