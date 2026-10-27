@@ -9,10 +9,10 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app import policy
+from app import deals, policy
 from app.config import settings
 from app.constants import ALLOWED_VENDORS
-from app.data_loader import load_sheet, load_transcript
+from app.data_loader import load_application, load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
 from app.parsing import PARSER_VERSION, map_columns, parse_pack, parse_price
@@ -29,8 +29,12 @@ COMMIT_METRICS = {
     "commit_returns": "units",
 }
 EXTRACTION_METRICS = {"pack_qty": "qty"}
+DEAL_TERM_PREFIX = "deal_term_"  # model-extracted numbers of a vendor's conditional offer, quote-checked like commitments
+DEAL_TERM_UNITS = ("pct", "inr", "units")
+DEAL_ENGINE_UNITS = ("ratio", "pts", "units", "inr", "pct")
 _VENDOR_ALT = "|".join(ALLOWED_VENDORS)
 _TRANSCRIPT = re.compile(rf"^vendors/({_VENDOR_ALT})/call_transcript\.json$")
+_APPLICATION = re.compile(rf"^vendors/({_VENDOR_ALT})/application\.json$")
 _VENDOR_SHEET = re.compile(rf"^vendors/({_VENDOR_ALT})/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 
@@ -106,6 +110,8 @@ def _parse_cell(raw: str, unit: str) -> float | None:
 
 
 def _recompute_engine(claim: Claim) -> float:
+    if claim.metric in deals.DEAL_METRICS:
+        return deals.recompute(claim)
     if claim.metric in VENDOR_METRICS:
         vendor, _, query = claim.source_ref.key.partition("?")
         params = dict(p.split("=", 1) for p in query.split("&") if "=" in p)
@@ -172,22 +178,36 @@ def _squash(text: str) -> str:
     return " ".join(text.split())
 
 
+def _quote_text(rel_file: str, row: int) -> tuple[str, str] | str:
+    """(vendor, text) of the transcript turn / application additional term a quote claims to come from, or an error."""
+    match = _TRANSCRIPT.match(rel_file)
+    if match:
+        turn = next((t for t in load_transcript(match.group(1)) or [] if t.get("turn") == row), None)
+        return (match.group(1), str(turn.get("text", ""))) if turn else f"the transcript has no turn {row}"
+    match = _APPLICATION.match(rel_file)
+    assert match is not None
+    extra = load_application(match.group(1)).get("proposed_terms", {}).get("additional_terms") or []
+    if not 1 <= row <= len(extra):
+        return f"the application has no additional term {row}"
+    return match.group(1), str(extra[row - 1])
+
+
 def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
-    """A negotiation commitment: the quote must appear verbatim in the canonical transcript at the claimed turn,
-    and the claimed number must be one of the numbers stated in that quote."""
+    """A negotiation commitment (or a number of a conditional offer): the quote must appear verbatim in the canonical
+    transcript turn (or application term) it claims, and the claimed number must be one of the numbers stated in the quote."""
     ev = claim.evidence
     if ev is None or ev.row is None or not ev.raw_value:
         return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
     if file_sha256(rel_file) != ev.sha256:
         return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")
-    vendor = _TRANSCRIPT.match(rel_file).group(1)  # type: ignore[union-attr]
-    turns = load_transcript(vendor) or []
-    turn = next((t for t in turns if t.get("turn") == ev.row), None)
-    if turn is None:
-        return _finish(claim, "rejected", f"the transcript has no turn {ev.row}")
+    found = _quote_text(rel_file, ev.row)
+    if isinstance(found, str):
+        return _finish(claim, "rejected", found)
     quote = _squash(ev.raw_value)
-    if quote not in _squash(str(turn.get("text", ""))):
-        return _finish(claim, "rejected", f"the quote does not appear verbatim in turn {ev.row} of the canonical transcript")
+    if quote not in _squash(found[1]):
+        where = "turn" if _TRANSCRIPT.match(rel_file) else "term"
+        source = "canonical transcript" if _TRANSCRIPT.match(rel_file) else "application"
+        return _finish(claim, "rejected", f"the quote does not appear verbatim in {where} {ev.row} of the {source}")
     stated = numbers_in(quote)
     value = claim.value * 100 if claim.unit == "pct" else claim.value
     tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
@@ -207,10 +227,14 @@ def verify_claim(claim: Claim) -> Claim:
         or COMMIT_METRICS.get(claim.metric)
         or EXTRACTION_METRICS.get(claim.metric)
     )
+    if claim.metric.startswith(DEAL_TERM_PREFIX) and claim.unit in DEAL_TERM_UNITS:
+        unit = claim.unit
+    elif claim.metric in deals.DEAL_METRICS and claim.unit in DEAL_ENGINE_UNITS:
+        unit = deals.DEAL_METRICS[claim.metric] or claim.unit  # percentiles and counters carry the metric's own unit
     if unit is None:
         return _finish(claim, "unverifiable", f"unknown metric {claim.metric!r}")
     if claim.origin == "model_extraction":
-        if _TRANSCRIPT.match(rel_file):
+        if _TRANSCRIPT.match(rel_file) or (_APPLICATION.match(rel_file) and claim.metric.startswith(DEAL_TERM_PREFIX)):
             return _verify_commitment(claim, rel_file)
         return _verify_extraction(claim, rel_file)
     if claim.evidence is not None and claim.evidence.sha256 != file_sha256(rel_file):

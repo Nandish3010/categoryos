@@ -36,10 +36,12 @@ CategoryOS takes a vendor from application to a launch-ready order in four phase
 | Execute | 5 Catalog |
 | Launch | 6 Marketing, 7 JBP, 8 PO (shown as one "Launch packet" screen) |
 
-Two features carry the product:
+Three features carry the product:
 
 - **Live what-if lever.** Drag target margin and MOQ and the shortlist re-scores instantly, showing capital at risk, days of cover and GMV. The numbers come from deterministic Python over the data, not from a model.
 - **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell; mismatches are caught and removed before they reach the page.
+
+- **Deal evaluator for conditional offers.** A vendor says "15% base margin, plus 20% marketing support if you sell 2,000 units in 90 days". The agent reads the structure; Python simulates demand (ramped new listing, fixed-seed Monte Carlo), gives the probability of hitting the target, prices the offer risk-adjusted in margin points, and rejects the structure with concrete counters (a target we can reach, a guaranteed base) when the chance is poor. Every number is a claim the verifier recomputes, and every assumption lives in the playbook (`negotiation.forecast`, `negotiation.contingent`).
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 

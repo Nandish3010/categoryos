@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "stage": "research"
   },
   {
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "stage": "po"
   }
  ],
@@ -54,7 +54,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{12}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[22]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -215,7 +215,7 @@
      "vendor_id": "V002"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=27cc75565240",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=79c8fb077f84",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -233,7 +233,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -250,7 +250,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{12}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[22]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -1659,8 +1659,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+    "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -1842,7 +1842,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2036,7 +2036,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2094,7 +2094,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, file=vendors/V002/call_transcript.json, turns[18]",
+    "result_summary": "vendor_id=V002, file=vendors/V002/call_transcript.json, turns[22]",
     "tool": "get_transcript"
    },
    "run_id": "run_recorded",
@@ -2111,7 +2111,7 @@
     "args": {
      "vendor_id": "V002"
     },
-    "result_summary": "application{12}, call_transcript[18]",
+    "result_summary": "application{12}, call_transcript[22]",
     "tool": "get_application"
    },
    "run_id": "run_recorded",
@@ -2129,7 +2129,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -2167,7 +2167,7 @@
       "parser_version": "1.0",
       "raw_value": "If you take the full treats range, I can move to 21 percent.",
       "row": 4,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:margin_pct:4:0",
      "metric": "commit_margin_pct",
@@ -2204,7 +2204,7 @@
       "parser_version": "1.0",
       "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
       "row": 8,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:payment_days:8:1",
      "metric": "commit_payment_days",
@@ -2241,7 +2241,7 @@
       "parser_version": "1.0",
       "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
       "row": 10,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:moq:10:2",
      "metric": "commit_moq",
@@ -2278,7 +2278,7 @@
       "parser_version": "1.0",
       "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
       "row": 12,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:marketing_inr:12:3",
      "metric": "commit_marketing_inr",
@@ -2315,7 +2315,7 @@
       "parser_version": "1.0",
       "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
       "row": 14,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:launch_discount_pct:14:4",
      "metric": "commit_launch_discount_pct",
@@ -2352,7 +2352,7 @@
       "parser_version": "1.0",
       "raw_value": "Defect returns within 7 days stay as they are.",
       "row": 16,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:returns:16:5",
      "metric": "commit_returns",
@@ -2379,6 +2379,562 @@
   },
   {
    "cost_usd": null,
+   "latency_ms": 180.0,
+   "model": null,
+   "payload": {
+    "args": {
+     "vendor_id": "V002"
+    },
+    "result_summary": "vendor_id=V002, file=vendors/V002/call_transcript.json, turns[22]",
+    "tool": "get_transcript"
+   },
+   "run_id": "run_recorded",
+   "seq": 52,
+   "stage": "negotiate",
+   "t_rel_ms": 19340.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": 180.0,
+   "model": null,
+   "payload": {
+    "args": {
+     "vendor_id": "V002"
+    },
+    "result_summary": "application{12}, call_transcript[22]",
+    "tool": "get_application"
+   },
+   "run_id": "run_recorded",
+   "seq": 53,
+   "stage": "negotiate",
+   "t_rel_ms": 20040.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": 180.0,
+   "model": null,
+   "payload": {
+    "args": {
+     "target_margin_pct_offset": 0,
+     "vendor_id": "V002"
+    },
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
+    "tool": "get_metrics"
+   },
+   "run_id": "run_recorded",
+   "seq": 54,
+   "stage": "negotiate",
+   "t_rel_ms": 20740.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": 0.0,
+   "latency_ms": 900.0,
+   "model": "muse-spark-1.3",
+   "payload": {
+    "input_tokens": 0,
+    "mode": "mock",
+    "output_tokens": 0,
+    "task": "deal_terms",
+    "tool_steps": 3
+   },
+   "run_id": "run_recorded",
+   "seq": 55,
+   "stage": "negotiate",
+   "t_rel_ms": 21840.0,
+   "type": "model_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 0.15,
+      "parser_version": "1.0",
+      "raw_value": "For the litter I can do a base margin of 15 percent.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t1:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.15,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '15% margin': value 15",
+     "unit": "pct",
+     "value": 0.15
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 56,
+   "stage": "negotiate",
+   "t_rel_ms": 21960.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 0.2,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.2,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': value 20",
+     "unit": "pct",
+     "value": 0.2
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 57,
+   "stage": "negotiate",
+   "t_rel_ms": 22080.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 2000.0,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:threshold",
+     "metric": "deal_term_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 2000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': threshold 2000",
+     "unit": "units",
+     "value": 2000.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 58,
+   "stage": "negotiate",
+   "t_rel_ms": 22200.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 90.0,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:window_days",
+     "metric": "deal_term_window_days",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 90.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': window days 90",
+     "unit": "units",
+     "value": 90.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 59,
+   "stage": "negotiate",
+   "t_rel_ms": 22320.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_probability:tier:0",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:0",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of 2,000 units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): <0.1%",
+     "unit": "ratio",
+     "value": 0.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 60,
+   "stage": "negotiate",
+   "t_rel_ms": 22440.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p10",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 174.2991,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p10",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P10 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 174 units",
+     "unit": "units",
+     "value": 174.2991
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 61,
+   "stage": "negotiate",
+   "t_rel_ms": 22560.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p50",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 275.0617,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p50",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P50 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 275 units",
+     "unit": "units",
+     "value": 275.0617
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 62,
+   "stage": "negotiate",
+   "t_rel_ms": 22680.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p90",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 430.5959,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p90",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P90 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 431 units",
+     "unit": "units",
+     "value": 430.5959
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 63,
+   "stage": "negotiate",
+   "t_rel_ms": 22800.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:base",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "base",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Guaranteed base for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 64,
+   "stage": "negotiate",
+   "t_rel_ms": 22920.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:expected",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "expected",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Risk-adjusted expected value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 65,
+   "stage": "negotiate",
+   "t_rel_ms": 23040.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:counted",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "counted",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counted value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 66,
+   "stage": "negotiate",
+   "t_rel_ms": 23160.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:required",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 22.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "required",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Required for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 22.0 points",
+     "unit": "pts",
+     "value": 22.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 67,
+   "stage": "negotiate",
+   "t_rel_ms": 23280.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_counter:threshold:0",
+     "metric": "deal_counter",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 250.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "threshold:0",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counter threshold for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 250 units",
+     "unit": "units",
+     "value": 250.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 68,
+   "stage": "negotiate",
+   "t_rel_ms": 23400.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_counter:uplift:1",
+     "metric": "deal_counter",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 7.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "uplift:1",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counter base uplift for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): +7.0 points",
+     "unit": "pts",
+     "value": 7.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 69,
+   "stage": "negotiate",
+   "t_rel_ms": 23520.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "args": {
+     "terms": [
+      "t1",
+      "t2"
+     ],
+     "vendor_id": "V002"
+    },
+    "deterministic": true,
+    "result_summary": "t2: reject_structure (P <0.1%)",
+    "tool": "assess_deals"
+   },
+   "run_id": "run_recorded",
+   "seq": 70,
+   "stage": "negotiate",
+   "t_rel_ms": 24220.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": 0.0,
+   "latency_ms": 900.0,
+   "model": "muse-spark-1.3",
+   "payload": {
+    "input_tokens": 0,
+    "mode": "mock",
+    "output_tokens": 0,
+    "task": "deal_talk",
+    "tool_steps": 0
+   },
+   "run_id": "run_recorded",
+   "seq": 71,
+   "stage": "negotiate",
+   "t_rel_ms": 25320.0,
+   "type": "model_call"
+  },
+  {
+   "cost_usd": null,
    "latency_ms": null,
    "model": null,
    "payload": {
@@ -2390,7 +2946,7 @@
        "parser_version": "1.0",
        "raw_value": "If you take the full treats range, I can move to 21 percent.",
        "row": 4,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:margin_pct:4:0",
       "metric": "commit_margin_pct",
@@ -2415,7 +2971,7 @@
        "parser_version": "1.0",
        "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
        "row": 8,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:payment_days:8:1",
       "metric": "commit_payment_days",
@@ -2440,7 +2996,7 @@
        "parser_version": "1.0",
        "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
        "row": 10,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:moq:10:2",
       "metric": "commit_moq",
@@ -2465,7 +3021,7 @@
        "parser_version": "1.0",
        "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
        "row": 12,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:marketing_inr:12:3",
       "metric": "commit_marketing_inr",
@@ -2490,7 +3046,7 @@
        "parser_version": "1.0",
        "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
        "row": 14,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:launch_discount_pct:14:4",
       "metric": "commit_launch_discount_pct",
@@ -2515,7 +3071,7 @@
        "parser_version": "1.0",
        "raw_value": "Defect returns within 7 days stay as they are.",
        "row": 16,
-       "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
       },
       "id": "V002:commit:returns:16:5",
       "metric": "commit_returns",
@@ -2531,6 +3087,286 @@
       "status": "verified",
       "text": "V002 commits to defect return window (days): 7 (turn 16)",
       "unit": "units",
+      "value": 7.0
+     },
+     {
+      "evidence": {
+       "header": "text",
+       "normalized_value": 0.15,
+       "parser_version": "1.0",
+       "raw_value": "For the litter I can do a base margin of 15 percent.",
+       "row": 18,
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+      },
+      "id": "V002:dealterm:t1:value",
+      "metric": "deal_term_value",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 0.15,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "turn:18"
+      },
+      "status": "verified",
+      "text": "V002 offer '15% margin': value 15",
+      "unit": "pct",
+      "value": 0.15
+     },
+     {
+      "evidence": {
+       "header": "text",
+       "normalized_value": 0.2,
+       "parser_version": "1.0",
+       "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+       "row": 18,
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+      },
+      "id": "V002:dealterm:t2:value",
+      "metric": "deal_term_value",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 0.2,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "turn:18"
+      },
+      "status": "verified",
+      "text": "V002 offer '20% marketing support if 2,000 units in 90 days': value 20",
+      "unit": "pct",
+      "value": 0.2
+     },
+     {
+      "evidence": {
+       "header": "text",
+       "normalized_value": 2000.0,
+       "parser_version": "1.0",
+       "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+       "row": 18,
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+      },
+      "id": "V002:dealterm:t2:threshold",
+      "metric": "deal_term_threshold",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 2000.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "turn:18"
+      },
+      "status": "verified",
+      "text": "V002 offer '20% marketing support if 2,000 units in 90 days': threshold 2000",
+      "unit": "units",
+      "value": 2000.0
+     },
+     {
+      "evidence": {
+       "header": "text",
+       "normalized_value": 90.0,
+       "parser_version": "1.0",
+       "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+       "row": 18,
+       "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+      },
+      "id": "V002:dealterm:t2:window_days",
+      "metric": "deal_term_window_days",
+      "origin": "model_extraction",
+      "reason": null,
+      "recomputed": 90.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "text",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "turn:18"
+      },
+      "status": "verified",
+      "text": "V002 offer '20% marketing support if 2,000 units in 90 days': window days 90",
+      "unit": "units",
+      "value": 90.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_probability:tier:0",
+      "metric": "deal_probability",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 0.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "tier:0",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Chance of 2,000 units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): <0.1%",
+      "unit": "ratio",
+      "value": 0.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_percentile:p10",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 174.2991,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p10",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "P10 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 174 units",
+      "unit": "units",
+      "value": 174.2991
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_percentile:p50",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 275.0617,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p50",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "P50 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 275 units",
+      "unit": "units",
+      "value": 275.0617
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_percentile:p90",
+      "metric": "deal_percentile",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 430.5959,
+      "sku_key": null,
+      "source_ref": {
+       "column": "p90",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "P90 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 431 units",
+      "unit": "units",
+      "value": 430.5959
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_pts:base",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 15.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "base",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Guaranteed base for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+      "unit": "pts",
+      "value": 15.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_pts:expected",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 15.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "expected",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Risk-adjusted expected value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+      "unit": "pts",
+      "value": 15.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_pts:counted",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 15.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "counted",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Counted value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+      "unit": "pts",
+      "value": 15.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_pts:required",
+      "metric": "deal_pts",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 22.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "required",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Required for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 22.0 points",
+      "unit": "pts",
+      "value": 22.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_counter:threshold:0",
+      "metric": "deal_counter",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 250.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "threshold:0",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Counter threshold for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 250 units",
+      "unit": "units",
+      "value": 250.0
+     },
+     {
+      "evidence": null,
+      "id": "V002:deal:t2:deal_counter:uplift:1",
+      "metric": "deal_counter",
+      "origin": "engine",
+      "reason": null,
+      "recomputed": 7.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "uplift:1",
+       "file": "vendors/V002/call_transcript.json",
+       "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+      },
+      "status": "verified",
+      "text": "Counter base uplift for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): +7.0 points",
+      "unit": "pts",
       "value": 7.0
      }
     ],
@@ -2604,9 +3440,232 @@
        "Move treats margin from 21% towards the 35% category target, or cut unit cost on MW-T01, MW-T02 and MW-T03 (see the required-cost table)",
        "Cut the first-order MOQ below 500 units, or phase it in two deliveries",
        "Revisit the cat litter margin (MW-L01) once the first month's sales are in",
-       "Written confirmation of 30 days payment, 50,000 rupees launch support and the 5 percent launch discount by Friday"
+       "Written confirmation of 30 days payment, 50,000 rupees launch support and the 5 percent launch discount by Friday",
+       "Conditional offer (20% marketing support if 2,000 units in 90 days (on a 15% margin base)): set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required."
       ],
       "email_draft": "Hi Priya,\n\nThank you for the call. To confirm what we agreed: 21 percent margin on the treats range, 30 days payment against a written order, 500 units in total for the first order, 50,000 rupees of launch marketing support, a 5 percent launch discount for the first 30 days, and defect returns within 7 days.\n\nThe margin is still the gap for us: our treats category needs 35 percent. Could you look at a lower unit cost on the tuna, chicken and salmon treats, or a phased MOQ? We are happy to revisit the litter margin after the first month of sales.\n\nPlease send the written confirmation by Friday and we will move to the purchase order.\n\nBest,\nCategory team"
+     },
+     "deals": {
+      "assessments": [
+       {
+        "base_assumed": false,
+        "base_pts": 15.0,
+        "base_term_id": "t1",
+        "call": "Reject this structure and counter. The chance of 2,000 units in 90 days is <0.1%, so the bonus counts as 0.0 points and the offer is worth 15.0% against 22.0% required. Counter: set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required.",
+        "counted_bonus_pts": 0.0,
+        "counted_pts": 15.0,
+        "counters": [
+         {
+          "counted_pts_after": 27.104,
+          "fair_conversion_pts": null,
+          "kind": "threshold",
+          "meets_requirement": true,
+          "probability": 0.6052,
+          "required_base_pts": null,
+          "scope": [],
+          "text": "set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required.",
+          "threshold": 250.0,
+          "uplift_pts": null,
+          "window_days": null
+         },
+         {
+          "counted_pts_after": 22.0,
+          "fair_conversion_pts": 0.0,
+          "kind": "convert_to_base",
+          "meets_requirement": true,
+          "probability": null,
+          "required_base_pts": 22.0,
+          "scope": [],
+          "text": "ask for a guaranteed base of 22.0% (+7.0 points) in place of the volume-linked bonus, which is worth 0.0 points risk-adjusted.",
+          "threshold": null,
+          "uplift_pts": 7.0,
+          "window_days": null
+         }
+        ],
+        "decision": "reject_structure",
+        "distribution": {
+         "bins": [
+          108.2748,
+          126.5354,
+          144.796,
+          163.0566,
+          181.3172,
+          199.5778,
+          217.8384,
+          236.099,
+          254.3596,
+          272.6202,
+          290.8808,
+          309.1414,
+          327.402,
+          345.6626,
+          363.9232,
+          382.1838,
+          400.4444,
+          418.705,
+          436.9656,
+          455.2262,
+          473.4868,
+          491.7474,
+          510.008,
+          528.2686,
+          546.5292,
+          564.7898,
+          583.0504,
+          601.311,
+          619.5716,
+          637.8322,
+          656.0928,
+          674.3534,
+          692.614
+         ],
+         "density": [
+          0.0093,
+          0.0208,
+          0.03395,
+          0.0505,
+          0.06255,
+          0.072,
+          0.0783,
+          0.0802,
+          0.0764,
+          0.0738,
+          0.06845,
+          0.05995,
+          0.0518,
+          0.0455,
+          0.03815,
+          0.0316,
+          0.0265,
+          0.02345,
+          0.01745,
+          0.0135,
+          0.01245,
+          0.01015,
+          0.0064,
+          0.0066,
+          0.0047,
+          0.0042,
+          0.00365,
+          0.00215,
+          0.00225,
+          0.0012,
+          0.0011,
+          0.00095
+         ],
+         "mean": 292.2898,
+         "metric": "units",
+         "p10": 174.2991,
+         "p50": 275.0617,
+         "p90": 430.5959,
+         "threshold": 2000.0,
+         "window_days": 90
+        },
+        "expected_bonus_pts": 0.0,
+        "expected_pts": 15.0,
+        "face_pts": 35.0,
+        "guaranteed_pts": 15.0,
+        "kind": "conditional",
+        "label": "20% marketing support if 2,000 units in 90 days (on a 15% margin base)",
+        "net_pts": null,
+        "probability": 0.0,
+        "quote": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+        "reasoning": [
+         "Demand over 90 days (ramped new listing, 45.0% forecast uncertainty): P10 174 units, P50 275 units, P90 431 units.",
+         "P(2,000 units in 90 days) = <0.1%; under the 60% bar, counts as 0.",
+         "Counted 15.0 base + 0.0 bonus = 15.0 points against 22.0 required."
+        ],
+        "recommended_counter": 0,
+        "required_pts": 22.0,
+        "shortfall_pts": -7.0,
+        "source": "transcript",
+        "term": "marketing_pct",
+        "term_id": "t2",
+        "tiers": [
+         {
+          "bonus_pts": 20.0,
+          "counted": false,
+          "incremental_pts": 20.0,
+          "probability": 0.0,
+          "threshold": 2000.0
+         }
+        ],
+        "turn": 18
+       }
+      ],
+      "assumptions": {
+       "cost_of_capital_pct_annual": 14.0,
+       "cv": 0.45,
+       "cv_by_category": {},
+       "inventory_carrying_pct_monthly": 2.0,
+       "mc_draws": 20000,
+       "min_probability": 0.6,
+       "ramp_by_month": [
+        0.5,
+        0.75,
+        0.9,
+        1.0
+       ],
+       "seed": 42,
+       "sku_correlation": 0.5,
+       "value_basis": "risk_adjusted"
+      },
+      "base_terms": [
+       {
+        "base_of": null,
+        "condition": null,
+        "days": null,
+        "id": "t1",
+        "kind": "base",
+        "quote": "For the litter I can do a base margin of 15 percent.",
+        "scope": [
+         "MW-L01",
+         "MW-L02",
+         "MW-L03",
+         "MW-L04",
+         "MW-L05"
+        ],
+        "source": "transcript",
+        "term": "margin_pct",
+        "tiers": [],
+        "turn": 18,
+        "unit": "pct",
+        "units": null,
+        "value": 15.0
+       }
+      ],
+      "claim_status": {
+       "V002:deal:t2:deal_counter:threshold:0": "verified",
+       "V002:deal:t2:deal_counter:uplift:1": "verified",
+       "V002:deal:t2:deal_percentile:p10": "verified",
+       "V002:deal:t2:deal_percentile:p50": "verified",
+       "V002:deal:t2:deal_percentile:p90": "verified",
+       "V002:deal:t2:deal_probability:tier:0": "verified",
+       "V002:deal:t2:deal_pts:base": "verified",
+       "V002:deal:t2:deal_pts:counted": "verified",
+       "V002:deal:t2:deal_pts:expected": "verified",
+       "V002:deal:t2:deal_pts:required": "verified",
+       "V002:dealterm:t1:value": "verified",
+       "V002:dealterm:t2:threshold": "verified",
+       "V002:dealterm:t2:value": "verified",
+       "V002:dealterm:t2:window_days": "verified"
+      },
+      "decision": "reject_structure",
+      "headline": "Reject the conditional structure and counter",
+      "mode": "mock",
+      "rejected_terms": [],
+      "talk": {
+       "email_paragraph": "On the cat litter, we are not able to accept a 20% marketing bonus that depends on 2,000 units in 90 days, since our forecast gives that a probability of under 0.1%. We would be glad to proceed if the target is set at 250 units in 90 days, or if the base margin is guaranteed at 22.0%.",
+       "source": "model",
+       "struck": [],
+       "talk_track": "We cannot accept the litter structure as offered: 2,000 units in 90 days has a probability of under 0.1% on our forecast, so the 20% marketing support is not something we can count. On its own, the 15.0% base is 7.0 points short of the 22.0% we need. Our first counter is to set the target at 250 units in 90 days, which we reach with a probability of 60.5%. If you prefer to keep the 2,000-unit target, we would need the margin guaranteed at 22.0% instead."
+      },
+      "verification": {
+       "rejected": 0,
+       "total": 14,
+       "unverifiable": 0,
+       "verified": 14
+      }
      },
      "gap_table": [
       {
@@ -2827,13 +3886,33 @@
        },
        {
         "speaker": "buyer",
-        "text": "Fine, no sale-or-return. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only.",
+        "text": "Fine, no sale-or-return. Before we recap, one thing on the cat litter: you said you would look at it again. Can you offer something now?",
         "turn": 17
        },
        {
         "speaker": "vendor",
-        "text": "That is correct. I will send the written confirmation by Friday.",
+        "text": "For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
         "turn": 18
+       },
+       {
+        "speaker": "buyer",
+        "text": "2,000 units in 90 days is far above what we expect for a new brand, and 15 percent is well under our litter target. Can the margin be guaranteed instead of depending on volume?",
+        "turn": 19
+       },
+       {
+        "speaker": "vendor",
+        "text": "The volume target is how I fund the marketing. The 15 percent base stays guaranteed, and the 20 percent applies only if you reach 2,000 units.",
+        "turn": 20
+       },
+       {
+        "speaker": "buyer",
+        "text": "Understood, we will evaluate that structure separately. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only.",
+        "turn": 21
+       },
+       {
+        "speaker": "vendor",
+        "text": "That is correct. I will send the written confirmation by Friday.",
+        "turn": 22
        }
       ]
      },
@@ -2846,17 +3925,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
     "status": "done",
-    "summary": "4 of 6 terms meet our requirement, 2 fall short"
+    "summary": "4 of 6 terms meet our requirement, 2 fall short; conditional offer rejected, counter ready"
    },
    "run_id": "run_recorded",
-   "seq": 52,
+   "seq": 72,
    "stage": "negotiate",
-   "t_rel_ms": 19040.0,
+   "t_rel_ms": 25720.0,
    "type": "stage_result"
   },
   {
@@ -2867,9 +3946,9 @@
     "stage": "catalog"
    },
    "run_id": "run_recorded",
-   "seq": 53,
+   "seq": 73,
    "stage": "catalog",
-   "t_rel_ms": 19340.0,
+   "t_rel_ms": 26020.0,
    "type": "stage_started"
   },
   {
@@ -2891,9 +3970,9 @@
     "tool": "normalise_rows"
    },
    "run_id": "run_recorded",
-   "seq": 54,
+   "seq": 74,
    "stage": "catalog",
-   "t_rel_ms": 20040.0,
+   "t_rel_ms": 26720.0,
    "type": "tool_call"
   },
   {
@@ -2909,9 +3988,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 55,
+   "seq": 75,
    "stage": "catalog",
-   "t_rel_ms": 21140.0,
+   "t_rel_ms": 27820.0,
    "type": "model_call"
   },
   {
@@ -2926,9 +4005,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 56,
+   "seq": 76,
    "stage": "catalog",
-   "t_rel_ms": 22240.0,
+   "t_rel_ms": 28920.0,
    "type": "model_call"
   },
   {
@@ -2963,9 +4042,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 57,
+   "seq": 77,
    "stage": "catalog",
-   "t_rel_ms": 22360.0,
+   "t_rel_ms": 29040.0,
    "type": "claim_checked"
   },
   {
@@ -3000,9 +4079,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 58,
+   "seq": 78,
    "stage": "catalog",
-   "t_rel_ms": 22480.0,
+   "t_rel_ms": 29160.0,
    "type": "claim_checked"
   },
   {
@@ -3037,9 +4116,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 59,
+   "seq": 79,
    "stage": "catalog",
-   "t_rel_ms": 22600.0,
+   "t_rel_ms": 29280.0,
    "type": "claim_checked"
   },
   {
@@ -3074,9 +4153,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 60,
+   "seq": 80,
    "stage": "catalog",
-   "t_rel_ms": 22720.0,
+   "t_rel_ms": 29400.0,
    "type": "claim_checked"
   },
   {
@@ -3111,9 +4190,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 61,
+   "seq": 81,
    "stage": "catalog",
-   "t_rel_ms": 22840.0,
+   "t_rel_ms": 29520.0,
    "type": "claim_checked"
   },
   {
@@ -3148,9 +4227,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 62,
+   "seq": 82,
    "stage": "catalog",
-   "t_rel_ms": 22960.0,
+   "t_rel_ms": 29640.0,
    "type": "claim_checked"
   },
   {
@@ -3185,9 +4264,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 63,
+   "seq": 83,
    "stage": "catalog",
-   "t_rel_ms": 23080.0,
+   "t_rel_ms": 29760.0,
    "type": "claim_checked"
   },
   {
@@ -3222,9 +4301,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 64,
+   "seq": 84,
    "stage": "catalog",
-   "t_rel_ms": 23200.0,
+   "t_rel_ms": 29880.0,
    "type": "claim_checked"
   },
   {
@@ -3827,17 +4906,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+    "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
     "summary": "4 listings drafted, 3 compliance flag(s), classifier agreement 100%"
    },
    "run_id": "run_recorded",
-   "seq": 65,
+   "seq": 85,
    "stage": "catalog",
-   "t_rel_ms": 23600.0,
+   "t_rel_ms": 30280.0,
    "type": "stage_result"
   },
   {
@@ -3848,9 +4927,9 @@
     "phase": "execute"
    },
    "run_id": "run_recorded",
-   "seq": 66,
+   "seq": 86,
    "stage": null,
-   "t_rel_ms": 24100.0,
+   "t_rel_ms": 30780.0,
    "type": "done"
   },
   {
@@ -3861,9 +4940,9 @@
     "stage": "marketing"
    },
    "run_id": "run_recorded",
-   "seq": 67,
+   "seq": 87,
    "stage": "marketing",
-   "t_rel_ms": 24400.0,
+   "t_rel_ms": 31080.0,
    "type": "stage_started"
   },
   {
@@ -3874,9 +4953,9 @@
     "stage": "jbp"
    },
    "run_id": "run_recorded",
-   "seq": 68,
+   "seq": 88,
    "stage": "jbp",
-   "t_rel_ms": 24700.0,
+   "t_rel_ms": 31380.0,
    "type": "stage_started"
   },
   {
@@ -3887,9 +4966,9 @@
     "stage": "po"
    },
    "run_id": "run_recorded",
-   "seq": 69,
+   "seq": 89,
    "stage": "po",
-   "t_rel_ms": 25000.0,
+   "t_rel_ms": 31680.0,
    "type": "stage_started"
   },
   {
@@ -3906,9 +4985,9 @@
     "tool": "build_po"
    },
    "run_id": "run_recorded",
-   "seq": 70,
+   "seq": 90,
    "stage": "po",
-   "t_rel_ms": 25700.0,
+   "t_rel_ms": 32380.0,
    "type": "tool_call"
   },
   {
@@ -3936,9 +5015,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 71,
+   "seq": 91,
    "stage": "po",
-   "t_rel_ms": 25820.0,
+   "t_rel_ms": 32500.0,
    "type": "claim_checked"
   },
   {
@@ -3966,9 +5045,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 72,
+   "seq": 92,
    "stage": "po",
-   "t_rel_ms": 25940.0,
+   "t_rel_ms": 32620.0,
    "type": "claim_checked"
   },
   {
@@ -3983,9 +5062,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 73,
+   "seq": 93,
    "stage": "jbp",
-   "t_rel_ms": 27040.0,
+   "t_rel_ms": 33720.0,
    "type": "model_call"
   },
   {
@@ -4000,9 +5079,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 74,
+   "seq": 94,
    "stage": "marketing",
-   "t_rel_ms": 28140.0,
+   "t_rel_ms": 34820.0,
    "type": "model_call"
   },
   {
@@ -4028,7 +5107,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -4036,9 +5115,9 @@
     "summary": "Campaign 'Mewsli Lick-and-Purr Launch' with a 5% brand-funded launch discount"
    },
    "run_id": "run_recorded",
-   "seq": 75,
+   "seq": 95,
    "stage": "marketing",
-   "t_rel_ms": 28540.0,
+   "t_rel_ms": 35220.0,
    "type": "stage_result"
   },
   {
@@ -4092,7 +5171,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -4100,9 +5179,9 @@
     "summary": "JBP drafted: 4 SKUs, ₹37,844 monthly GMV target"
    },
    "run_id": "run_recorded",
-   "seq": 76,
+   "seq": 96,
    "stage": "jbp",
-   "t_rel_ms": 28940.0,
+   "t_rel_ms": 35620.0,
    "type": "stage_result"
   },
   {
@@ -4249,17 +5328,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+    "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
     "summary": "PO PO-V002-20261027: 4 lines, ₹1,33,952 including GST"
    },
    "run_id": "run_recorded",
-   "seq": 77,
+   "seq": 97,
    "stage": "po",
-   "t_rel_ms": 29340.0,
+   "t_rel_ms": 36020.0,
    "type": "stage_result"
   },
   {
@@ -4270,16 +5349,16 @@
     "phase": "launch"
    },
    "run_id": "run_recorded",
-   "seq": 78,
+   "seq": 98,
    "stage": null,
-   "t_rel_ms": 29840.0,
+   "t_rel_ms": 36520.0,
    "type": "done"
   }
  ],
  "meta": {
-  "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+  "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T02:33:49+00:00",
+  "recorded_at": "2026-10-27T03:08:33+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -4310,7 +5389,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=27cc75565240",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=79c8fb077f84",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -4328,7 +5407,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -4345,7 +5424,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{12}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[22]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -5754,8 +6833,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-      "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+      "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+      "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -5937,7 +7016,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+      "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -5964,7 +7043,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "moq": 800,
    "offset": 0.0,
    "research": {
@@ -6609,8 +7688,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-    "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+    "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+    "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -6643,7 +7722,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=ad837024bea4",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=6bed14908b55",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -6661,7 +7740,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -6678,7 +7757,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{12}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[22]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -8087,8 +9166,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
-      "narrative_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+      "metrics_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
+      "narrative_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -8270,7 +9349,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+      "metrics_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -8297,7 +9376,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+   "metrics_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
    "moq": 800,
    "offset": 2.0,
    "research": {
@@ -8942,8 +10021,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
-    "narrative_hash": "ad837024bea462873d8c14d63e512ebca8db6cadb955d304b2bd19caa0f94664",
+    "metrics_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
+    "narrative_hash": "6bed14908b55fd32c7384cb4670d34487ceee4c1fc53f5e5f78a09e1d32a2230",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -8976,7 +10055,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=ff139007bda3",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=1b30a754c762",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -8994,7 +10073,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -9011,7 +10090,7 @@
       "args": {
        "vendor_id": "V002"
       },
-      "result_summary": "application{12}, call_transcript[18]",
+      "result_summary": "application{12}, call_transcript[22]",
       "tool": "get_application"
      },
      "run_id": "run_recorded",
@@ -10420,8 +11499,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
-      "narrative_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+      "metrics_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
+      "narrative_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -10603,7 +11682,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+      "metrics_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -10630,7 +11709,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+   "metrics_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
    "moq": 800,
    "offset": 4.0,
    "research": {
@@ -11275,8 +12354,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
-    "narrative_hash": "ff139007bda30f41ee209f10d2590082d691c31830c98bbeaba93baf58e9fdba",
+    "metrics_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
+    "narrative_hash": "1b30a754c7626e6bcd1771244dc60a5e725a16d37e8c20fef438cf04ae29e5e2",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -11881,8 +12960,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+   "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -12019,7 +13098,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -12045,7 +13124,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -12061,7 +13140,7 @@
       "parser_version": "1.0",
       "raw_value": "If you take the full treats range, I can move to 21 percent.",
       "row": 4,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:margin_pct:4:0",
      "metric": "commit_margin_pct",
@@ -12086,7 +13165,7 @@
       "parser_version": "1.0",
       "raw_value": "But I can do 30 days if the order is confirmed in writing this week.",
       "row": 8,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:payment_days:8:1",
      "metric": "commit_payment_days",
@@ -12111,7 +13190,7 @@
       "parser_version": "1.0",
       "raw_value": "I can bring it down to 500 units in total for the first order, split across the SKUs you list.",
       "row": 10,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:moq:10:2",
      "metric": "commit_moq",
@@ -12136,7 +13215,7 @@
       "parser_version": "1.0",
       "raw_value": "We can raise that to 50,000 rupees for the launch month, to be used on sponsored listings and sampling.",
       "row": 12,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:marketing_inr:12:3",
      "metric": "commit_marketing_inr",
@@ -12161,7 +13240,7 @@
       "parser_version": "1.0",
       "raw_value": "I can give a 5 percent launch discount for the first 30 days.",
       "row": 14,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:launch_discount_pct:14:4",
      "metric": "commit_launch_discount_pct",
@@ -12186,7 +13265,7 @@
       "parser_version": "1.0",
       "raw_value": "Defect returns within 7 days stay as they are.",
       "row": 16,
-      "sha256": "ab016da6e110971f810d3f3d0d6bd79aa340a32c82b9314aa3547a4ca1980f67"
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
      },
      "id": "V002:commit:returns:16:5",
      "metric": "commit_returns",
@@ -12202,6 +13281,286 @@
      "status": "verified",
      "text": "V002 commits to defect return window (days): 7 (turn 16)",
      "unit": "units",
+     "value": 7.0
+    },
+    {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 0.15,
+      "parser_version": "1.0",
+      "raw_value": "For the litter I can do a base margin of 15 percent.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t1:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.15,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '15% margin': value 15",
+     "unit": "pct",
+     "value": 0.15
+    },
+    {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 0.2,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:value",
+     "metric": "deal_term_value",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 0.2,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': value 20",
+     "unit": "pct",
+     "value": 0.2
+    },
+    {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 2000.0,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:threshold",
+     "metric": "deal_term_threshold",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 2000.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': threshold 2000",
+     "unit": "units",
+     "value": 2000.0
+    },
+    {
+     "evidence": {
+      "header": "text",
+      "normalized_value": 90.0,
+      "parser_version": "1.0",
+      "raw_value": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+      "row": 18,
+      "sha256": "c509eaec3e6b9d006a095c01659d9977b941363b4ae3bdd70c93b80a3c35e053"
+     },
+     "id": "V002:dealterm:t2:window_days",
+     "metric": "deal_term_window_days",
+     "origin": "model_extraction",
+     "reason": null,
+     "recomputed": 90.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "text",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "turn:18"
+     },
+     "status": "verified",
+     "text": "V002 offer '20% marketing support if 2,000 units in 90 days': window days 90",
+     "unit": "units",
+     "value": 90.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_probability:tier:0",
+     "metric": "deal_probability",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 0.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "tier:0",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Chance of 2,000 units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): <0.1%",
+     "unit": "ratio",
+     "value": 0.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p10",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 174.2991,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p10",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P10 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 174 units",
+     "unit": "units",
+     "value": 174.2991
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p50",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 275.0617,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p50",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P50 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 275 units",
+     "unit": "units",
+     "value": 275.0617
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_percentile:p90",
+     "metric": "deal_percentile",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 430.5959,
+     "sku_key": null,
+     "source_ref": {
+      "column": "p90",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "P90 of units in 90 days for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 431 units",
+     "unit": "units",
+     "value": 430.5959
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:base",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "base",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Guaranteed base for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:expected",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "expected",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Risk-adjusted expected value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:counted",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 15.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "counted",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counted value of 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 15.0 points",
+     "unit": "pts",
+     "value": 15.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_pts:required",
+     "metric": "deal_pts",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 22.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "required",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Required for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 22.0 points",
+     "unit": "pts",
+     "value": 22.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_counter:threshold:0",
+     "metric": "deal_counter",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 250.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "threshold:0",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counter threshold for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): 250 units",
+     "unit": "units",
+     "value": 250.0
+    },
+    {
+     "evidence": null,
+     "id": "V002:deal:t2:deal_counter:uplift:1",
+     "metric": "deal_counter",
+     "origin": "engine",
+     "reason": null,
+     "recomputed": 7.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "uplift:1",
+      "file": "vendors/V002/call_transcript.json",
+      "key": "V002?offset=0&moq=800#{\"base\":{\"base_of\":null,\"condition\":null,\"days\":null,\"id\":\"t1\",\"kind\":\"base\",\"quote\":\"For the litter I can do a base margin of 15 percent.\",\"scope\":[\"MW-L01\",\"MW-L02\",\"MW-L03\",\"MW-L04\",\"MW-L05\"],\"source\":\"transcript\",\"term\":\"margin_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":15.0},\"base_margin_pct\":21.0,\"base_moq\":800.0,\"base_payment_days\":30.0,\"codes\":[\"MW-L01\",\"MW-T01\",\"MW-T02\",\"MW-T03\"],\"term\":{\"base_of\":\"t1\",\"condition\":{\"metric\":\"units\",\"scope\":[],\"threshold\":2000.0,\"window_days\":90},\"days\":null,\"id\":\"t2\",\"kind\":\"conditional\",\"quote\":\"On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.\",\"scope\":[],\"source\":\"transcript\",\"term\":\"marketing_pct\",\"tiers\":[],\"turn\":18,\"unit\":\"pct\",\"units\":null,\"value\":20.0}}"
+     },
+     "status": "verified",
+     "text": "Counter base uplift for 20% marketing support if 2,000 units in 90 days (on a 15% margin base): +7.0 points",
+     "unit": "pts",
      "value": 7.0
     }
    ],
@@ -12275,9 +13634,232 @@
       "Move treats margin from 21% towards the 35% category target, or cut unit cost on MW-T01, MW-T02 and MW-T03 (see the required-cost table)",
       "Cut the first-order MOQ below 500 units, or phase it in two deliveries",
       "Revisit the cat litter margin (MW-L01) once the first month's sales are in",
-      "Written confirmation of 30 days payment, 50,000 rupees launch support and the 5 percent launch discount by Friday"
+      "Written confirmation of 30 days payment, 50,000 rupees launch support and the 5 percent launch discount by Friday",
+      "Conditional offer (20% marketing support if 2,000 units in 90 days (on a 15% margin base)): set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required."
      ],
      "email_draft": "Hi Priya,\n\nThank you for the call. To confirm what we agreed: 21 percent margin on the treats range, 30 days payment against a written order, 500 units in total for the first order, 50,000 rupees of launch marketing support, a 5 percent launch discount for the first 30 days, and defect returns within 7 days.\n\nThe margin is still the gap for us: our treats category needs 35 percent. Could you look at a lower unit cost on the tuna, chicken and salmon treats, or a phased MOQ? We are happy to revisit the litter margin after the first month of sales.\n\nPlease send the written confirmation by Friday and we will move to the purchase order.\n\nBest,\nCategory team"
+    },
+    "deals": {
+     "assessments": [
+      {
+       "base_assumed": false,
+       "base_pts": 15.0,
+       "base_term_id": "t1",
+       "call": "Reject this structure and counter. The chance of 2,000 units in 90 days is <0.1%, so the bonus counts as 0.0 points and the offer is worth 15.0% against 22.0% required. Counter: set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required.",
+       "counted_bonus_pts": 0.0,
+       "counted_pts": 15.0,
+       "counters": [
+        {
+         "counted_pts_after": 27.104,
+         "fair_conversion_pts": null,
+         "kind": "threshold",
+         "meets_requirement": true,
+         "probability": 0.6052,
+         "required_base_pts": null,
+         "scope": [],
+         "text": "set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required.",
+         "threshold": 250.0,
+         "uplift_pts": null,
+         "window_days": null
+        },
+        {
+         "counted_pts_after": 22.0,
+         "fair_conversion_pts": 0.0,
+         "kind": "convert_to_base",
+         "meets_requirement": true,
+         "probability": null,
+         "required_base_pts": 22.0,
+         "scope": [],
+         "text": "ask for a guaranteed base of 22.0% (+7.0 points) in place of the volume-linked bonus, which is worth 0.0 points risk-adjusted.",
+         "threshold": null,
+         "uplift_pts": 7.0,
+         "window_days": null
+        }
+       ],
+       "decision": "reject_structure",
+       "distribution": {
+        "bins": [
+         108.2748,
+         126.5354,
+         144.796,
+         163.0566,
+         181.3172,
+         199.5778,
+         217.8384,
+         236.099,
+         254.3596,
+         272.6202,
+         290.8808,
+         309.1414,
+         327.402,
+         345.6626,
+         363.9232,
+         382.1838,
+         400.4444,
+         418.705,
+         436.9656,
+         455.2262,
+         473.4868,
+         491.7474,
+         510.008,
+         528.2686,
+         546.5292,
+         564.7898,
+         583.0504,
+         601.311,
+         619.5716,
+         637.8322,
+         656.0928,
+         674.3534,
+         692.614
+        ],
+        "density": [
+         0.0093,
+         0.0208,
+         0.03395,
+         0.0505,
+         0.06255,
+         0.072,
+         0.0783,
+         0.0802,
+         0.0764,
+         0.0738,
+         0.06845,
+         0.05995,
+         0.0518,
+         0.0455,
+         0.03815,
+         0.0316,
+         0.0265,
+         0.02345,
+         0.01745,
+         0.0135,
+         0.01245,
+         0.01015,
+         0.0064,
+         0.0066,
+         0.0047,
+         0.0042,
+         0.00365,
+         0.00215,
+         0.00225,
+         0.0012,
+         0.0011,
+         0.00095
+        ],
+        "mean": 292.2898,
+        "metric": "units",
+        "p10": 174.2991,
+        "p50": 275.0617,
+        "p90": 430.5959,
+        "threshold": 2000.0,
+        "window_days": 90
+       },
+       "expected_bonus_pts": 0.0,
+       "expected_pts": 15.0,
+       "face_pts": 35.0,
+       "guaranteed_pts": 15.0,
+       "kind": "conditional",
+       "label": "20% marketing support if 2,000 units in 90 days (on a 15% margin base)",
+       "net_pts": null,
+       "probability": 0.0,
+       "quote": "On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
+       "reasoning": [
+        "Demand over 90 days (ramped new listing, 45.0% forecast uncertainty): P10 174 units, P50 275 units, P90 431 units.",
+        "P(2,000 units in 90 days) = <0.1%; under the 60% bar, counts as 0.",
+        "Counted 15.0 base + 0.0 bonus = 15.0 points against 22.0 required."
+       ],
+       "recommended_counter": 0,
+       "required_pts": 22.0,
+       "shortfall_pts": -7.0,
+       "source": "transcript",
+       "term": "marketing_pct",
+       "term_id": "t2",
+       "tiers": [
+        {
+         "bonus_pts": 20.0,
+         "counted": false,
+         "incremental_pts": 20.0,
+         "probability": 0.0,
+         "threshold": 2000.0
+        }
+       ],
+       "turn": 18
+      }
+     ],
+     "assumptions": {
+      "cost_of_capital_pct_annual": 14.0,
+      "cv": 0.45,
+      "cv_by_category": {},
+      "inventory_carrying_pct_monthly": 2.0,
+      "mc_draws": 20000,
+      "min_probability": 0.6,
+      "ramp_by_month": [
+       0.5,
+       0.75,
+       0.9,
+       1.0
+      ],
+      "seed": 42,
+      "sku_correlation": 0.5,
+      "value_basis": "risk_adjusted"
+     },
+     "base_terms": [
+      {
+       "base_of": null,
+       "condition": null,
+       "days": null,
+       "id": "t1",
+       "kind": "base",
+       "quote": "For the litter I can do a base margin of 15 percent.",
+       "scope": [
+        "MW-L01",
+        "MW-L02",
+        "MW-L03",
+        "MW-L04",
+        "MW-L05"
+       ],
+       "source": "transcript",
+       "term": "margin_pct",
+       "tiers": [],
+       "turn": 18,
+       "unit": "pct",
+       "units": null,
+       "value": 15.0
+      }
+     ],
+     "claim_status": {
+      "V002:deal:t2:deal_counter:threshold:0": "verified",
+      "V002:deal:t2:deal_counter:uplift:1": "verified",
+      "V002:deal:t2:deal_percentile:p10": "verified",
+      "V002:deal:t2:deal_percentile:p50": "verified",
+      "V002:deal:t2:deal_percentile:p90": "verified",
+      "V002:deal:t2:deal_probability:tier:0": "verified",
+      "V002:deal:t2:deal_pts:base": "verified",
+      "V002:deal:t2:deal_pts:counted": "verified",
+      "V002:deal:t2:deal_pts:expected": "verified",
+      "V002:deal:t2:deal_pts:required": "verified",
+      "V002:dealterm:t1:value": "verified",
+      "V002:dealterm:t2:threshold": "verified",
+      "V002:dealterm:t2:value": "verified",
+      "V002:dealterm:t2:window_days": "verified"
+     },
+     "decision": "reject_structure",
+     "headline": "Reject the conditional structure and counter",
+     "mode": "mock",
+     "rejected_terms": [],
+     "talk": {
+      "email_paragraph": "On the cat litter, we are not able to accept a 20% marketing bonus that depends on 2,000 units in 90 days, since our forecast gives that a probability of under 0.1%. We would be glad to proceed if the target is set at 250 units in 90 days, or if the base margin is guaranteed at 22.0%.",
+      "source": "model",
+      "struck": [],
+      "talk_track": "We cannot accept the litter structure as offered: 2,000 units in 90 days has a probability of under 0.1% on our forecast, so the 20% marketing support is not something we can count. On its own, the 15.0% base is 7.0 points short of the 22.0% we need. Our first counter is to set the target at 250 units in 90 days, which we reach with a probability of 60.5%. If you prefer to keep the 2,000-unit target, we would need the margin guaranteed at 22.0% instead."
+     },
+     "verification": {
+      "rejected": 0,
+      "total": 14,
+      "unverifiable": 0,
+      "verified": 14
+     }
     },
     "gap_table": [
      {
@@ -12498,13 +14080,33 @@
       },
       {
        "speaker": "buyer",
-       "text": "Fine, no sale-or-return. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only.",
+       "text": "Fine, no sale-or-return. Before we recap, one thing on the cat litter: you said you would look at it again. Can you offer something now?",
        "turn": 17
       },
       {
        "speaker": "vendor",
-       "text": "That is correct. I will send the written confirmation by Friday.",
+       "text": "For the litter I can do a base margin of 15 percent. On top of that I will give you 20 percent marketing support on sales if you sell 2,000 units across the range within the first 90 days.",
        "turn": 18
+      },
+      {
+       "speaker": "buyer",
+       "text": "2,000 units in 90 days is far above what we expect for a new brand, and 15 percent is well under our litter target. Can the margin be guaranteed instead of depending on volume?",
+       "turn": 19
+      },
+      {
+       "speaker": "vendor",
+       "text": "The volume target is how I fund the marketing. The 15 percent base stays guaranteed, and the 20 percent applies only if you reach 2,000 units.",
+       "turn": 20
+      },
+      {
+       "speaker": "buyer",
+       "text": "Understood, we will evaluate that structure separately. To recap: 21 percent margin, 30 days payment, 500 units MOQ, 50,000 rupees marketing support, 5 percent launch discount for 30 days, defect returns within 7 days only.",
+       "turn": 21
+      },
+      {
+       "speaker": "vendor",
+       "text": "That is correct. I will send the written confirmation by Friday.",
+       "turn": 22
       }
      ]
     },
@@ -12517,12 +14119,12 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
    "status": "done",
-   "summary": "4 of 6 terms meet our requirement, 2 fall short"
+   "summary": "4 of 6 terms meet our requirement, 2 fall short; conditional offer rejected, counter ready"
   },
   "po": {
    "claims": [
@@ -12664,8 +14266,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+   "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -13313,8 +14915,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
-   "narrative_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
+   "narrative_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -13486,7 +15088,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "27cc75565240d1487187dd9e1f6bd65b7c6088c130fea4604e82d52b251a16cf",
+   "metrics_hash": "79c8fb077f844291c281e56773bcf1793dc867a4c80f0c8f9ad86ec66c934fbc",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",
