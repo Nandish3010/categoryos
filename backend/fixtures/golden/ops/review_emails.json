@@ -1,0 +1,208 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_anomalies",
+        "args": {}
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E002"
+        }
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E003"
+        }
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E004"
+        }
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E005"
+        }
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E006"
+        }
+      }
+    ],
+    "final": {
+      "emails": [
+        {
+          "vendor_id": "E002",
+          "subject": "Weekly review: Purrline fill rate and PO-E002-0012",
+          "body": "Hi Rakesh,\n\nOur weekly review shows your fill rate over the last four weeks at 54%, down from 98% earlier, and on-time-in-full at 57%. PO-E002-0012 is also past its promised date. Ocean Fish Adult is down to 6 days of cover on our side.\n\nCould you send a dated recovery plan and the tracking number for the open PO by Friday 30 Oct? Please also tell us what is behind the shortfall (transport or raw material) so we can plan around it.\n\nThanks,\nCategory team",
+          "figures": [
+            {
+              "metric": "ops_fill_rate_recent",
+              "key": "E002",
+              "value": 0.5437,
+              "shown": "54%",
+              "text": "Purrline recent fill rate"
+            },
+            {
+              "metric": "ops_fill_rate_prior",
+              "key": "E002",
+              "value": 0.9823,
+              "shown": "98%",
+              "text": "Purrline earlier fill rate"
+            },
+            {
+              "metric": "ops_otif",
+              "key": "E002",
+              "value": 0.5714,
+              "shown": "57%",
+              "text": "Purrline on-time-in-full"
+            },
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E002:PL-01",
+              "value": 6,
+              "shown": "6 days",
+              "text": "Ocean Fish Adult stock cover"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E003",
+          "subject": "Weekly review: NutriPaws supply and Peanut Butter Biscuits",
+          "body": "Hi Meera,\n\nYour recent fill rate is 89%, down from 98% earlier, and on-time-in-full is 69%. The most urgent point is Peanut Butter Biscuits 400 g: it has 0 days of cover and the balance of PO-E003-0010 is not due until 3 Nov.\n\nCan you bring the balance forward, even as a part shipment, and confirm a date by Tuesday 27 Oct?\n\nThanks,\nCategory team",
+          "figures": [
+            {
+              "metric": "ops_fill_rate_recent",
+              "key": "E003",
+              "value": 0.8864,
+              "shown": "89%",
+              "text": "NutriPaws recent fill rate"
+            },
+            {
+              "metric": "ops_fill_rate_prior",
+              "key": "E003",
+              "value": 0.9789,
+              "shown": "98%",
+              "text": "NutriPaws earlier fill rate"
+            },
+            {
+              "metric": "ops_otif",
+              "key": "E003",
+              "value": 0.6897,
+              "shown": "69%",
+              "text": "NutriPaws on-time-in-full"
+            },
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E003:NP-03",
+              "value": 0,
+              "shown": "0 days",
+              "text": "Peanut Butter Biscuits stock cover"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E004",
+          "subject": "Weekly review: Tailwind Play ageing stock and delivery dates",
+          "body": "Hi Vikram,\n\nTwo points from this week's review. First, 42% of your stock value with us is in the oldest age bucket, mainly the feather wand (150 days of cover) and the printed bandana set (260 days of cover). Can we agree a markdown with funding from your side, or a return of the slowest lines?\n\nSecond, on-time-in-full is 78%. Please confirm a firm dispatch date for PO-E004-0007 by Wednesday 28 Oct.\n\nThanks,\nCategory team",
+          "figures": [
+            {
+              "metric": "ops_aged_pct",
+              "key": "E004",
+              "value": 0.424,
+              "shown": "42%",
+              "text": "Tailwind Play share of stock value in the oldest bucket"
+            },
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E004:TW-03",
+              "value": 150,
+              "shown": "150 days",
+              "text": "Feather Wand Teaser stock cover"
+            },
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E004:TW-05",
+              "value": 260,
+              "shown": "260 days",
+              "text": "Printed Bandana Set stock cover"
+            },
+            {
+              "metric": "ops_otif",
+              "key": "E004",
+              "value": 0.7778,
+              "shown": "78%",
+              "text": "Tailwind Play on-time-in-full"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E005",
+          "subject": "Weekly review: Litterly fill rate and the overdue PO",
+          "body": "Hi Sanjay,\n\nYour fill rate over the last four weeks is 67%, down from 100% earlier, because PO-E005-0008 is a week past its promised date and we have no dispatch date. Clumping Bentonite 5 kg has 5 days of cover with us.\n\nPlease send a firm dispatch date and the tracking number by Tuesday 27 Oct, and tell us what is holding up the packing material.\n\nThanks,\nCategory team",
+          "figures": [
+            {
+              "metric": "ops_fill_rate_recent",
+              "key": "E005",
+              "value": 0.6701,
+              "shown": "67%",
+              "text": "Litterly recent fill rate"
+            },
+            {
+              "metric": "ops_fill_rate_prior",
+              "key": "E005",
+              "value": 0.9963,
+              "shown": "100%",
+              "text": "Litterly earlier fill rate"
+            },
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E005:LT-05",
+              "value": 5,
+              "shown": "5 days",
+              "text": "Clumping Bentonite 5 kg stock cover"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E006",
+          "subject": "Weekly review: Groomwell Deshedding Brush returns and rating",
+          "body": "Hi Neha,\n\nThe Deshedding Brush has 7.1% returns over four weeks and its rating is down 0.74 stars; customers mostly cite leaking packaging. Could you share what changed in the packaging or the batch, and a corrective plan by Friday 30 Oct?\n\nSeparately, Paw Balm sales fell 53% week on week; if you changed anything on your side (price, pack, availability on other platforms) please let us know.\n\nThanks,\nCategory team",
+          "figures": [
+            {
+              "metric": "ops_sku_return_rate",
+              "key": "E006:GW-02",
+              "value": 0.0709,
+              "shown": "7.1%",
+              "text": "Deshedding Brush return rate"
+            },
+            {
+              "metric": "ops_sku_rating_change",
+              "key": "E006:GW-02",
+              "value": -0.74,
+              "shown": "0.74",
+              "text": "Deshedding Brush rating change over four weeks"
+            },
+            {
+              "metric": "ops_sku_growth_wow",
+              "key": "E006:GW-03",
+              "value": -0.5287,
+              "shown": "53%",
+              "text": "Paw Balm sales change, week on week"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

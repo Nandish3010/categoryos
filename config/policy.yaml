@@ -355,9 +355,9 @@ impact:                          # Impact meter. RESEARCH ESTIMATES (not measure
     new_vendor_onboarding: {label: "New-vendor onboarding (Screen, Decide, Negotiate, Catalog, Launch packet)", status: shipped, measured_from_runs: true}
     conditional_offer_evaluator: {label: "Conditional-offer evaluator (probability, risk-adjusted value, counters)", status: shipped}   # part of the onboarding Negotiate stage; its time is the baseline's conditional_offer_eval
     live_negotiation_copilot: {label: "Live negotiation copilot (transcript, extraction, gap table, next ask)", status: shipped}   # covers the calls and notes in negotiation_calls
-    weekly_review_mis: {label: "Weekly vendor-performance review and MIS generator", status: not_built}
+    weekly_review_mis: {label: "Weekly vendor-performance review and MIS generator", status: shipped}
     price_increase_evaluator: {label: "Existing-vendor price-increase evaluator", status: not_built}
-    po_followup: {label: "PO follow-up and fill-rate chaser", status: not_built}
+    po_followup: {label: "PO follow-up and fill-rate chaser", status: shipped}
     catalog_qc_queue: {label: "Catalog QC and fix queue on existing SKUs", status: not_built}
     promotions_planner: {label: "Promotions and event planner", status: not_built}
     competitor_monitor: {label: "Competitor price monitor", status: not_built}
@@ -424,3 +424,36 @@ documents:                       # Intake and Catalog: scanned vendor documents 
     - {id: label_protein_vs_listing, label: Protein on the label vs the listing copy, kind: product_label, field: protein_pct, against: listing_copy, pattern: '(\d+(?:\.\d+)?)\s*%\s*protein', severity: high}
     - {id: label_mrp_vs_sheet, label: MRP on the label vs the SKU sheet, kind: product_label, field: mrp, against: sku_sheet, target: mrp, tolerance: 1, severity: medium}
     - {id: label_quantity_vs_sheet, label: Net quantity on the label vs the SKU sheet pack, kind: product_label, field: net_quantity, against: sku_sheet, target: pack, severity: medium}
+
+operations:                      # Run: weekly review and PO follow-up for EXISTING vendors (ops_review, ops_chaser)
+  scorecard:                     # limits that flag a vendor or SKU in the weekly review
+    fill_rate_floor_pct: 90      # recent fill rate below this is flagged
+    fill_rate_drop_pp: 8         # ...or a fall of this many points against the vendor's earlier fill rate
+    fill_rate_recent_weeks: 4    # PO lines promised in the last N weeks are "recent"
+    otif_target_pct: 85          # on time and in full target
+    on_time_grace_days: 1        # delivery up to N days after the promised date still counts as on time
+    in_full_min_pct: 98          # a line is in full at this share of the ordered quantity or more
+    demand_window_days: 28       # daily demand for stock cover = average over this many days
+    stock_cover_alert_days: 14   # fewer days of cover than this is flagged
+    overstock_cover_days: 90     # more days of cover than this is overstock
+    ageing_buckets_days: [30, 60, 90]   # upper edges (days since receipt); the last bucket is "older than 90"
+    aged_alert_pct: 20           # flag when this share of a vendor's stock value is older than the last edge
+    return_rate_alert_pct: 4     # returns over the last 4 weeks as a share of units sold
+    rating_drop_alert: 0.3       # rating fell by this many stars over 4 weeks
+  anomaly:                       # when a weekly movement is unusual
+    growth_z_threshold: 2.5      # standard deviations from the trailing weeks
+    growth_min_change_pct: 15    # ...and at least this much week on week
+    lookback_weeks: 12           # trailing weeks used as the baseline
+    min_weekly_units: 30         # SKUs below this are too noisy to test
+  actions:                       # the "what to do this week" list
+    max_actions: 8
+    priority_weights: {stockout: 100, fill_rate: 70, sales_drop: 60, returns: 55, otif: 50, ageing: 45, rating: 40, overstock: 30, sales_spike: 25}   # base score per action type; severity (1 to 3) multiplies it
+  po_followup:                   # PO chaser
+    ladder:                      # ordered by days overdue; a PO sits on the highest rung it has reached
+      - {name: Nudge, days_overdue: -2, channel: email, owner: category executive, tone: friendly}
+      - {name: Chase, days_overdue: 1, channel: email+whatsapp, owner: category executive, tone: firm but polite}
+      - {name: Escalate, days_overdue: 4, channel: email, owner: category manager, tone: "firm; copy the vendor's head of sales"}
+      - {name: Formal notice, days_overdue: 8, channel: email, owner: category manager, tone: "formal; refer to the PO terms and name the alternative-sourcing option"}
+    vague_reply_bumps_rung: true # a reply with no dated commitment moves a late PO up one rung
+    stockout_buffer_days: 2      # cover must beat the remaining lead time by this many days
+    default_lead_days: 7         # assumed wait for an overdue PO with no dated commitment

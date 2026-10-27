@@ -1,0 +1,56 @@
+[
+  {
+    "id": "E001",
+    "company_name": "Barkley Foods Pvt Ltd",
+    "brand": "Barkley & Co",
+    "contact_name": "Anil Rao",
+    "contact_email": "orders@barkley.example",
+    "category": "dog food",
+    "lead_time_days": 7
+  },
+  {
+    "id": "E002",
+    "company_name": "Purrline Nutrition LLP",
+    "brand": "Purrline Foods",
+    "contact_name": "Rakesh Shah",
+    "contact_email": "dispatch@purrline.example",
+    "category": "cat food",
+    "lead_time_days": 10
+  },
+  {
+    "id": "E003",
+    "company_name": "NutriPaws Snacks Pvt Ltd",
+    "brand": "NutriPaws",
+    "contact_name": "Meera Iyer",
+    "contact_email": "supply@nutripaws.example",
+    "category": "treats",
+    "lead_time_days": 6
+  },
+  {
+    "id": "E004",
+    "company_name": "Tailwind Play Co",
+    "brand": "Tailwind Play",
+    "contact_name": "Vikram Sethi",
+    "contact_email": "sales@tailwindplay.example",
+    "category": "toys and accessories",
+    "lead_time_days": 14
+  },
+  {
+    "id": "E005",
+    "company_name": "Litterly Products",
+    "brand": "Litterly",
+    "contact_name": "Sanjay Kulkarni",
+    "contact_email": "ops@litterly.example",
+    "category": "cat litter",
+    "lead_time_days": 8
+  },
+  {
+    "id": "E006",
+    "company_name": "Groomwell Care Pvt Ltd",
+    "brand": "Groomwell",
+    "contact_name": "Neha Bhatt",
+    "contact_email": "care@groomwell.example",
+    "category": "grooming",
+    "lead_time_days": 9
+  }
+]

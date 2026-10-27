@@ -1,0 +1,152 @@
+import type { Draft, Po, PoTracker, Review, Scorecard, VendorReview } from "@/lib/ops";
+
+export const draft = (over: Partial<Draft> = {}): Draft => ({
+  id: "DR-REVIEW-E002",
+  kind: "vendor_review",
+  vendor_id: "E002",
+  po_id: null,
+  channel: "email",
+  subject: "Weekly review: Purrline",
+  body: "Hi Rakesh, your fill rate is 54% this month.",
+  to: "dispatch@purrline.example",
+  source: "agent",
+  status: "pending",
+  simulated: true,
+  edited: false,
+  decided_at: null,
+  figures: [{ claim_id: "c1", shown: "54%", status: "verified", reason: null }],
+  blocked_by: [],
+  warnings: [],
+  ...over,
+});
+
+export const card = (over: Partial<Scorecard> = {}): Scorecard => ({
+  vendor_id: "E002",
+  brand: "Purrline Foods",
+  company_name: "Purrline Nutrition LLP",
+  category: "cat food",
+  week_start: "2026-10-19",
+  week_end: "2026-10-25",
+  gmv: 215470,
+  units: 852,
+  gmv_growth_wow: 0.0172,
+  gmv_z: 0.19,
+  margin_pct: 0.2365,
+  fill_rate: 0.8468,
+  fill_rate_recent: 0.5437,
+  fill_rate_prior: 0.9823,
+  otif: 0.5714,
+  min_cover_days: 6,
+  stock_value_inr: 553515,
+  ageing: [{ label: "0-30 days", units: 10, value_inr: 1000 }, { label: "over 90 days", units: 0, value_inr: 0 }],
+  aged_pct: 0,
+  return_rate: 0.0154,
+  rating: 4.15,
+  rating_change: -0.05,
+  series: [1, 2, 3, 2, 3, 4, 3, 4, 5, 4, 5, 4, 5],
+  ...over,
+});
+
+const verification = { total: 3, verified: 3, rejected: 0, unverifiable: 0 };
+
+export const review = (over: Partial<Review> = {}): Review => ({
+  as_of: "2026-10-26",
+  week_start: "2026-10-19",
+  week_end: "2026-10-25",
+  mode: "mock",
+  degraded: false,
+  category: { gmv: 1365809, gmv_prev: 1359034, gmv_growth_wow: 0.005, units: 4113, margin_pct: 0.2638, fill_rate: 0.9245, fill_rate_recent: 0.7876, otif: 0.7647, vendor_count: 6, sku_count: 36, series: [1, 2] },
+  vendors: [card(), card({ vendor_id: "E001", brand: "Barkley & Co", fill_rate_recent: 0.99, otif: 0.93, min_cover_days: 21 })],
+  anomalies: [
+    { id: "fill_rate:E002", vendor_id: "E002", sku_code: null, type: "fill_rate", severity: 3, metric: "ops_fill_rate_recent", key: "E002", value: 0.5437, threshold: 0.9, reason: "Purrline fill rate is 54%", explanation: "Likely the transporter strike.", exposure_inr: 0 },
+  ],
+  actions: [
+    { id: "act:stockout:NP-03", anomaly_id: "stockout:NP-03", vendor_id: "E002", sku_code: "NP-03", type: "stockout", title: "Expedite replenishment of Peanut Butter Biscuits 400 g", severity: 3, score: 320, exposure_inr: 369237, rank: 1, deterministic_rank: 1, llm_rank: 1, rationale: "Out of stock on the best seller." },
+    { id: "act:fill_rate:E002", anomaly_id: "fill_rate:E002", vendor_id: "E002", sku_code: null, type: "fill_rate", severity: 3, title: "Agree a recovery plan with Purrline Foods", score: 210, exposure_inr: 0, rank: 2, deterministic_rank: 4, llm_rank: 2, rationale: null },
+  ],
+  headline: "Demand is steady but supply is the problem",
+  narrative: "Para one.\n\nPara two.",
+  mis_markdown: "# Category MIS: 2026-10-19 to 2026-10-25\n\n## Category summary\n\n| Measure | This week |\n| --- | --- |\n| GMV | ₹13,65,809 |\n",
+  flagged_vendors: ["E002"],
+  drafts: [draft()],
+  claims: [],
+  verification,
+  unclaimed_numbers: [],
+  trace: [
+    { seq: 1, t_rel_ms: 0, type: "stage_started", stage: "ops", model: null, latency_ms: null, cost_usd: null, payload: {} },
+    { seq: 2, t_rel_ms: 5, type: "tool_call", stage: "ops", model: null, latency_ms: 1, cost_usd: null, payload: { tool: "get_anomalies", result_summary: "anomalies[1]" } },
+  ],
+  impact_coverage: { module: "weekly_review_mis", registered: true, status: "shipped", tasks: [], units: {}, baseline_minutes: {}, manual_minutes_replaced: 690, baseline_status: "research_estimate" },
+  ...over,
+});
+
+export const po = (over: Partial<Po> = {}): Po => ({
+  po_id: "PO-E003-0010",
+  vendor_id: "E003",
+  brand: "NutriPaws",
+  po_date: "2026-10-14",
+  promised_date: "2026-10-20",
+  days_overdue: 6,
+  status: "overdue",
+  partial: true,
+  ordered_qty: 1600,
+  received_qty: 1000,
+  fill_so_far: 0.625,
+  eta: "2026-11-03",
+  vague_reply: false,
+  reply_ids: ["R003"],
+  risk: "critical",
+  stockout_days: 8,
+  lost_gmv: 211008,
+  rung: { index: 2, name: "Escalate", channel: "email", owner: "category manager", tone: "firm", bumped_by_vague_reply: false, of: 4 },
+  needs_chase: true,
+  lines: [
+    { sku_code: "NP-03", name: "Peanut Butter Biscuits 400 g", ordered: 900, received: 300, open_qty: 600, on_hand: 22, daily_rate: 57, cover_days: 0, arrival: "2026-11-03", arrival_basis: "vendor_reply", remaining_lead_days: 8, stockout_days: 8, lost_gmv: 211008, risk: "critical", suggested_reorder: 1200 },
+  ],
+  ...over,
+});
+
+export const tracker = (over: Partial<PoTracker> = {}): PoTracker => ({
+  as_of: "2026-10-26",
+  mode: "mock",
+  pos: [po(), po({ po_id: "PO-E005-0008", vendor_id: "E005", brand: "Litterly", days_overdue: 7, eta: null, vague_reply: true, partial: false, risk: "critical", rung: { index: 3, name: "Formal notice", channel: "email", owner: "category manager", tone: "formal", bumped_by_vague_reply: true, of: 4 } })],
+  readings: [
+    {
+      reply_id: "R004", po_id: "PO-E004-0007", vendor_id: "E004", received_at: "2026-10-22T12:30:00", from: "Vikram <sales@tailwindplay.example>", subject: "RE: PO", body: "dispatch will take approx 5-6 working days from today",
+      stance: "committed", summary: "Dispatch in about 5 to 6 working days.", excuse: "fabric awaited", root_cause: "raw_material",
+      commitments: [{ kind: "eta_date", quote: "approx 5-6 working days from today", eta_date: "2026-10-29", qty: null, note: null, claim_id: "reply:R004:0", status: "verified", reason: null, first_value: 7, corrected: true, resolved_eta: "2026-10-30" }],
+    },
+    {
+      reply_id: "R006", po_id: "PO-E005-0008", vendor_id: "E005", received_at: "2026-10-23T11:02:00", from: "Sanjay <ops@litterly.example>", subject: "RE: PO", body: "will be sent shortly",
+      stance: "vague", summary: "No date.", excuse: "packing material", root_cause: "packing", commitments: [],
+    },
+  ],
+  ladder: [{ name: "Nudge", days_overdue: -2, channel: "email", owner: "category executive", tone: "friendly" }, { name: "Chase", days_overdue: 1, channel: "email+whatsapp", owner: "category executive", tone: "firm" }],
+  ledger: [{ po_id: "PO-E005-0008", vendor_id: "E005", brand: "Litterly", sku_code: "LT-05", name: "Clumping Bentonite 5 kg", shortfall_units: 700, days_overdue: 7, root_cause: "packing" }],
+  drafts: [draft({ id: "DR-PO-E003-0010", kind: "po_followup", vendor_id: "E003", po_id: "PO-E003-0010", subject: "PO-E003-0010 out of stock", rung: "Escalate", owner: "category manager" })],
+  claims: [],
+  verification: { total: 5, verified: 5, rejected: 0, unverifiable: 0 },
+  corrected: ["reply:R004:0"],
+  unresolved: [],
+  unclaimed_numbers: [],
+  trace: [],
+  impact_coverage: { module: "po_followup", registered: true, status: "shipped", tasks: [], units: {}, baseline_minutes: {}, manual_minutes_replaced: 330, baseline_status: "research_estimate" },
+  ...over,
+});
+
+export const vendorReview = (): VendorReview => ({
+  vendor: { id: "E002", brand: "Purrline Foods", company_name: "Purrline Nutrition LLP", contact_name: "Rakesh", contact_email: "dispatch@purrline.example", lead_time_days: 10, category: "cat food" },
+  scorecard: {
+    ...card(),
+    skus: [{ sku_code: "PL-01", name: "Ocean Fish Adult 1.2 kg", gmv: 1000, units: 16, units_prev: 15, growth_wow: 0.06, units_z: 0.4, on_hand: 96, daily_rate: 16, cover_days: 6, return_rate: 0.01, rating: 4.2, rating_change: -0.1, series: [1, 2, 3] }],
+  },
+  anomalies: review().anomalies,
+  actions: review().actions.slice(1),
+  email: draft(),
+  pos: [po({ po_id: "PO-E002-0012", vendor_id: "E002", brand: "Purrline Foods", risk: "low", days_overdue: 2 })],
+  readings: [],
+  drafts: [],
+  claims: [],
+  week_start: "2026-10-19",
+  week_end: "2026-10-25",
+});

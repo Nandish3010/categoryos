@@ -621,6 +621,98 @@ class Documents(M):
         return self
 
 
+# ---------- operations (Run: existing vendors) ----------
+
+
+class Scorecard(M):
+    fill_rate_floor_pct: float = F(90, "Fill-rate floor", "A vendor whose recent fill rate is below this is flagged.", unit="%", min=0, max=100, step=1, used_in=["ops_review", "ops_chaser"])
+    fill_rate_drop_pp: float = F(8, "Fill-rate drop", "Flag a vendor whose recent fill rate fell this many points below its earlier fill rate.", unit="pp", min=0, max=100, step=1, used_in=["ops_review"])
+    fill_rate_recent_weeks: int = F(4, "Recent window", "PO lines promised in the last N weeks count as recent; earlier lines are the comparison.", unit="weeks", min=1, max=12, step=1, used_in=["ops_review"])
+    otif_target_pct: float = F(85, "OTIF target", "On time and in full: a vendor below this is flagged.", unit="%", min=0, max=100, step=1, used_in=["ops_review"])
+    on_time_grace_days: int = F(1, "On-time grace", "A delivery up to this many days after the promised date still counts as on time.", unit="days", min=0, max=30, step=1, used_in=["ops_review"])
+    in_full_min_pct: float = F(98, "In-full threshold", "A line counts as in full when at least this share of the ordered quantity arrived.", unit="%", min=1, max=100, step=1, used_in=["ops_review"])
+    demand_window_days: int = F(28, "Demand window", "Daily demand for stock cover is the average over this many days.", unit="days", min=7, max=91, step=7, used_in=["ops_review", "ops_chaser"])
+    stock_cover_alert_days: int = F(14, "Stock-cover alert", "A SKU with fewer days of cover than this is flagged.", unit="days", min=0, max=365, step=1, used_in=["ops_review"])
+    overstock_cover_days: int = F(90, "Overstock cover", "A SKU with more days of cover than this counts as overstocked.", unit="days", min=1, max=1000, step=5, used_in=["ops_review"])
+    ageing_buckets_days: list[int] = F(label="Ageing buckets", help="Upper edges in days since receipt, for example 30, 60, 90. The last bucket is everything older than the largest edge.", used_in=["ops_review"])
+    aged_alert_pct: float = F(20, "Aged-stock alert", "Flag a vendor when this share of its stock value is older than the last bucket edge.", unit="%", min=0, max=100, step=1, used_in=["ops_review"])
+    return_rate_alert_pct: float = F(4, "Return-rate alert", "Flag a SKU or vendor whose returns over the last four weeks exceed this share of units sold.", unit="%", min=0, max=100, step=0.5, used_in=["ops_review"])
+    rating_drop_alert: float = F(0.3, "Rating-drop alert", "Flag a SKU whose rating fell by at least this much over four weeks.", unit="stars", min=0, max=5, step=0.1, used_in=["ops_review"])
+
+    @field_validator("ageing_buckets_days")
+    @classmethod
+    def _buckets(cls, v: list[int]) -> list[int]:
+        if not v or any(b <= 0 for b in v) or v != sorted(set(v)):
+            raise ValueError("use positive, strictly increasing day edges, for example 30, 60, 90")
+        return v
+
+
+class AnomalyRules(M):
+    growth_z_threshold: float = F(2.5, "Growth anomaly z-score", "A week is an anomaly when it sits this many standard deviations from the trailing weeks.", unit="z", min=0.5, max=10, step=0.1, used_in=["ops_review"])
+    growth_min_change_pct: float = F(15, "Minimum week-on-week change", "...and moved at least this much against the previous week.", unit="%", min=0, max=500, step=1, used_in=["ops_review"])
+    lookback_weeks: int = F(12, "Lookback", "Trailing weeks that form the baseline.", unit="weeks", min=4, max=12, step=1, used_in=["ops_review"])
+    min_weekly_units: int = F(30, "Minimum weekly units", "SKUs selling less than this per week are too noisy to test.", unit="units", min=0, max=10000, step=5, used_in=["ops_review"])
+
+
+class WeeklyActions(M):
+    max_actions: int = F(8, "Actions listed", "Length of the what-to-do-this-week list.", unit="actions", min=1, max=30, step=1, used_in=["ops_review"])
+    priority_weights: dict[str, float] = F(label="Priority weights", help="Base score per action type; severity multiplies it. Types: stockout, fill_rate, otif, ageing, returns, rating, sales_drop, sales_spike, overstock.", used_in=["ops_review"])
+
+
+class EscalationRung(M):
+    name: str = F(label="Rung")
+    days_overdue: int = F(0, "From days overdue", "Reached when the PO is this many days past its promised date (negative: before it is due).", unit="days", min=-30, max=365, step=1)
+    channel: str = F("email", "Channel", options=["email", "whatsapp", "email+whatsapp"])
+    owner: str = F("category executive", "Owner")
+    tone: str = F("friendly", "Tone", "How the drafted message should read.")
+
+
+class PoFollowup(M):
+    ladder: list[EscalationRung] = F(label="Escalation ladder", help="Ordered by days overdue. The PO sits on the highest rung it has reached.", used_in=["ops_chaser"])
+    vague_reply_bumps_rung: bool = F(True, "Vague reply escalates", "A reply with no dated commitment moves a late PO up one rung.", used_in=["ops_chaser"])
+    stockout_buffer_days: int = F(2, "Stock-out buffer", "Cover must exceed the remaining lead time by this many days to be safe.", unit="days", min=0, max=60, step=1, used_in=["ops_chaser"])
+    default_lead_days: int = F(7, "Default lead time", "Assumed wait for an overdue PO with no dated commitment.", unit="days", min=1, max=90, step=1, used_in=["ops_chaser"])
+
+    @field_validator("ladder")
+    @classmethod
+    def _ladder(cls, v: list[EscalationRung]) -> list[EscalationRung]:
+        if not v:
+            raise ValueError("the ladder needs at least one rung")
+        days = [r.days_overdue for r in v]
+        if days != sorted(days):
+            raise ValueError("order the rungs by days overdue, smallest first")
+        return v
+
+
+def _default_ladder() -> list[EscalationRung]:
+    return [
+        EscalationRung(name="Nudge", days_overdue=-2, channel="email", owner="category executive", tone="friendly"),
+        EscalationRung(name="Chase", days_overdue=1, channel="email+whatsapp", owner="category executive", tone="firm but polite"),
+        EscalationRung(name="Escalate", days_overdue=4, channel="email", owner="category manager", tone="firm; copy the vendor's head of sales"),
+        EscalationRung(name="Formal notice", days_overdue=8, channel="email", owner="category manager", tone="formal; refer to the PO terms and name the alternative-sourcing option"),
+    ]
+
+
+def _default_weights() -> dict[str, float]:
+    return {"stockout": 100, "fill_rate": 70, "otif": 50, "ageing": 45, "overstock": 30, "returns": 55, "rating": 40, "sales_drop": 60, "sales_spike": 25}
+
+
+class Operations(M):
+    scorecard: Scorecard = Field(
+        default_factory=lambda: Scorecard(ageing_buckets_days=[30, 60, 90]),
+        json_schema_extra={"label": "Scorecard thresholds", "help": "Fill rate, OTIF, stock cover, ageing, returns and rating limits.", "used_in": ["ops_review"]},
+    )
+    anomaly: AnomalyRules = Field(default_factory=AnomalyRules, json_schema_extra={"label": "Anomaly detection", "help": "When a weekly movement counts as unusual.", "used_in": ["ops_review"]})
+    actions: WeeklyActions = Field(
+        default_factory=lambda: WeeklyActions(max_actions=8, priority_weights=_default_weights()),
+        json_schema_extra={"label": "Weekly actions", "help": "How the what-to-do-this-week list is ranked.", "used_in": ["ops_review"]},
+    )
+    po_followup: PoFollowup = Field(
+        default_factory=lambda: PoFollowup(ladder=_default_ladder()),
+        json_schema_extra={"label": "PO follow-up", "help": "Escalation ladder and stock-out risk for open purchase orders.", "used_in": ["ops_chaser"]},
+    )
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -635,6 +727,10 @@ class Policy(M):
     po: Po = F(label="Purchase order", used_in=["po"])
     levers: Levers = F(label="Levers", used_in=["research"])
     verifier: Verifier = F(label="Verifier", used_in=["research", "negotiate", "catalog", "po"])
+    operations: Operations = Field(
+        default_factory=Operations,
+        json_schema_extra={"label": "Operations", "help": "Run: weekly vendor review and PO follow-up for existing vendors.", "used_in": ["ops_review", "ops_chaser"]},
+    )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
 
     documents: Documents = Field(

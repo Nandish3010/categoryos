@@ -1,0 +1,65 @@
+[
+  {
+    "id": "R001",
+    "po_id": "PO-E001-0010",
+    "vendor_id": "E001",
+    "received_at": "2026-10-22T10:14:00",
+    "from": "Anil Rao <orders@barkley.example>",
+    "subject": "RE: PO PO-E001-0010",
+    "body": "Hi team,\n\nPO received and confirmed. We will deliver on 29th Oct as per PO, qty 400 bags BK-01 and 1200 pouches BK-05 as ordered.\n\nRegards\nAnil Rao\nBarkley Foods"
+  },
+  {
+    "id": "R002",
+    "po_id": "PO-E002-0012",
+    "vendor_id": "E002",
+    "received_at": "2026-10-26T09:41:00",
+    "from": "Rakesh Shah <dispatch@purrline.example>",
+    "subject": "RE: Re: PO PO-E002-0012 - delay??",
+    "body": "Dear Sir/Madam,\n\nSorry for delay, our transporter had strike in Pune since Friday and truck could not move. Truck is loaded now and left tonite. Will reach by Thursday for sure. Only 350 pcs of PL-01 can be sent in this lot, remaining we are short of raw material (fish meal supplier problem). Pls bear with us.\n\nThanks & regards\nRakesh Shah\nPurrline Nutrition LLP"
+  },
+  {
+    "id": "R003",
+    "po_id": "PO-E003-0010",
+    "vendor_id": "E003",
+    "received_at": "2026-10-23T17:05:00",
+    "from": "Meera Iyer <supply@nutripaws.example>",
+    "subject": "NP-03 shipment update",
+    "body": "Hello,\n\nDispatched 300 units of NP-03 today via Delhivery (docket DL88213). Balance 600 units is still under production, oven line was down 3 days. We will ship the balance by 3rd Nov. Kindly adjust.\n\nBest,\nMeera"
+  },
+  {
+    "id": "R004",
+    "po_id": "PO-E004-0007",
+    "vendor_id": "E004",
+    "received_at": "2026-10-22T12:30:00",
+    "from": "Vikram Sethi <sales@tailwindplay.example>",
+    "subject": "RE: PO PO-E004-0007",
+    "body": "PO acknowledged. Fabric for plush duck is awaited from mill so dispatch will take approx 5-6 working days from today. Bowls are ready. Will update.\n\nVikram\nTailwind Play"
+  },
+  {
+    "id": "R005",
+    "po_id": "PO-E005-0008",
+    "vendor_id": "E005",
+    "received_at": "2026-10-14T15:20:00",
+    "from": "Sanjay Kulkarni <ops@litterly.example>",
+    "subject": "RE: PO PO-E005-0008",
+    "body": "Dear Sir, we have received your PO and processing. Dispatch will be done next week. Thank you.\n\nSanjay"
+  },
+  {
+    "id": "R006",
+    "po_id": "PO-E005-0008",
+    "vendor_id": "E005",
+    "received_at": "2026-10-23T11:02:00",
+    "from": "Sanjay Kulkarni <ops@litterly.example>",
+    "subject": "RE: RE: PO PO-E005-0008 - URGENT",
+    "body": "Dear Sir,\n\nMaterial is under dispatch preparation and will be sent shortly. Some issue with packing material but we are working on it. Will revert with tracking details soon. Thank you for your patience.\n\nRegards\nSanjay Kulkarni\nLitterly Products"
+  },
+  {
+    "id": "R007",
+    "po_id": "PO-E006-0008",
+    "vendor_id": "E006",
+    "received_at": "2026-10-23T09:00:00",
+    "from": "Neha Bhatt <care@groomwell.example>",
+    "subject": "PO acknowledgement",
+    "body": "Hi, PO noted for 350 shampoo bottles. Everything on track, ready by 31st Oct.\n\nNeha"
+  }
+]

@@ -595,3 +595,27 @@ process memory (capped at 200) and vanish on restart: `GET /api/runs/{id}` is th
 `GET /api/mode` also returns `degraded: bool` and, in replay, `replay.vendors: {id: "ok" | <reason>}`. On startup each
 golden run is checked (sha256 sidecar, `schema_version`, `parser_version`, pydantic models, `meta.metrics_hash` against the
 current engine); a vendor that fails is served from the mock fixtures through the normal pipeline and flagged degraded.
+
+## Run: existing vendors (`/api/ops/*`)
+
+Weekly review and PO follow-up for existing vendors (ids `E001` to `E006` in the synthetic data; unrelated to the V00x applicants).
+All numbers are computed in Python (`app/ops/metrics.py`, `app/ops/pos.py`); the agent (stage `ops`, tasks `review_mis`,
+`review_emails`, `po_replies`, `po_drafts`, fixtures under `fixtures/mock/ops` and `fixtures/golden/ops`) only reads, explains,
+prioritises and drafts. Every number it writes is a claim with a source under `ops/` that `app.verify.verify_claim` hands to
+`app.ops.verify`: engine claims are recomputed, vendor-reply extractions (`reply_eta_days`, `reply_qty`) are checked against the
+reply text and go through the self-correction loop. Playbook: `operations` (thresholds, anomaly rules, escalation ladder); the
+modules `weekly_review_mis` and `po_followup` are registered in `impact.modules` / `impact.coverage`.
+
+| Route | Returns |
+|---|---|
+| `GET /api/ops/review[?inject=1]` | category summary, vendor scorecards, anomalies, ranked actions, `mis_markdown`, vendor-review `drafts`, `claims`, `verification`, `unclaimed_numbers`, `trace`, `impact_coverage` |
+| `GET /api/ops/pos[?inject=1]` | PO tracker rows (status, `days_overdue`, `risk`, `stockout_days`, `rung`), `readings` (stance, commitments with verbatim `quote`, verifier status, `corrected`), `ladder`, `ledger`, follow-up `drafts`, `claims`, `trace` |
+| `GET /api/ops/vendors/{id}` | one vendor's scorecard with SKU rows, anomalies, actions, email draft, POs, readings, claims |
+| `GET /api/ops/outbox[?kind=]` | queued drafts; `simulated: true` |
+| `POST /api/ops/outbox/{id}/approve` `{body?}` | marks the draft `sent_simulated` (nothing is sent). `409 draft_has_unverified_numbers` if the text still states a rejected number; `409 draft_not_pending` |
+| `POST /api/ops/outbox/{id}/reject` `{note?}` | `rejected` |
+| `GET /api/ops/impact` | `impact_coverage` for both modules (playbook registration, units done, manual minutes replaced) |
+| `POST /api/ops/reset` | demo key; clears caches and the outbox |
+
+Errors are the usual `{code, problem, cause, fix}`: `unknown_ops_vendor`, `unknown_po`, `unknown_draft`, `draft_not_pending`,
+`draft_has_unverified_numbers`, `ops_data_missing`, `unknown_ops_metric`. In live mode the GET routes need the demo key.

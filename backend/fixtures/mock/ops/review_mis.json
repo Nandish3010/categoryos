@@ -1,0 +1,260 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_category_summary",
+        "args": {}
+      },
+      {
+        "tool": "get_anomalies",
+        "args": {}
+      },
+      {
+        "tool": "get_action_candidates",
+        "args": {}
+      },
+      {
+        "tool": "get_vendor_scorecard",
+        "args": {
+          "vendor_id": "E002"
+        }
+      },
+      {
+        "tool": "get_return_reasons",
+        "args": {
+          "sku_code": "GW-02"
+        }
+      }
+    ],
+    "final": {
+      "headline": "Demand is steady at ₹13.7 lakh, but supply problems at Purrline, NutriPaws and Litterly put stock at risk",
+      "narrative": "Category GMV was ₹13.7 lakh for the week of 19 Oct to 25 Oct, up 0.5% on the week before, so demand is steady. The concern is supply: the category's fill rate over the last four weeks is 79%, and only 76% of purchase-order lines reached us on time and in full.\n\nPurrline Foods is the clearest supply problem. Its recent fill rate is 54% against 98% earlier, and its open PO is past due. Ocean Fish Adult is down to 6 days of cover.\n\nNutriPaws's best seller, Peanut Butter Biscuits, is out of stock with 0 days of cover. It sold 329 units this week against 437 the week before, and the 600 units still due are not promised until 3 Nov.\n\nTailwind Play has 42% of its stock value in the oldest age bucket: slow movers that need a markdown or a return to the vendor. Groomwell's Deshedding Brush has 7.1% returns and a rating down 0.74 stars, and the returns mostly cite leaking packaging.",
+      "figures": [
+        {
+          "metric": "ops_cat_gmv",
+          "key": "category",
+          "value": 1365809,
+          "shown": "₹13.7 lakh",
+          "text": "Category GMV for the week"
+        },
+        {
+          "metric": "ops_cat_gmv_growth_wow",
+          "key": "category",
+          "value": 0.005,
+          "shown": "0.5%",
+          "text": "Category GMV growth, week on week"
+        },
+        {
+          "metric": "ops_cat_fill_rate_recent",
+          "key": "category",
+          "value": 0.7876,
+          "shown": "79%",
+          "text": "Category fill rate over the last four weeks"
+        },
+        {
+          "metric": "ops_cat_otif",
+          "key": "category",
+          "value": 0.7647,
+          "shown": "76%",
+          "text": "Category on-time-in-full"
+        },
+        {
+          "metric": "ops_fill_rate_recent",
+          "key": "E002",
+          "value": 0.5437,
+          "shown": "54%",
+          "text": "Purrline recent fill rate"
+        },
+        {
+          "metric": "ops_fill_rate_prior",
+          "key": "E002",
+          "value": 0.9823,
+          "shown": "98%",
+          "text": "Purrline earlier fill rate"
+        },
+        {
+          "metric": "ops_sku_cover_days",
+          "key": "E002:PL-01",
+          "value": 6,
+          "shown": "6 days",
+          "text": "Ocean Fish Adult stock cover"
+        },
+        {
+          "metric": "ops_sku_cover_days",
+          "key": "E003:NP-03",
+          "value": 0,
+          "shown": "0 days",
+          "text": "Peanut Butter Biscuits stock cover"
+        },
+        {
+          "metric": "ops_sku_units",
+          "key": "E003:NP-03",
+          "value": 329,
+          "shown": "329 units",
+          "text": "Peanut Butter Biscuits units this week"
+        },
+        {
+          "metric": "ops_sku_units_prev",
+          "key": "E003:NP-03",
+          "value": 437,
+          "shown": "437",
+          "text": "Peanut Butter Biscuits units last week"
+        },
+        {
+          "metric": "ops_open_qty",
+          "key": "PO-E003-0010:NP-03",
+          "value": 600,
+          "shown": "600 units",
+          "text": "Peanut Butter Biscuits still to arrive"
+        },
+        {
+          "metric": "ops_aged_pct",
+          "key": "E004",
+          "value": 0.424,
+          "shown": "42%",
+          "text": "Tailwind Play share of stock value in the oldest bucket"
+        },
+        {
+          "metric": "ops_sku_return_rate",
+          "key": "E006:GW-02",
+          "value": 0.0709,
+          "shown": "7.1%",
+          "text": "Deshedding Brush return rate"
+        },
+        {
+          "metric": "ops_sku_rating_change",
+          "key": "E006:GW-02",
+          "value": -0.74,
+          "shown": "0.74",
+          "text": "Deshedding Brush rating change over four weeks"
+        }
+      ],
+      "anomaly_notes": [
+        {
+          "anomaly_id": "fill_rate:E002",
+          "explanation": "Likely cause: the transporter strike and the fish-meal shortage the vendor reported; recent fill rate is 54% against 98% earlier.",
+          "figures": [
+            {
+              "metric": "ops_fill_rate_recent",
+              "key": "E002",
+              "value": 0.5437,
+              "shown": "54%",
+              "text": "Purrline recent fill rate"
+            },
+            {
+              "metric": "ops_fill_rate_prior",
+              "key": "E002",
+              "value": 0.9823,
+              "shown": "98%",
+              "text": "Purrline earlier fill rate"
+            }
+          ]
+        },
+        {
+          "anomaly_id": "stockout:NP-03",
+          "explanation": "Only part of the order arrived because the vendor's oven line was down, so there are 0 days of cover.",
+          "figures": [
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E003:NP-03",
+              "value": 0,
+              "shown": "0 days",
+              "text": "Peanut Butter Biscuits stock cover"
+            }
+          ]
+        },
+        {
+          "anomaly_id": "sales_drop:NP-03",
+          "explanation": "Likely a consequence of the stock-out: sales choked in the last two days as units ran out."
+        },
+        {
+          "anomaly_id": "rating:GW-02",
+          "explanation": "Return reasons are dominated by leaking packaging, which fits the rating slide."
+        },
+        {
+          "anomaly_id": "ageing:E004",
+          "explanation": "These are slow movers received months ago (feather wand, harness, bandana); a markdown or a return to the vendor is the usual route."
+        },
+        {
+          "anomaly_id": "sales_drop:GW-03",
+          "explanation": "Sales fell 53% week on week with no stock or return issue behind it, so check price, listing and search placement first.",
+          "figures": [
+            {
+              "metric": "ops_sku_growth_wow",
+              "key": "E006:GW-03",
+              "value": -0.5287,
+              "shown": "53%",
+              "text": "Paw Balm sales change, week on week"
+            }
+          ]
+        },
+        {
+          "anomaly_id": "sales_spike:BK-02",
+          "explanation": "Likely promotion-driven; stock cover is healthy so no action beyond watching it."
+        }
+      ],
+      "priority": [
+        {
+          "action_id": "act:stockout:NP-03",
+          "rationale": "Out of stock on the best seller, and the balance is not due for over a week."
+        },
+        {
+          "action_id": "act:stockout:LT-05",
+          "rationale": "Only 5 days of cover and the PO is a week late with no dispatch date.",
+          "figures": [
+            {
+              "metric": "ops_sku_cover_days",
+              "key": "E005:LT-05",
+              "value": 5,
+              "shown": "5 days",
+              "text": "Clumping Bentonite 5 kg stock cover"
+            }
+          ]
+        },
+        {
+          "action_id": "act:fill_rate:E002",
+          "rationale": "Fill rate has collapsed from 98% to 54% and the open PO is late.",
+          "figures": [
+            {
+              "metric": "ops_fill_rate_recent",
+              "key": "E002",
+              "value": 0.5437,
+              "shown": "54%",
+              "text": "Purrline recent fill rate"
+            },
+            {
+              "metric": "ops_fill_rate_prior",
+              "key": "E002",
+              "value": 0.9823,
+              "shown": "98%",
+              "text": "Purrline earlier fill rate"
+            }
+          ]
+        },
+        {
+          "action_id": "act:stockout:PL-01",
+          "rationale": "The truck is promised by Thursday; cover is thin until then."
+        },
+        {
+          "action_id": "act:fill_rate:E005",
+          "rationale": "Recent shortfalls are driven by the overdue PO; needs a dated plan."
+        },
+        {
+          "action_id": "act:ageing:E004",
+          "rationale": "Cash is tied up in stock older than the last bucket; start the markdown plan."
+        },
+        {
+          "action_id": "act:rating:GW-02",
+          "rationale": "Rating and returns point to a packaging defect; get a root cause from the vendor."
+        },
+        {
+          "action_id": "act:sales_drop:GW-03",
+          "rationale": "A drop by half with no supply reason."
+        }
+      ]
+    }
+  }
+}

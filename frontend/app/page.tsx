@@ -125,6 +125,9 @@ export default function VendorsBoard() {
             <Link href="/try" className="inline-flex min-h-11 items-center rounded-card border border-accent/40 px-3 text-sm text-accent hover:bg-surface-2">
               Try your own vendor
             </Link>
+            <Link href="/run" className="inline-flex min-h-11 items-center rounded-card border border-border px-3 text-sm text-text-dim hover:bg-surface-2 hover:text-text">
+              Run (existing vendors)
+            </Link>
             <Link href="/rules" className="inline-flex min-h-11 items-center rounded-card border border-border px-3 text-sm text-text-dim hover:bg-surface-2 hover:text-text">
               Playbook
             </Link>
