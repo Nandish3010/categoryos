@@ -29,6 +29,11 @@ async def require_key_if_live(request: Request, x_demo_key: str | None = Header(
 def reset() -> None:
     _cache.clear()
     outbox.reset()
+    from app.ops.catalog_qc import (
+        api as catalog_api,  # lazy: that module imports this one
+    )
+
+    catalog_api.reset()
 
 
 async def _get(kind: str, inject: bool) -> dict[str, Any]:

@@ -5,6 +5,7 @@ model's own evidence.raw_value."""
 import hashlib
 import posixpath
 import re
+from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
@@ -280,10 +281,18 @@ def _verify_vision(claim: Claim, rel_file: str) -> Claim:
         return _finish(claim, "rejected", "no evidence: the scan, a bounding box, a crop hash and the printed text are required")
     if file_sha256(rel_file) != ev.sha256:
         return _finish(claim, "rejected", "source changed: evidence sha256 does not match the scan")
+    return vision_check(claim, lambda: (_resolve(rel_file) or Path()).read_bytes())
+
+
+def vision_check(claim: Claim, read_page: Callable[[], bytes]) -> Claim:
+    """The pixel-and-second-read half of the vision check, for any scan whose bytes ``read_page`` returns (the caller has
+    already matched the page's sha256 and the evidence shape). Shared with the Run area's pack-label checks."""
+    ev = claim.evidence
+    assert ev is not None and ev.bbox is not None
     if not docparse.valid_bbox(ev.bbox):
         return _finish(claim, "rejected", f"the bounding box {ev.bbox} does not lie on the page")
     try:
-        page = (_resolve(rel_file) or Path()).read_bytes()
+        page = read_page()
         digest = docparse.region_digest(page, ev.bbox)
     except (OSError, ValueError) as exc:
         return _finish(claim, "rejected", f"the scan cannot be opened: {exc}")

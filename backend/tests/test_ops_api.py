@@ -199,7 +199,8 @@ def test_golden_fixtures_match_the_mock_fixtures():
     for f in sorted((FIXTURES / "mock" / "ops").glob("*.json")):
         golden = FIXTURES / "golden" / "ops" / f.name
         assert golden.exists(), f"missing golden for {f.name}: copy it from the mock fixtures"
-        assert json.loads(golden.read_text())["content"] == json.loads(f.read_text())["content"]
+        g, m = json.loads(golden.read_text()), json.loads(f.read_text())
+        assert g.get("content", g) == m.get("content", m)  # a SAM panel box fixture has no content wrapper
 
 
 def test_replay_serves_the_recorded_runs_without_degrading(client, monkeypatch):

@@ -1,0 +1,34 @@
+{
+  "documents": [
+    {
+      "file": "label_BK-01.jpg",
+      "kind": "product_label",
+      "title": "Pack label BK-01 (photo)",
+      "pages": [
+        "label_BK-01.jpg"
+      ],
+      "sku_code": "BK-01",
+      "vendor_id": "E001"
+    },
+    {
+      "file": "label_PL-01.jpg",
+      "kind": "product_label",
+      "title": "Pack label PL-01 (photo)",
+      "pages": [
+        "label_PL-01.jpg"
+      ],
+      "sku_code": "PL-01",
+      "vendor_id": "E002"
+    },
+    {
+      "file": "label_LT-04.jpg",
+      "kind": "product_label",
+      "title": "Pack label LT-04 (photo)",
+      "pages": [
+        "label_LT-04.jpg"
+      ],
+      "sku_code": "LT-04",
+      "vendor_id": "E005"
+    }
+  ]
+}

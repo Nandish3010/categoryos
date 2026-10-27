@@ -642,3 +642,31 @@ delay | delist | needs_review`, `then_decision`, `counter_pct`, `counter_cost`, 
 `sweeteners[]`, `decision` (most serious line), `approval {pct, asked_pct, tier, asked_tier, reasons, matrix}`, `counter_offer`,
 `impact` (GMV and margin deltas over `horizon_days` if we absorb, pass on, or follow the decision), `justification`, `assumptions`.
 Errors: `price_request_not_found`, `price_request_unreadable`, `price_request_invalid`, `approval_tier_too_low`, `price_request_decided`.
+
+## Run: catalog fixes (`/api/ops/catalog`)
+
+QC and fix queue for the live listings of existing vendors (`data/synthetic/ops/catalog_live.csv`). Python detects 13 issue types
+(`title_too_long`, `title_missing_attributes`, `missing_attribute`, `banned_claim`, `mrp_mismatch`, `pack_mismatch`,
+`duplicate_listing`, `wrong_category`, `missing_image`, `low_res_image`, `high_returns_not_as_described`, `expired_licence`,
+`label_mismatch`), scores each by GMV at risk, severity and the return-rate signal (playbook `catalog_qc.priority_weights`) and
+proposes a fix. Fixes are deterministic where the answer is in the data (MRP and pack from the latest price list, category from the
+taxonomy classifier, licence swap or hold, duplicate retirement, protein from the pack label) and model-written otherwise (stage
+`ops`, task `catalog_qc_rewrite`, muse-spark through the gateway: a rewritten title, bullets, description and text attributes using
+only the row and label facts; mock fixture `fixtures/mock/ops/catalog_qc_rewrite.json`, rejected numbers get
+`catalog_qc_rewrite__fix1.json`). Every proposed value is a claim whose source is under `ops/` and is checked by
+`app/ops/catalog_qc/verify.py` (metrics `qc_*`; label readings are `vision_extraction` claims checked with
+`app.verify.vision_check`, the same pixel-and-second-read check as Catalog). Numbers the model states about pack or MRP go through
+the self-correction loop. Where a pack label exists it is read by the Catalog doc-vision reader (`docs._read_page`) and compared with
+the listing. Playbook: `catalog_qc`; the module `catalog_qc_queue` is registered as shipped (70% of `catalog_create_qc`).
+Approving is SIMULATED: it queues a catalog update in memory; nothing leaves the app.
+
+| Route | Returns |
+|---|---|
+| `GET /api/ops/catalog[?inject=1]` | `rows` (one per issue, ranked: `score`, `signals`, `gmv_at_risk_inr`, `fix_id`, `decision`), `listings` (`before`, `after`, `fixes`, `label` card), `fixes` (`changes[{field,label,before,after}]`, `claim_ids`, `status` ready or blocked, `decision`), `claims`, `verification`, `corrected`, `summary` (`fixes_ready`, `minutes_saved` from `impact.recurring_minutes.catalog_fix_per_sku`), `updates`, `limits.bulk_approve`, `trace`, `impact_coverage` |
+| `POST /api/ops/catalog/fixes/{id}/approve` | queues the listing's catalog update (`applied_simulated`). `409 catalog_fix_unverified` if a claim was rejected, `409 catalog_fix_not_pending` |
+| `POST /api/ops/catalog/fixes/{id}/reject` `{note?}` | `rejected` |
+| `POST /api/ops/catalog/bulk-approve` `{fix_ids}` | `{approved, skipped: [{fix_id, reason}], updates}`. Checked as a whole first: `409 bulk_limit_exceeded` above `catalog_qc.bulk_approve_limit`, `422 empty_selection`, `404 unknown_catalog_fix`. Decided and unverified fixes are skipped |
+| `POST /api/ops/catalog/bulk-reject` `{fix_ids}` | `{rejected, skipped}` |
+| `GET /api/ops/catalog/outbox` | queued simulated catalog updates |
+| `GET /api/ops/catalog/labels/{name}` | a pack-label image listed in the manifest (`404 unknown_catalog_label` otherwise) |
+| `POST /api/ops/reset` | also clears the catalog queue cache and outbox |

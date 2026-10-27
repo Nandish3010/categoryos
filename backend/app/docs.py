@@ -284,16 +284,19 @@ def _apply_reads(targets: list[FieldRead], reads: list[Any]) -> None:
 
 
 async def _read_page(
-    ctx: RunContext, vendor_id: str, stage: str, doc: DocRead, page_no: int, page_file: str, cfg: Any, today: date
+    ctx: RunContext, vendor_id: str, stage: str, doc: DocRead, page_no: int, page_file: str, cfg: Any, today: date,
+    *, resolve: Any = None, url: Any = None,
 ) -> None:
+    """``resolve`` / ``url`` replace the page lookup and the page URL for documents that do not live in a V00x vendor's
+    docs folder (the Run area reads the pack labels of existing vendors' listings through the same reader)."""
     pol = policy.get().documents
-    path = doc_path(vendor_id, page_file)
+    path = (resolve or doc_path)(vendor_id, page_file)
     if path is None:
         doc.error = f"page {page_file!r} is not in the vendor's document manifest"
         return
     png = path.read_bytes()
     img = docparse.open_image(png)
-    doc.pages.append({"page": page_no, "file": page_file, "url": doc_url(vendor_id, page_file), "width": img.width, "height": img.height})
+    doc.pages.append({"page": page_no, "file": page_file, "url": (url or doc_url)(vendor_id, page_file), "width": img.width, "height": img.height})
     task = f"docs_{vendor_id}_{slug(page_file)}"
     res = await llm.call(stage, prompts_docs.extract_messages(doc.kind, png, page_no, "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"), task=task, schema=VisionExtraction, max_tokens=3000)
     _emit_model_call(ctx, stage, "doc_extract", res, doc.file)

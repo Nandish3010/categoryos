@@ -59,6 +59,12 @@ def _verify_reply(claim: Claim) -> Claim:
 
 
 def verify_ops_claim(claim: Claim) -> Claim:
+    from app.ops.catalog_qc import (
+        verify as catalog_verify,  # the live-catalog fix queue owns its claims
+    )
+
+    if catalog_verify.handles(claim):
+        return catalog_verify.verify_catalog_claim(claim)
     rel = claim.source_ref.file
     if rel not in allowed_files():
         return _finish(claim, "rejected", f"unknown source: {rel!r} is not an allowlisted ops data file")

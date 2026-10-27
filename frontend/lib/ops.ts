@@ -283,6 +283,7 @@ export const RUN_NAV: RunNavItem[] = [
   { href: "/run", label: "Category MIS", match: (p) => p === "/run" || p.startsWith("/run/vendors") },
   { href: "/run/pos", label: "PO tracker", match: (p) => p.startsWith("/run/pos") },
   { href: "/run/price-requests", label: "Price requests", match: (p) => p.startsWith("/run/price-requests") },
+  { href: "/run/catalog", label: "Catalog fixes", match: (p) => p.startsWith("/run/catalog") },
 ];
 
 // ---------- formatting ----------

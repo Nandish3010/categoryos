@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests lint live record smoke requirements eval
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog lint live record smoke requirements eval
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -33,6 +33,10 @@ data-price-requests:
 # Vendor scans, labels and the price-list PDF, plus the mock vision fixtures (needs the backend environment: Pillow, PyYAML).
 data-docs:
 	cd backend && uv run python ../data/generate_docs.py
+
+# Live catalog of the existing vendors (listings, price lists, licences, three pack labels and their mock vision fixtures). Needs Pillow and PyYAML.
+data-catalog:
+	cd backend && uv run python ../data/generate_catalog_live.py
 
 lint:
 	cd backend && uv run ruff check .

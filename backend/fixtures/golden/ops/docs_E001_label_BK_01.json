@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "kind": "product_label",
+    "legible": true,
+    "fields": [
+      {
+        "name": "product_name",
+        "value": "Chicken & Rice Adult Dry Dog Food 3 kg",
+        "bbox": [
+          0.0411,
+          0.1613,
+          0.714,
+          0.1968
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      },
+      {
+        "name": "protein_pct",
+        "value": "26.0 %",
+        "bbox": [
+          0.6102,
+          0.3095,
+          0.7146,
+          0.3315
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      },
+      {
+        "name": "claims_text",
+        "value": "Grain inclusive. Boosts immunity.",
+        "bbox": [
+          0.0626,
+          0.6448,
+          0.4814,
+          0.672
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      },
+      {
+        "name": "net_quantity",
+        "value": "3 kg",
+        "bbox": [
+          0.3036,
+          0.7177,
+          0.3766,
+          0.7449
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 1,050",
+        "bbox": [
+          0.3046,
+          0.7615,
+          0.4486,
+          0.7867
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      },
+      {
+        "name": "fssai_number",
+        "value": "FSSAI-E001-2028",
+        "bbox": [
+          0.3056,
+          0.804,
+          0.5508,
+          0.8258
+        ],
+        "confidence": 0.97,
+        "sku_code": "BK-01"
+      }
+    ],
+    "notes": ""
+  }
+}

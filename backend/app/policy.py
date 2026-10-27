@@ -794,6 +794,94 @@ class Operations(M):
     )
 
 
+# ---------- catalog QC (Run: fix queue for existing listings) ----------
+
+QC_ISSUE_TYPES = (
+    "title_too_long", "title_missing_attributes", "missing_attribute", "banned_claim", "mrp_mismatch", "pack_mismatch",
+    "duplicate_listing", "wrong_category", "missing_image", "low_res_image", "high_returns_not_as_described", "expired_licence",
+    "label_mismatch",
+)
+_Sev = Literal["low", "medium", "high"]
+
+
+def _sev(label: str, default: _Sev, help: str = "") -> Any:
+    return F(default, label, help, options=["low", "medium", "high"], used_in=["ops_catalog"])
+
+
+class QcSeverities(M):
+    title_too_long: _Sev = _sev("Title over the limit", "low", "Longer than catalog.title_max_chars.")
+    title_missing_attributes: _Sev = _sev("Title missing key attributes", "medium", "Lacks something listed in 'Title must contain'.")
+    missing_attribute: _Sev = _sev("Missing required attribute", "medium", "A catalog.required_attributes entry for the listing's category is empty.")
+    banned_claim: _Sev = _sev("Banned or unproven claim", "high", "A screening.claim_rules pattern matches the listing copy. The rule's own severity is used when it is higher.")
+    mrp_mismatch: _Sev = _sev("MRP differs from price list or label", "high")
+    pack_mismatch: _Sev = _sev("Pack size differs from the price list", "high")
+    duplicate_listing: _Sev = _sev("Near-duplicate listing", "medium")
+    wrong_category: _Sev = _sev("Wrong category or subcategory", "medium")
+    missing_image: _Sev = _sev("No image", "high")
+    low_res_image: _Sev = _sev("Low-resolution image", "medium")
+    high_returns_not_as_described: _Sev = _sev("High returns citing 'not as described'", "medium")
+    expired_licence: _Sev = _sev("Expired licence number", "high")
+    label_mismatch: _Sev = _sev("Label differs from the listing", "high", "A value read off the pack label (protein, licence number) differs from the listing copy.")
+
+
+class QcSeverityPoints(M):
+    low: float = F(1, "Low", min=0, max=100, step=0.5, used_in=["ops_catalog"])
+    medium: float = F(2, "Medium", min=0, max=100, step=0.5, used_in=["ops_catalog"])
+    high: float = F(3, "High", min=0, max=100, step=0.5, used_in=["ops_catalog"])
+
+
+class QcWeights(M):
+    gmv_at_risk: float = F(0.5, "GMV at risk", "Weight of the listing's recent GMV, scaled to the biggest listing.", min=0, max=10, step=0.05, used_in=["ops_catalog"])
+    severity: float = F(0.35, "Severity", "Weight of the issue's severity points, scaled to the highest severity.", min=0, max=10, step=0.05, used_in=["ops_catalog"])
+    return_rate: float = F(0.15, "Return-rate signal", "Weight of the 'not as described' return rate, scaled to twice the threshold.", min=0, max=10, step=0.05, used_in=["ops_catalog"])
+
+
+class QcReturns(M):
+    threshold_pct: float = F(0.6, "Return-rate threshold", "Flag a listing when returns citing the reasons below are at least this share of units sold.", unit="%", min=0, max=100, step=0.1, used_in=["ops_catalog"])
+    min_returned_units: int = F(5, "Minimum returned units", "...and at least this many units came back (too few is noise).", unit="units", min=0, max=10000, step=1, used_in=["ops_catalog"])
+    window_days: int = F(91, "Window", "Sales and returns of the last N days of data.", unit="days", min=7, max=365, step=7, used_in=["ops_catalog"])
+    reasons: list[str] = Field(
+        default_factory=lambda: ["quality not as expected", "wrong item sent", "not as described"],
+        json_schema_extra={"label": "Return reasons that mean 'not as described'", "help": "Matched against the reason column of the ops returns data, case-insensitive.", "used_in": ["ops_catalog"]},
+    )
+
+
+class QcImages(M):
+    min_resolution_px: int = F(800, "Minimum resolution", "Shortest side of the main image.", unit="px", min=100, max=10000, step=50, used_in=["ops_catalog"])
+    min_count: int = F(1, "Minimum images", unit="images", min=0, max=20, step=1, used_in=["ops_catalog"])
+
+
+class CatalogQc(M):
+    severities: QcSeverities = Field(default_factory=QcSeverities, json_schema_extra={"label": "Issue severities", "help": "", "used_in": ["ops_catalog"]})
+    severity_points: QcSeverityPoints = Field(default_factory=QcSeverityPoints, json_schema_extra={"label": "Severity points", "help": "What low, medium and high count as in the priority score.", "used_in": ["ops_catalog"]})
+    priority_weights: QcWeights = Field(default_factory=QcWeights, json_schema_extra={"label": "Priority weights", "help": "Score = weighted sum of three 0-100 signals; the weights are normalised, so only their ratio matters.", "used_in": ["ops_catalog"]})
+    gmv_window_days: int = F(28, "GMV window", "GMV at risk is the listing's sales of the last N days of data.", unit="days", min=7, max=365, step=7, used_in=["ops_catalog"])
+    near_duplicate_threshold: float = F(0.8, "Near-duplicate threshold", "Name similarity (Jaccard overlap of the title words and the pack) at or above which two listings in the same category are duplicates.", min=0.1, max=1, step=0.05, used_in=["ops_catalog"])
+    returns: QcReturns = Field(default_factory=QcReturns, json_schema_extra={"label": "Returns signal", "help": "", "used_in": ["ops_catalog"]})
+    images: QcImages = Field(default_factory=QcImages, json_schema_extra={"label": "Images", "help": "", "used_in": ["ops_catalog"]})
+    title_required: list[str] = Field(
+        default_factory=lambda: ["brand", "pack"],
+        json_schema_extra={"label": "Title must contain", "help": "brand: the vendor's brand name. pack: the pack size (or size word).", "used_in": ["ops_catalog"], "options": ["brand", "pack"]},
+    )
+    bulk_approve_limit: int = F(25, "Bulk-approve limit", "Most fixes one bulk approve may apply. A bigger selection is refused, so a person looks at it in batches.", unit="fixes", min=1, max=500, step=1, used_in=["ops_catalog"])
+    model_rewrites: bool = F(True, "Model-written fixes", "Let the model (muse-spark) rewrite titles, bullets and fill text attributes. Off: only the deterministic fixes are proposed.", used_in=["ops_catalog"])
+
+    @model_validator(mode="after")
+    def _weights(self) -> "CatalogQc":
+        w = self.priority_weights
+        if w.gmv_at_risk + w.severity + w.return_rate <= 0:
+            raise ValueError("priority_weights cannot all be zero")
+        return self
+
+    @field_validator("title_required")
+    @classmethod
+    def _tr(cls, v: list[str]) -> list[str]:
+        bad = [x for x in v if x not in ("brand", "pack")]
+        if bad:
+            raise ValueError(f"unknown title requirement(s) {bad}; use brand and/or pack")
+        return v
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -811,6 +899,10 @@ class Policy(M):
     operations: Operations = Field(
         default_factory=Operations,
         json_schema_extra={"label": "Operations", "help": "Run: weekly vendor review and PO follow-up for existing vendors.", "used_in": ["ops_review", "ops_chaser"]},
+    )
+    catalog_qc: CatalogQc = Field(
+        default_factory=CatalogQc,
+        json_schema_extra={"label": "Catalog QC (Run)", "help": "Fix queue for the live listings of existing vendors.", "used_in": ["ops_catalog"]},
     )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
 
