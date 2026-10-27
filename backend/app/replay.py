@@ -221,6 +221,7 @@ class ReplayStore:
         self.stages: dict[str, dict[str, StageResult]] = {}
         self.approvals: dict[str, list[dict[str, Any]]] = {}
         self.overrides: dict[str, list[dict[str, Any]]] = {}
+        self.marks: dict[str, list[dict[str, Any]]] = {}
         self.latest: dict[str, str] = {}
 
     def has(self, run_id: str) -> bool:
@@ -236,11 +237,11 @@ class ReplayStore:
         created = _now()
         self.runs[run_id] = {"run_id": run_id, "vendor_id": vendor_id, "mode": mode, "created_at": created}
         self.events[run_id], self.stages[run_id] = [], {}
-        self.approvals[run_id], self.overrides[run_id] = [], []
+        self.approvals[run_id], self.overrides[run_id], self.marks[run_id] = [], [], []
         self.latest[vendor_id] = run_id
         while len(self.runs) > MAX_SESSIONS:
             old, meta = self.runs.popitem(last=False)
-            for table in (self.events, self.stages, self.approvals, self.overrides):
+            for table in (self.events, self.stages, self.approvals, self.overrides, self.marks):
                 table.pop(old, None)
             if self.latest.get(meta["vendor_id"]) == old:
                 self.latest.pop(meta["vendor_id"], None)
@@ -283,6 +284,13 @@ class ReplayStore:
             {"id": len(rows) + 1, "run_id": run_id, "stage": stage, "sku_code": sku_code, "verdict": verdict,
              "note": note, "created_at": _now()}
         )
+
+    async def add_mark(self, run_id: str, stage: str, kind: str) -> None:
+        rows = self.marks[run_id]
+        rows.append({"id": len(rows) + 1, "run_id": run_id, "stage": stage, "kind": kind, "created_at": _now()})
+
+    async def list_marks(self, run_id: str) -> list[dict[str, Any]]:
+        return list(self.marks.get(run_id, []))
 
     async def list_approvals(self, run_id: str) -> list[dict[str, Any]]:
         return list(self.approvals.get(run_id, []))

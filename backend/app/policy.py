@@ -463,6 +463,94 @@ class Tolerances(M):
 
 class Verifier(M):
     tolerances: Tolerances = F(label="Tolerances", help="How closely a claim must match the recomputed value.", used_in=["research", "negotiate", "catalog", "po"])
+    max_self_corrections: int = F(2, "Self-corrections", "When the verifier rejects something the agent read from a document, the agent is told what the source says and may retry this many times before the claim is left unresolved. 0 turns self-correction off.", unit="retries", min=0, max=5, step=1, used_in=["research", "negotiate", "catalog"])
+
+
+IMPACT_SOURCE = "Research estimate (not measured): docs/research/category-manager-workload.md. Replace with your own time diary."
+
+
+def _minutes(label: str, default: float, help: str = "") -> Any:
+    return F(default, label, f"{help} {IMPACT_SOURCE}".strip(), unit="min", min=0, max=6000, step=5, used_in=["impact"])
+
+
+class BaselineMinutes(M):
+    """Human minutes each step of onboarding one new vendor takes by hand today (the report's table A, about 12 SKUs)."""
+
+    screening: float = _minutes("Document screening", 45, "GST, licences, brand authorisation, FSSAI for one vendor.")
+    market_research_per_sku: float = _minutes("Market research go/no-go, per SKU", 20)
+    shortlist: float = _minutes("Shortlist and rationale", 30)
+    negotiation_prep: float = _minutes("Negotiation prep and gap analysis", 60)
+    negotiation_calls: float = _minutes("Negotiation calls and notes", 110, "Two 45 minute calls plus notes.")
+    conditional_offer_eval: float = _minutes("Conditional-offer evaluation", 30)
+    catalog_listing_per_sku: float = _minutes("Catalog listing from a messy sheet, per SKU", 25)
+    image_content_per_sku: float = _minutes("Images and content sourcing and QC, per SKU", 10)
+    compliance_per_sku: float = _minutes("Compliance checks, per SKU", 5)
+    marketing_jbp_draft: float = _minutes("Marketing and JBP draft", 60)
+    first_po_draft: float = _minutes("First PO draft", 30)
+
+
+class RecurringMinutes(M):
+    """By-hand minutes for recurring tasks that future modules would take over (the report's table B). Reference only."""
+
+    price_increase_request: float = _minutes("Price-increase request evaluation", 90, "Per request (CM 60 + CE 30).")
+    weekly_review_pack: float = _minutes("Weekly business review / MIS pack", 240, "Per category per week.")
+    vendor_scorecard: float = _minutes("Vendor scorecard", 75, "Per vendor per month.")
+    po_chase: float = _minutes("PO chase", 15, "Per late PO.")
+    fill_rate_reconciliation: float = _minutes("Fill-rate reconciliation", 45, "Per vendor per week.")
+    catalog_fix_per_sku: float = _minutes("Existing catalog fix, per SKU", 12)
+    promotion_event_plan: float = _minutes("Promotion / event plan", 480, "Per event.")
+    qbr_jbp_deck: float = _minutes("QBR / JBP deck", 600, "Per top vendor per quarter.")
+    competitor_price_sweep: float = _minutes("Competitor price sweep", 30, "Per day per category.")
+    inventory_ageing_review: float = _minutes("Inventory ageing review and liquidation plan", 180, "Per category per week.")
+
+
+class Team(M):
+    category_managers: int = F(1, "Category managers", "Headcount. " + IMPACT_SOURCE, min=0, max=1000, step=1, used_in=["impact"])
+    category_executives: int = F(2, "Category executives", "Headcount. " + IMPACT_SOURCE, min=0, max=1000, step=1, used_in=["impact"])
+    work_hours_per_week: float = F(45, "Working hours per week", "Per person. " + IMPACT_SOURCE, unit="h", min=1, max=100, step=1, used_in=["impact"])
+    weeks_per_month: float = F(4.33, "Weeks per month", unit="weeks", min=1, max=5, step=0.01, used_in=["impact"])
+    vendors_onboarded_per_month: float = F(3.2, "Vendors onboarded per month", "New vendors taken from application to PO each month (the report: 0.5 to 1 a week). " + IMPACT_SOURCE, min=0, max=10000, step=0.5, used_in=["impact"])
+    typical_skus_per_vendor: int = F(12, "SKUs per new vendor", "Used to price a typical onboarding for the team projection. " + IMPACT_SOURCE, min=1, max=1000, step=1, used_in=["impact"])
+
+
+class WorkTask(M):
+    label: str = F(label="Task")
+    category_manager_pct: float = F(0, "Category manager: share of week", unit="%", min=0, max=100, step=0.5)
+    category_executive_pct: float = F(0, "Category executive: share of week", unit="%", min=0, max=100, step=0.5)
+    saved_pct: float = F(0, "Time saved if automated", "Share of this task's time saved by a module that covers it, with human review.", unit="%", min=0, max=100, step=1)
+
+
+class Module(M):
+    label: str = F(label="Module")
+    status: Literal["shipped", "not_built"] = F("not_built", "Status", "Only shipped modules count towards the saving; the rest are shown as a projection.", options=["shipped", "not_built"])
+    measured_from_runs: bool = F(False, "Measured by runs", "Once runs are fully reviewed, this module's saved share is the measured review reduction instead of the table's estimate.")
+
+
+class Coverage(M):
+    module: str = F(label="Module", help="A key of impact.modules.")
+    task: str = F(label="Task", help="A key of impact.workload.")
+    in_scope_pct: float = F(100, "Share of the task covered", unit="%", min=0, max=100, step=5)
+
+
+class Impact(M):
+    baseline_status: Literal["research_estimate", "measured"] = F("research_estimate", "Baseline status", "research_estimate: the times, shares and team size here come from docs/research/category-manager-workload.md and are NOT measured; the UI says so. Set to measured once you have replaced them with a time diary of your own team.", used_in=["impact"], options=["research_estimate", "measured"])
+    baseline_minutes: BaselineMinutes = F(label="Onboarding baseline, minutes by hand", help="One new vendor. " + IMPACT_SOURCE, used_in=["impact"])
+    recurring_minutes: RecurringMinutes = F(label="Recurring tasks, minutes by hand", help="For future modules. " + IMPACT_SOURCE, used_in=["impact"])
+    team: Team = F(label="Team", help=IMPACT_SOURCE, used_in=["impact"])
+    workload: dict[str, WorkTask] = F(label="Where the week goes", help="Each task's share of a category manager's and a category executive's week, and how much of it automation saves. Each column sums to 100. " + IMPACT_SOURCE, used_in=["impact"])
+    modules: dict[str, Module] = F(label="Modules", help="What exists or is planned. Register a new module here and list the tasks it covers below.", used_in=["impact"])
+    coverage: list[Coverage] = F(label="Module coverage", help="Which share of which task each module takes over. Register new modules' coverage here.", used_in=["impact"])
+    max_review_minutes: float = F(120, "Longest review counted", "A review gap longer than this is capped (the reviewer walked away); the cap is shown.", unit="min", min=1, max=1440, step=5, used_in=["impact"])
+    target_reduction_pct: float = F(33.3, "Workload target", "The goal the team view is compared with: cut category-team workload by this much.", unit="%", min=0, max=100, step=0.1, used_in=["impact"])
+
+    @model_validator(mode="after")
+    def _refs(self) -> "Impact":
+        for row in self.coverage:
+            if row.module not in self.modules:
+                raise ValueError(f"coverage row names unknown module {row.module!r}; use one of {sorted(self.modules)}")
+            if row.task not in self.workload:
+                raise ValueError(f"coverage row names unknown task {row.task!r}; use one of {sorted(self.workload)}")
+        return self
 
 
 class DocKind(M):
@@ -546,6 +634,8 @@ class Policy(M):
     po: Po = F(label="Purchase order", used_in=["po"])
     levers: Levers = F(label="Levers", used_in=["research"])
     verifier: Verifier = F(label="Verifier", used_in=["research", "negotiate", "catalog", "po"])
+    impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
+
     documents: Documents = Field(
         default_factory=Documents,
         json_schema_extra={"label": "Documents", "help": "Scanned certificates, labels and price lists read by the vision models.", "used_in": ["intake", "catalog"]},

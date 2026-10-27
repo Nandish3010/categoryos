@@ -83,6 +83,15 @@ export type LeverResponse = {
 
 export type ClaimStatus = "pending" | "verified" | "rejected" | "unverifiable";
 
+/** One try at a model-extraction claim; attempt 0 is the agent's first answer. Only present once the verifier rejected it. */
+export type ClaimAttempt = {
+  attempt: number;
+  value: number;
+  status: ClaimStatus;
+  reason?: string | null;
+  recomputed?: number | null;
+};
+
 export type Claim = {
   id: string;
   text: string;
@@ -94,6 +103,8 @@ export type Claim = {
   recomputed?: number | null;
   reason?: string | null;
   origin: "engine" | "model_extraction" | "vision_extraction" | "injected_test";
+  /** Timeline of attempts when the first answer was rejected (self-correction), oldest first. */
+  attempts?: ClaimAttempt[];
   source_ref: { file: string; key: string; column?: string | null };
   evidence?: {
     row?: number | null;

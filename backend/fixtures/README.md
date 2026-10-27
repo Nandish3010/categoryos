@@ -77,9 +77,21 @@ Sku codes, rows, headers and cell values in these files are the real ones from `
 
 - `HP-D01` cost, sheet row 2, header `Cost to Us`: the sheet says `Rs. 956.50`, the mock agent says `965.50`.
 
-The verifier re-reads the cell, rejects the claim, and the sentence citing `₹965.50` is struck from the narrative.
-All other extractions in all four fixtures are correct. This is a hand-written stand-in: the headline demo claim is a
-real, unscripted catch from a live run. When one is recorded it replaces this file under `fixtures/golden/`.
+The verifier re-reads the cell and rejects the claim. The agent is then told (self-correction) and the scripted retry in
+`decide_V001__fix1.json` answers `956.50`, which the verifier accepts; the narrative sentence now quotes `₹956.50`. With
+`verifier.max_self_corrections: 0`, or when a retry fixture is missing, the claim stays rejected and the sentence is
+struck as before. All other extractions in all four fixtures are correct. This is a hand-written stand-in: the headline
+demo claim is a real, unscripted catch from a live run. When one is recorded it replaces this file under `fixtures/golden/`.
+
+### Self-correction retries (`<task>__fix<n>.json`)
+
+`llm.call(stage, ..., task="<task>__fix1")` is how the agent answers a verifier rejection. Its mock fixture is
+`mock/<stage>/<task>__fix<n>.json` with `content` `{"fixes": [{"claim_id", "value", "row"?, "header"?, "turn"?, "transcript_quote"?}]}`.
+No fixture means no corrected answer is available: the claim stays unresolved.
+
+| File | Retry for |
+|---|---|
+| `mock/research/decide_V001__fix1.json` | Decide V001: HP-D01 cost 965.50 -> 956.50 |
 
 ### Images
 

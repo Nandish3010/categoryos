@@ -2,6 +2,7 @@
 
 import { Check, Copy, Loader2, Play, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { inrExact } from "@/lib/format";
 import type { ResearchData } from "@/lib/runs";
 import { Tag } from "../Chip";
 import { PanelHeader } from "../PanelHeader";
@@ -96,6 +97,22 @@ export function NarrativeCard({
               <li key={r.code}>
                 <span className="font-mono text-xs text-text-dim">{r.code}</span>{" "}
                 {r.verdict ? <span className="text-xs text-text-dim">({r.verdict})</span> : null} {r.why}
+              </li>
+            ))}
+          </ul>
+        ) : null}
+
+        {research.corrections.length ? (
+          <ul aria-label="Corrected by the agent" className="flex flex-col gap-2">
+            {research.corrections.map((c) => (
+              <li key={`${c.code}-${c.field}`} className="rounded-chip border border-ok/40 bg-ok/5 p-2">
+                <Tag tone="ok">Caught → corrected</Tag>{" "}
+                <span className="font-mono text-xs text-text-dim">{c.code}</span> {c.field}:{" "}
+                <s className="text-text-dim">{inrExact(c.original)}</s> → <span className="num font-medium">{inrExact(c.corrected)}</span>
+                <div className="text-xs text-text-dim">
+                  The verifier re-read the sheet and rejected the first answer; the agent was told and answered again
+                  {c.attempts > 2 ? ` (${c.attempts - 1} retries)` : ""}. The narrative uses the corrected value.
+                </div>
               </li>
             ))}
           </ul>

@@ -242,6 +242,20 @@ def verify_against_turns(claim: Claim, turns: list[dict]) -> Claim:
     return check_quote_claim(claim, str(turn.get("text", "")), f"turn {ev.row} of the call")
 
 
+def check_row_owner(claim: Claim, code: str | None, expected_row: int | None) -> Claim:
+    """A cell can exist and parse and still be the wrong SKU's: an extraction that cites another SKU's row is rejected.
+    ``code`` / ``expected_row`` are the SKU the claim is about and the sheet row it lives on (None: not in the sheet)."""
+    ev = claim.evidence
+    if claim.status != "verified" or ev is None:
+        return claim
+    if expected_row is None:
+        return claim.model_copy(update={"status": "rejected", "reason": f"{claim.sku_key} is not a SKU in this vendor's sheet"})
+    if ev.row != expected_row:
+        reason = f"row {ev.row} is not {code}'s row (it is row {expected_row})"
+        return claim.model_copy(update={"status": "rejected", "reason": reason})
+    return claim
+
+
 def _vision_kind(claim: Claim) -> str:
     if claim.metric.startswith("doc_date:"):
         return "date"
