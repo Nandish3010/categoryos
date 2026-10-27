@@ -11,7 +11,7 @@ import asyncio
 import re
 from typing import Any
 
-from app import llm, media, policy, prompts_exec
+from app import llm, media, policy, prompts_exec, selfcorrect
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
@@ -30,7 +30,7 @@ from app.schemas import (
     StageResult,
 )
 from app.taxonomy import catalog_subcategories, categories, segments_for
-from app.verify import file_sha256, verify_all
+from app.verify import VerifySummary, file_sha256, verify_all
 
 STAGE = "catalog"
 
@@ -209,6 +209,22 @@ def attribute_claims(vendor_id: str, sku: SkuMetrics, attributes: dict[str, Any]
     return claims
 
 
+def _attribute_key(metric: str, attributes: dict[str, Any]) -> str:
+    return "mrp" if metric == "mrp" else next(k for k in ("pack_g", "pack_ml", "pack_pc") if k in attributes)
+
+
+async def _verify_attributes(ctx: RunContext, vendor_id: str, claims: list[Claim], messages: list[dict[str, Any]], previous: str) -> VerifySummary:
+    """Verify the listing attributes; a rejected one goes back to the copywriter with the sheet value (self-correction).
+    Whatever stays rejected is replaced by the sheet value further down, as before."""
+    checked = verify_all(claims).claims
+    if previous:
+        checked = await selfcorrect.self_correct(
+            ctx, STAGE, checked, task=f"catalog_copy_{vendor_id}", messages=messages, previous=previous,
+            rebuild=lambda claim, fix: selfcorrect.revalue(claim, fix.value), check=lambda batch: verify_all(batch).claims,
+        )
+    return selfcorrect.summarize(checked)
+
+
 # ---------- (d) images ----------
 
 
@@ -330,10 +346,12 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
 
     rows = [{"sku_code": s.code, "row": s.raw} for s in skus]
     copies: dict[str, CatalogCopy] = {}
+    copy_msgs = prompts_exec.copy_messages(vendor_id, brand, rows, [s.category for s in skus])
+    copy_content = ""
     try:
         res = await llm.call(
             STAGE,
-            prompts_exec.copy_messages(vendor_id, brand, rows, [s.category for s in skus]),
+            copy_msgs,
             task=f"catalog_copy_{vendor_id}",
             schema=CatalogCopyFinal,
             max_tokens=4000,
@@ -349,6 +367,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
         if res.degraded:
             ctx.emit("degraded", STAGE, {"reason": "no recorded run for this vendor; served the mock fixture"})
         assert isinstance(res.parsed, CatalogCopyFinal)
+        copy_content = res.content
         copies = {i.sku_code: i for i in res.parsed.items}
     except (LlmBadOutput, LlmUnavailable) as exc:
         ctx.emit("degraded", STAGE, {"reason": f"catalog copy unusable ({exc.code}); wrote rule-based copy"})
@@ -375,7 +394,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
             return await _images(ctx, vendor_id, s, brand, title, s.code in heroes, live)
 
     images = await asyncio.gather(*(make_images(s, copy["title"]) for s, copy, _ in prepared))
-    summary = verify_all(all_claims)
+    summary = await _verify_attributes(ctx, vendor_id, all_claims, copy_msgs, copy_content)
     by_id = {c.id: c for c in summary.claims}
     for claim in summary.claims:
         ctx.emit("claim_checked", STAGE, {"claim": claim.model_dump(mode="json")})
@@ -386,8 +405,10 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
         corrections = []
         for claim in claims:
             checked = by_id[claim.id]
+            if checked.status == "verified" and len(checked.attempts) > 1:  # rejected, then corrected by the agent
+                copy["attributes"][_attribute_key(checked.metric, copy["attributes"])] = checked.value
             if checked.status == "rejected" and checked.recomputed is not None:
-                key = "mrp" if checked.metric == "mrp" else next(k for k in ("pack_g", "pack_ml", "pack_pc") if k in copy["attributes"])
+                key = _attribute_key(checked.metric, copy["attributes"])
                 corrections.append({"attribute": key, "claimed": claim.value, "sheet": checked.recomputed, "claim_id": claim.id})
                 copy["attributes"][key] = checked.recomputed
         cls = classes[s.code]

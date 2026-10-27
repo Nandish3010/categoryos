@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 from typing import Any
 
-from app import llm, media, policy, prompts_exec, tools
+from app import llm, media, policy, prompts_exec, selfcorrect, tools
 from app.agents import shortlist as sl
 from app.agents.context import RunContext
 from app.config import settings
@@ -19,6 +19,7 @@ from app.errors import CategoryOSError
 from app.parsing import PARSER_VERSION
 from app.schemas import (
     Claim,
+    ClaimFix,
     Evidence,
     LeverResponse,
     NegotiateFinal,
@@ -26,7 +27,7 @@ from app.schemas import (
     SourceRef,
     StageResult,
 )
-from app.verify import file_sha256, verify_all
+from app.verify import VerifySummary, file_sha256, verify_all
 
 STAGE = "negotiate"
 TERMS = ("margin_pct", "payment_days", "moq", "marketing_inr", "launch_discount_pct", "returns")
@@ -264,10 +265,11 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     canonical_text = " ".join(t["text"] for t in canonical)
     asr = await _asr(ctx, vendor_id, canonical_text)
     brand = load_application(vendor_id)["brand_name"]
+    msgs = prompts_exec.negotiate_messages(vendor_id, brand)
     res = await llm.run_tools(
         STAGE,
         f"negotiate_{vendor_id}",
-        prompts_exec.negotiate_messages(vendor_id, brand),
+        msgs,
         tools.select(tools.NEGOTIATE_TOOLS),
         max_steps=5,
         schema=NegotiateFinal,
@@ -286,7 +288,7 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     final = res.parsed
     assert isinstance(final, NegotiateFinal)
 
-    summary = verify_all(commitment_claims(vendor_id, final))
+    summary = await _verify_commitments(ctx, vendor_id, final, msgs, res.content)
     for claim in summary.claims:
         ctx.emit("claim_checked", STAGE, {"claim": claim.model_dump(mode="json")})
     commitments: dict[str, dict[str, Any]] = {}
@@ -318,3 +320,25 @@ async def run(ctx: RunContext, research: StageResult) -> StageResult:
     if rejected:
         text += f"; {rejected} commitment(s) failed verification and were not counted"
     return StageResult(stage=STAGE, status="done", summary=text, data=data, claims=summary.claims, metrics_hash=lever.metrics_hash)
+
+
+async def _verify_commitments(ctx: RunContext, vendor_id: str, final: NegotiateFinal, messages: list[dict[str, Any]], previous: str) -> VerifySummary:
+    """Verify the commitments; a rejected one goes back to the agent with what the transcript says (self-correction).
+    A corrected commitment is written back into ``final`` so the gap table uses the corrected number and quote."""
+    claims = verify_all(commitment_claims(vendor_id, final)).claims
+    slot = {c.id: i for i, c in enumerate(claims)}
+
+    def rebuild(claim: Claim, fix: ClaimFix) -> Claim | None:
+        c = final.commitments[slot[claim.id]]
+        c.offered = fix.value
+        if fix.turn is not None:
+            c.turn = fix.turn
+        if fix.transcript_quote:
+            c.transcript_quote = fix.transcript_quote
+        return commitment_claims(vendor_id, final)[slot[claim.id]].model_copy(update={"id": claim.id})
+
+    fixed = await selfcorrect.self_correct(
+        ctx, STAGE, claims, task=f"negotiate_{vendor_id}", messages=messages, previous=previous, rebuild=rebuild,
+        check=lambda batch: verify_all(batch).claims,
+    )
+    return selfcorrect.summarize(fixed)
