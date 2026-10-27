@@ -239,7 +239,7 @@ async def generate_image(prompt: str, *, size: str = "1024x1024") -> tuple[bytes
 _BOX = re.compile(r"x1=(?P<x1>-?[\d.]+)\D+?y1=(?P<y1>-?[\d.]+)\D+?x2=(?P<x2>-?[\d.]+)\D+?y2=(?P<y2>-?[\d.]+)")
 # Live-verified (2026-10-27): the token is `<|mask;x=0;y=0;data=H,W,<enc><payload>|>`; the payload alphabet never holds | < > so the
 # closing `|>` ends it (non-greedy, so the delimiter is never swallowed into the payload). H is the mask height, W its width; they differ slightly from the image's own size.
-_MASK = re.compile(r"data=(?P<h>\d+),(?P<w>\d+),(?P<enc>[~!])(?P<payload>\S+?)(?:\|>|\s|$)")
+_MASK = re.compile(r"(?:x=(?P<x>\d+);y=(?P<y>\d+);)?data=(?P<h>\d+),(?P<w>\d+),(?P<enc>[~!])(?P<payload>\S+?)(?:\|>|\s|$)")
 
 
 @dataclass
@@ -249,6 +249,16 @@ class SamRecord:
     mask_w: int
     enc: str
     payload: str
+    mask_x: int = 0  # the mask's offset inside the box (live: x=0;y=0)
+    mask_y: int = 0
+
+    def origin(self) -> tuple[int, int]:
+        """Top-left pixel of the mask raster in the sent image. Live-verified (2026-10-27): the raster covers the box only
+        (a 760x1100 label, box 18,261..737,1006 inclusive, came back as a 720x746 mask), so it starts at the box corner plus
+        the token's x/y; with no box it is taken to cover the whole image."""
+        if self.box is None:
+            return self.mask_x, self.mask_y
+        return round(self.box[0]) + self.mask_x, round(self.box[1]) + self.mask_y
 
 
 def parse_sam_text(text: str) -> list[SamRecord]:
@@ -262,7 +272,7 @@ def parse_sam_text(text: str) -> list[SamRecord]:
             pass
         if b is not None:
             box = (float(b["x1"]), float(b["y1"]), float(b["x2"]), float(b["y2"]))
-        records.append(SamRecord(box, int(m["h"]), int(m["w"]), m["enc"], m["payload"]))
+        records.append(SamRecord(box, int(m["h"]), int(m["w"]), m["enc"], m["payload"], int(m["x"] or 0), int(m["y"] or 0)))
         cursor = m.end()
     return records
 
@@ -356,7 +366,12 @@ def cutout_png(source_png: bytes, record: SamRecord) -> bytes:
     if not (SAM_MIN_COVERAGE <= coverage <= SAM_MAX_COVERAGE):
         raise SegmentationUnusable(cause=f"mask covers {coverage:.1%} of the image")
     img = Image.open(io.BytesIO(source_png)).convert("RGBA")
-    mask = mask.resize(img.size, Image.NEAREST)
+    if record.box is None and mask.size != img.size:
+        mask = mask.resize(img.size, Image.NEAREST)  # legacy full-frame masks
+    else:
+        full = Image.new("L", img.size)
+        full.paste(mask, record.origin())
+        mask = full
     img.putalpha(mask)
     bbox = mask.getbbox()
     if bbox:
@@ -425,7 +440,12 @@ def region_from_record(record: SamRecord, width: int, height: int) -> list[float
         extent = mask.getbbox()
         coverage = sum(bits) / max(len(bits), 1)
         if extent and SAM_MIN_COVERAGE <= coverage <= SAM_MAX_COVERAGE:
-            return [round(extent[0] / record.mask_w, 4), round(extent[1] / record.mask_h, 4), round(extent[2] / record.mask_w, 4), round(extent[3] / record.mask_h, 4)]
+            if record.box is None:
+                return [round(extent[0] / record.mask_w, 4), round(extent[1] / record.mask_h, 4), round(extent[2] / record.mask_w, 4), round(extent[3] / record.mask_h, 4)]
+            ox, oy = record.origin()
+            px = (ox + extent[0], oy + extent[1], ox + extent[2], oy + extent[3])
+            if region := _normalise_box((px[0], px[1], px[2], px[3]), width, height):
+                return region
     except SegmentationUnusable:
         pass
     if record.box is not None and (region := _normalise_box(record.box, width, height)):
