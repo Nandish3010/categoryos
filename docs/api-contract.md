@@ -55,7 +55,25 @@ approving it makes it `done`. If Screen fails, `intake` is `failed` and every la
 ```
 
 `claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine` or
-`model_extraction`; `status` is `verified|rejected|unverifiable`).
+`model_extraction`; `status` is `verified|rejected|unverifiable`). A `model_extraction` claim the verifier rejected and
+the agent was asked to re-read also carries `attempts: [{attempt, value, status, reason?, recomputed?}]`, oldest first
+(`attempt` 0 is the agent's first answer). `status` is the last attempt's: `verified` with more than one attempt is
+"caught, then corrected"; `rejected` with more than one is "unresolved" after `verifier.max_self_corrections` retries.
+Claims that were never rejected have `attempts: []`.
+
+### Self-correction
+
+When the verifier rejects a `model_extraction` claim (Decide: a cost or MRP read off the sheet; Negotiate: a commitment;
+Catalog: an MRP or pack quantity), the agent gets one feedback message per rejected claim, for example
+`Claim V001:HP-D01:cost:extracted rejected: you said ₹965.50; the evidence cites sheet row 2 'Cost to Us'. Verifier: sheet
+cell 'Rs. 956.50' parses to 956.5, claim says 965.5. Re-read and correct.`, and may answer again
+(`{"fixes": [{claim_id, value, row?, header?, turn?, transcript_quote?}]}`) up to the playbook's
+`verifier.max_self_corrections` (default 2; 0 turns it off). A corrected answer is verified exactly like the first. A
+corrected Decide extraction is written back into the narrative (the sentences that quoted the wrong number now quote the
+corrected one); a claim still wrong after the last retry stays `rejected`, its sentence is struck as before (Decide), the
+commitment drops out of the gap table (Negotiate) or the sheet value replaces it (Catalog). Decide's `data` gains
+`self_correction: {max, corrected: [claim_id], unresolved: [claim_id]}`, and an `extractions[]` item that was corrected
+carries `original_value` and `attempts`.
 
 `intake` `data`: `{decision: "pass"|"fail", reasons[], risk_flags: [{type, quote, severity}], injection_detected,
 followup_questions[], documents: {documents[], problems[], blocking}, guards[], mode}`. When it fails,
@@ -166,7 +184,7 @@ The timeline is simulated, with dates derived from the run's `demo_today` and on
   "seq": 7,
   "run_id": "run_ab12cd34ef",
   "t_rel_ms": 412.5,
-  "type": "stage_started|tool_call|model_call|claim_checked|stage_result|degraded|error|done",
+  "type": "stage_started|tool_call|model_call|claim_checked|claim_rejected|self_correction|claim_verified|claim_unresolved|stage_result|degraded|error|done",
   "stage": "intake|...|null",
   "model": "muse-spark-1.3|null",
   "latency_ms": 12.3,
@@ -184,6 +202,10 @@ started. Payloads:
 | `tool_call` | `{tool, args, result_summary, deterministic?}` (`deterministic: true` for engine/document steps that are not model-chosen) |
 | `model_call` | `{task, mode: "mock"|"replay"|"live", input_tokens, output_tokens, tool_steps}`; `model`, `latency_ms`, `cost_usd` set on the event |
 | `claim_checked` | `{claim: Claim}` with its final `status` and `reason` |
+| `claim_rejected` | `{claim, attempt}`: the verifier rejected the agent's answer (`attempt` 0 is its first answer, later ones are retries) |
+| `self_correction` | `{attempt, of, claim_ids[], feedback[], answered, note?}`: the agent was told what the source says; `answered: false` means no corrected answer was available |
+| `claim_verified` | `{claim, attempt}`: the corrected answer passed |
+| `claim_unresolved` | `{claim, attempts}`: still rejected after the last retry |
 | `stage_result` | a full `StageResult` |
 | `degraded` | `{reason}` (replay fell back to a mock fixture) |
 | `error` | `{code, problem, cause, fix, run_id}` |
@@ -202,9 +224,40 @@ Starts Screen, then Decide if Screen passed, as a background task. Demo key when
 ### `GET /api/runs/{run_id}`
 ```json
 {"run_id": "...", "vendor_id": "V001", "mode": "mock", "created_at": "2026-10-27T10:00:00.000+00:00",
- "stages": {"intake": StageResult, "research": StageResult, "...": "all 8 ids always present"}}
+ "stages": {"intake": StageResult, "research": StageResult, "...": "all 8 ids always present"},
+ "impact": RunImpact}
 ```
 Untouched stages are `{"status": "pending"}` StageResults. `404 run_not_found`.
+
+`impact` is the impact meter's block for this run. Human time is recorded, not assumed: the clock starts the first time a
+stage reaches `review` and stops at its first approval (re-plans do not restart it), and each gap is counted up to
+`impact.max_review_minutes`. The three review steps cover the work behind them: `research` (screening, market research,
+shortlist), `catalog` (negotiation prep and follow-up, catalog listings, image briefs) and `po` (marketing brief, JBP,
+PO raise and follow-up).
+```json
+{"run_id", "vendor_id", "mode", "baseline_status": "placeholder|measured", "n_skus", "tasks": [{"task", "label", "gate",
+  "minutes", "per_sku", "count", "total_minutes"}],
+ "gates": [{"stage": "research|catalog|po", "label", "status": "measured|pending", "baseline_minutes", "review_seconds"|null,
+   "counted_minutes"|null, "capped", "overrides", "replans", "edits"}],
+ "baseline_minutes", "baseline_measured_minutes", "human_minutes", "reduction_pct"|null, "measured_gates", "total_gates",
+ "complete", "basis": "measured|baseline_estimate", "edits", "overrides", "replans", "max_review_minutes"}
+```
+`reduction_pct` compares the human minutes with the baseline of the *reviewed* steps only (`null` before any approval);
+`edits` are verdict overrides plus re-plans. `baseline_status` mirrors the playbook: the shipped baselines are placeholders.
+
+### `GET /api/impact`
+The team rollup over every vendor's latest run, from the playbook's `impact.team` settings:
+```json
+{"basis": "measured|baseline_estimate", "measured_runs", "partly_measured_runs", "baseline_status", "human_share_pct",
+ "baseline_hours_per_vendor", "human_hours_per_vendor", "vendors_per_month", "demand_hours_per_month",
+ "hours_saved_per_month", "workload_hours_per_month", "task_capacity_hours_per_month", "pct_of_workload",
+ "pct_of_task_time", "demand_vs_capacity_pct", "target_pct", "meets_target", "formula", "team": {...}, "mode",
+ "vendors": [{"vendor_id", "run_id", "baseline_minutes", "human_minutes", "measured_gates", "complete", "reduction_pct"}]}
+```
+`hours saved per month = vendors per month x baseline hours per vendor x (1 - human share)` and
+`pct_of_workload = hours saved / (category managers x hours per week x weeks per month)`. The human share is measured
+(recorded review time over the fully reviewed runs, `measured_runs` of them) when there is at least one such run, else the
+playbook's `impact.assumed_review_share_pct` and `basis` is `baseline_estimate`.
 
 ### `GET /api/runs/{run_id}/events` -> `text/event-stream`
 ```

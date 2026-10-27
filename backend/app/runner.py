@@ -17,7 +17,6 @@ from app.agents.context import RunContext, Sequencer
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor
-from app.metrics import apply_levers, build_base
 from app.errors import (
     CategoryOSError,
     NarrativeUnavailable,
@@ -28,6 +27,7 @@ from app.errors import (
     UnknownSku,
     UnknownStage,
 )
+from app.metrics import apply_levers, build_base
 from app.schemas import StageResult, TraceEvent
 
 log = logging.getLogger("categoryos.runner")

@@ -36,10 +36,11 @@ CategoryOS takes a vendor from application to a launch-ready order in four phase
 | Execute | 5 Catalog |
 | Launch | 6 Marketing, 7 JBP, 8 PO (shown as one "Launch packet" screen) |
 
-Two features carry the product:
+These features carry the product:
 
 - **Live what-if lever.** Drag target margin and MOQ and the shortlist re-scores instantly, showing capital at risk, days of cover and GMV. The numbers come from deterministic Python over the data, not from a model.
-- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell; mismatches are caught and removed before they reach the page.
+- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell. When the agent read a number wrong, it is told what the source says and tries again (up to `verifier.max_self_corrections`, default 2); the UI shows "Caught → corrected" with the attempts. A claim that never gets right is removed before it reaches the page.
+- **The impact meter.** The app records how long a person actually spends reviewing each stage (from "ready for review" to approve) and counts their edits, then compares that with the playbook's by-hand baselines (`impact`, placeholders until you replace them). The vendor workspace has a per-vendor drawer; the vendors board has a team projection that says whether it is measured or a baseline estimate.
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
@@ -182,7 +183,8 @@ All code and data in this repository were created from October 26, 2026 onward, 
 backend/    FastAPI app, agents, metrics, verifier, fixtures, tests
 frontend/   Next.js app (vendors board, vendor workspace)
 data/       Synthetic data and generate.py (see data/README.md)
-scripts/    deploy.md and smoke_deployed.sh
+eval/       Measured eval (verifier, agent, injection) and its results
+scripts/    deploy.md, smoke_deployed.sh and measure.py (make eval)
 Makefile    setup, demo, test, lint, record, smoke, data and other targets
 ```
 
