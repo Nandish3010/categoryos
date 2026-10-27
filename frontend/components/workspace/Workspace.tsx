@@ -451,7 +451,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
 
             {view === "decide" ? <DecideTabs stage={stage} onSelect={selectStage} /> : null}
 
-            {view === "decide" && stage === "negotiate" ? <NegotiateView stage={run?.stages.negotiate} /> : null}
+            {view === "decide" && stage === "negotiate" ? <NegotiateView stage={run?.stages.negotiate} vendorId={vendorId} /> : null}
 
             {view === "decide" && stage !== "negotiate" ? (
               <>

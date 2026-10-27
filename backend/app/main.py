@@ -1,13 +1,14 @@
 import asyncio
+import json
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import Any
+from typing import Annotated, Any
 
-from fastapi import Depends, FastAPI, Header, Query, Request
+from fastapi import Depends, FastAPI, File, Form, Header, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 
-from app import ledger, media, persist, policy, replay, runner, store
+from app import copilot, ledger, media, persist, policy, replay, runner, store
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
@@ -17,13 +18,16 @@ from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
 from app.schemas import (
     ApproveBody,
+    EndCallBody,
     LeverResponse,
     OverrideBody,
     PolicyResetBody,
     RejectBody,
     ReplanBody,
     StageResult,
+    StartCallBody,
     TraceEvent,
+    TurnBody,
 )
 from app.verify import VerifySummary, engine_claims, inject_fault, verify_all
 
@@ -326,6 +330,104 @@ async def replan(vendor_id: str, body: ReplanBody) -> StageResult:
 @app.post("/api/vendors/{vendor_id}/reject")
 async def reject_vendor(vendor_id: str, body: RejectBody) -> dict[str, Any]:
     return await runner.reject(body.run_id, vendor_id, body.reason)
+
+
+# ---------- live negotiation copilot ----------
+
+
+@app.post("/api/vendors/{vendor_id}/call", status_code=202, dependencies=[Depends(require_demo_key_if_live)])
+async def start_call(vendor_id: str, body: StartCallBody, request: Request, x_demo_key: str | None = Header(default=None)) -> dict[str, Any]:
+    """Start a call. `simulate` plays the recorded call through the pipeline (free in mock/replay); `live` listens to the
+    microphone chunks and always needs the demo key (and live mode)."""
+    check_vendor(vendor_id)
+    if body.mode == "live":
+        await require_demo_key(request, x_demo_key)
+    session = copilot.start(vendor_id, body.mode, body.speed)
+    return {"call_id": session.call_id, "mode": session.mode}
+
+
+@app.post("/api/vendors/{vendor_id}/call/chunks", dependencies=[Depends(require_demo_key_if_live)])
+async def call_chunk(
+    vendor_id: str,
+    call_id: Annotated[str, Form()],
+    audio: Annotated[UploadFile, File()],
+    speaker: Annotated[str, Form()] = "auto",
+) -> dict[str, Any]:
+    """One push-to-talk clip (16 kHz mono WAV, about six seconds) -> transcription -> a new turn -> incremental extraction."""
+    check_vendor(vendor_id)
+    session = copilot.get(call_id, vendor_id)
+    data = await audio.read(settings.call_chunk_max_bytes + 1)
+    turn = await copilot.ingest_chunk(session, data, speaker)
+    return {"turn": turn, "state": session.state}
+
+
+@app.post("/api/vendors/{vendor_id}/call/turns", dependencies=[Depends(require_demo_key_if_live)])
+async def call_turn(vendor_id: str, body: TurnBody) -> dict[str, Any]:
+    """A typed line (the fallback when there is no microphone), through the same pipeline."""
+    check_vendor(vendor_id)
+    session = copilot.get(body.call_id, vendor_id)
+    turn = await copilot.ingest_text(session, body.speaker, body.text)
+    return {"turn": turn, "state": session.state}
+
+
+@app.post("/api/vendors/{vendor_id}/call/end")
+async def end_call(vendor_id: str, body: EndCallBody) -> dict[str, Any]:
+    check_vendor(vendor_id)
+    session = copilot.get(body.call_id, vendor_id)
+    await copilot.end(session)
+    return copilot.snapshot(session)
+
+
+@app.get("/api/vendors/{vendor_id}/call/{call_id}")
+async def get_call(vendor_id: str, call_id: str) -> dict[str, Any]:
+    check_vendor(vendor_id)
+    return copilot.snapshot(copilot.get(call_id, vendor_id))
+
+
+def _call_sse(event: dict[str, Any]) -> str:
+    return f"id: {event['seq']}\nevent: call\ndata: {json.dumps(event)}\n\n"
+
+
+async def _call_stream(session: copilot.CallSession, last_id: int) -> AsyncIterator[str]:
+    queue: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
+    session.subscribers.append(queue)  # subscribe first so nothing falls between the replay and the live events
+    try:
+        seen = last_id
+        for event in list(session.events):
+            if event["seq"] > seen:
+                seen = event["seq"]
+                yield _call_sse(event)
+                if event["type"] == "ended":
+                    return
+        while True:
+            try:
+                event = await asyncio.wait_for(queue.get(), timeout=settings.sse_heartbeat_s)
+            except TimeoutError:
+                yield ": ping\n\n"
+                continue
+            if event["seq"] <= seen:
+                continue
+            seen = event["seq"]
+            yield _call_sse(event)
+            if event["type"] == "ended":
+                return
+    finally:
+        session.subscribers.remove(queue)
+
+
+@app.get("/api/vendors/{vendor_id}/call/{call_id}/events")
+async def call_events(vendor_id: str, call_id: str, last_event_id: str | None = Header(default=None)) -> StreamingResponse:
+    check_vendor(vendor_id)
+    session = copilot.get(call_id, vendor_id)
+    try:
+        last_id = max(int(last_event_id), 0) if last_event_id else 0
+    except ValueError:
+        last_id = 0
+    return StreamingResponse(
+        _call_stream(session, last_id),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no", "Connection": "keep-alive"},
+    )
 
 
 @app.post("/api/admin/reset", dependencies=[Depends(require_demo_key)])

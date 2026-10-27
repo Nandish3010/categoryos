@@ -46,6 +46,8 @@ These features carry the product:
 
 - **Document vision.** Vendor documents arrive as scans and photos. muse-spark-1.3 reads the licence certificates, label photos and price-list PDF with bounding boxes; SAM 3.1 segments a label's nutrition and claims panel and the crop is read a second time; the verifier binds every reading to the page pixels and to that second read (new claim origin `vision_extraction`, evidence `{doc, page, bbox, crop_sha256}`); cross-document checks compare certificate vs application, label vs SKU sheet vs listing copy, and price list vs sheet. Screen treats the scanned certificate as ground truth over the declared status. Which documents, fields, pairs and tolerances: the playbook `documents` section. The synthetic scans (all marked SAMPLE) come from `data/generate_docs.py` (`make data-docs`).
 
+- **Live negotiation copilot.** In Negotiate, "Live call" transcribes the call as it happens (push-to-talk buttons for who is speaking), reads what the vendor commits to, updates the gap table row by row, prices any conditional offer the moment it is said ("Don't accept: <0.1% chance") and suggests the buyer's next line with the reason. "Simulate call" streams the recorded call through the same pipeline from fixtures, so the public demo shows it at no cost; a microphone call needs live mode and the demo key and has a per-call spend budget (`CALL_BUDGET_USD`).
+
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
 ## Measured eval
@@ -137,6 +139,7 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `MODEL_MODE` | `mock`, `live` or `replay` |
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
+| `CALL_BUDGET_USD` | Most one live copilot call may spend on transcription and extraction (default 2.00) |
 
 ## Configure the playbook
 

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "commitments": [],
+    "refusals": [
+      {
+        "term": "margin_pct",
+        "turn": 6,
+        "transcript_quote": "No, 21 is my floor on the treats.",
+        "note": "Would not go to 24 percent on treats; litter margin to be revisited once there are sales."
+      }
+    ],
+    "deal_terms": []
+  }
+}

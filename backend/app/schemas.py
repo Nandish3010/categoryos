@@ -465,3 +465,21 @@ class RereadItem(BaseModel):
 
 class VisionReread(BaseModel):
     reads: list[RereadItem] = Field(default_factory=list)
+
+
+# ---------- live copilot request bodies ----------
+
+
+class StartCallBody(BaseModel):
+    mode: Literal["simulate", "live"] = "simulate"
+    speed: float = Field(default=1.0, ge=0.25, le=20)
+
+
+class TurnBody(BaseModel):
+    call_id: str
+    speaker: Literal["buyer", "vendor", "auto"] = "auto"
+    text: str = Field(min_length=1, max_length=2000)
+
+
+class EndCallBody(BaseModel):
+    call_id: str
