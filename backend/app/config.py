@@ -45,6 +45,10 @@ class Settings(BaseSettings):
     config_dir: Path = REPO_DIR / "config"  # playbook defaults (policy.yaml)
     policy_local_path: Path | None = None  # playbook overrides; default config_dir/policy.local.yaml
 
+    call_budget_usd: float = 2.0  # live copilot: most one call may spend on transcription and extraction (ops: env, not playbook)
+    call_chunk_max_bytes: int = 2_000_000  # largest audio chunk accepted (a 6 s 16 kHz mono WAV is about 190 KB)
+    copilot_sim_speed: float = 1.0  # pacing of "Simulate call" (1 = realistic speaking speed); tests set a huge number
+
     backend_port: int = 8001
     frontend_origin: str | None = None
 

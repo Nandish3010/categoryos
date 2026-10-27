@@ -192,6 +192,23 @@ def _quote_text(rel_file: str, row: int) -> tuple[str, str] | str:
     return match.group(1), str(extra[row - 1])
 
 
+def check_quote_claim(claim: Claim, text: str, where: str) -> Claim:
+    """The quote must appear verbatim in ``text`` (a transcript turn or application term), and the claimed number must be
+    one of the numbers stated in the quote. ``where`` names the source in the rejection reason."""
+    ev = claim.evidence
+    assert ev is not None and ev.raw_value
+    quote = _squash(ev.raw_value)
+    if quote not in _squash(text):
+        return _finish(claim, "rejected", f"the quote does not appear verbatim in {where}")
+    stated = numbers_in(quote)
+    value = claim.value * 100 if claim.unit == "pct" else claim.value
+    tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
+    if not any(abs(n - value) <= max(tol, 1e-9) for n in stated):
+        shown = ", ".join(f"{n:g}" for n in stated) or "none"
+        return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
+    return _finish(claim, "verified", None, claim.value)
+
+
 def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
     """A negotiation commitment (or a number of a conditional offer): the quote must appear verbatim in the canonical
     transcript turn (or application term) it claims, and the claimed number must be one of the numbers stated in the quote."""
@@ -203,18 +220,22 @@ def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
     found = _quote_text(rel_file, ev.row)
     if isinstance(found, str):
         return _finish(claim, "rejected", found)
-    quote = _squash(ev.raw_value)
-    if quote not in _squash(found[1]):
-        where = "turn" if _TRANSCRIPT.match(rel_file) else "term"
-        source = "canonical transcript" if _TRANSCRIPT.match(rel_file) else "application"
-        return _finish(claim, "rejected", f"the quote does not appear verbatim in {where} {ev.row} of the {source}")
-    stated = numbers_in(quote)
-    value = claim.value * 100 if claim.unit == "pct" else claim.value
-    tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
-    if not any(abs(n - value) <= max(tol, 1e-9) for n in stated):
-        shown = ", ".join(f"{n:g}" for n in stated) or "none"
-        return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
-    return _finish(claim, "verified", None, claim.value)
+    is_call = bool(_TRANSCRIPT.match(rel_file))
+    return check_quote_claim(claim, found[1], f"{'turn' if is_call else 'term'} {ev.row} of the {'canonical transcript' if is_call else 'application'}")
+
+
+def verify_against_turns(claim: Claim, turns: list[dict]) -> Claim:
+    """Live call: check a transcript quote against the call's own turns so far (the file only exists after the call).
+    Anything that is not a transcript quote goes through the normal verifier."""
+    ev = claim.evidence
+    if claim.origin != "model_extraction" or not _TRANSCRIPT.match(_normalize(claim.source_ref.file)):
+        return verify_claim(claim)
+    if ev is None or ev.row is None or not ev.raw_value:
+        return _finish(claim, "rejected", "no evidence: a transcript turn and a verbatim quote are required")
+    turn = next((t for t in turns if t.get("turn") == ev.row), None)
+    if turn is None:
+        return _finish(claim, "rejected", f"the call has no turn {ev.row} yet")
+    return check_quote_claim(claim, str(turn.get("text", "")), f"turn {ev.row} of the call")
 
 
 def verify_claim(claim: Claim) -> Claim:
