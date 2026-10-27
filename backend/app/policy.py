@@ -29,6 +29,7 @@ from pydantic import (
     model_validator,
 )
 
+from app import scope
 from app.config import settings
 from app.errors import PolicyInvalid
 
@@ -649,12 +650,45 @@ def load() -> Loaded:
     return loaded
 
 
+STARTERS = ("pet", "beauty", "electronics")
+_starter_cache: dict[str, tuple[int, Loaded]] = {}
+
+
+def starter_path(name: str) -> Path:
+    return config_dir() / "examples" / f"{name}.yaml"
+
+
+def starter(name: str) -> Loaded:
+    """A starter playbook for a sandbox vendor. "pet" is the effective playbook (config/policy.yaml plus the local
+    overrides); beauty and electronics are the complete example playbooks in config/examples, used as shipped."""
+    if name == "pet" or name not in STARTERS:
+        return load()
+    path = starter_path(name)
+    stamp = _stamp(path)
+    hit = _starter_cache.get(f"{path}")
+    if hit is not None and hit[0] == stamp:
+        return hit[1]
+    raw = _read_yaml(path)
+    if not raw:
+        raise PolicyInvalid(f"starter playbook {name!r} is missing", cause=f"Looked for {path}", fix="Restore config/examples from git", code="policy_missing")
+    policy = _validate(raw)
+    loaded = Loaded(policy, policy, {}, _digest(policy))
+    _starter_cache[f"{path}"] = (stamp, loaded)
+    return loaded
+
+
+def _active() -> Loaded:
+    """The playbook in force: a sandbox vendor's starter while its scope is active, else the global one."""
+    sc = scope.current()
+    return starter(sc.starter) if sc is not None else load()
+
+
 def get() -> Policy:
-    return load().policy
+    return _active().policy
 
 
 def policy_hash() -> str:
-    return load().hash
+    return _active().hash
 
 
 def _invalidate() -> None:

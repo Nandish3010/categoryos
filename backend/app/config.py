@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from typing import Literal
 
@@ -44,6 +45,22 @@ class Settings(BaseSettings):
     fixtures_dir: Path = BACKEND_DIR / "fixtures"
     config_dir: Path = REPO_DIR / "config"  # playbook defaults (policy.yaml)
     policy_local_path: Path | None = None  # playbook overrides; default config_dir/policy.local.yaml
+
+    # Bring-your-own-vendor sandbox (ops limits; the business rules stay in the playbook)
+    state_dir: Path = Path(tempfile.gettempdir()) / "categoryos-state"  # writable; a Volume path on Modal; never the repo
+    samples_dir: Path = REPO_DIR / "data" / "samples"
+    upload_ttl_hours: float = 24
+    upload_max_sheet_bytes: int = 2 * 1024 * 1024
+    upload_max_rows: int = 200
+    upload_max_columns: int = 30
+    upload_max_cell_chars: int = 2000
+    upload_max_docs: int = 5
+    upload_max_doc_bytes: int = 5 * 1024 * 1024
+    upload_max_application_bytes: int = 64 * 1024
+    upload_rate_per_hour: int = 12  # uploads per IP per hour
+    upload_max_active: int = 300  # sandbox vendors alive at once, so a flood cannot fill the disk
+    upload_live_budget_usd_per_ip: float = 0.50  # model spend one IP may cause on sandbox vendors without the demo key
+    upload_cleanup_interval_min: float = 30
 
     backend_port: int = 8001
     frontend_origin: str | None = None

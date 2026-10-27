@@ -5,6 +5,7 @@ from functools import cache
 from pathlib import Path
 from typing import Any
 
+from app import registry, scope
 from app.config import settings
 from app.constants import ALLOWED_VENDORS
 from app.errors import UnknownVendor
@@ -52,13 +53,28 @@ class Keyword:
 
 
 def check_vendor(vendor_id: str) -> str:
-    if vendor_id not in ALLOWED_VENDORS:
+    """The built-in vendors, or a live (not expired) sandbox vendor created at /try."""
+    if vendor_id not in ALLOWED_VENDORS and not registry.exists(vendor_id):
         raise UnknownVendor(vendor_id)
     return vendor_id
 
 
 def _root() -> str:
+    """Where market data (benchmarks, catalog, listings, keywords, reviews) is read from: the active sandbox vendor's own
+    stubs when it has them, else the shared synthetic data."""
+    sc = scope.current()
+    if sc is not None and sc.market_dir:
+        return str(Path(sc.market_dir))
     return str(Path(settings.data_dir))
+
+
+def _vendor_root() -> str:
+    return str(Path(settings.data_dir) / "vendors")
+
+
+def _vendor_dir(vendor_id: str) -> Path:
+    """The folder of a vendor's own files: data/synthetic/vendors/<id> or the sandbox folder."""
+    return registry.vendor_dir(vendor_id) if vendor_id not in ALLOWED_VENDORS else Path(_vendor_root()) / vendor_id  # type: ignore[return-value]
 
 
 def _num(value: str | None) -> float | None:
@@ -90,18 +106,18 @@ def _json(path: str) -> Any:
 
 def load_sheet(vendor_id: str) -> tuple[list[str], tuple[SheetRow, ...]]:
     check_vendor(vendor_id)
-    return _csv_rows(f"{_root()}/vendors/{vendor_id}/sku_sheet.csv")
+    return _csv_rows(str(_vendor_dir(vendor_id) / "sku_sheet.csv"))
 
 
 def load_application(vendor_id: str) -> dict[str, Any]:
     check_vendor(vendor_id)
-    return _json(f"{_root()}/vendors/{vendor_id}/application.json")
+    return _json(str(_vendor_dir(vendor_id) / "application.json"))
 
 
 def load_transcript(vendor_id: str) -> list[dict[str, Any]] | None:
     """Canonical call transcript (speaker turns) for vendors that have one, else None."""
     check_vendor(vendor_id)
-    path = Path(_root()) / "vendors" / vendor_id / "call_transcript.json"
+    path = _vendor_dir(vendor_id) / "call_transcript.json"
     return _json(str(path)) if path.exists() else None
 
 
@@ -188,7 +204,7 @@ def load_keywords() -> tuple[Keyword, ...]:
 
 
 def _docs_dir(vendor_id: str) -> Path:
-    return Path(_root()) / "vendors" / vendor_id / "docs"
+    return _vendor_dir(vendor_id) / "docs"
 
 
 def load_doc_manifest(vendor_id: str) -> list[dict[str, Any]]:
@@ -215,8 +231,12 @@ def doc_files(vendor_id: str) -> set[str]:
 
 def doc_path(vendor_id: str, name: str) -> Path | None:
     """Path-safe lookup: a plain file name that the vendor's manifest lists, inside the vendor's docs folder."""
-    if vendor_id not in ALLOWED_VENDORS or name != Path(name).name or name not in doc_files(vendor_id):
+    if name != Path(name).name or not _known_vendor(vendor_id) or name not in doc_files(vendor_id):
         return None
     folder = _docs_dir(vendor_id).resolve()
     path = (folder / name).resolve()
     return path if path.parent == folder and path.is_file() else None
+
+
+def _known_vendor(vendor_id: str) -> bool:
+    return vendor_id in ALLOWED_VENDORS or registry.exists(vendor_id)

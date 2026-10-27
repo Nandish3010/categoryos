@@ -93,6 +93,7 @@ class BaseSku(BaseModel):
     nearest_sku_id: str | None = None
     review_score: float | None = None
     avg_monthly_units: float
+    market_data: bool = True  # False: the category has no benchmark / the vendor has no demand rows, so the SKU is needs_data
     est_monthly_units: float
     category_target_pct: float
     category_min_pct: float
