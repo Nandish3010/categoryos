@@ -1027,6 +1027,76 @@ class PriceWatch(M):
     ask_price_protection: bool = F(True, "Ask the vendor for price protection", "When matching would break the margin floor, ask the vendor to fund the gap instead.", used_in=_WATCH)
 
 
+# ---------- inventory health (Run) ----------
+
+_INV = ["ops_inventory_health"]
+
+
+class InvForecast(M):
+    window_days: int = F(28, "Demand window", "Days of recent sales that set the daily demand forecast.", unit="days", min=7, max=120, step=1, used_in=_INV)
+    min_daily_units: float = F(0.05, "Smallest rate that counts as selling", "A SKU selling less than this many units a day has no cover figure (it is treated as not moving).", unit="units/day", min=0, max=1000, step=0.01, used_in=_INV)
+
+
+class InvCoverBand(M):
+    min_days: float = F(14, "Lowest healthy cover", "Days of cover on hand under this is below the band.", unit="days", min=0, max=365, step=1)
+    target_days: float = F(30, "Target cover", "Days of cover a reorder or a clearance brings the SKU to.", unit="days", min=1, max=365, step=1)
+    max_days: float = F(60, "Highest healthy cover", "Days of cover on hand over this is excess stock.", unit="days", min=1, max=730, step=1)
+
+    @model_validator(mode="after")
+    def _order(self) -> "InvCoverBand":
+        if not self.min_days <= self.target_days <= self.max_days:
+            raise ValueError("cover band needs min_days <= target_days <= max_days")
+        return self
+
+
+class InvCover(InvCoverBand):
+    by_category: dict[str, InvCoverBand] = F({}, label="Cover band by category", help="Category -> its own band, where one pace does not fit (fast movers, long-shelf-life or bulky goods).", used_in=_INV)
+
+
+class InvStockOut(M):
+    safety_days: float = F(5, "Safety days", "Extra cover on top of lead time and the review cycle before a reorder is due.", unit="days", min=0, max=90, step=0.5, used_in=_INV)
+    review_days: float = F(7, "Review cycle", "How often the category is reviewed: an order placed at the next review lands this much later.", unit="days", min=0, max=60, step=1, used_in=_INV)
+    overdue_assumed_days: float = F(7, "Overdue PO lands in", "A PO line past its promised date is assumed to land this many days from today, not today.", unit="days", min=0, max=90, step=1, used_in=_INV)
+    critical_days: float = F(3, "Critical when stock ends within", "A stock-out forecast to start within this many days is critical.", unit="days", min=0, max=60, step=0.5, used_in=_INV)
+
+
+class InvAgeing(M):
+    aged_days: int = F(90, "Aged after", "A batch received more than this many days ago is aged stock.", unit="days", min=7, max=1000, step=5, used_in=_INV)
+    dead_no_sale_days: int = F(45, "Dead after no sale for", "A SKU with stock but no sale for this many days is dead stock.", unit="days", min=7, max=1000, step=5, used_in=_INV)
+
+
+class InvMoq(M):
+    overbuy_ratio: float = F(1.5, "Overbuy ratio", "A PO line or reorder at least this many times the quantity actually needed is an overbuy forced by the vendor's minimum order quantity.", min=1, max=50, step=0.1, used_in=_INV)
+    pack_round_units: int = F(10, "Round orders to", "Reorder quantities with no MOQ on file round up to a multiple of this.", unit="units", min=1, max=10000, step=1, used_in=_INV)
+
+
+class InvRtv(M):
+    allow: bool = F(True, "Allow return to vendor", "When off, aged and dead stock is never sent back under sell-or-return terms.", used_in=_INV)
+    min_credit_inr: float = F(2000, "Smallest worthwhile return", "A return worth less credit than this is not worth the freight and paperwork: liquidate instead.", unit="INR", min=0, max=10000000, step=500, used_in=_INV)
+    prefer_pct_of_liquidation: float = F(100, "Return when credit is at least", "Return to the vendor when its credit is at least this % of what a liquidation promo would recover.", unit="%", min=0, max=500, step=5, used_in=_INV)
+    urgent_window_days: int = F(21, "Window closing soon", "A sell-or-return window with this many days or fewer left is flagged urgent.", unit="days", min=0, max=365, step=1, used_in=_INV)
+
+
+class InvLiquidate(M):
+    discount_aged_pct: float = F(25, "Aged stock discount", "Promo discount on stock past the aged threshold.", unit="%", min=0, max=90, step=1, used_in=_INV)
+    discount_dead_pct: float = F(40, "Dead stock discount", "Promo discount on stock with no sale for the dead-stock period.", unit="%", min=0, max=90, step=1, used_in=_INV)
+    discount_excess_pct: float = F(15, "Excess stock discount", "Promo discount on stock above the healthy cover band.", unit="%", min=0, max=90, step=1, used_in=_INV)
+    floor_pct_of_cost: float = F(60, "Never below", "A liquidation price is never set under this % of cost, whatever the discount.", unit="%", min=0, max=200, step=5, used_in=_INV)
+    uplift_multiplier: float = F(2.0, "Sales lift on promo", "Daily sales on a liquidation promo are this multiple of the normal rate (sets the days to clear).", min=1, max=20, step=0.1, used_in=_INV)
+    max_clear_days: float = F(90, "Longest sensible promo", "A promo that would take longer than this to clear the stock is not counted as a recovery: a return to the vendor is preferred when its window is open.", unit="days", min=1, max=730, step=5, used_in=_INV)
+    price_round_inr: float = F(1, "Round price to", "Liquidation prices are rounded to a multiple of this.", unit="INR", min=0.01, max=1000, step=0.5, used_in=_INV)
+
+
+class InventoryHealth(M):
+    forecast: InvForecast = Field(default_factory=InvForecast, json_schema_extra={"label": "Demand forecast", "help": "How daily demand is read from recent sales.", "used_in": _INV})
+    cover: InvCover = Field(default_factory=InvCover, json_schema_extra={"label": "Days of cover", "help": "The healthy band and the target a reorder or clearance aims for.", "used_in": _INV})
+    stock_out: InvStockOut = Field(default_factory=InvStockOut, json_schema_extra={"label": "Stock-out risk", "help": "Lead time, review cycle and how overdue POs are treated.", "used_in": _INV})
+    ageing: InvAgeing = Field(default_factory=InvAgeing, json_schema_extra={"label": "Ageing and dead stock", "help": "When stock counts as aged or dead.", "used_in": _INV})
+    moq: InvMoq = Field(default_factory=InvMoq, json_schema_extra={"label": "Minimum order quantity", "help": "Overbuy forced by MOQ and how orders round.", "used_in": _INV})
+    rtv: InvRtv = Field(default_factory=InvRtv, json_schema_extra={"label": "Return to vendor", "help": "When sell-or-return terms are used.", "used_in": _INV})
+    liquidate: InvLiquidate = Field(default_factory=InvLiquidate, json_schema_extra={"label": "Liquidation promo", "help": "Discount depth, price floor and lift.", "used_in": _INV})
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -1056,6 +1126,10 @@ class Policy(M):
     price_watch: PriceWatch = Field(
         default_factory=PriceWatch,
         json_schema_extra={"label": "Price watch (Run)", "help": "Competitor undercuts, blips, vendor parity breaches and match rules.", "used_in": ["ops_price_watch"]},
+    )
+    inventory_health: InventoryHealth = Field(
+        default_factory=InventoryHealth,
+        json_schema_extra={"label": "Inventory health (Run)", "help": "Cover band, stock-out risk, ageing, MOQ overbuy, return to vendor and liquidation.", "used_in": ["ops_inventory_health"]},
     )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
 

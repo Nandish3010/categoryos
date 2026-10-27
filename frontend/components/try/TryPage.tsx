@@ -1,5 +1,6 @@
 "use client";
 
+import { budgetMessage } from "@/lib/publicLive";
 import { ArrowLeft, FileUp, FlaskConical, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -90,8 +91,16 @@ export function TryForm({ options }: { options: UploadOptions }) {
           ? "The rules engine scores every SKU for free. No model is called, so there is no model-written narrative or document reading."
           : options.llm_mode === "mock"
             ? "This server uses a canned stand-in for the model. Verdicts and numbers are still the engine's."
-            : `Model stages may run. Without the demo key they stop after about $${options.live_budget_usd.toFixed(2)} of spend per visitor per day.`}
+            : options.public_live?.enabled && !options.public_live.exhausted && options.public_live.ip_remaining_usd != null
+              ? `Model stages run live on the public budget: about $${options.public_live.ip_remaining_usd.toFixed(2)} left for you today, then rules-only.`
+              : `Model stages may run. Without the demo key they stop after about $${options.live_budget_usd.toFixed(2)} of spend per visitor per day.`}
       </Banner>
+
+      {budgetMessage(options.public_live) ? (
+        <Banner tone="warn" title={budgetMessage(options.public_live) ?? ""}>
+          Uploads still work: the rules engine scores every SKU for free.
+        </Banner>
+      ) : null}
 
       <section className={card} aria-labelledby="sample-h">
         <h2 id="sample-h" className="flex items-center gap-2 text-base font-semibold">

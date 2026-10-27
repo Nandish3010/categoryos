@@ -99,7 +99,7 @@ export type DraftFigure = { claim_id: string; shown: string; status: string; rea
 
 export type Draft = {
   id: string;
-  kind: "vendor_review" | "po_followup" | "promo_funding" | "price_watch";
+  kind: "vendor_review" | "po_followup" | "promo_funding" | "price_watch" | "inventory_health";
   vendor_id: string;
   po_id: string | null;
   channel: string;
@@ -286,6 +286,7 @@ export const RUN_NAV: RunNavItem[] = [
   { href: "/run/catalog", label: "Catalog fixes", match: (p) => p.startsWith("/run/catalog") },
   { href: "/run/promotions", label: "Promotions", match: (p) => p.startsWith("/run/promotions") },
   { href: "/run/price-watch", label: "Price watch", match: (p) => p.startsWith("/run/price-watch") },
+  { href: "/run/inventory-health", label: "Inventory health", match: (p) => p.startsWith("/run/inventory-health") },
 ];
 
 // ---------- formatting ----------

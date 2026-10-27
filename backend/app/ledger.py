@@ -80,22 +80,32 @@ def record(model: str, usage: dict[str, float]) -> float:
         tmp.write_text(json.dumps(data, indent=2))
         os.replace(tmp, path)
     persist.notify()
-    sc = scope.current()
-    if sc is not None and sc.ip_key:
-        from app import (
-            sandbox_budget,  # sandbox vendors: charge the caller's per-IP bucket too
-        )
+    from app import public_live, sandbox_budget  # late: both import this module
 
-        sandbox_budget.charge(sc.ip_key, cost)
+    sc = scope.current()
+    pc = public_live.current()
+    if sc is not None and sc.ip_key:
+        if sc.public:
+            public_live.charge(sc.ip_key, cost)  # public live budget (no demo key)
+        else:
+            sandbox_budget.charge(sc.ip_key, cost)  # sandbox vendors: charge the caller's per-IP bucket too
+    elif pc is not None:
+        public_live.charge(pc.ip_key, cost)
     return cost
 
 
 def check_budget() -> None:
-    sc = scope.current()
-    if sc is not None and sc.ip_key:
-        from app import sandbox_budget
+    from app import public_live, sandbox_budget
 
-        sandbox_budget.check(sc.ip_key)
+    sc = scope.current()
+    pc = public_live.current()
+    if sc is not None and sc.ip_key:
+        if sc.public:
+            public_live.check(sc.ip_key)
+        else:
+            sandbox_budget.check(sc.ip_key)
+    elif pc is not None:
+        public_live.check(pc.ip_key)
     spent = total_usd()
     if spent >= settings.max_spend_usd:
         raise SpendCapExceeded(

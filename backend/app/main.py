@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import json
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
@@ -15,6 +16,7 @@ from app import (
     media,
     persist,
     policy,
+    public_live,
     registry,
     replay,
     runner,
@@ -23,15 +25,22 @@ from app import (
     uploads,
 )
 from app.agents import pricereq as price_requests
-from app.auth import require_demo_key
+from app.auth import check_rate, require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor, doc_path, load_application
-from app.errors import AssetNotFound, CategoryOSError, LeverOutOfRange, PolicyReadOnly
+from app.errors import (
+    AssetNotFound,
+    CategoryOSError,
+    DemoKeyRequired,
+    LeverOutOfRange,
+    PolicyReadOnly,
+)
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
 from app.ops.api import router as ops_router
 from app.ops.catalog_qc.api import router as catalog_qc_router
+from app.ops.inventory_health.api import router as inventory_health_router
 from app.ops.pricewatch.api import router as price_watch_router
 from app.ops.promotions.api import router as promotions_router
 from app.schemas import (
@@ -78,6 +87,7 @@ app.include_router(ops_router)  # Run: weekly review and PO follow-up for existi
 app.include_router(catalog_qc_router)  # Run: catalog QC / fix queue for existing listings
 app.include_router(promotions_router)  # Run: promotions and event planner
 app.include_router(price_watch_router)  # Run: competitor price monitor
+app.include_router(inventory_health_router)  # Run: weekly inventory health review
 
 origins = ["http://localhost:3000"]
 if settings.frontend_origin:
@@ -196,7 +206,15 @@ async def mode() -> dict[str, Any]:
         "spend_usd": round(ledger.total_usd(), 4),
         "max_spend_usd": settings.max_spend_usd,
         "warn_spend_usd": settings.warn_spend_usd,
+        "provenance": {v: replay.provenance(v) for v in ALLOWED_VENDORS} if settings.model_mode == "replay" else {},
+        "public_live": public_live.status(),
     }
+
+
+@app.get("/api/public-live")
+async def get_public_live(request: Request) -> dict[str, Any]:
+    """The public live budget as the caller sees it: shared remainder, this address's remainder, and which features it covers."""
+    return public_live.status(sandbox.ip_key(sandbox.client_ip(request)))
 
 
 # ---------- playbook ----------
@@ -377,38 +395,69 @@ async def reject_vendor(vendor_id: str, body: RejectBody) -> dict[str, Any]:
 # ---------- live negotiation copilot ----------
 
 
-@app.post("/api/vendors/{vendor_id}/call", status_code=202, dependencies=[Depends(require_demo_key_if_live)])
+async def _authorize_call(request: Request, session: copilot.CallSession, x_demo_key: str | None) -> contextlib.AbstractContextManager[None]:
+    """Access for the model-spending call routes. A public live call (no demo key) is rate-limited and context-scoped to
+    its IP bucket; any other call keeps the old rule: the demo key whenever some stage would run live."""
+    if session.public_ip:
+        key = sandbox.ip_key(sandbox.client_ip(request))
+        if key != session.public_ip:
+            raise DemoKeyRequired(cause="This public live call belongs to another address", fix="Start your own call")
+        check_rate(sandbox.client_ip(request))
+        public_live.check(session.public_ip)
+        return public_live.use(public_live.PublicCtx("copilot", session.public_ip))
+    if any_live():
+        await require_demo_key(request, x_demo_key)
+    return contextlib.nullcontext()
+
+
+@app.post("/api/vendors/{vendor_id}/call", status_code=202)
 async def start_call(vendor_id: str, body: StartCallBody, request: Request, x_demo_key: str | None = Header(default=None)) -> dict[str, Any]:
     """Start a call. `simulate` plays the recorded call through the pipeline (free in mock/replay); `live` listens to the
-    microphone chunks and always needs the demo key (and live mode)."""
+    microphone chunks and needs the demo key (and live mode), or, when PUBLIC_LIVE_FEATURES lists `copilot`, the public
+    live budget. Once that is used up a public caller gets 429 public_budget_exhausted and falls back to Simulate."""
     check_vendor(vendor_id)
+    public_ip = ""
     if body.mode == "live":
+        if public_live.enabled("copilot") and not sandbox.demo_key_ok(x_demo_key):
+            ip = sandbox.client_ip(request)
+            check_rate(ip)
+            public_ip = sandbox.ip_key(ip)
+            public_live.check(public_ip)
+        else:
+            await require_demo_key(request, x_demo_key)
+    elif any_live():
         await require_demo_key(request, x_demo_key)
-    session = copilot.start(vendor_id, body.mode, body.speed)
-    return {"call_id": session.call_id, "mode": session.mode}
+    session = copilot.start(vendor_id, body.mode, body.speed, public_ip=public_ip)
+    return {"call_id": session.call_id, "mode": session.mode, "public": bool(public_ip)}
 
 
-@app.post("/api/vendors/{vendor_id}/call/chunks", dependencies=[Depends(require_demo_key_if_live)])
+@app.post("/api/vendors/{vendor_id}/call/chunks")
 async def call_chunk(
     vendor_id: str,
+    request: Request,
     call_id: Annotated[str, Form()],
     audio: Annotated[UploadFile, File()],
     speaker: Annotated[str, Form()] = "auto",
+    x_demo_key: str | None = Header(default=None),
 ) -> dict[str, Any]:
     """One push-to-talk clip (16 kHz mono WAV, about six seconds) -> transcription -> a new turn -> incremental extraction."""
     check_vendor(vendor_id)
     session = copilot.get(call_id, vendor_id)
+    ctx = await _authorize_call(request, session, x_demo_key)
     data = await audio.read(settings.call_chunk_max_bytes + 1)
-    turn = await copilot.ingest_chunk(session, data, speaker)
+    with ctx:
+        turn = await copilot.ingest_chunk(session, data, speaker)
     return {"turn": turn, "state": session.state}
 
 
-@app.post("/api/vendors/{vendor_id}/call/turns", dependencies=[Depends(require_demo_key_if_live)])
-async def call_turn(vendor_id: str, body: TurnBody) -> dict[str, Any]:
+@app.post("/api/vendors/{vendor_id}/call/turns")
+async def call_turn(vendor_id: str, body: TurnBody, request: Request, x_demo_key: str | None = Header(default=None)) -> dict[str, Any]:
     """A typed line (the fallback when there is no microphone), through the same pipeline."""
     check_vendor(vendor_id)
     session = copilot.get(body.call_id, vendor_id)
-    turn = await copilot.ingest_text(session, body.speaker, body.text)
+    ctx = await _authorize_call(request, session, x_demo_key)
+    with ctx:
+        turn = await copilot.ingest_text(session, body.speaker, body.text)
     return {"turn": turn, "state": session.state}
 
 

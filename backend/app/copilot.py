@@ -76,6 +76,7 @@ class CallSession:
     events: list[dict[str, Any]] = field(default_factory=list)
     subscribers: list[asyncio.Queue[dict[str, Any]]] = field(default_factory=list)
     spend_usd: float = 0.0
+    public_ip: str = ""  # set when the call is live on the public live budget (no demo key): the caller's IP bucket
     ended: bool = False
     task: asyncio.Task | None = None
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
@@ -112,19 +113,21 @@ def get(call_id: str, vendor_id: str | None = None) -> CallSession:
 # ---------- starting and ending ----------
 
 
-def start(vendor_id: str, mode: Mode, speed: float = 1.0) -> CallSession:
-    if mode == "live" and llm.resolve_mode(STAGE) != "live":
+def start(vendor_id: str, mode: Mode, speed: float = 1.0, public_ip: str = "") -> CallSession:
+    """``public_ip`` (an IP bucket key) marks a live call that runs on the public live budget instead of the demo key."""
+    if mode == "live" and not public_ip and llm.resolve_mode(STAGE) != "live":
         raise LiveCallUnavailable()
     if mode == "simulate" and load_transcript(vendor_id) is None:
         raise NoCallScript()
     session = CallSession(f"call_{uuid.uuid4().hex[:10]}", vendor_id, mode, max(speed, 0.1) * settings.copilot_sim_speed)
+    session.public_ip = public_ip if mode == "live" else ""
     _calls[session.call_id] = session
     while len(_calls) > MAX_CALLS:
         _, old = _calls.popitem(last=False)
         if old.task is not None:
             old.task.cancel()
     session.state = compute_state(session)
-    session.emit("started", {"mode": mode, "vendor_id": vendor_id, "state": session.state, "budget_usd": settings.call_budget_usd if mode == "live" else 0.0})
+    session.emit("started", {"mode": mode, "vendor_id": vendor_id, "state": session.state, "budget_usd": settings.call_budget_usd if mode == "live" else 0.0, "public": bool(session.public_ip)})
     if mode == "simulate":
         session.task = asyncio.create_task(_simulate(session))
     return session
@@ -136,7 +139,7 @@ async def end(session: CallSession) -> dict[str, Any]:
         if session.ended:
             return session.state
         session.ended = True
-        canonical = session.mode == "live" and len(session.turns) >= 2
+        canonical = session.mode == "live" and len(session.turns) >= 2 and not session.public_ip  # a public visitor's call never rewrites the shared transcript
         if canonical:
             set_transcript_override(session.vendor_id, [{"turn": t["turn"], "speaker": t["speaker"], "text": t["text"]} for t in session.turns])
         session.state = compute_state(session)
@@ -460,6 +463,7 @@ def snapshot(session: CallSession) -> dict[str, Any]:
         "state": session.state,
         "last_seq": session._seq,
         "spend_usd": round(session.spend_usd, 6),
+        "public": bool(session.public_ip),
     }
 
 

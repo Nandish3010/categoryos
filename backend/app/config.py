@@ -67,6 +67,12 @@ class Settings(BaseSettings):
     call_chunk_max_bytes: int = 2_000_000  # largest audio chunk accepted (a 6 s 16 kHz mono WAV is about 190 KB)
     copilot_sim_speed: float = 1.0  # pacing of "Simulate call" (1 = realistic speaking speed); tests set a huge number
 
+    # Public live budget (ops env, not playbook): lets judges try BYO and the live copilot on the public deploy WITHOUT the
+    # demo key. 0 = disabled. Applies on top of MAX_SPEND_USD, which always wins. See app/public_live.py.
+    public_live_budget_usd: float = 0.0
+    public_live_per_ip_usd: float = 0.50
+    public_live_features: str = ""  # comma list, any of: byo, copilot
+
     backend_port: int = 8001
     frontend_origin: str | None = None
 

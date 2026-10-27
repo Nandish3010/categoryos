@@ -42,6 +42,7 @@ import { useRun } from "@/lib/useRun";
 import { BackendBanner } from "../BackendBanner";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
+import { ProvenanceChip } from "../ProvenanceChip";
 import { Skeleton } from "../Skeleton";
 import { Stat } from "../Stat";
 import { Tween } from "../Tween";
@@ -395,6 +396,11 @@ export function Workspace({ vendorId }: { vendorId: string }) {
               <BackendBanner error={lever.error} cached={data != null} />
             ) : null}
 
+            {run?.mode === "replay" ? (
+              <div>
+                <ProvenanceChip provenance={run.provenance ?? mode.data?.provenance?.[vendorId]} />
+              </div>
+            ) : null}
             <RunBar
               running={running}
               hasRun={!!run}

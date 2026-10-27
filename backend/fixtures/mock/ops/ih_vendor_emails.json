@@ -1,0 +1,154 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_inventory_summary",
+        "args": {}
+      },
+      {
+        "tool": "get_vendor_contacts",
+        "args": {}
+      }
+    ],
+    "final": {
+      "emails": [
+        {
+          "vendor_id": "E005",
+          "subject": "Inventory review: Litterly",
+          "body": "Hi Sanjay,\n\nClumping Bentonite 5 kg runs out in 5.0 days, and its open PO (700 units) is past its promised date, so we expect about 2.0 days out of stock. Please confirm dispatch and ship it by Friday.\n\nPlease let us know by Friday.\n\nThanks",
+          "figures": [
+            {
+              "metric": "ih_run_out_day",
+              "key": "E005:LT-05",
+              "value": 4.98,
+              "shown": "5.0",
+              "text": "Clumping Bentonite 5 kg: days until the stock runs out"
+            },
+            {
+              "metric": "ih_short_days",
+              "key": "E005:LT-05",
+              "value": 2.02,
+              "shown": "2.0",
+              "text": "Clumping Bentonite 5 kg: days out of stock"
+            },
+            {
+              "metric": "ih_inbound_units",
+              "key": "E005:LT-05",
+              "value": 700.0,
+              "shown": "700",
+              "text": "Clumping Bentonite 5 kg: units on open POs"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E002",
+          "subject": "Inventory review: Purrline Foods",
+          "body": "Hi Rakesh,\n\nOcean Fish Adult 1.2 kg runs out in 6.0 days, and its open PO (500 units) is past its promised date, so we expect about 1.0 days out of stock. Please confirm dispatch and ship it by Friday.\n\nPlease let us know by Friday.\n\nThanks",
+          "figures": [
+            {
+              "metric": "ih_run_out_day",
+              "key": "E002:PL-01",
+              "value": 6.03,
+              "shown": "6.0",
+              "text": "Ocean Fish Adult 1.2 kg: days until the stock runs out"
+            },
+            {
+              "metric": "ih_short_days",
+              "key": "E002:PL-01",
+              "value": 0.97,
+              "shown": "1.0",
+              "text": "Ocean Fish Adult 1.2 kg: days out of stock"
+            },
+            {
+              "metric": "ih_inbound_units",
+              "key": "E002:PL-01",
+              "value": 500.0,
+              "shown": "500",
+              "text": "Ocean Fish Adult 1.2 kg: units on open POs"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E003",
+          "subject": "Inventory review: NutriPaws",
+          "body": "Hi Meera,\n\nUnder our sell-or-return terms we would like to return 240 units of Training Bites (old pack) for ₹15,048 of credit. The window closes in 66 days; please send a return authorisation.\n\nPlease let us know by Friday.\n\nThanks",
+          "figures": [
+            {
+              "metric": "ih_clear_units",
+              "key": "E003:NP-91",
+              "value": 240.0,
+              "shown": "240",
+              "text": "Training Bites (old pack): units to clear"
+            },
+            {
+              "metric": "ih_rtv_credit_inr",
+              "key": "E003:NP-91",
+              "value": 15048.0,
+              "shown": "₹15,048",
+              "text": "Training Bites (old pack): vendor credit for returning them"
+            },
+            {
+              "metric": "ih_rtv_days_left",
+              "key": "E003:NP-91",
+              "value": 66.0,
+              "shown": "66",
+              "text": "Training Bites (old pack): days left in the sell-or-return window"
+            }
+          ]
+        },
+        {
+          "vendor_id": "E004",
+          "subject": "Inventory review: Tailwind Play",
+          "body": "Hi Vikram,\n\nUnder our sell-or-return terms we would like to return 343 units of Printed Bandana Set for ₹35,844 of credit. The window closes in 18 days; please send a return authorisation.\nPlease hold PO PO-E004-0007 for Collapsible Travel Bowl (300 units). We already hold 30.0 days of cover without it, and the minimum order quantity of 300 made the PO larger than we need. We will take it in the next cycle.\n\nPlease let us know by Friday.\n\nThanks",
+          "figures": [
+            {
+              "metric": "ih_clear_units",
+              "key": "E004:TW-05",
+              "value": 343.0,
+              "shown": "343",
+              "text": "Printed Bandana Set: units to clear"
+            },
+            {
+              "metric": "ih_rtv_credit_inr",
+              "key": "E004:TW-05",
+              "value": 35843.5,
+              "shown": "₹35,844",
+              "text": "Printed Bandana Set: vendor credit for returning them"
+            },
+            {
+              "metric": "ih_rtv_days_left",
+              "key": "E004:TW-05",
+              "value": 18.0,
+              "shown": "18",
+              "text": "Printed Bandana Set: days left in the sell-or-return window"
+            },
+            {
+              "metric": "ih_pause_units",
+              "key": "E004:TW-06",
+              "value": 300.0,
+              "shown": "300",
+              "text": "Collapsible Travel Bowl: units on the PO to pause"
+            },
+            {
+              "metric": "ih_pause_cover_without_days",
+              "key": "E004:TW-06",
+              "value": 30.03,
+              "shown": "30.0",
+              "text": "Collapsible Travel Bowl: days of cover without the PO"
+            },
+            {
+              "metric": "ih_moq_units",
+              "key": "E004:TW-06",
+              "value": 300.0,
+              "shown": "300",
+              "text": "Collapsible Travel Bowl: vendor minimum order quantity"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

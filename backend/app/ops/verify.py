@@ -65,6 +65,9 @@ def verify_ops_claim(claim: Claim) -> Claim:
 
     if catalog_verify.handles(claim):
         return catalog_verify.verify_catalog_claim(claim)
+    from app.ops.inventory_health import (
+        claims as ih_claims,  # the inventory health review owns ih_* claims
+    )
     from app.ops.pricewatch import (
         claims as pw_claims,  # the competitor price monitor owns pw_* claims
     )
@@ -72,6 +75,8 @@ def verify_ops_claim(claim: Claim) -> Claim:
         verify as promo_verify,  # the promotions planner owns promo_* claims
     )
 
+    if ih_claims.handles(claim):
+        return ih_claims.verify(claim)
     if pw_claims.handles(claim):
         return pw_claims.verify(claim)
     if promo_verify.handles(claim):

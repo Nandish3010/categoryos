@@ -31,11 +31,11 @@ Then open http://localhost:3000/vendors/V001.
 
 | Model | What it does here | Where | Without it |
 |---|---|---|---|
-| `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies`, `ops/promotions/agent.py:generate` (reads funding replies, writes the event brief and funding emails), `ops/pricewatch/agent.py:generate` (daily summary, vendor parity messages) | No agent output; only the deterministic metrics remain |
+| `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies`, `ops/promotions/agent.py:generate` (reads funding replies, writes the event brief and funding emails), `ops/pricewatch/agent.py:generate` (daily summary, vendor parity messages), `ops/inventory_health/agent.py:generate` (weekly summary, action notes, vendor messages) | No agent output; only the deterministic metrics remain |
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
 | `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
 | Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
-| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded: cutouts need Meta's optional `meta-sam-parser` package (not installed by default), otherwise the box token is used |
+| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded and decoded with Meta's `meta-sam-parser` (pinned `==0.1.0`, a regular dependency), so real cutouts and panel regions work; the mask raster covers the box only and is placed at the box corner. The SAM License applies to that dependency. If decoding fails the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
 
@@ -59,6 +59,7 @@ These features carry the product:
 - **The impact meter.** The app records how long a person actually spends reviewing each stage (from "ready for review" to approve) and counts their edits, then compares that with the playbook's by-hand baselines (`impact`: research estimates, not measured, until you replace them with your own time diary). The vendor workspace has a per-vendor drawer; the vendors board has a team projection that shows the share of the team's week in scope of the shipped modules, the share saved, and every module as shipped or not yet built, labelled estimate or measured.
 - **Promotions and event planner (Run).** For each sale in the playbook calendar (a festive sale, a payday sale) Python plans from ops sales, stock and open POs: baseline demand lifted by the event, an uplift curve per category, units pulled forward, sales taken from near-duplicate SKUs, the stock-out check (a depth that would run out before the event ends is capped, or a stock-up PO is suggested if the vendor's lead time allows), the margin after vendor funding and the funding ask. The model reads the vendors' funding replies (every share, target and banner is checked against the email and self-corrected), the deal evaluator values conditional offers by Monte Carlo (an unreachable target counts as 0 and is countered), and the model writes the brief and the funding emails from engine numbers only: a sentence with a number that does not verify is struck. A person approves; POs and mails are simulated. Open `/run/promotions`; tune it in the Playbook (`promotions`).
 - **Competitor price monitor (Run).** Thirty days of daily price snapshots from three marketplaces. Python separates a sustained undercut from a one-day blip (never matched) and a slow trend, flags a vendor selling under our price elsewhere or under MAP, and recommends match / hold / ask the vendor for price protection / flag the breach, with the margin impact over the horizon. Every number is a claim the verifier recomputes; the model drafts the daily summary and the vendor messages. Open `/run/price-watch`; tune it in the Playbook (`price_watch`).
+- **Inventory health review (Run).** Weekly, per vendor and SKU: days of cover against a target band, stock-out risk (forecast demand against on-hand stock and the open POs' promised dates, late POs assumed to land later), aged and dead stock, excess from a vendor's minimum order quantity, and one recommended action each: reorder (quantity rounded up to the MOQ, with lead time), expedite a late PO, pause an overbought PO, return to the vendor under open sell-or-return terms, or liquidate on a promo (never under a cost floor). Python decides every number; each is a claim the verifier recomputes, and the model only drafts the plain-English notes and vendor messages (a sentence with a number that fails is struck). Approving is simulated. Open `/run/inventory-health`; tune it in the Playbook (`inventory_health`); data from `make data-inventory-health`.
 - **Price requests (Run).** An existing vendor emails "we are revising prices by 8-12% from 1st Dec" with a messy price list and maybe a sweetener. The agent reads it into lines with verbatim quotes (checked and self-corrected); Python works out each SKU's new margin, the retail price that defends the target, the gap to competitors, elasticity risk, the 90-day GMV and margin impact and whether an input index justifies the rise; the deal evaluator's probability engine values volume-linked sweeteners; each SKU gets accept / accept partly (counter %) / pass through to price / delay / delist, an approval tier from the playbook's matrix, and a reply draft that only states engine numbers. A person approves; sending is simulated. Open `/run/price-requests`; tune it in the Playbook (`price_requests`).
 
 - **Deal evaluator for conditional offers.** A vendor says "15% base margin, plus 20% marketing support if you sell 2,000 units in 90 days". The agent reads the structure; Python simulates demand (ramped new listing, fixed-seed Monte Carlo), gives the probability of hitting the target, prices the offer risk-adjusted in margin points, and rejects the structure with concrete counters (a target we can reach, a guaranteed base) when the chance is poor. Every number is a claim the verifier recomputes, and every assumption lives in the playbook (`negotiation.forecast`, `negotiation.contingent`).
@@ -74,7 +75,9 @@ Negotiate is transcript-first: the vendor call is transcribed and the commitment
 `make contract` (spends a few cents; needs `MODEL_API_KEY` and `BASETEN_API_KEY`) makes one tiny real call per external contract
 (chat, reasoning-token limit, structured output, tool calling, vision, SAM 3.1, muse-image, ASR, Baseten), through the app's own
 gateway code, and saves the scrubbed raw responses to `backend/fixtures/contract/`. `backend/tests/test_contract_fixtures.py`
-replays those through the parsers offline. `make contract ONLY="chat sam"` runs a subset.
+replays those through the parsers offline (the recorded SAM mask is decoded through `meta-sam-parser`). `make contract ONLY="chat sam"` runs a subset.
+
+SAM 3.1 returns the mask raster for the matched box only (live-verified: a 760x1100 label with box 18,261..737,1006 gave a 746x720 mask), so the app pastes it at the box corner plus the token's `x`/`y`. Decoding uses Meta's official `meta-sam-parser` from PyPI, pinned to 0.1.0; the SAM License applies to that dependency.
 
 ## Measured eval
 
@@ -86,7 +89,7 @@ and injection checks run real code on synthetic data; the model comparison is no
 (needs `MODEL_MODE=live`, keys, credits). The table below is injected by `scripts/measure.py` and always names its mode.
 
 <!-- eval:start -->
-**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data. No model was called, so there are no model results here. Seed 42, run 2026-10-27.
+**Mode: live.** Live run: models called through the gateway. Seed 42, run 2026-10-27.
 
 **Verifier** (no model; synthetic sheet, planted errors, matched correct controls)
 
@@ -104,17 +107,22 @@ and injection checks run real code on synthetic data; the model comparison is no
 
 Misses are errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages), which the verifier accepts by design.
 
-Model comparison (muse-spark-1.3 vs Muse Spark Open): pending live run
+**Extraction agent** (160 tasks, mode: live)
+
+| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Tokens | Latency / task |
+|---|---|---|---|---|---|---|---|---|---|
+| muse-spark-1.3 (model A) | 100.0% | 0 | 0 | n/a | 100.0% | 0 | $0.0383 | 4469 in / 7696 out | 195 ms (extract call 31.2 s) |
+| Muse Spark Open via Baseten (model B) | 100.0% | 0 | 0 | n/a | 100.0% | 0 | not metered | 4666 in / 8913 out | 95 ms (extract call 15.2 s) |
+
+_Live: models called through the gateway (one batched extraction call per model over a clean synthetic sheet, so ceiling effects are expected); cost from the ledger, latency = total wall-clock / tasks. A self-correction rate of n/a means the verifier caught nothing to correct, so the retry loop was not exercised. Muse Spark Open on Baseten: cost is not metered (price unknown), token counts shown. Model-detector false positives varied between 1 and 3 of 30 across reruns._
 
 **Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)
 
 | Detector | Injections caught | Benign texts wrongly flagged |
 |---|---|---|
 | Regex guard (playbook `screening.injection_patterns`) | 9/30 (30%) | 0/30 (0%) |
-| Model | not run (mock) | not run (mock) |
-| Regex + model | 9/30 (30%) | |
-
-The model layer is measured in the live run.
+| Model | 30/30 (100%) | 3/30 |
+| Regex + model | 30/30 (100%) | |
 <!-- eval:end -->
 
 ## Architecture

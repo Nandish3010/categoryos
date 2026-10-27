@@ -108,3 +108,12 @@ sells in the event (near-zero chance, countered); E002 flat 30%; E003 35% on a r
 Planted: BK-01 sustained 7% undercut that breaks the margin floor; GW-01 sustained 9% undercut that is worth matching; NP-04 a one-day 14% dip that must
 not be matched; TW-02 a falling trend; PL-03 an old dip that recovered; LT-01 the vendor itself 12% under us on another marketplace (and under MAP).
 Both are seed 42, byte-identical on re-run, and do not touch the other generators.
+
+## Inventory health (Run)
+
+`python3 data/generate_inventory_health.py` (`make data-inventory-health`) writes `ops/inventory_terms.csv` (MOQ and sell-or-return terms for the 36 SKUs and 2
+legacy lots), `inventory_legacy.csv` (two discontinued packs on the shelf, not in `skus.csv`) and `inventory_health_meta.json`. Planted (the ops data already
+has the stock-outs and aged batches): NP-03 stock-out inside a day with a late PO (reorder against a 600 MOQ); LT-05 and PL-01 short before a late PO lands
+(expedite); TW-05 aged with a sell-or-return window closing in 18 days (return, urgent); TW-03 aged with a lapsed window and TW-04 with no return terms (liquidate);
+TW-06 an MOQ-sized open PO on top of 30 days of cover (pause); NP-91 dead stock with open return terms (return); GW-91 dead stock with none (liquidate). Seed 42,
+byte-identical on re-run; it reads the ops files but changes none.

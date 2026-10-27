@@ -130,6 +130,7 @@
   "tolerances": {
     "inr": 1.0,
     "pct": 0.01,
+    "pts": 0.05,
     "qty": 0.0,
     "ratio": 0.005,
     "score": 0.5,

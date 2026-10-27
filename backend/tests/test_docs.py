@@ -546,12 +546,14 @@ def fixture_text(stage, task):
     return json.dumps(json.loads((Path(settings.fixtures_dir) / "mock" / stage / f"{task}.json").read_text())["content"])
 
 
-def mask_text(box, h=100, w=100):
-    import zlib  # noqa: F401
-
-    flat = [1 if box[0] * w <= x < box[2] * w and box[1] * h <= y < box[3] * h else 0 for y in range(h) for x in range(w)]
+def mask_text(box, img_w=760, img_h=1100):
+    """A SAM token the way the live API sends it: the mask raster covers the BOX only (sized to it, x=0 y=0 inside the box)."""
+    x0, y0, x1, y1 = round(box[0] * img_w), round(box[1] * img_h), round(box[2] * img_w), round(box[3] * img_h)
+    w, h = x1 - x0, y1 - y0
+    # all ones but for a hole in the middle, so the mask is under the max-coverage cut-off yet its extent is the whole box
+    flat = [0 if w // 4 <= x < 3 * w // 4 and h // 4 <= y < 3 * h // 4 else 1 for y in range(h) for x in range(w)]
     packed = bytes(sum(bit << (7 - i) for i, bit in enumerate(flat[k : k + 8])) for k in range(0, len(flat), 8))
-    return f"<0f>1 x1=1 y1=1 x2=2 y2=2 w={w} h={h} x=0 y=0 data={h},{w},!{base64.b85encode(packed).decode()}"
+    return f"<0f>1 <|box;x1={x0};y1={y0};x2={x1 - 1};y2={y1 - 1};w={img_w};h={img_h}|><|mask;x=0;y=0;data={h},{w},!{base64.b85encode(packed).decode()}|>"
 
 
 @pytest.fixture
@@ -643,8 +645,14 @@ def rec(box=None, mask=None, h=10, w=10):
 
 
 def test_region_from_mask_prefers_the_mask_extent():
+    # the mask raster covers the box only: a 10x10 mask at the box corner (20, 40) of a 200x400 image
     flat = [1 if 2 <= x < 8 and 3 <= y < 9 else 0 for y in range(10) for x in range(10)]
-    assert media.region_from_record(rec((0, 0, 1, 1), flat), 200, 400) == [0.2, 0.3, 0.8, 0.9]
+    assert media.region_from_record(rec((20, 40, 29, 49), flat), 200, 400) == [0.11, 0.1075, 0.14, 0.1225]
+
+
+def test_region_from_a_legacy_full_frame_mask_without_a_box_is_normalised_by_the_mask_size():
+    flat = [1 if 2 <= x < 8 and 3 <= y < 9 else 0 for y in range(10) for x in range(10)]
+    assert media.region_from_record(rec(None, flat), 200, 400) == [0.2, 0.3, 0.8, 0.9]
 
 
 def test_region_falls_back_to_the_box_in_pixels_or_fractions():

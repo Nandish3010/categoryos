@@ -69,7 +69,7 @@ class EvalItem(BaseModel):
 
 
 class EvalExtractions(BaseModel):
-    items: list[EvalItem] = Field(default_factory=list)
+    items: list[EvalItem] = Field(min_length=1)  # required: a truncated reply must not parse as an empty list
 
 
 def tasks_for(world: World, n: int) -> list[Task]:
@@ -151,6 +151,9 @@ class LiveAgent:
         self.spec, self.world, self.tasks, self.ctx = spec, world, tasks, ctx
         self.cost = 0.0
         self.latency_ms = 0.0
+        self.extract_latency_ms = 0.0
+        self.input_tokens = 0
+        self.output_tokens = 0
         self.messages: list[dict[str, Any]] = []
         self.previous = ""
 
@@ -163,9 +166,12 @@ class LiveAgent:
              f'Reply {{"items": [{{"code", "field", "value", "row", "header"}}]}}.'},
         ]
         res = await llm.call("research", self.messages, task=f"eval_extract_{self.spec.key}", schema=EvalExtractions,
-                             model=self.spec.model, provider=self.spec.provider, max_tokens=6000)
+                             model=self.spec.model, provider=self.spec.provider, max_tokens=20000)
         self.cost += res.cost_usd
         self.latency_ms += res.latency_ms
+        self.extract_latency_ms = res.latency_ms
+        self.input_tokens += res.input_tokens
+        self.output_tokens += res.output_tokens
         self.previous = res.content
         assert isinstance(res.parsed, EvalExtractions)
         return {f"{i.code}:{i.field}": Answer(i.value, i.row, i.header) for i in res.parsed.items}
@@ -229,6 +235,10 @@ async def run_model(spec: ModelSpec, world: World, tasks: list[Task], mode: str,
     model_calls = [e for e in _drain(ctx) if e.type == "model_call"]
     n = len(tasks)
     live = mode == "live"
+    in_tok = out_tok = None
+    if live and isinstance(agent, LiveAgent):
+        in_tok = agent.input_tokens + sum(e.payload.get("input_tokens", 0) for e in model_calls)
+        out_tok = agent.output_tokens + sum(e.payload.get("output_tokens", 0) for e in model_calls)
     cost = round(agent.cost + sum(e.cost_usd or 0.0 for e in model_calls), 6) if live and isinstance(agent, LiveAgent) else None
     latency = (agent.latency_ms + sum(e.latency_ms or 0.0 for e in model_calls)) / n if live and isinstance(agent, LiveAgent) else None
     return {
@@ -247,6 +257,11 @@ async def run_model(spec: ModelSpec, world: World, tasks: list[Task], mode: str,
         "silent_errors": len(silent),
         "cost_usd": cost,
         "latency_ms_per_task": None if latency is None else round(latency, 1),
+        "extract_call_latency_ms": round(agent.extract_latency_ms, 1) if isinstance(agent, LiveAgent) else None,
+        "correction_calls": len(model_calls) if live else None,
+        "input_tokens": in_tok,
+        "output_tokens": out_tok,
+        "cost_metered": spec.provider != "baseten",
         **({"profile": {"error_rate": spec.error_rate, "fix_rate": spec.fix_rate}} if not live else {}),
     }
 
@@ -271,6 +286,9 @@ async def run(world: World, mode: str, seed: int = 42, n_tasks: int = 100, model
             "Mock: scripted stand-ins with a fixed error profile replace the models. The loop, feedback, verifier and scoring "
             "are real; the error rates are parameters, not measurements. Cost and latency are not reported."
             if mode != "live"
-            else "Live: models called through the gateway; cost from the ledger, latency wall-clock."
+            else "Live: models called through the gateway (one batched extraction call per model over a clean synthetic sheet, so ceiling "
+            "effects are expected); cost from the ledger, latency = total wall-clock / tasks. A self-correction rate of n/a means the "
+            "verifier caught nothing to correct, so the retry loop was not exercised. Muse Spark Open on Baseten: cost is not metered "
+            "(price unknown), token counts shown. Model-detector false positives varied between 1 and 3 of 30 across reruns."
         ),
     }

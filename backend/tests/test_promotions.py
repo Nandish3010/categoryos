@@ -181,8 +181,8 @@ def test_rollup_moves_when_the_module_ships():
     assert impact.rollup([])["saved_pct"] < shipped["saved_pct"]
 
 
-def test_default_rollup_with_both_modules_shipped():
+def test_default_rollup_with_every_module_shipped():
     out = impact.rollup([])
     mods = {m["key"]: m for m in out["modules"]}
     assert mods["promotions_planner"]["status"] == "shipped" and mods["competitor_monitor"]["status"] == "shipped"
-    assert out["saved_pct"] == 32.7 and out["potential_saved_pct"] == 34.6  # inventory health is the one module left
+    assert out["saved_pct"] == 34.6 and out["potential_saved_pct"] == 34.6  # every module is shipped

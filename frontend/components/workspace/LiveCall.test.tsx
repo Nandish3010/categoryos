@@ -117,3 +117,25 @@ describe("NegotiateView mode switch", () => {
     expect(screen.getByTestId("live-call")).toBeInTheDocument();
   });
 });
+
+describe("LiveCall public live budget", () => {
+  const stubMode = (public_live: Record<string, unknown>) =>
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ mode: "replay", spend_usd: 0, max_spend_usd: 5, public_live }), { status: 200, headers: { "Content-Type": "application/json" } })),
+    );
+
+  it("enables the microphone call without a demo key while the public budget has room", async () => {
+    stubMode({ enabled: true, features: ["copilot"], budget_usd: 10, remaining_usd: 4, per_ip_usd: 0.5 });
+    render(<LiveCall vendorId="V002" />);
+    await waitFor(() => expect(screen.getByRole("button", { name: /Start live call/ })).toBeEnabled());
+  });
+
+  it("says the public budget is used up and keeps Simulate call", async () => {
+    stubMode({ enabled: true, features: ["copilot"], budget_usd: 10, remaining_usd: 0, per_ip_usd: 0.5 });
+    render(<LiveCall vendorId="V002" />);
+    await waitFor(() => expect(screen.getByTestId("live-unavailable")).toHaveTextContent("Public live budget used up: showing the recorded run"));
+    expect(screen.getByRole("button", { name: /Start live call/ })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Simulate call/ })).toBeEnabled();
+  });
+});
