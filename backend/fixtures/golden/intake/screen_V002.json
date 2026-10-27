@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "screen_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 6947,
+  "output_tokens": 2189,
+  "checksum": "3c7517c98f0d226de57d8b9f6512dffaff8f5463af6b8eac6be400b6c23579a8",
+  "content": "{\"steps\": [{\"tool\": \"get_application\", \"args\": {\"vendor_id\": \"V002\"}}, {\"tool\": \"get_sku_rows\", \"args\": {\"vendor_id\": \"V002\"}}], \"final\": {\"risk_flags\": [{\"type\": \"missing_data\", \"quote\": \"MW-T03 Our Cost blank\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"MW-T05 Size blank\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"MW-L01 Our Cost blank\", \"severity\": \"low\"}, {\"type\": \"missing_data\", \"quote\": \"MW-L04 Our Cost blank\", \"severity\": \"low\"}], \"injection_detected\": false, \"followup_questions\": [\"Provide Our Cost for MW-T03, MW-L01 and MW-L04.\", \"Provide Size / pack size for MW-T05.\", \"Clarify FSSAI expiry: scan shows 2026-11-30 vs application 2027-11-30, and confirm renewal plan as it expires 2026-11-30.\"], \"decision\": \"pass\", \"reasons\": [\"Documents are valid with no blocking issue; FSSAI expires 2026-11-30 and needs renewal confirmation.\", \"Pricing is blocked on 4 SKUs due to missing costs and pack size.\", \"No medical claims or prompt injection found in copy reviewed.\"]}}"
+}

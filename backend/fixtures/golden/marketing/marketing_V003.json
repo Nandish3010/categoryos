@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "marketing",
+  "task": "marketing_V003",
+  "model": "muse-spark-1.3",
+  "input_tokens": 862,
+  "output_tokens": 662,
+  "checksum": "75783584ae95c267a18cad9a7d119f4a735beea31917d740b03852dce280e6ae",
+  "content": "{\"campaign_name\":\"SnapTail Launch Week\",\"copy\":\"Discover SnapTail essentials for walks, meals and play. Shop adjustable harnesses, collars, toys and bowls now live with launch offers.\",\"discount_ask\":{\"brand_funded_pct\":5,\"our_pct\":0,\"rationale\":\"Vendor committed to 5% launch discount for 30 days with 0 marketing funding\"}}"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V004_fssai_certificate_reread",
+  "model": "muse-spark-1.3",
+  "input_tokens": 385,
+  "output_tokens": 507,
+  "checksum": "6b1f1addf0d3209957ad9228c71a2ca9a8a4de1c7eca75c380c491e944813627",
+  "content": "{\"reads\":[{\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"FSSAI-DEMO-0004\"},{\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"01 APR 202\"},{\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"31 MAR 2026\"}]}"
+}

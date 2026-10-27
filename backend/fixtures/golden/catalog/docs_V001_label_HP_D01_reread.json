@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "docs_V001_label_HP_D01_reread",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1285,
+  "output_tokens": 774,
+  "checksum": "090c755d293adaadb20fb6de4047921885a093a63767c51fec5d7378d26f62e3",
+  "content": "{\"reads\": [{\"name\": \"product_name\", \"sku_code\": \"HP-D01\", \"value\": \"Alpine Chicken & Sweet Potato Adult\"}, {\"name\": \"net_quantity\", \"sku_code\": \"HP-D01\", \"value\": \"1.5 kg\"}, {\"name\": \"mrp\", \"sku_code\": \"HP-D01\", \"value\": \"Rs. 1,499\"}, {\"name\": \"protein_pct\", \"sku_code\": \"HP-D01\", \"value\": \"30.0 %\"}, {\"name\": \"fssai_number\", \"sku_code\": \"HP-D01\", \"value\": \"FSSAI-DEMO-0001\"}, {\"name\": \"claims_text\", \"sku_code\": \"HP-D01\", \"value\": \"Grain-free. Single-source chicken. Supports joint health.\"}]}"
+}

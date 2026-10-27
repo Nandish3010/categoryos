@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "negotiate",
+  "task": "deals_talk_V002",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1653,
+  "output_tokens": 5220,
+  "checksum": "ff4484d6894017a6fec867ad07fe492a36bbb83e822187ef9bc2587c4fbcdb39",
+  "content": "{\"email_paragraph\": \"Thank you for the proposal for 2,000 units in 90 days on a 15% margin base with 20% marketing support. We would like to set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required, and ask for a guaranteed base of 22.0% (+7.0 points) in place of the volume-linked bonus, which is worth 0.0 points risk-adjusted.\", \"talk_track\": \"We are rejecting this structure because the chance of 2,000 units in 90 days is <0.1%, so the bonus counts as 0.0 points and the offer is worth 15.0% against 22.0% required. Set the target at 250 units in 90 days (P = 60.5%); counted value becomes 27.1% against 22.0% required. Ask for a guaranteed base of 22.0% (+7.0 points) in place of the volume-linked bonus, which is worth 0.0 points risk-adjusted.\"}"
+}

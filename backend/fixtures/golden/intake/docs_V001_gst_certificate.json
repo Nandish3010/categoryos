@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V001_gst_certificate",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1898,
+  "output_tokens": 799,
+  "checksum": "cb1f96e3b38c9982e1e0998c5a178cb57bc8f3becac57d0304a75b032494b544",
+  "content": "{\"fields\":[{\"bbox\":[0.392,0.266,0.687,0.295],\"confidence\":0.99,\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"GST-DEMO-0001\"},{\"bbox\":[0.391,0.334,0.862,0.364],\"confidence\":0.99,\"name\":\"holder_name\",\"sku_code\":null,\"value\":\"Highland Paws Nutrition Pvt Ltd\"},{\"bbox\":[0.386,0.571,0.583,0.6],\"confidence\":0.99,\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"01 APR 2020\"},{\"bbox\":[0.386,0.64,0.592,0.667],\"confidence\":0.99,\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"31 MAR 2030\"}],\"kind\":\"licence_certificate\",\"legible\":true,\"notes\":\"Document header states SAMPLE DOCUMENT - FICTIONAL - NOT A REAL LICENCE with SAMPLE watermark.\"}"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "docs_V001_label_HP_D02",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1712,
+  "output_tokens": 773,
+  "checksum": "4b0c30073da2d9146e4d2521a8a0f670dc0c3b6a96c5a94b15a0dcecb3e5a927",
+  "content": "{\"fields\":[{\"bbox\":[0.04,0.168,0.885,0.199],\"confidence\":0.99,\"name\":\"product_name\",\"sku_code\":null,\"value\":\"Alpine Chicken & Sweet Potato Adult Value Pack\"},{\"bbox\":[0.27,0.741,0.34,0.766],\"confidence\":0.99,\"name\":\"net_quantity\",\"sku_code\":null,\"value\":\"6 kg\"},{\"bbox\":[0.276,0.786,0.45,0.81],\"confidence\":0.99,\"name\":\"mrp\",\"sku_code\":null,\"value\":\"Rs. 4,999\"},{\"bbox\":[0.61,0.282,0.713,0.305],\"confidence\":0.99,\"name\":\"protein_pct\",\"sku_code\":null,\"value\":\"32.0 %\"},{\"bbox\":[0.277,0.824,0.56,0.848],\"confidence\":0.99,\"name\":\"fssai_number\",\"sku_code\":null,\"value\":\"FSSAI-DEMO-0001\"},{\"bbox\":[0.068,0.646,0.547,0.6700000000000001],\"confidence\":0.98,\"name\":\"claims_text\",\"sku_code\":null,\"value\":\"Grain-free. Single-source chicken.\"}],\"kind\":\"product_label\",\"legible\":true,\"notes\":\"\"}"
+}

@@ -140,6 +140,14 @@ def test_run_tools_rejects_fixture_calling_unoffered_tool():
 
 def test_run_tools_replay_falls_back_to_mock_degraded(monkeypatch):
     monkeypatch.setattr(settings, "model_mode", "replay")
+    real = llm._load_fixture
+
+    def no_golden(kind, stage, task):  # every vendor now has a recorded stage fixture; simulate a missing one
+        if kind == "golden":
+            raise llm.FixtureMissing(f"{kind}/{stage}/{task}")
+        return real(kind, stage, task)
+
+    monkeypatch.setattr(llm, "_load_fixture", no_golden)
     res = run(llm.run_tools("intake", "screen_V001", MSGS, screen_tools(), schema=ScreenFinal))
     assert res.mode == "replay" and res.degraded and len(res.steps) == 2
 
@@ -224,7 +232,9 @@ def test_live_loop_stops_at_max_steps_and_forces_a_final_answer(live):
     client = live([loop_call(1), loop_call(2), reply(GOOD_FINAL)])
     res = run(llm.run_tools("intake", "screen_V002", MSGS, screen_tools(), schema=ScreenFinal, max_steps=2))
     assert len(res.steps) == 2 and res.parsed.decision == "pass"
-    assert "tool_choice" not in client.calls[0] and client.calls[2]["tool_choice"] == "none"
+    assert "tool_choice" not in client.calls[0] and "tools" in client.calls[0]
+    # the live API only supports tool_choice "auto" ("none" -> 400), so the forced final answer withholds the tools
+    assert "tool_choice" not in client.calls[2] and "tools" not in client.calls[2]
 
 
 def test_live_loop_repairs_an_invalid_final_once(live):

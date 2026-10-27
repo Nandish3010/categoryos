@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "catalog",
+  "task": "catalog_copy_V003",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1040,
+  "output_tokens": 2159,
+  "checksum": "c87f9bf5891b82ffbe3fe15d676a68b01d60c06b2db79b2f885923b1494c2d98",
+  "content": "{\"items\": [{\"attributes\": {}, \"bullets\": [\"Cotton rope design for tug games\", \"Suitable for chewing play\", \"1 Pc pack for dogs\"], \"compliance_flags\": [], \"description\": \"Cotton rope tug toy for dogs. Good for chewing and tug games as described by vendor.\", \"sku_code\": \"ST-101\", \"title\": \"Cotton Rope Tug Toy for Dogs - 1 Pc\"}, {\"attributes\": {}, \"bullets\": [\"Nylon medium dog collar\", \"Adjustable fit\", \"Quick-release buckle\"], \"compliance_flags\": [], \"description\": \"Adjustable nylon collar in medium size for dogs. Features a quick-release buckle.\", \"sku_code\": \"ST-201\", \"title\": \"Nylon Dog Collar Medium - Quick-Release Buckle\"}, {\"attributes\": {}, \"bullets\": [\"Padded mesh harness in medium size\", \"Adjustable design\", \"Reflective strips\"], \"compliance_flags\": [], \"description\": \"Adjustable dog harness in medium size. Made with padded mesh and reflective strips.\", \"sku_code\": \"ST-202\", \"title\": \"Adjustable Padded Mesh Dog Harness Medium\"}, {\"attributes\": {}, \"bullets\": [\"Stainless steel pet bowl\", \"750 ml capacity\", \"For pet food or water\"], \"compliance_flags\": [], \"description\": \"Stainless steel pet bowl with 750 ml capacity. Suitable for everyday pet feeding.\", \"sku_code\": \"ST-204\", \"title\": \"Stainless Steel Pet Bowl 750ml\"}]}"
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V001_price_list_p1_reread",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1308,
+  "output_tokens": 3285,
+  "checksum": "b63dc3f27a36d0ccc7b6ba7ddf3f0662ac832b30359922117440a6e90f96d62e",
+  "content": "{\"reads\": [{\"name\": \"price\", \"sku_code\": \"HP-D01\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-D02\", \"value\": \"3,150.00\"}, {\"name\": \"price\", \"sku_code\": \"HP-D03\", \"value\": \"1,014.00\"}, {\"name\": \"price\", \"sku_code\": \"HP-D04\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-D06\", \"value\": \"3,352.00\"}, {\"name\": \"price\", \"sku_code\": \"HP-D07\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-W01\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-W02\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-W03\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-T01\", \"value\": \"\"}, {\"name\": \"price\", \"sku_code\": \"HP-T02\", \"value\": \"\"}]}"
+}

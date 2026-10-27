@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V001_fssai_certificate",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1898,
+  "output_tokens": 547,
+  "checksum": "21742c9731eca2b71d59e500d2fea409928085e526fa20fa019364bc35566514",
+  "content": "{\"fields\":[{\"bbox\":[0.385,0.247,0.695,0.28],\"confidence\":0.99,\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"FSSAI-DEMO-0001\"},{\"bbox\":[0.39,0.323,0.83,0.355],\"confidence\":0.99,\"name\":\"holder_name\",\"sku_code\":null,\"value\":\"Highland Paws Nutrition Pvt Ltd\"},{\"bbox\":[0.39,0.558,0.595,0.59],\"confidence\":0.99,\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"16 AUG 2022\"},{\"bbox\":[0.398,0.643,0.597,0.672],\"confidence\":0.99,\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"15 AUG 2027\"}],\"kind\":\"licence_certificate\",\"legible\":true,\"notes\":\"\"}"
+}

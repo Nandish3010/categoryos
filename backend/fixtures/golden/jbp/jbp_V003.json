@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "jbp",
+  "task": "jbp_V003",
+  "model": "muse-spark-1.3",
+  "input_tokens": 760,
+  "output_tokens": 1742,
+  "checksum": "fb3933cf8197ea94c26ac691a5044d962079ce7c02902fdbc0cac73f85c2272c",
+  "content": "{\"markdown\": \"# Joint Business Plan \u2014 SnapTail\\n\\n## Overview\\nJoint Business Plan between the Indian online pet retailer and SnapTail covering the shortlisted assortment for launch and sell-through review.\\n\\n## Targets\\n| Metric | Value |\\n| --- | --- |\\n| Shortlisted SKUs | 4 |\\n| Est. monthly GMV INR | 14445.18 |\\n| Est. monthly units | 46.3 |\\n| Blended margin pct | 0.316 |\\n| First order units | 400 |\\n| First order cost INR | 82144.0 |\\n| Payment days | 30 |\\n| Agreed margin pct | 22 |\\n| Agreed MOQ | 400 |\\n\\n## Investments\\n- Brand-funded marketing INR: 0\\n- Launch discount pct: 5\\n- Launch discount days: 30\\n- Brand-funded pct: 5\\n\\n## Promo calendar\\n| Activity | Start | End |\\n| --- | --- | --- |\\n| Listings live | 2026-11-13 | 2026-11-13 |\\n| Launch week: sponsored listings and sampling | 2026-11-13 | 2026-11-19 |\\n| Launch-month discount window | 2026-11-13 | 2026-12-12 |\\n| First sell-through review | 2026-12-13 | 2026-12-13 |\\n\\n## Commitments and next steps\\n- Retailer to go live with ST-202, ST-201, ST-101, ST-204 assortment\\n- Vendor to fund launch discount and support launch-week sampling\\n- Parties to operate on agreed payment days and MOQ terms\\n- Review sell-through at first sell-through review\"}"
+}

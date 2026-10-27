@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "intake",
+  "task": "docs_V003_gst_certificate_reread",
+  "model": "muse-spark-1.3",
+  "input_tokens": 387,
+  "output_tokens": 335,
+  "checksum": "dc4ea9b9c7bba013b7144cd82e8e58cc5bfa04f371fdf61992ecbf989423539c",
+  "content": "{\"reads\":[{\"name\":\"licence_number\",\"sku_code\":null,\"value\":\"GST-DEMO-0003\"},{\"name\":\"valid_from\",\"sku_code\":null,\"value\":\"01 APR 202\"},{\"name\":\"valid_until\",\"sku_code\":null,\"value\":\"31 MAR 202\"}]}"
+}
