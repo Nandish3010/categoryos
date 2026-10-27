@@ -1,0 +1,82 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_event_plan",
+        "args": {
+          "event_id": "payday"
+        }
+      },
+      {
+        "tool": "get_stock_risks",
+        "args": {
+          "event_id": "payday"
+        }
+      },
+      {
+        "tool": "get_vendor_funding",
+        "args": {
+          "event_id": "payday"
+        }
+      }
+    ],
+    "final": {
+      "headline": "Put 24 SKUs on promo for the Payday Sale, with ₹63,096 of vendor funding asked.",
+      "brief": "We promote 24 SKUs. They sell ₹722,024 of GMV over the event and add ₹15,144 of margin after the units pulled forward and the sales taken from near-duplicates. Holding the promo margin floor needs ₹63,096 of vendor funding, which lifts the plan's margin to 21.6%.\n\nNo SKU is at risk of a stock-out at the planned depth.\n\nThe offer from Purrline Foods counts for ₹9,434, 39.6% of our ask on its SKUs; we ask for a bigger share.",
+      "figures": [
+        {
+          "metric": "promo_event_planned_skus",
+          "key": "payday",
+          "value": 24.0,
+          "shown": "24",
+          "text": "payday: SKUs on promo"
+        },
+        {
+          "metric": "promo_event_gmv_inr",
+          "key": "payday",
+          "value": 722023.81,
+          "shown": "₹722,024",
+          "text": "payday: GMV of the SKUs on promo"
+        },
+        {
+          "metric": "promo_event_incremental_margin_inr",
+          "key": "payday",
+          "value": 15144.08,
+          "shown": "₹15,144",
+          "text": "payday: net extra margin"
+        },
+        {
+          "metric": "promo_event_funding_ask_inr",
+          "key": "payday",
+          "value": 63096.48,
+          "shown": "₹63,096",
+          "text": "payday: funding asked"
+        },
+        {
+          "metric": "promo_event_margin_at_ask_pct",
+          "key": "payday",
+          "value": 0.216,
+          "shown": "21.6%",
+          "text": "payday: margin if funded as asked"
+        },
+        {
+          "metric": "promo_offer_counted_inr",
+          "key": "payday:E002?share=20",
+          "value": 9433.58,
+          "shown": "₹9,434",
+          "text": "Purrline Foods: offer value counted"
+        },
+        {
+          "metric": "promo_offer_covers_ask_pct",
+          "key": "payday:E002?share=20",
+          "value": 0.3964,
+          "shown": "39.6%",
+          "text": "Purrline Foods: share of the ask covered"
+        }
+      ]
+    }
+  }
+}

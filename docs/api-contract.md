@@ -670,3 +670,20 @@ Approving is SIMULATED: it queues a catalog update in memory; nothing leaves the
 | `GET /api/ops/catalog/outbox` | queued simulated catalog updates |
 | `GET /api/ops/catalog/labels/{name}` | a pack-label image listed in the manifest (`404 unknown_catalog_label` otherwise) |
 | `POST /api/ops/reset` | also clears the catalog queue cache and outbox |
+
+
+## Run: promotions and event planner
+
+- `GET /api/ops/promotions`: the calendar (playbook `promotions.events`) with each event's plan headline. No model call.
+- `GET /api/ops/promotions/{event_id}[?inject=1]`: the plan (`rows` planned and excluded, `vendors` with the funding ask and the valued offer, `pos` stock-up POs, `totals`),
+  the model's `headline` / `brief` (`struck` lists removed sentences), `readings` of the vendor replies (claims with attempts), `drafts` (kind `promo_funding`),
+  `claims` / `verification` / `trace`, `decision`. Unknown event: 404 `unknown_promo_event`.
+- `POST /api/ops/promotions/{event_id}/approve` (body `{sku_codes?, note?}`) queues the simulated price changes and stock-up POs; `.../reject`. 409 `promo_plan_decided`, `promo_plan_empty`.
+- Funding emails are approved in the shared outbox (`/api/ops/outbox/{id}/approve`).
+
+## Run: competitor price monitor
+
+- `GET /api/ops/price-watch[?inject=1]`: `counts`, `headline` / `narrative`, `actions` (kind undercut / breach / blip / trend, recommendation match / hold / ask_vendor_funding / flag_breach / escalate, numbers, `series`, `claims`, `decision`),
+  `skus` (every SKU scanned), `drafts` (kind `price_watch`), `claims` / `verification` / `trace`.
+- `POST /api/ops/price-watch/actions/{id}/approve|reject`: simulated; a match records the price change, a vendor action approves the vendor message. 404 `unknown_price_watch_action`, 409 `price_watch_action_decided`.
+- Both modules: `POST .../reset` (demo key). Assumed live shapes: see the module docstrings (`ops/promotions/agent.py`, `ops/pricewatch/agent.py`).

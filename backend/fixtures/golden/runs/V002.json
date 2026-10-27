@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "stage": "research"
   },
   {
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "stage": "po"
   }
  ],
@@ -2138,7 +2138,7 @@
      "vendor_id": "V002"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=892365a03bb9",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=c94c7969206c",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
@@ -2156,7 +2156,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -3725,8 +3725,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-    "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+    "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -3908,7 +3908,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -4102,7 +4102,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -4195,7 +4195,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -4528,7 +4528,7 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V002"
     },
-    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
@@ -6151,7 +6151,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -7925,8 +7925,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-    "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+    "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
@@ -8128,7 +8128,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -8192,7 +8192,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -8351,8 +8351,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-    "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+    "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
@@ -8379,9 +8379,9 @@
   }
  ],
  "meta": {
-  "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+  "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T04:07:59+00:00",
+  "recorded_at": "2026-10-27T05:02:19+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -8412,7 +8412,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=892365a03bb9",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=c94c7969206c",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -8430,7 +8430,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -9999,8 +9999,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-      "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+      "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+      "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -10182,7 +10182,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+      "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -10209,7 +10209,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "moq": 800,
    "offset": 0.0,
    "research": {
@@ -10928,8 +10928,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-    "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+    "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+    "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -10962,7 +10962,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=f396fbc444e2",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=9dd49d8dce21",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -10980,7 +10980,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -12549,8 +12549,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
-      "narrative_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
+      "metrics_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
+      "narrative_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -12732,7 +12732,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
+      "metrics_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -12759,7 +12759,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
+   "metrics_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
    "moq": 800,
    "offset": 2.0,
    "research": {
@@ -13478,8 +13478,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
-    "narrative_hash": "f396fbc444e2f060c8bc7adfb55f9999d03975a5b470506c7c8c880052390e24",
+    "metrics_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
+    "narrative_hash": "9dd49d8dce217fd078eac0628aaf9686fdb3e3bd8d3a83dfc76f0a3620f28c9d",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -13512,7 +13512,7 @@
        "vendor_id": "V002"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=07468af02200",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=188588, metrics_hash=dcd70f21816e",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
@@ -13530,7 +13530,7 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V002"
       },
-      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V002, target_margin_pct_offset=0, metrics_hash=c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
@@ -15099,8 +15099,8 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
-      "narrative_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
+      "metrics_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
+      "narrative_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
@@ -15282,7 +15282,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
+      "metrics_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -15309,7 +15309,7 @@
      "type": "done"
     }
    ],
-   "metrics_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
+   "metrics_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
    "moq": 800,
    "offset": 4.0,
    "research": {
@@ -16028,8 +16028,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
-    "narrative_hash": "07468af0220063708906e9ba20d6bcc4e6b9db2bdcfb617fbfd88789a85596c0",
+    "metrics_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
+    "narrative_hash": "dcd70f21816e1e36a529cc4e65a37fa644febebdf1fc823c253abe618db7554b",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -17174,8 +17174,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-   "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+   "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
@@ -18541,7 +18541,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -18567,7 +18567,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -19642,7 +19642,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -19791,8 +19791,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-   "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+   "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -20514,8 +20514,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
-   "narrative_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
+   "narrative_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -20687,7 +20687,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "892365a03bb9bb23bc4e6d75f498ab48441f97fde3a7be95ede7bf0ad600bbb1",
+   "metrics_hash": "c94c7969206c027f6598975f1981538754eb877a8740f2842d14cff8be3aa714",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

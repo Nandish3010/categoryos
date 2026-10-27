@@ -25,7 +25,12 @@ from app.ops.promotions import data as pdata
 from app.ops.promotions import engine
 from app.ops.promotions import prompts as pr
 from app.ops.promotions import tools as pt
-from app.ops.promotions.schemas import FundingReading, FundingRepliesFinal, FundingTerm, PromoBriefFinal
+from app.ops.promotions.schemas import (
+    FundingReading,
+    FundingRepliesFinal,
+    FundingTerm,
+    PromoBriefFinal,
+)
 from app.ops.review import impact_for
 from app.ops.runclaims import compact, fmt_shown, strike
 from app.ops.schemas import EmailDraft, EmailsFinal, Figure

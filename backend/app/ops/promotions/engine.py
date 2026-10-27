@@ -289,7 +289,6 @@ def _plan_rows(ev: PromoEvent, fs: dict[str, Fact], pr: Promotions) -> list[dict
     allowed = [x / 100 for x in pr.discount.steps_pct if x <= pr.discount.max_pct + EPS]
     chosen: dict[str, tuple[float, dict[str, Any]]] = {}
     reasons: dict[str, str] = {}
-    start = ev_days[0]
 
     # eligibility on stock before any promo: the SKU must have stock at the start
     eligible: dict[str, Fact] = {}
@@ -357,7 +356,7 @@ def cannibal_cost_per_unit(f: Fact, fs: dict[str, Fact], sibs: dict[str, list[tu
     off = [(sim, code) for code, sim in sibs.get(f.code, []) if code not in promoted]
     if not off or share <= 0:
         return {}
-    sim, code = max(off)
+    _sim, code = max(off)
     s = fs[code]
     return {f.code: share * (s.price - s.cost)}
 

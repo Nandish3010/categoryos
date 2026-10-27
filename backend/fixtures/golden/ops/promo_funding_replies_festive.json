@@ -1,0 +1,118 @@
+{
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "steps": [
+      {
+        "tool": "get_funding_replies",
+        "args": {
+          "event_id": "festive"
+        }
+      }
+    ],
+    "final": {
+      "readings": [
+        {
+          "reply_id": "F001",
+          "stance": "conditional_offer",
+          "summary": "Barkley funds half the markdown if we guarantee a top-3 banner and the range sells a very high target.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": [
+            {
+              "share_pct": 50,
+              "scope": [],
+              "threshold_units": 3400,
+              "window_days": 7,
+              "banner_top_n": 3,
+              "quote": "We can fund 50% of the markdown on the Barkley range, provided you guarantee a top-3 banner and the range sells 3,400 units between 6th and 12th Nov."
+            }
+          ]
+        },
+        {
+          "reply_id": "F002",
+          "stance": "offer",
+          "summary": "Purrline funds a flat share of the markdown on every promoted SKU.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": [
+            {
+              "share_pct": 30,
+              "scope": [],
+              "threshold_units": null,
+              "window_days": null,
+              "banner_top_n": null,
+              "quote": "Purrline will fund 30% of the markdown on every Purrline SKU you put on promo."
+            }
+          ]
+        },
+        {
+          "reply_id": "F003",
+          "stance": "conditional_offer",
+          "summary": "NutriPaws supports a share of the discount if the range reaches a sales target.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": [
+            {
+              "share_pct": 53,
+              "scope": [],
+              "threshold_units": 1150,
+              "window_days": 7,
+              "banner_top_n": null,
+              "quote": "NutriPaws can support 35% of the discount cost across our range if the range sells 1,150 units during 6-12 Nov."
+            }
+          ]
+        },
+        {
+          "reply_id": "F004",
+          "stance": "decline",
+          "summary": "Litterly will not fund any discount this quarter.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": []
+        },
+        {
+          "reply_id": "F005",
+          "stance": "conditional_offer",
+          "summary": "Groomwell funds a share on two hero SKUs in return for a top-3 banner.",
+          "lead_time_days": null,
+          "lead_time_quote": "",
+          "terms": [
+            {
+              "share_pct": 25,
+              "scope": [
+                "GW-01",
+                "GW-03"
+              ],
+              "threshold_units": null,
+              "window_days": null,
+              "banner_top_n": 3,
+              "quote": "Groomwell will fund 25% of the markdown on GW-01 and GW-03 for the Festive Sale if you give us a top-3 banner placement."
+            }
+          ]
+        },
+        {
+          "reply_id": "F006",
+          "stance": "offer",
+          "summary": "Tailwind funds a share on two SKUs and cannot restock before the sale.",
+          "lead_time_days": 14,
+          "lead_time_quote": "our lead time is 14 days",
+          "terms": [
+            {
+              "share_pct": 40,
+              "scope": [
+                "TW-01",
+                "TW-02"
+              ],
+              "threshold_units": null,
+              "window_days": null,
+              "banner_top_n": null,
+              "quote": "We can fund 40% of the markdown on TW-01 and TW-02."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

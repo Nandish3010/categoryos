@@ -97,3 +97,14 @@ near-duplicates), `vendor_price_list.csv` (an old list, the latest list and one 
 records, some expired) and `catalog_labels/` (three pack-label photos plus `manifest.json`; Pillow and PyYAML needed, reusing the
 label canvas of `generate_docs.py`). The matching mock vision fixtures go to `backend/fixtures/mock/ops/docs_E00x_label_*.json`
 (copy them to `fixtures/golden/ops/`). The planted issues are listed at the top of the generator. It only reads `ops/skus.csv`.
+
+## Promotions and price watch (Run)
+
+`python3 data/generate_promotions.py` (`make data-promotions`) writes `ops/promo_vendor_replies.json`: seven messy vendor emails about funding a sale
+(the calendar itself is the playbook's `promotions.events`). Planted: E001 offers 50% of the markdown only if its range sells about 4.5x what it
+sells in the event (near-zero chance, countered); E002 flat 30%; E003 35% on a reachable target; E005 declines; E006 25% for a top-3 banner; E004
+40% on two SKUs and a 14 day lead time. `python3 data/generate_price_watch.py` (`make data-price-watch`) writes `ops/price_snapshots.csv` (30 days,
+3 marketplaces, competitor and vendor-storefront prices for the 36 SKUs), `price_watch_map.csv` (minimum advertised prices) and `price_watch_meta.json`.
+Planted: BK-01 sustained 7% undercut that breaks the margin floor; GW-01 sustained 9% undercut that is worth matching; NP-04 a one-day 14% dip that must
+not be matched; TW-02 a falling trend; PL-03 an old dip that recovered; LT-01 the vendor itself 12% under us on another marketplace (and under MAP).
+Both are seed 42, byte-identical on re-run, and do not touch the other generators.

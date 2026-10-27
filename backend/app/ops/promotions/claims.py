@@ -107,7 +107,7 @@ def offer_params(key: str) -> dict[str, Any]:
 
 def valued_offer(key: str) -> dict[str, Any]:
     """The engine's value of the funding offer written in ``key`` (cached: the deal evaluator runs a Monte Carlo)."""
-    event, vendor, _, _ = _split(key)
+    _event, vendor, _, _ = _split(key)
     if vendor is None:
         raise MissingInput(f"{key!r} needs a vendor", fix="Use festive:E001?share=50")
     return _valued(key, policy.policy_hash(), data_sha())
