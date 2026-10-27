@@ -165,7 +165,7 @@ export function PoTrackerPage() {
             <ol className="grid gap-2 p-4 md:grid-cols-4">
               {data.ladder.map((r, i) => (
                 <li key={r.name} className="rounded-card border border-border bg-bg p-3">
-                  <div className="text-xs text-text-dim">Rung {i + 1} {"·"} from {r.days_overdue > 0 ? `${r.days_overdue} days overdue` : r.days_overdue === 0 ? "the due date" : `${-r.days_overdue} days before due`}</div>
+                  <div className="text-xs text-text-dim">Rung {i + 1} {"·"} from {r.days_overdue > 0 ? `${r.days_overdue} ${r.days_overdue === 1 ? "day" : "days"} overdue` : r.days_overdue === 0 ? "the due date" : `${-r.days_overdue} ${r.days_overdue === -1 ? "day" : "days"} before due`}</div>
                   <div className="text-sm font-medium">{r.name}</div>
                   <div className="text-xs text-text-dim">{r.channel} {"·"} {r.owner}</div>
                 </li>
