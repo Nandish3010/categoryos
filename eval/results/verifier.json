@@ -1,0 +1,138 @@
+{
+  "classes": [
+    {
+      "beyond_tolerance": 23,
+      "caught": 23,
+      "caught_beyond_tolerance": 23,
+      "class": "digit_transposition",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Digit transposition",
+      "missed": [
+        "digit_transposition:18",
+        "digit_transposition:22"
+      ],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 0.92,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "decimal_shift",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Decimal shift",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "unit_confusion",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "kg vs g (or L vs ml)",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "rs_vs_paise",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Rs vs paise",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "wrong_row",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Wrong row",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "wrong_column",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Wrong column",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "rounding_beyond_tolerance",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Rounding beyond tolerance",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    },
+    {
+      "beyond_tolerance": 25,
+      "caught": 25,
+      "caught_beyond_tolerance": 25,
+      "class": "spelled_number",
+      "controls": 25,
+      "false_positives": 0,
+      "label": "Spelled-out number",
+      "missed": [],
+      "planted": 25,
+      "precision": 1.0,
+      "recall": 1.0,
+      "recall_beyond_tolerance": 1.0
+    }
+  ],
+  "overall": {
+    "caught": 198,
+    "controls": 200,
+    "false_positives": 0,
+    "planted": 200,
+    "precision": 1.0,
+    "recall": 0.99,
+    "recall_beyond_tolerance": 1.0
+  },
+  "per_class": 25,
+  "seed": 42,
+  "tolerances": {
+    "inr": 1.0,
+    "pct": 0.01,
+    "qty": 0.0,
+    "ratio": 0.005,
+    "score": 0.5,
+    "units": 0.0
+  }
+}

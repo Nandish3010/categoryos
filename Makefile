@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data lint live record smoke requirements
+.PHONY: setup dev demo test data lint live record smoke requirements eval
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -38,6 +38,12 @@ live:
 #   cd backend && MODEL_MODE=live RECORD=1 uv run python -m app.record --vendor V001
 record:
 	cd backend && uv run python -m app.record --vendor all
+
+# Measured eval: verifier vs planted errors, the extraction agent through two models, prompt-injection variants.
+# Mock by default (free, no network; the agent rows are scripted stand-ins and say so). Writes eval/results/*.json and
+# refreshes the table in the README. For the real models: cd backend && MODEL_MODE=live uv run python ../scripts/measure.py --live
+eval:
+	cd backend && uv run python ../scripts/measure.py
 
 # Regenerate the pinned requirements used by the Modal image (commit the result).
 requirements:

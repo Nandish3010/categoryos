@@ -12,8 +12,8 @@ final answer as an assistant message and the verifier feedback as a user message
 stays unresolved.
 """
 
-from collections.abc import Callable
-from typing import Any
+from collections.abc import Awaitable, Callable
+from typing import Any, Literal
 
 from app import llm, policy
 from app.agents.context import RunContext
@@ -21,6 +21,7 @@ from app.errors import CategoryOSError
 from app.schemas import Claim, ClaimAttempt, ClaimFix, FixFinal
 from app.verify import VerifySummary
 
+Ask = Callable[[list[Claim], int], Awaitable[tuple[dict[str, ClaimFix] | None, str | None]]]  # (rejected, attempt) -> fixes
 Rebuild = Callable[[Claim, ClaimFix], Claim | None]  # claim carrying the corrected answer, still unverified (same id)
 Check = Callable[[list[Claim]], list[Claim]]  # verify them (the verifier plus any extra rule the stage applies)
 
@@ -60,6 +61,9 @@ async def _ask(
     previous: str,
     pending: list[Claim],
     attempt: int,
+    *,
+    model: str | None = None,
+    provider: Literal["meta", "baseten"] = "meta",
 ) -> tuple[dict[str, ClaimFix] | None, str | None]:
     notes = "\n".join(feedback(c) for c in pending)
     ask = (
@@ -68,7 +72,7 @@ async def _ask(
     )
     msgs = [*messages, {"role": "assistant", "content": previous}, {"role": "user", "content": ask}]
     try:
-        res = await llm.call(stage, msgs, task=f"{task}__fix{attempt}", schema=FixFinal)
+        res = await llm.call(stage, msgs, task=f"{task}__fix{attempt}", schema=FixFinal, model=model, provider=provider)
     except CategoryOSError as exc:  # no scripted fixture, no credits, provider down: stay unresolved, never block
         return None, f"{exc.code}: no corrected answer available"
     ctx.emit(
@@ -93,12 +97,16 @@ async def self_correct(
     previous: str,
     rebuild: Rebuild,
     check: Check,
+    ask: Ask | None = None,
+    model: str | None = None,
+    provider: Literal["meta", "baseten"] = "meta",
 ) -> list[Claim]:
     """Return ``claims`` (same order and ids) with every rejected model extraction given its chance to be corrected.
 
     ``claims`` are already verified. ``rebuild`` turns a claim plus the agent's fix into a new unverified claim and
     ``check`` verifies it; the caller keeps whatever other state (narrative, structured output) it needs in those two
-    closures. Corrected claims carry their ``attempts`` timeline."""
+    closures. Corrected claims carry their ``attempts`` timeline. ``ask`` replaces the model call (the eval harness drives
+    its own agents through the same loop); ``model`` / ``provider`` pick which model is asked."""
     limit = policy.get().verifier.max_self_corrections
     out = list(claims)
     index = {c.id: i for i, c in enumerate(out)}
@@ -114,7 +122,10 @@ async def self_correct(
     attempt = 0
     while attempt < limit and (todo := pending()):
         attempt += 1
-        fixes, note = await _ask(ctx, stage, task, messages, previous, todo, attempt)
+        if ask is not None:
+            fixes, note = await ask(todo, attempt)
+        else:
+            fixes, note = await _ask(ctx, stage, task, messages, previous, todo, attempt, model=model, provider=provider)
         ctx.emit(
             "self_correction",
             stage,

@@ -43,6 +43,52 @@ Two features carry the product:
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
 
+## Measured eval
+
+`make eval` runs three checks and writes `eval/results/*.json`: the **verifier** against planted errors (digit
+transposition, decimal shift, kg vs g, Rs vs paise, wrong row, wrong column, rounding beyond tolerance, spelled-out
+numbers) with matched correct controls; the **extraction agent** through two models, graded by the verifier and the
+self-correction loop; and **prompt injection** variants hidden in vendor text. It defaults to mock (free): the verifier
+and injection checks run real code on synthetic data, the agent rows use scripted stand-ins. `--live` runs the models
+(needs `MODEL_MODE=live`, keys, credits). The table below is injected by `scripts/measure.py` and always names its mode.
+
+<!-- eval:start -->
+**Mode: mock.** These numbers come from a mock run: the verifier and injection checks are real code on synthetic data, but the agent rows use scripted stand-ins for the models, so they are NOT measurements of Muse Spark. Seed 42, run 2026-10-27.
+
+**Verifier** (no model; synthetic sheet, planted errors, matched correct controls)
+
+| Error class | Planted | Caught | Recall | Recall (error above tolerance) | False positives (of matched controls) | Precision |
+|---|---|---|---|---|---|---|
+| Digit transposition | 25 | 23 | 92% | 100% (23/23) | 0 of 25 | 100% |
+| Decimal shift | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| kg vs g (or L vs ml) | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Rs vs paise | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Wrong row | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Wrong column | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Rounding beyond tolerance | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| Spelled-out number | 25 | 25 | 100% | 100% (25/25) | 0 of 25 | 100% |
+| **All** | 200 | 198 | 99.0% | 100.0% | 0 of 200 | 100.0% |
+
+Misses are errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages), which the verifier accepts by design.
+
+**Extraction agent** (160 tasks, mode: mock)
+
+| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Latency / task |
+|---|---|---|---|---|---|---|---|---|
+| muse-spark-1.3 (model A) | 94.4% | 9 | 8 | 89% | 99.4% | 0 | n/a (mock) | n/a (mock) |
+| Muse Spark Open via Baseten (model B) | 84.4% | 25 | 21 | 84% | 97.5% | 0 | n/a (mock) | n/a (mock) |
+
+_Mock: scripted stand-ins with a fixed error profile replace the models. The loop, feedback, verifier and scoring are real; the error rates are parameters, not measurements. Cost and latency are not reported._
+
+**Prompt injection** (30 variants hidden in vendor text, 30 look-alike benign texts)
+
+| Detector | Injections caught | Benign texts wrongly flagged |
+|---|---|---|
+| Regex guard (playbook `screening.injection_patterns`) | 9/30 (30%) | 0/30 (0%) |
+| Model | not run (mock) | not run (mock) |
+| Regex + model | 9/30 (30%) | |
+<!-- eval:end -->
+
 ## Meta models used
 
 | Model | What it does here | Where (file) | Without it |
