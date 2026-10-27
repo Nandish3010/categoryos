@@ -1,0 +1,6 @@
+sku_id,brand,name,category,subcategory,pack_size,mrp,selling_price,cost_price,margin_pct,monthly_units,rating,review_count,in_stock
+PC-AU-001,Boomtone,Wireless Earbuds Bluetooth 5.3,audio,earbuds,1 pc,2199,1799,1500,16.6,320,4.1,5200,Y
+PC-AU-002,Boomtone,Portable Bluetooth Speaker 5W,audio,speakers,1 pc,1499,1199,950,20.8,210,4.0,2600,Y
+PC-MA-001,ChargeRight,Type-C Fast Charger 33W,mobile accessories,power,1 pc,1299,999,700,29.9,400,4.2,6100,Y
+PC-MA-002,ChargeRight,Power Bank 10000mAh,mobile accessories,power,1 pc,1499,1199,880,26.6,380,4.1,4300,Y
+PC-CA-001,DeskPro,Laptop Stand Foldable,computing accessories,other,1 pc,1099,899,620,31.0,120,4.3,1500,Y

@@ -61,6 +61,7 @@ class Settings(BaseSettings):
     upload_max_active: int = 300  # sandbox vendors alive at once, so a flood cannot fill the disk
     upload_live_budget_usd_per_ip: float = 0.50  # model spend one IP may cause on sandbox vendors without the demo key
     upload_cleanup_interval_min: float = 30
+    trust_forwarded_for: bool = False  # behind a proxy: take the client address from X-Forwarded-For (last entry)
 
     backend_port: int = 8001
     frontend_origin: str | None = None

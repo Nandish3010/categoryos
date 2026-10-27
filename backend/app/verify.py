@@ -10,9 +10,8 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from app import docparse, policy
-from app.config import settings
-from app.constants import ALLOWED_VENDORS
+from app import docparse, policy, registry
+from app.constants import ALLOWED_VENDORS, VENDOR_ID_PATTERN
 from app.data_loader import doc_files, load_sheet, load_transcript
 from app.errors import CategoryOSError
 from app.metrics import METRIC_UNITS, apply_levers, build_base, compute_metric
@@ -30,7 +29,7 @@ COMMIT_METRICS = {
     "commit_returns": "units",
 }
 EXTRACTION_METRICS = {"pack_qty": "qty"}
-_VENDOR_ALT = "|".join(ALLOWED_VENDORS)
+_VENDOR_ALT = VENDOR_ID_PATTERN  # built-in vendors and sandbox ids; existence is checked in _resolve
 _TRANSCRIPT = re.compile(rf"^vendors/({_VENDOR_ALT})/call_transcript\.json$")
 _VENDOR_SHEET = re.compile(rf"^vendors/({_VENDOR_ALT})/sku_sheet\.csv$")
 _PCT_CELL = re.compile(r"(\d+(?:\.\d+)?)\s*%")
@@ -68,15 +67,23 @@ def allowed_sources() -> frozenset[str]:
     return frozenset(files)
 
 
+_SANDBOX_FILE = re.compile(r"^vendors/(U-[a-z0-9]{8})/(.+)$")
+
+
 def _normalize(file: str) -> str:
     return posixpath.normpath(file.replace("\\", "/"))
 
 
 def _resolve(file: str) -> Path | None:
     norm = _normalize(file)
+    sandbox = _SANDBOX_FILE.match(norm)
+    if sandbox:  # a sandbox vendor's own files: only the fixed names and the documents its manifest lists
+        vid, rest = sandbox.group(1), sandbox.group(2)
+        ok = registry.exists(vid) and (rest in registry.VENDOR_FILES or (rest.startswith("docs/") and rest[5:] in doc_files(vid)))
+        return registry.resolve_data_file(norm) if ok else None
     if norm not in allowed_sources():
         return None
-    return Path(settings.data_dir) / norm
+    return registry.resolve_data_file(norm)
 
 
 def file_sha256(file: str) -> str:
@@ -235,7 +242,7 @@ def _verify_vision(claim: Claim, rel_file: str) -> Claim:
     if not docparse.valid_bbox(ev.bbox):
         return _finish(claim, "rejected", f"the bounding box {ev.bbox} does not lie on the page")
     try:
-        page = (Path(settings.data_dir) / rel_file).read_bytes()
+        page = (_resolve(rel_file) or Path()).read_bytes()
         digest = docparse.region_digest(page, ev.bbox)
     except (OSError, ValueError) as exc:
         return _finish(claim, "rejected", f"the scan cannot be opened: {exc}")

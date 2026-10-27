@@ -21,6 +21,7 @@ STATE_DIR = "/state"
 DATA_DIR = "/root/data/synthetic"
 FIXTURES_DIR = "/root/fixtures"
 CONFIG_DIR = "/root/config"
+SAMPLES_DIR = "/root/samples"
 
 image_env = {
     "MODEL_MODE": os.environ.get("MODEL_MODE", "replay"),
@@ -30,6 +31,9 @@ image_env = {
     "POLICY_LOCAL_PATH": f"{STATE_DIR}/policy.local.yaml",  # playbook edits survive restarts on the Volume
     "DB_PATH": f"{STATE_DIR}/categoryos.db",
     "LEDGER_PATH": f"{STATE_DIR}/ledger.json",
+    "STATE_DIR": f"{STATE_DIR}/sandbox",  # uploaded sandbox vendors (24 h TTL) live on the Volume, never in the image
+    "SAMPLES_DIR": SAMPLES_DIR,
+    "TRUST_FORWARDED_FOR": "false",  # set true only once you have confirmed Modal's proxy sets X-Forwarded-For
 }
 if os.environ.get("FRONTEND_ORIGIN"):
     image_env["FRONTEND_ORIGIN"] = os.environ["FRONTEND_ORIGIN"]
@@ -41,6 +45,7 @@ image = (
     # add_local_* must come last: these are mounted at container start, not baked into the image layers
     .add_local_python_source("app")
     .add_local_dir(REPO_DIR / "data" / "synthetic", DATA_DIR)
+    .add_local_dir(REPO_DIR / "data" / "samples", SAMPLES_DIR)
     .add_local_dir(REPO_DIR / "config", CONFIG_DIR, ignore=["policy.local.yaml"])
     .add_local_dir(BACKEND_DIR / "fixtures", FIXTURES_DIR, ignore=["**/__pycache__/**"])
 )

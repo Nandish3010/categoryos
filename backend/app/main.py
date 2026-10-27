@@ -3,11 +3,22 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import Depends, FastAPI, Header, Query, Request
+from fastapi import Depends, FastAPI, File, Form, Header, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
+from fastapi.responses import FileResponse, JSONResponse, Response, StreamingResponse
 
-from app import ledger, media, persist, policy, replay, runner, store
+from app import (
+    ledger,
+    media,
+    persist,
+    policy,
+    registry,
+    replay,
+    runner,
+    sandbox,
+    store,
+    uploads,
+)
 from app.auth import require_demo_key
 from app.config import settings
 from app.constants import ALLOWED_VENDORS, STAGE_META
@@ -36,7 +47,10 @@ async def lifespan(_: FastAPI):
         await store.init()
     for vendor_id in ALLOWED_VENDORS:
         apply_levers(build_base(vendor_id))
+    sandbox.cleanup()  # expired sandbox vendors from a previous run of the server
+    sweeper = asyncio.create_task(sandbox.cleanup_loop())
     yield
+    sweeper.cancel()
     persist.flush()
 
 
@@ -46,6 +60,7 @@ origins = ["http://localhost:3000"]
 if settings.frontend_origin:
     origins.append(settings.frontend_origin)
 
+app.add_middleware(sandbox.SandboxScopeMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -95,7 +110,8 @@ async def vendors() -> list[dict[str, Any]]:
 async def vendor_detail(vendor_id: str) -> dict[str, Any]:
     check_vendor(vendor_id)
     base = build_base(vendor_id)
-    return {**load_application(vendor_id), "id": vendor_id, "sku_count": len(base.skus)}
+    extra = {"sandbox": sandbox.public(vendor_id) | {"skus_without_market_data": sum(1 for s in base.skus if not s.market_data)}} if registry.is_sandbox_id(vendor_id) else {}
+    return {**load_application(vendor_id), "id": vendor_id, "sku_count": len(base.skus), **extra}
 
 
 def check_levers(vendor_id: str, offset: float | None, moq: int | None) -> None:
@@ -228,8 +244,14 @@ async def get_doc(vendor_id: str, file: str) -> FileResponse:
 # ---------- runs ----------
 
 
-async def require_demo_key_if_live(request: Request, x_demo_key: str | None = Header(default=None)) -> None:
-    """Routes that can spend model credits need the demo key only when some stage would run live."""
+async def require_demo_key_if_live(
+    request: Request, vendor_id: str | None = None, x_demo_key: str | None = Header(default=None)
+) -> None:
+    """Routes that can spend model credits need the demo key only when some stage would run live. A sandbox vendor never
+    needs it: without a key (or once its IP budget is spent) it is run rules-only instead."""
+    if registry.is_sandbox_id(vendor_id):
+        sandbox.authorize_run(request, vendor_id or "", x_demo_key)
+        return
     if any_live():
         await require_demo_key(request, x_demo_key)
 
@@ -320,7 +342,8 @@ async def override_stage(run_id: str, stage: str, body: OverrideBody) -> StageRe
 async def replan(vendor_id: str, body: ReplanBody) -> StageResult:
     check_vendor(vendor_id)
     check_levers(vendor_id, body.target_margin_pct_offset, body.moq)
-    return await runner.replan(body.run_id, vendor_id, body.target_margin_pct_offset, body.moq)
+    with registry.scoped(vendor_id):
+        return await runner.replan(body.run_id, vendor_id, body.target_margin_pct_offset, body.moq)
 
 
 @app.post("/api/vendors/{vendor_id}/reject")
@@ -332,3 +355,108 @@ async def reject_vendor(vendor_id: str, body: RejectBody) -> dict[str, Any]:
 async def admin_reset() -> dict[str, bool]:
     await runner.reset()
     return {"ok": True}
+
+
+# ---------- bring your own vendor ----------
+
+MAX_UPLOAD_BODY = 40 * 1024 * 1024  # sheet + application + documents + multipart overhead; refused before parsing
+
+
+@app.get("/api/uploads/options")
+async def upload_options(request: Request, x_demo_key: str | None = Header(default=None)) -> dict[str, Any]:
+    return sandbox.options(sandbox.demo_key_ok(x_demo_key), sandbox.client_ip(request))
+
+
+@app.get("/api/uploads/samples/{name}/sku_sheet.csv")
+async def sample_sheet(name: str) -> FileResponse:
+    return FileResponse(sandbox.sample_dir(name) / "sku_sheet.csv", media_type="text/csv", filename=f"{name}_sample_sku_sheet.csv")
+
+
+async def _read_capped(f: UploadFile, limit: int, what: str) -> bytes:
+    data = await f.read(limit + 1)
+    if len(data) > limit:
+        raise uploads.UploadTooLarge(f"The {what} is over {limit // 1024 // 1024 or limit // 1024} {'MB' if limit >= 1024 * 1024 else 'KB'}")
+    return data
+
+
+@app.post("/api/uploads", status_code=201)
+async def create_upload(
+    request: Request,
+    starter: str = Form("pet"),
+    sample: str | None = Form(None),
+    sheet: UploadFile | None = File(None),  # noqa: B008
+    application: UploadFile | None = File(None),  # noqa: B008
+    company_name: str | None = Form(None),
+    brand_name: str | None = Form(None),
+    vendor_type: str | None = Form(None),
+    categories: str | None = Form(None),
+    margin_offered_pct: float | None = Form(None),
+    payment_terms_days: int | None = Form(None),
+    moq_units: int | None = Form(None),
+    marketing_support_inr: float | None = Form(None),
+    launch_discount_pct: float | None = Form(None),
+    returns_policy: str | None = Form(None),
+    pitch: str | None = Form(None),
+    documents: list[UploadFile] = File(default_factory=list),  # noqa: B008
+    doc_kinds: list[str] = Form(default_factory=list),  # noqa: B008
+    doc_declares: list[str] = Form(default_factory=list),  # noqa: B008
+    x_demo_key: str | None = Header(default=None),
+) -> dict[str, Any]:
+    """Create a sandbox vendor from an uploaded SKU sheet (or a bundled sample). Free: the engine runs without models;
+    model stages run only when allowed (see sandbox.decide_llm_mode)."""
+    length = request.headers.get("content-length")
+    if length and length.isdigit() and int(length) > MAX_UPLOAD_BODY:
+        raise uploads.UploadTooLarge("The upload is too large", fix="Send a smaller sheet and fewer or smaller documents")
+    if sample and sheet is not None:
+        raise uploads.UploadError("Send either a sample or a sheet, not both")
+    sheet_bytes = await _read_capped(sheet, settings.upload_max_sheet_bytes, "sheet") if sheet is not None else None
+    app_in = None
+    if application is not None:
+        app_in = uploads.parse_application_json(await _read_capped(application, settings.upload_max_application_bytes, "application"))
+    elif company_name or brand_name:
+        terms = {
+            k: v
+            for k, v in {
+                "margin_offered_pct": margin_offered_pct,
+                "payment_terms_days": payment_terms_days,
+                "moq_units": moq_units,
+                "marketing_support_inr": marketing_support_inr,
+                "launch_discount_pct": launch_discount_pct,
+                "returns_policy": returns_policy,
+            }.items()
+            if v is not None
+        }
+        app_in = uploads.application_from(
+            {
+                "company_name": company_name or brand_name,
+                "brand_name": brand_name or company_name,
+                "vendor_type": vendor_type,
+                "categories": categories or "",
+                "proposed_terms": terms,
+                "pitch": pitch or "",
+            }
+        )
+    docs = []
+    for i, f in enumerate(documents[: settings.upload_max_docs + 1]):
+        data = await _read_capped(f, settings.upload_max_doc_bytes, "document")
+        kind = doc_kinds[i] if i < len(doc_kinds) else ""
+        docs.append(sandbox.DocIn(data, kind, "", doc_declares[i] if i < len(doc_declares) else ""))
+    keyed = sandbox.demo_key_ok(x_demo_key)
+    return sandbox.create(ip=sandbox.client_ip(request), keyed=keyed, starter=starter, sheet=sheet_bytes, sample=sample, application=app_in, docs=docs)
+
+
+@app.get("/api/vendors/{vendor_id}/export.csv")
+async def export_verdicts(vendor_id: str) -> Response:
+    """The verdict table as CSV. Every cell is neutralised against spreadsheet formula injection."""
+    import csv
+    import io
+
+    check_vendor(vendor_id)
+    lever = apply_levers(build_base(vendor_id))
+    buf = io.StringIO()
+    w = csv.writer(buf, lineterminator="\n")
+    w.writerow(["sku_code", "name", "category", "verdict", "mrp", "cost", "margin_pct", "target_pct", "demand_score", "overlap", "reasons"])
+    for s in lever.skus:
+        row = [s.code, s.name, s.category, s.verdict, s.mrp, s.cost, s.margin_pct, s.target_pct, s.demand_score, s.overlap, "; ".join(s.reasons)]
+        w.writerow([uploads.csv_safe(c) if isinstance(c, str) else c for c in row])
+    return Response(buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{vendor_id}_verdicts.csv"'})

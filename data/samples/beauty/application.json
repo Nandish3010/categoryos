@@ -1,0 +1,25 @@
+{
+  "company_name": "Lumen & Leaf Botanicals Pvt Ltd",
+  "brand_name": "Lumen & Leaf",
+  "contact_name": "Isha Kapoor",
+  "contact_email": "isha.kapoor@example.com",
+  "city": "Mumbai",
+  "years_in_business": 4,
+  "categories": ["skincare", "haircare", "makeup", "fragrance"],
+  "vendor_type": "d2c_brand",
+  "documents": [
+    {"type": "GST", "number": "GST-SAMPLE-B001", "valid_until": "2030-03-31", "status": "valid"},
+    {"type": "PAN", "number": "PAN-SAMPLE-B001", "valid_until": "2099-12-31", "status": "valid"},
+    {"type": "CDSCO cosmetics registration", "number": "CDSCO-SAMPLE-B001", "valid_until": "2028-06-30", "status": "valid"},
+    {"type": "Trademark", "number": "TM-SAMPLE-B001", "valid_until": "2033-01-15", "status": "valid"}
+  ],
+  "proposed_terms": {
+    "margin_offered_pct": 50,
+    "payment_terms_days": 45,
+    "moq_units": 600,
+    "marketing_support_inr": 150000,
+    "launch_discount_pct": 10,
+    "returns_policy": "Credit note for damaged or near-expiry (under 90 days) stock; 45-day sell-through return window"
+  },
+  "pitch": "We make small-batch, fragrance-light skincare and haircare with clean ingredient lists, sold direct in Mumbai and Pune. We want national reach and are happy to fund launch marketing. Sample data for the CategoryOS sandbox."
+}

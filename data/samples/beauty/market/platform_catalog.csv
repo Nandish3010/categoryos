@@ -1,0 +1,7 @@
+sku_id,brand,name,category,subcategory,pack_size,mrp,selling_price,cost_price,margin_pct,monthly_units,rating,review_count,in_stock
+PC-MU-001,Kaya Colour,Matte Lipstick Ruby Red,makeup,lips,4 g,420,380,230,39.5,160,4.2,820,Y
+PC-MU-002,Kaya Colour,Kajal Smudge Proof Black,makeup,eyes,1.2 g,199,179,110,38.5,210,4.1,1500,Y
+PC-SK-001,Dewdrop,Hydrating Moisturiser Light,skincare,moisturisers,100 g,450,399,230,42.3,180,4.3,2100,Y
+PC-SK-002,Dewdrop,Daily Sunscreen Lotion SPF 30,skincare,sun care,50 g,399,349,200,42.7,260,4.0,3000,Y
+PC-HC-001,Root & Co,Hair Growth Oil,haircare,oils and serums,100 ml,350,299,150,49.8,140,4.2,900,Y
+PC-HC-002,Root & Co,Daily Shampoo Mild,haircare,shampoo,200 ml,299,259,140,46.0,230,4.1,1800,Y

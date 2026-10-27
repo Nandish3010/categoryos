@@ -130,11 +130,11 @@ def scoped(vendor_id: str) -> Iterator[None]:
     if not is_sandbox_id(vendor_id):
         yield
         return
-    current = scope.current()
-    if current is not None and current.vendor_id == vendor_id:
+    wanted = scope_for(vendor_id)  # re-read each time: the model mode can change between a request and its run
+    if scope.current() == wanted:
         yield
         return
-    with scope.use(scope_for(vendor_id)):
+    with scope.use(wanted):
         yield
 
 
