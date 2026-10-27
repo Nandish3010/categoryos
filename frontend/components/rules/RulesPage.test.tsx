@@ -14,6 +14,13 @@ const policy = {
   },
   screening: { documents: [{ type: "GST", blocking: true, categories: "all" }], claim_rules: [] },
   research: { demand_min: 0.4, mystery_knob: 7, flag: true },
+  verifier: { tolerances: { pct: 0.01, inr: 1 }, max_self_corrections: 2 },
+  impact: {
+    baseline_status: "placeholder",
+    baseline_minutes: { screening: 30, catalog_listing_per_sku: 20 },
+    team: { category_managers: 6 },
+    target_reduction_pct: 33.3,
+  },
   margins: { categories: { Skincare: { target_pct: 30, min_pct: 20, payment_terms_days: 30 } }, brands: {} },
 };
 
@@ -24,6 +31,13 @@ function resp(over: Partial<PolicyResponse> = {}): PolicyResponse {
       "research.demand_min": { label: "Minimum demand", unit: "0 to 1", min: 0, max: 1, step: 0.05, kind: "number", used_in: ["research"] },
       "research.flag": { label: "Strict mode", kind: "bool" },
       "onboarding.required_terms": { label: "Required terms", kind: "string_list" },
+      "verifier.max_self_corrections": { label: "Self-corrections", help: "How many retries the agent gets.", unit: "retries", min: 0, max: 5, step: 1, kind: "number", used_in: ["research", "negotiate", "catalog"] },
+      "impact.baseline_status": { label: "Baseline status", help: "placeholder: the times and team numbers here are guesses.", kind: "enum", options: ["placeholder", "measured"], used_in: ["impact"] },
+      "impact.baseline_minutes": { label: "Baseline minutes per task", help: "How long the team spends today. Placeholders until you replace them.", used_in: ["impact"] },
+      "impact.baseline_minutes.screening": { label: "Screening", unit: "min", min: 0, max: 6000, step: 5, kind: "number", used_in: ["impact"] },
+      "impact.baseline_minutes.catalog_listing_per_sku": { label: "Catalog listing, per SKU", unit: "min", kind: "number", used_in: ["impact"] },
+      "impact.team.category_managers": { label: "Category managers", help: "People on the category team (placeholder).", kind: "number", used_in: ["impact"] },
+      "impact.target_reduction_pct": { label: "Workload target", unit: "%", kind: "number", used_in: ["impact"] },
     },
     ...over,
   };
@@ -113,6 +127,33 @@ describe("RulesPage", () => {
     const gst = await screen.findByRole("checkbox", { name: "GST applies to all categories" });
     fireEvent.click(gst);
     expect(within(document.body).getByRole("checkbox", { name: "GST category Skincare" })).toBeInTheDocument();
+  });
+
+  it("edits the self-correction retry limit under Verifier", async () => {
+    const puts = setup(resp(), () => json(resp({ hash: "h3" })));
+    open("Verifier");
+    const limit = await screen.findByRole("spinbutton", { name: "Self-corrections" });
+    expect(limit).toHaveValue(2);
+    expect(limit).toHaveAttribute("max", "5");
+    fireEvent.change(limit, { target: { value: "1" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0]).toEqual({ verifier: { max_self_corrections: 1 } });
+  });
+
+  it("renders the Impact section from schema_hints and says the baselines are placeholders", async () => {
+    const puts = setup(resp(), () => json(resp({ hash: "h4" })));
+    open("Impact");
+    const screening = await screen.findByRole("spinbutton", { name: "Screening" });
+    expect(screening).toHaveValue(30);
+    expect(screen.getByRole("spinbutton", { name: "Catalog listing, per SKU" })).toHaveValue(20);
+    expect(screen.getByRole("spinbutton", { name: "Category managers" })).toHaveValue(6);
+    expect(screen.getByText(/Placeholders until you replace them/)).toBeInTheDocument();
+    expect(screen.getByText(/guesses/)).toBeInTheDocument();
+    fireEvent.change(screening, { target: { value: "45" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await waitFor(() => expect(puts).toHaveLength(1));
+    expect(puts[0]).toEqual({ impact: { baseline_minutes: { screening: 45 } } });
   });
 
   it("links to the starter playbooks", async () => {

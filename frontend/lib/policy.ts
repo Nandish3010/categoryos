@@ -38,6 +38,7 @@ export const SECTIONS = [
   { id: "po", label: "PO" },
   { id: "levers", label: "Levers" },
   { id: "verifier", label: "Verifier" },
+  { id: "impact", label: "Impact" },
 ] as const;
 
 export const fetchPolicy = (signal?: AbortSignal) =>

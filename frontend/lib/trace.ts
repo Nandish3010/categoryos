@@ -37,6 +37,30 @@ export function describeEvent(ev: TraceEvent): { title: string; detail: string }
       const text = typeof c.text === "string" ? c.text : typeof c.id === "string" ? c.id : "";
       return { title: `${stage} · claim ${status}`, detail: clip(text) };
     }
+    case "claim_rejected": {
+      const c = (p.claim && typeof p.claim === "object" ? p.claim : p) as Record<string, unknown>;
+      const attempt = typeof p.attempt === "number" ? p.attempt : 0;
+      return {
+        title: `${stage} · claim rejected${attempt > 0 ? ` (retry ${attempt})` : ""}`,
+        detail: [typeof c.text === "string" ? clip(c.text) : "", typeof c.reason === "string" ? clip(c.reason, 60) : ""].filter(Boolean).join(" · "),
+      };
+    }
+    case "self_correction": {
+      const feedback = Array.isArray(p.feedback) && typeof p.feedback[0] === "string" ? clip(p.feedback[0], 100) : "";
+      const answered = p.answered !== false;
+      return {
+        title: `${stage} · self-correction ${String(p.attempt ?? "?")}/${String(p.of ?? "?")}`,
+        detail: answered ? feedback : typeof p.note === "string" ? clip(p.note) : "no corrected answer",
+      };
+    }
+    case "claim_verified": {
+      const c = (p.claim && typeof p.claim === "object" ? p.claim : p) as Record<string, unknown>;
+      return { title: `${stage} · claim corrected`, detail: typeof c.text === "string" ? clip(c.text) : "" };
+    }
+    case "claim_unresolved": {
+      const c = (p.claim && typeof p.claim === "object" ? p.claim : p) as Record<string, unknown>;
+      return { title: `${stage} · claim unresolved`, detail: typeof c.text === "string" ? clip(c.text) : "" };
+    }
     case "stage_result":
       return { title: `${stage} · ${typeof p.status === "string" ? p.status : "result"}`, detail: typeof p.summary === "string" ? clip(p.summary) : "" };
     case "degraded":

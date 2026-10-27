@@ -1,4 +1,4 @@
-import { CheckCircle2, CircleHelp, XCircle } from "lucide-react";
+import { CheckCircle2, CircleHelp, RotateCcw, XCircle } from "lucide-react";
 import type { Claim } from "@/lib/api";
 import { inrExact } from "@/lib/format";
 import { Tag } from "./Chip";
@@ -14,6 +14,8 @@ export function formatClaimValue(value: number | string | null | undefined, unit
       return `${(Math.abs(value) <= 1 ? value * 100 : value).toFixed(1)}%`;
     case "units":
       return `${Math.round(value)} units`;
+    case "qty":
+      return String(Math.round(value * 1000) / 1000);
     case "ratio":
       return value.toFixed(2); // 0-1 scores (demand, overlap), shown as the backend sees them
     default:
@@ -36,16 +38,44 @@ const STATUS = {
   pending: { Icon: CircleHelp, cls: "text-text-dim", label: "Pending" },
 } as const;
 
+/** A claim the verifier rejected at least once and the agent then answered again. */
+export function wasRetried(claim: Claim): boolean {
+  return (claim.attempts?.length ?? 0) > 1;
+}
+
+/** Caught, then fixed by the agent. */
+export function isCorrected(claim: Claim): boolean {
+  return claim.status === "verified" && wasRetried(claim);
+}
+
+function Attempts({ claim }: { claim: Claim }) {
+  const tries = claim.attempts ?? [];
+  return (
+    <ol aria-label="Attempts" className="mt-2 flex flex-col gap-1 border-l-2 border-border pl-3 text-xs">
+      {tries.map((a) => (
+        <li key={a.attempt} data-status={a.status} className={a.status === "verified" ? "text-ok" : "text-bad"}>
+          <span className="num">
+            {a.attempt === 0 ? "First answer" : `Retry ${a.attempt}`}: {formatClaimValue(a.value, claim.unit)} {"·"}{" "}
+            {a.status === "verified" ? "verified" : "rejected"}
+          </span>
+          {a.status !== "verified" && a.reason ? <span className="block text-text-dim">{a.reason}</span> : null}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 export function ClaimRow({ claim }: { claim: Claim }) {
-  const s = STATUS[claim.status] ?? STATUS.pending;
+  const corrected = isCorrected(claim);
+  const s = corrected ? { Icon: RotateCcw, cls: "text-ok", label: "Caught, then corrected" } : (STATUS[claim.status] ?? STATUS.pending);
   const rejected = claim.status === "rejected";
   const sheetValue = claim.recomputed ?? claim.evidence?.normalized_value ?? null;
   const injected = claim.origin === "injected_test";
 
   return (
     <li
-      className={`border-b border-border px-4 py-2 last:border-b-0 ${rejected ? "bg-bad/10" : ""}`}
-      data-status={claim.status}
+      className={`border-b border-border px-4 py-2 last:border-b-0 ${rejected ? "bg-bad/10" : corrected ? "bg-ok/5" : ""}`}
+      data-status={corrected ? "corrected" : claim.status}
     >
       <div className="flex items-start gap-2">
         <s.Icon size={16} className={`mt-0.5 shrink-0 ${s.cls}`} aria-label={s.label} />
@@ -66,7 +96,10 @@ export function ClaimRow({ claim }: { claim: Claim }) {
               {sourceLabel(claim)}
             </span>
             {injected ? <Tag tone="warn">Injected test</Tag> : null}
+            {corrected ? <Tag tone="ok">Caught → corrected</Tag> : null}
+            {rejected && wasRetried(claim) ? <Tag tone="bad">Unresolved after {(claim.attempts?.length ?? 1) - 1} {(claim.attempts?.length ?? 1) - 1 === 1 ? "retry" : "retries"}</Tag> : null}
           </div>
+          {wasRetried(claim) ? <Attempts claim={claim} /> : null}
           {rejected ? (
             <div className="mt-2 rounded-chip border border-bad/40 bg-bad/10 p-2 text-sm text-bad">
               <span className="num">

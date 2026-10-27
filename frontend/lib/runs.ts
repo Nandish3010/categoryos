@@ -8,6 +8,7 @@ import {
   type Verdict,
 } from "./api";
 import { getDemoKey } from "./demoKey";
+import type { RunImpact } from "./impact";
 
 export const STAGE_IDS = [
   "intake",
@@ -50,6 +51,8 @@ export type RunSnapshot = {
   mode: string;
   created_at: string;
   stages: Partial<Record<StageId, StageResult>>;
+  /** Recorded human review time against the by-hand baseline (absent on older backends). */
+  impact?: RunImpact | null;
 };
 
 export type TraceEventType =
@@ -57,6 +60,10 @@ export type TraceEventType =
   | "tool_call"
   | "model_call"
   | "claim_checked"
+  | "claim_rejected"
+  | "self_correction"
+  | "claim_verified"
+  | "claim_unresolved"
   | "stage_result"
   | "degraded"
   | "error"
@@ -178,6 +185,8 @@ export type ResearchData = {
   terms: string[];
   email_draft: string | null;
   struck: { code: string | null; text: string; reason: string }[];
+  /** Extractions the verifier rejected and the agent then got right. */
+  corrections: { code: string; field: string; original: number; corrected: number; attempts: number }[];
   replanned: boolean;
 };
 
@@ -212,6 +221,16 @@ export function readResearch(stage: StageResult | undefined | null): ResearchDat
           str(x.text) ??
           `${str(x.field) ?? "value"}: claimed ${String(x.claimed_value ?? "?")}, sheet says ${String(x.sheet_value ?? "?")}`,
         reason: str(x.reason) ?? "failed verification",
+      })),
+    corrections: arr(d.extractions)
+      .filter(isObj)
+      .filter((x) => typeof x.original_value === "number" && typeof x.value === "number" && x.status === "verified")
+      .map((x) => ({
+        code: str(x.sku_code) ?? "",
+        field: str(x.field) ?? "value",
+        original: x.original_value as number,
+        corrected: x.value as number,
+        attempts: arr(x.attempts).length,
       })),
     replanned: d.replanned === true,
   };
