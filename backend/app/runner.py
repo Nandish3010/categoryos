@@ -10,13 +10,14 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from app import replay, store
+from app import impact, replay, store
 from app.agents import catalog, decide, launch, negotiate, screen
 from app.agents import shortlist as sl
 from app.agents.context import RunContext, Sequencer
 from app.config import settings
-from app.constants import STAGE_META
+from app.constants import ALLOWED_VENDORS, STAGE_META
 from app.data_loader import check_vendor
+from app.metrics import apply_levers, build_base
 from app.errors import (
     CategoryOSError,
     NarrativeUnavailable,
@@ -146,6 +147,15 @@ async def _persist_publish(state: RunState, event: TraceEvent) -> None:
         queue.put_nowait(event)
 
 
+async def _mark_review(db: Any, run_id: str, result: StageResult) -> None:
+    """Start the human-review clock the first time a stage waits on a person (impact meter)."""
+    if result.status != "review" or not result.needs_approval:
+        return
+    if any(m["stage"] == result.stage and m["kind"] == "review_started" for m in await db.list_marks(run_id)):
+        return
+    await db.add_mark(run_id, result.stage, "review_started")
+
+
 async def _drive_stage(state: RunState, stage_id: str, agent: Agent) -> StageResult:
     ctx = RunContext(state.run_id, state.vendor_id, today(), state.sequencer)
     await state.db.save_stage(state.run_id, StageResult(stage=stage_id, status="running", summary="Running"))
@@ -154,6 +164,7 @@ async def _drive_stage(state: RunState, stage_id: str, agent: Agent) -> StageRes
     result = ctx.result
     assert result is not None
     await state.db.save_stage(state.run_id, result)
+    await _mark_review(state.db, state.run_id, result)
     return result
 
 
@@ -165,6 +176,7 @@ async def _drive_multi(state: RunState, stage_ids: tuple[str, ...], agent: Multi
         await _persist_publish(state, event)
     for result in ctx.results.values():
         await state.db.save_stage(state.run_id, result)
+        await _mark_review(state.db, state.run_id, result)
     return ctx.results
 
 
@@ -256,7 +268,9 @@ async def _play(state: RunState, events: list[TraceEvent], *, cap_s: float = rep
             if current is None or current.status not in {"review", "done"}:
                 await state.db.save_stage(state.run_id, StageResult(stage=event.stage, status="running", summary="Running"))
         elif event.type == "stage_result" and event.stage:
-            await state.db.save_stage(state.run_id, StageResult.model_validate(event.payload))
+            played = StageResult.model_validate(event.payload)
+            await state.db.save_stage(state.run_id, played)
+            await _mark_review(state.db, state.run_id, played)
         await _persist_publish(state, event)
 
 
@@ -358,7 +372,35 @@ async def get_run_view(run_id: str) -> dict:
     stages = {
         sid: (stored.get(sid) or StageResult(stage=sid, status="pending")).model_dump(mode="json") for sid in STAGE_IDS
     }
-    return {**run, "stages": stages}
+    return {**run, "stages": stages, "impact": await run_impact(run_id)}
+
+
+# ---------- impact meter ----------
+
+
+def _shortlisted(vendor_id: str) -> int:
+    return apply_levers(build_base(vendor_id)).summary.shortlisted
+
+
+async def run_impact(run_id: str) -> dict:
+    """The run's impact block: baseline hours vs the human review time recorded so far (see app.impact)."""
+    run = await require_run(run_id)
+    db = _db(run_id)
+    stages = await db.get_stages(run_id)
+    short = stages.get("shortlist")
+    n_skus = int(short.data["shortlisted"]) if short is not None and "shortlisted" in short.data else _shortlisted(run["vendor_id"])
+    return impact.for_run(run, await db.list_approvals(run_id), await db.list_marks(run_id), await db.list_overrides(run_id), n_skus)
+
+
+async def team_impact() -> dict:
+    """GET /api/impact: the team rollup over every vendor's latest run."""
+    blocks = []
+    for vendor_id in ALLOWED_VENDORS:
+        run_id = await latest_run(vendor_id)
+        if run_id is not None:
+            blocks.append(await run_impact(run_id))
+    baselines = {v: impact.baseline_minutes(_shortlisted(v)) for v in ALLOWED_VENDORS}
+    return {**impact.rollup(blocks, baselines), "mode": "replay" if replay.pure_replay() else settings.effective_mode}
 
 
 def check_stage(stage: str) -> str:
@@ -404,6 +446,7 @@ async def replan(run_id: str, vendor_id: str, offset: float, moq: int) -> StageR
         result = await _drive_stage(state, "research", agent)
         if result.status == "review":
             await _mirror_shortlist(state, result, done=False)
+        await state.db.add_mark(run_id, "research", "replan")
         await _finish(state, {"replan": True})
         return result
     finally:
@@ -421,6 +464,7 @@ async def _replan_replay(state: RunState, offset: float, moq: int) -> StageResul
     try:
         await state.db.save_stage(state.run_id, StageResult(stage="research", status="running", summary="Running"))
         await _play(state, [e for e in cached.events if e.type != "done"], cap_s=replay.REPLAN_GAP_S)
+        await state.db.add_mark(state.run_id, "research", "replan")
         await _finish(state, {"replan": True})
         return (await state.db.get_stages(state.run_id))["research"]
     finally:

@@ -236,6 +236,11 @@ async def latest_run(vendor_id: str) -> dict[str, str | None]:
     return {"run_id": await runner.latest_run(vendor_id)}
 
 
+@app.get("/api/impact")
+async def team_impact() -> dict[str, Any]:
+    return await runner.team_impact()
+
+
 @app.get("/api/runs/{run_id}")
 async def get_run(run_id: str) -> dict[str, Any]:
     return await runner.get_run_view(run_id)
