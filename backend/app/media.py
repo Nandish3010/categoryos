@@ -357,6 +357,17 @@ def _inflate(raw: bytes) -> bytes | None:
         return None
 
 
+def _box_size(record: SamRecord) -> tuple[int, int]:
+    """The raster size the mask should have on the image. Live-verified (2026-10-27): a box whose long side exceeds 1024 px
+    comes back with the mask's long side capped at 1024 (a 700x1277 box -> a 562x1024 mask, 0.80 on both axes), so the
+    mask is scaled back to the box; within 2 px of the box it is already at scale (a 720x746 box -> a 720x746 mask)."""
+    assert record.box is not None
+    bw, bh = round(record.box[2] - record.box[0]) + 1, round(record.box[3] - record.box[1]) + 1
+    if abs(bw - record.mask_w) <= 2 and abs(bh - record.mask_h) <= 2:
+        return record.mask_w, record.mask_h
+    return bw, bh
+
+
 def cutout_png(source_png: bytes, record: SamRecord) -> bytes:
     """Transparent PNG: the packshot with the mask as alpha, cropped to the mask."""
     bits = decode_mask(record)
@@ -369,6 +380,10 @@ def cutout_png(source_png: bytes, record: SamRecord) -> bytes:
     if record.box is None and mask.size != img.size:
         mask = mask.resize(img.size, Image.NEAREST)  # legacy full-frame masks
     else:
+        if record.box is not None:
+            bw, bh = _box_size(record)
+            if (bw, bh) != (mask.width, mask.height):
+                mask = mask.resize((bw, bh), Image.BILINEAR)
         full = Image.new("L", img.size)
         full.paste(mask, record.origin())
         mask = full
@@ -443,7 +458,9 @@ def region_from_record(record: SamRecord, width: int, height: int) -> list[float
             if record.box is None:
                 return [round(extent[0] / record.mask_w, 4), round(extent[1] / record.mask_h, 4), round(extent[2] / record.mask_w, 4), round(extent[3] / record.mask_h, 4)]
             ox, oy = record.origin()
-            px = (ox + extent[0], oy + extent[1], ox + extent[2], oy + extent[3])
+            bw, bh = _box_size(record)
+            sx, sy = bw / record.mask_w, bh / record.mask_h
+            px = (ox + extent[0] * sx, oy + extent[1] * sy, ox + extent[2] * sx, oy + extent[3] * sy)
             if region := _normalise_box((px[0], px[1], px[2], px[3]), width, height):
                 return region
     except SegmentationUnusable:

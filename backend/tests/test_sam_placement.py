@@ -48,6 +48,18 @@ def test_cutout_is_the_box_sized_raster_pasted_at_the_box_corner():
     assert img.getpixel((0, 0))[3] == 255 and img.getpixel((MASK_W // 2, MASK_H // 2))[3] == 0  # the hole
 
 
+def test_mask_capped_at_1024_is_scaled_back_to_the_box():
+    """Live-verified: a 700x1277 box on a 1600x1600 packshot came back as a 562x1024 mask; unscaled, the cutout lost its
+    right and bottom edges."""
+    box = (450, 175, 1150, 1452)
+    rec = media.parse_sam_text(token(box=box, h=1024, w=562))[0]
+    buf = io.BytesIO()
+    Image.new("RGB", (1600, 1600), (200, 200, 200)).save(buf, format="PNG")
+    img = Image.open(io.BytesIO(media.cutout_png(buf.getvalue(), rec)))
+    assert img.size == (701, 1278)
+    assert media.region_from_record(rec, 1600, 1600) == [round(450 / 1600, 4), round(175 / 1600, 4), round(1151 / 1600, 4), round(1453 / 1600, 4)]  # the hole is inside
+
+
 def test_offset_shifts_the_placement():
     rec = media.parse_sam_text(token(x=2, y=3, h=100, w=100, box=(100, 200, 199, 299)))[0]
     assert media.region_from_record(rec, W, H) == [round(102 / W, 4), round(203 / H, 4), round(202 / W, 4), round(303 / H, 4)]
