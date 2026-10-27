@@ -7,13 +7,14 @@ against the raw cell. A rejected extraction strikes the sentence that used it fr
 import re
 from typing import Any
 
-from app import llm, prompts, tools
+from app import llm, policy, prompts, selfcorrect, tools
 from app.agents.context import RunContext
 from app.data_loader import load_sheet
 from app.metrics import apply_levers, build_base
 from app.parsing import PARSER_VERSION
 from app.schemas import (
     Claim,
+    ClaimFix,
     DecideFinal,
     Evidence,
     LeverResponse,
@@ -22,7 +23,7 @@ from app.schemas import (
     StageResult,
 )
 from app.util import fmt_inr
-from app.verify import engine_claims, file_sha256, verify_all
+from app.verify import check_row_owner, engine_claims, file_sha256, verify_all
 
 STAGE = "research"
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
@@ -121,15 +122,45 @@ def extraction_claims(vendor_id: str, lever: LeverResponse, extractions: list[di
 def _wrong_row(claim: Claim, lever: LeverResponse) -> Claim:
     """The cell may exist and parse, but if the model cited another SKU's row the extraction is still wrong."""
     sku = next((s for s in lever.skus if s.sku_key == claim.sku_key), None)
-    ev = claim.evidence
-    if claim.status != "verified" or ev is None:
-        return claim
-    if sku is None:
-        return claim.model_copy(update={"status": "rejected", "reason": f"{claim.sku_key} is not a SKU in this vendor's sheet"})
-    if ev.row != sku.sheet_row:
-        reason = f"row {ev.row} is not {sku.code}'s row (it is row {sku.sheet_row})"
-        return claim.model_copy(update={"status": "rejected", "reason": reason})
-    return claim
+    return check_row_owner(claim, sku.code if sku else None, sku.sheet_row if sku else None)
+
+
+def _swap_number(text: str, old: float, new: float) -> str:
+    """Rewrite every way ``old`` is written in ``text`` with ``new``, keeping the thousands commas and the decimals."""
+    need = 0 if float(new).is_integer() else 2
+
+    def repl(match: re.Match[str]) -> str:
+        shown = match.group(0)
+        decimals = max(len(shown.split(".")[1]) if "." in shown else 0, need)
+        return f"{new:,.{decimals}f}" if "," in shown else f"{new:.{decimals}f}"
+
+    return _number_re(old).sub(repl, text)
+
+
+def _rewrite(text: str, old: float, new: float, must_contain: str | None) -> str:
+    sentences = _SENTENCE_SPLIT.split(text)
+    pattern = _number_re(old)
+    changed = False
+    for i, sentence in enumerate(sentences):
+        if pattern.search(sentence) and (must_contain is None or must_contain in sentence):
+            sentences[i] = _swap_number(sentence, old, new)
+            changed = True
+    return " ".join(sentences) if changed else text
+
+
+def apply_corrections(narrative: dict[str, Any], fixed: list[tuple[str, float, float]]) -> None:
+    """The agent corrected an extraction: put the corrected number where the narrative quoted the wrong one, in place.
+    ``fixed`` is (sku code, wrong value, corrected value); the same sentences apply_strikes would remove are rewritten."""
+    for code, old, new in fixed:
+        for row in narrative["rationale_per_sku"]:
+            if row["code"] == code:
+                row["why"] = _rewrite(row["why"], old, new, None)
+        narrative["headline"] = _rewrite(narrative["headline"], old, new, code)
+        offer = narrative["counter_offer"]
+        offer["email_draft"] = _rewrite(offer["email_draft"], old, new, code)
+        for term in offer["terms"]:
+            if term.get("sku_code") == code and term.get("rationale"):
+                term["rationale"] = _rewrite(term["rationale"], old, new, None)
 
 
 def apply_strikes(narrative: dict[str, Any], rejected: list[tuple[Claim, dict[str, Any]]], lever: LeverResponse) -> list[dict[str, Any]]:
@@ -184,10 +215,11 @@ async def run(ctx: RunContext, *, offset: float = 0.0, moq: int | None = None, r
             "deterministic": True,
         },
     )
+    msgs = prompts.decide_messages(vendor_id, base.brand, offset, lever.summary.moq, replan)
     res = await llm.run_tools(
         STAGE,
         f"decide_{vendor_id}",
-        prompts.decide_messages(vendor_id, base.brand, offset, lever.summary.moq, replan),
+        msgs,
         tools.select(tools.DECIDE_TOOLS),
         max_steps=6,
         schema=DecideFinal,
@@ -216,9 +248,29 @@ async def run(ctx: RunContext, *, offset: float = 0.0, moq: int | None = None, r
     extractions = [e.model_dump() for e in final.extractions]
     corrections = reconcile(narrative, lever, regenerate_headline=replan and res.mode != "live")
 
+    originals = {f"{vendor_id}:{e['sku_code']}:{e['field']}:extracted": dict(e) for e in extractions}
+    by_ex = {f"{vendor_id}:{e['sku_code']}:{e['field']}:extracted": e for e in extractions}
     ext_claims = extraction_claims(vendor_id, lever, extractions)
     summary = verify_all(engine_claims(vendor_id, lever) + ext_claims)
+
+    def check(batch: list[Claim]) -> list[Claim]:
+        return [_wrong_row(c, lever) if c.origin == "model_extraction" else c for c in verify_all(batch).claims]
+
+    def rebuild(claim: Claim, fix: ClaimFix) -> Claim | None:
+        ex = by_ex.get(claim.id)
+        if ex is None:
+            return None
+        ex["value"] = fix.value
+        if fix.row is not None:
+            ex["row"] = fix.row
+        if fix.header:
+            ex["header"] = fix.header
+        return extraction_claims(vendor_id, lever, [ex])[0]
+
     claims = [_wrong_row(c, lever) if c.origin == "model_extraction" else c for c in summary.claims]
+    claims = await selfcorrect.self_correct(
+        ctx, STAGE, claims, task=f"decide_{vendor_id}", messages=msgs, previous=res.content, rebuild=rebuild, check=check
+    )
     for claim in claims:
         ctx.emit(
             "claim_checked",
@@ -227,8 +279,9 @@ async def run(ctx: RunContext, *, offset: float = 0.0, moq: int | None = None, r
         )
 
     by_id = {c.id: c for c in claims}
-    rejected = [(by_id[f"{vendor_id}:{e['sku_code']}:{e['field']}:extracted"], e) for e in extractions]
-    rejected = [(c, e) for c, e in rejected if c.status == "rejected"]
+    fixed = [(by_ex[c.id]["sku_code"], originals[c.id]["value"], by_ex[c.id]["value"]) for c in selfcorrect.corrected(claims) if c.id in by_ex]
+    apply_corrections(narrative, fixed)
+    rejected = [(c, originals[c.id]) for c in selfcorrect.unresolved(claims) if c.id in originals]
     struck = apply_strikes(narrative, rejected, lever)
 
     def count(status: str) -> int:
@@ -237,12 +290,21 @@ async def run(ctx: RunContext, *, offset: float = 0.0, moq: int | None = None, r
     ext_out = []
     for e in extractions:
         c = by_id[f"{vendor_id}:{e['sku_code']}:{e['field']}:extracted"]
-        ext_out.append({**e, "claim_id": c.id, "status": c.status, "sheet_value": c.recomputed})
+        item = {**e, "claim_id": c.id, "status": c.status, "sheet_value": c.recomputed}
+        if len(c.attempts) > 1:
+            item["original_value"] = originals[c.id]["value"]
+            item["attempts"] = [a.model_dump(mode="json") for a in c.attempts]
+        ext_out.append(item)
 
     data: dict[str, Any] = {
         **narrative,
         "extractions": ext_out,
         "struck": struck,
+        "self_correction": {
+            "max": policy.get().verifier.max_self_corrections,
+            "corrected": [c.id for c in selfcorrect.corrected(claims)],
+            "unresolved": [c.id for c, _ in rejected],
+        },
         "verdict_corrections": corrections,
         "lever": {"target_margin_pct_offset": offset, "moq": lever.summary.moq},
         "summary": lever.summary.model_dump(mode="json"),

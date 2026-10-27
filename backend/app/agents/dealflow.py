@@ -7,13 +7,14 @@ stating a number the engine did not produce is struck."""
 from dataclasses import dataclass, field
 from typing import Any
 
-from app import deals, llm, prompts_exec, tools
+from app import deals, llm, prompts_exec, selfcorrect, tools
 from app.agents.context import RunContext
 from app.data_loader import load_application, load_transcript
 from app.errors import CategoryOSError
 from app.parsing import PARSER_VERSION
 from app.schemas import (
     Claim,
+    ClaimFix,
     DealExtraction,
     DealTalk,
     DealTerm,
@@ -92,6 +93,53 @@ def term_claims(vendor_id: str, terms: list[DealTerm]) -> list[tuple[DealTerm, C
                 )
             )
     return claims
+
+
+def apply_fix(term: DealTerm, field_name: str, fix: ClaimFix) -> None:
+    """Write the agent's corrected number (and quote / turn) into the term, so the corrected claim is rebuilt from it."""
+    if field_name == "value":
+        term.value = fix.value
+    elif field_name == "threshold" and term.condition is not None:
+        term.condition.threshold = fix.value
+    elif field_name == "window_days" and term.condition is not None:
+        term.condition.window_days = int(fix.value)
+    elif field_name.startswith("tier"):
+        idx, _, what = field_name.removeprefix("tier").partition("_")
+        tier = term.tiers[int(idx)]
+        if what == "threshold":
+            tier.threshold = fix.value
+        else:
+            tier.value = fix.value
+    elif field_name == "days":
+        term.days = fix.value
+    elif field_name == "units":
+        term.units = fix.value
+    if fix.turn is not None:
+        term.turn = fix.turn
+    if fix.transcript_quote:
+        term.quote = fix.transcript_quote
+
+
+async def verify_terms(
+    ctx: RunContext, vendor_id: str, terms: list[DealTerm], messages: list[dict[str, Any]], previous: str
+) -> list[tuple[DealTerm, Claim]]:
+    """Verify every number of every term; a rejected one goes back to the agent with what the quote says (self-correction)."""
+    for t in terms:
+        t.tiers.sort(key=lambda x: x.threshold)
+    pairs = term_claims(vendor_id, terms)
+    claims = verify_all([c for _, c in pairs]).claims
+    where = {c.id: (t, c.metric.removeprefix("deal_term_")) for (t, _), c in zip(pairs, claims)}
+
+    def rebuild(claim: Claim, fix: ClaimFix) -> Claim | None:
+        term, field_name = where[claim.id]
+        apply_fix(term, field_name, fix)
+        return next((c for _, c in term_claims(vendor_id, [term]) if c.id == claim.id), None)
+
+    fixed = await selfcorrect.self_correct(
+        ctx, STAGE, claims, task=f"deals_{vendor_id}", messages=messages, previous=previous, rebuild=rebuild,
+        check=lambda batch: verify_all(batch).claims,
+    )
+    return [(t, c) for (t, _), c in zip(pairs, fixed)]
 
 
 def verified_terms(terms: list[DealTerm], checked: list[tuple[DealTerm, Claim]]) -> tuple[list[DealTerm], list[dict[str, Any]]]:
@@ -230,9 +278,8 @@ async def run(
     terms, res = got
     if not terms:
         return DealsOutcome(data={"decision": "none", "headline": "No conditional terms", "assessments": [], "base_terms": [], "rejected_terms": [], "assumptions": deals.assumptions(), "talk": None, "verification": {"total": 0, "verified": 0, "rejected": 0, "unverifiable": 0}, "mode": res.mode})
-    checked_pairs = term_claims(vendor_id, terms)
-    summary = verify_all([c for _, c in checked_pairs])
-    checked = [(t, c) for (t, _), c in zip(checked_pairs, summary.claims)]
+    checked = await verify_terms(ctx, vendor_id, terms, prompts_exec.deals_messages(vendor_id, load_application(vendor_id)["brand_name"]), res.content)
+    summary = selfcorrect.summarize([c for _, c in checked])
     for claim in summary.claims:
         ctx.emit("claim_checked", STAGE, {"claim": claim.model_dump(mode="json")})
     ok_terms, dropped = verified_terms(terms, checked)

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 1180,
+  "output_tokens": 46,
+  "content": {
+    "fixes": [
+      {"claim_id": "V001:HP-D01:cost:extracted", "value": 956.5, "row": 2, "header": "Cost to Us"}
+    ]
+  }
+}

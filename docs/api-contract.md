@@ -55,7 +55,25 @@ approving it makes it `done`. If Screen fails, `intake` is `failed` and every la
 ```
 
 `claims` are `Claim` objects as returned by `GET /api/vendors/{id}/claims` (`origin` is `engine`, `model_extraction` or
-`vision_extraction`; `status` is `verified|rejected|unverifiable`).
+`vision_extraction`; `status` is `verified|rejected|unverifiable`). A `model_extraction` claim the verifier rejected and
+the agent was asked to re-read also carries `attempts: [{attempt, value, status, reason?, recomputed?}]`, oldest first
+(`attempt` 0 is the agent's first answer). `status` is the last attempt's: `verified` with more than one attempt is
+"caught, then corrected"; `rejected` with more than one is "unresolved" after `verifier.max_self_corrections` retries.
+Claims that were never rejected have `attempts: []`.
+
+### Self-correction
+
+When the verifier rejects a `model_extraction` claim (Decide: a cost or MRP read off the sheet; Negotiate: a commitment;
+Catalog: an MRP or pack quantity), the agent gets one feedback message per rejected claim, for example
+`Claim V001:HP-D01:cost:extracted rejected: you said ₹965.50; the evidence cites sheet row 2 'Cost to Us'. Verifier: sheet
+cell 'Rs. 956.50' parses to 956.5, claim says 965.5. Re-read and correct.`, and may answer again
+(`{"fixes": [{claim_id, value, row?, header?, turn?, transcript_quote?}]}`) up to the playbook's
+`verifier.max_self_corrections` (default 2; 0 turns it off). A corrected answer is verified exactly like the first. A
+corrected Decide extraction is written back into the narrative (the sentences that quoted the wrong number now quote the
+corrected one); a claim still wrong after the last retry stays `rejected`, its sentence is struck as before (Decide), the
+commitment drops out of the gap table (Negotiate) or the sheet value replaces it (Catalog). Decide's `data` gains
+`self_correction: {max, corrected: [claim_id], unresolved: [claim_id]}`, and an `extractions[]` item that was corrected
+carries `original_value` and `attempts`.
 
 A `vision_extraction` claim is a number or date a vision model read off a scanned document. Its `evidence` is
 `{doc, page, bbox: [x0, y0, x1, y1] (fractions of the page), crop_sha256, raw_value (the page read, as printed),
@@ -134,7 +152,7 @@ sell_through_pct, threshold, window_days, scope[]}, tiers?: [{threshold, value}]
 turn, source: transcript|application}`. For an application term, `turn` is the 1-based index into `additional_terms`.
 Every number of a term (value, threshold, window, tier values, days, units) is a `model_extraction` Claim
 (`deal_term_<field>`): its quote must appear verbatim in that turn / additional term and state the number, or the whole
-term is dropped into `rejected_terms` and never valued. `app/deals.py` then values the verified terms in Python:
+term is sent back to the agent first (self-correction, `verifier.max_self_corrections`, task `deals_<VID>__fix<n>`) and, if still wrong, dropped into `rejected_terms` and never valued. `app/deals.py` then values the verified terms in Python:
 
 ```json
 {"decision": "reject_structure|accept|needs_human|not_assessable|none", "headline": "...",
@@ -230,7 +248,7 @@ The timeline is simulated, with dates derived from the run's `demo_today` and on
   "seq": 7,
   "run_id": "run_ab12cd34ef",
   "t_rel_ms": 412.5,
-  "type": "stage_started|tool_call|model_call|claim_checked|stage_result|degraded|error|done",
+  "type": "stage_started|tool_call|model_call|claim_checked|claim_rejected|self_correction|claim_verified|claim_unresolved|stage_result|degraded|error|done",
   "stage": "intake|...|null",
   "model": "muse-spark-1.3|null",
   "latency_ms": 12.3,
@@ -248,6 +266,10 @@ started. Payloads:
 | `tool_call` | `{tool, args, result_summary, deterministic?}` (`deterministic: true` for engine/document steps that are not model-chosen) |
 | `model_call` | `{task, mode: "mock"|"replay"|"live", input_tokens, output_tokens, tool_steps}`; `model`, `latency_ms`, `cost_usd` set on the event |
 | `claim_checked` | `{claim: Claim}` with its final `status` and `reason` |
+| `claim_rejected` | `{claim, attempt}`: the verifier rejected the agent's answer (`attempt` 0 is its first answer, later ones are retries) |
+| `self_correction` | `{attempt, of, claim_ids[], feedback[], answered, note?}`: the agent was told what the source says; `answered: false` means no corrected answer was available |
+| `claim_verified` | `{claim, attempt}`: the corrected answer passed |
+| `claim_unresolved` | `{claim, attempts}`: still rejected after the last retry |
 | `stage_result` | a full `StageResult` |
 | `degraded` | `{reason}` (replay fell back to a mock fixture) |
 | `error` | `{code, problem, cause, fix, run_id}` |
@@ -266,9 +288,49 @@ Starts Screen, then Decide if Screen passed, as a background task. Demo key when
 ### `GET /api/runs/{run_id}`
 ```json
 {"run_id": "...", "vendor_id": "V001", "mode": "mock", "created_at": "2026-10-27T10:00:00.000+00:00",
- "stages": {"intake": StageResult, "research": StageResult, "...": "all 8 ids always present"}}
+ "stages": {"intake": StageResult, "research": StageResult, "...": "all 8 ids always present"},
+ "impact": RunImpact}
 ```
 Untouched stages are `{"status": "pending"}` StageResults. `404 run_not_found`.
+
+`impact` is the impact meter's block for this run. Human time is recorded, not assumed: the clock starts the first time a
+stage reaches `review` and stops at its first approval (re-plans do not restart it), and each gap is counted up to
+`impact.max_review_minutes`. The three review steps cover the work behind them: `research` (screening, market research,
+shortlist), `catalog` (negotiation prep and follow-up, catalog listings, image briefs) and `po` (marketing brief, JBP,
+PO raise and follow-up).
+```json
+{"run_id", "vendor_id", "mode", "baseline_status": "research_estimate|measured", "n_skus", "tasks": [{"task", "label", "gate",
+  "minutes", "per_sku", "count", "total_minutes"}],
+ "gates": [{"stage": "research|catalog|po", "label", "status": "measured|pending", "baseline_minutes", "review_seconds"|null,
+   "counted_minutes"|null, "capped", "overrides", "replans", "edits"}],
+ "baseline_minutes", "baseline_measured_minutes", "human_minutes", "reduction_pct"|null, "measured_gates", "total_gates",
+ "complete", "basis": "measured|research_estimate", "edits", "overrides", "replans", "max_review_minutes"}
+```
+`reduction_pct` compares the human minutes with the baseline of the *reviewed* steps only (`null` before any approval);
+`edits` are verdict overrides plus re-plans. `baseline_status` mirrors the playbook: the shipped baselines are research estimates (about 1,085 min for a 12-SKU vendor).
+
+### `GET /api/impact`
+The team rollup. Every number is built from the playbook's `impact` section, which ships **research estimates, not
+measurements** (`docs/research/category-manager-workload.md`; `baseline_status: research_estimate`). The team is
+`impact.team` (default 1 category manager + 2 category executives, 45 h week); `impact.workload` gives each task's share of
+each role's week and the share of it automation saves; `impact.modules` lists the modules (`shipped` or `not_built`) and
+`impact.coverage` says which share of which task each one takes over, so a new module registers there.
+```json
+{"basis": "measured|research_estimate", "measured_runs", "partly_measured_runs", "baseline_status",
+ "in_scope_pct", "saved_pct", "potential_saved_pct", "target_pct", "meets_target", "team_hours_per_month",
+ "hours_saved_per_month", "roles": [{"role", "label", "headcount", "in_scope_pct", "saved_pct"}],
+ "modules": [{"key", "label", "status": "shipped|not_built", "in_scope_pct", "saved_pct", "tasks": [{"task", "label", "in_scope_pct"}]}],
+ "onboarding": {"typical_skus", "baseline_hours_per_vendor", "human_share_pct"|null, "saved_pct_basis", "vendors_per_month",
+   "demand_hours_per_month", "team_hours_on_task_per_month"},
+ "formula", "team": {...}, "mode", "vendors": [{"vendor_id", "run_id", "baseline_minutes", "human_minutes", "measured_gates", "complete", "reduction_pct"}]}
+```
+(a) `in_scope_pct` is the share of the team's week that shipped modules touch; (b) `saved_pct` is the share of the week saved;
+(c) `modules` lists every module with its status (`saved_pct` of a `not_built` module is what it would add). Per task:
+`share of the week x share of the task a shipped module covers (rows on one task add up, capped at 100) x share of that time
+saved`; the team is headcount-weighted over the two roles. A module marked `measured_from_runs` (onboarding) uses the
+measured review reduction (1 - recorded human review time / by-hand baseline, over fully reviewed runs) instead of the
+table's `saved_pct` once at least one run is fully reviewed; then `basis` is `measured`. With the shipped defaults the
+numbers reproduce the report: about 19% in scope, about 9% saved, about 34% if every module were built.
 
 ### `GET /api/runs/{run_id}/events` -> `text/event-stream`
 ```

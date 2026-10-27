@@ -48,6 +48,7 @@ import { Tween } from "../Tween";
 import { ActionBar } from "./ActionBar";
 import { CatalogStudio } from "./CatalogStudio";
 import { LaunchPacket } from "./LaunchPacket";
+import { ImpactPanel } from "./ImpactPanel";
 import { LeverCard } from "./LeverCard";
 import { NegotiateView } from "./NegotiateView";
 import { Rail } from "./Rail";
@@ -175,6 +176,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
   const [editing, setEditing] = useState(false);
   const [overrides, setOverrides] = useState<Record<string, Verdict>>({});
   const [drawer, setDrawer] = useState(false);
+  const [impactOpen, setImpactOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   useEffect(() => {
     if (!toast) return;
@@ -363,7 +365,11 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         onToggleDrawer={() => setDrawer((d) => !d)}
         phase={phaseOfStage(stage)}
         onPhase={(p) => selectStage(PHASE_STAGE[p])}
+        impact={run?.impact ?? null}
+        impactOpen={impactOpen}
+        onToggleImpact={() => setImpactOpen((o) => !o)}
       />
+      {impactOpen && run?.impact ? <ImpactPanel impact={run.impact} onClose={() => setImpactOpen(false)} /> : null}
 
       <div
         className="grid flex-1 grid-cols-1 min-[900px]:grid-cols-[56px_minmax(0,1fr)] min-[1280px]:grid-cols-[240px_minmax(0,1fr)_320px]"

@@ -1,0 +1,49 @@
+{
+  "mode": "mock",
+  "models": [
+    {
+      "caught_by_verifier": 9,
+      "corrected": 8,
+      "cost_usd": null,
+      "final_accuracy": 0.9938,
+      "first_pass_accuracy": 0.9437,
+      "key": "scripted_stand_in_A",
+      "label": "scripted stand-in A",
+      "latency_ms_per_task": null,
+      "profile": {
+        "error_rate": 0.06,
+        "fix_rate": 0.85
+      },
+      "provider": null,
+      "self_correction_rate": 0.8889,
+      "silent_errors": 0,
+      "stand_in": true,
+      "tasks": 160,
+      "unresolved": 1
+    },
+    {
+      "caught_by_verifier": 25,
+      "corrected": 21,
+      "cost_usd": null,
+      "final_accuracy": 0.975,
+      "first_pass_accuracy": 0.8438,
+      "key": "scripted_stand_in_B",
+      "label": "scripted stand-in B",
+      "latency_ms_per_task": null,
+      "profile": {
+        "error_rate": 0.12,
+        "fix_rate": 0.6
+      },
+      "provider": null,
+      "self_correction_rate": 0.84,
+      "silent_errors": 0,
+      "stand_in": true,
+      "tasks": 160,
+      "unresolved": 4
+    }
+  ],
+  "note": "Mock: scripted stand-ins with a fixed error profile replace the models. The loop, feedback, verifier and scoring are real; the error rates are parameters, not measurements. Cost and latency are not reported.",
+  "seed": 42,
+  "stand_in": true,
+  "tasks": 160
+}

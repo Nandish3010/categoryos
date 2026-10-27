@@ -515,6 +515,34 @@ def test_a_model_that_misquotes_a_term_gets_it_dropped_not_valued(monkeypatch):
     assert "threshold" in d["rejected_terms"][0]["reasons"][0]
 
 
+def test_a_misquoted_deal_number_is_sent_back_to_the_agent_and_corrected(monkeypatch):
+    from app import llm
+    from app.schemas import ClaimFix, FixFinal
+
+    real_tools, real_call = llm.run_tools, llm.call
+
+    async def lying(*args, **kwargs):
+        res = await real_tools(*args, **kwargs)
+        for t in getattr(res.parsed, "terms", []):
+            if t.id == "t2":
+                t.condition.threshold = 200
+        return res
+
+    async def fixer(stage, messages, *, task, **kwargs):
+        if task == "deals_V002__fix1":
+            fix = FixFinal(fixes=[ClaimFix(claim_id="V002:dealterm:t2:threshold", value=2000)])
+            return llm.LlmResult(fix.model_dump_json(), fix, "muse-spark-1.3", "meta", "mock", 0, 0, 0.0, 1.0)
+        return await real_call(stage, messages, task=task, **kwargs)
+
+    monkeypatch.setattr(llm, "run_tools", lying)
+    monkeypatch.setattr(llm, "call", fixer)
+    result = run_negotiate("V002")
+    d = result.data["deals"]
+    assert d["rejected_terms"] == [] and d["assessments"][0]["decision"] == "reject_structure"
+    fixed = next(c for c in result.claims if c.id == "V002:dealterm:t2:threshold")
+    assert fixed.status == "verified" and [a.status for a in fixed.attempts] == ["rejected", "verified"]
+
+
 def test_missing_extraction_fixture_degrades_instead_of_blocking(monkeypatch):
     from app import llm
     from app.errors import FixtureMissing
