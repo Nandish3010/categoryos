@@ -33,9 +33,9 @@ Then open http://localhost:3000/vendors/V001.
 |---|---|---|---|
 | `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies`, `ops/promotions/agent.py:generate` (reads funding replies, writes the event brief and funding emails), `ops/pricewatch/agent.py:generate` (daily summary, vendor parity messages) | No agent output; only the deterministic metrics remain |
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
-| `muse-spark-1.3-contributor` | Cheaper development model. Configured, not wired into a stage yet | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
+| `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
 | Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
-| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes |
+| `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded: cutouts need Meta's optional `meta-sam-parser` package (not installed by default), otherwise the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
 
@@ -68,6 +68,13 @@ These features carry the product:
 - **Live negotiation copilot.** In Negotiate, "Live call" transcribes the call as it happens (push-to-talk buttons for who is speaking), reads what the vendor commits to, updates the gap table row by row, prices any conditional offer the moment it is said ("Don't accept: <0.1% chance") and suggests the buyer's next line with the reason. "Simulate call" streams the recorded call through the same pipeline from fixtures, so a replay or mock deployment shows it at no cost; a microphone call needs live mode and the demo key and has a per-call spend budget (`CALL_BUDGET_USD`).
 
 Negotiate is transcript-first: the vendor call is transcribed and the commitments are extracted into a gap table against the application. Voice is layered on top.
+
+## Live contract smoke
+
+`make contract` (spends a few cents; needs `MODEL_API_KEY` and `BASETEN_API_KEY`) makes one tiny real call per external contract
+(chat, reasoning-token limit, structured output, tool calling, vision, SAM 3.1, muse-image, ASR, Baseten), through the app's own
+gateway code, and saves the scrubbed raw responses to `backend/fixtures/contract/`. `backend/tests/test_contract_fixtures.py`
+replays those through the parsers offline. `make contract ONLY="chat sam"` runs a subset.
 
 ## Measured eval
 

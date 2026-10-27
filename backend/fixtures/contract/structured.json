@@ -1,0 +1,90 @@
+{
+  "contract": "structured",
+  "model": "muse-spark-1.3-contributor",
+  "status": "PASS",
+  "note": "response_format json_schema accepted; api_calls=1 (1 = no repair) parsed=animal='dog' legs=4",
+  "recorded_at": "2026-10-27",
+  "raw": {
+    "client.chat.completions.create": [
+      {
+        "request_params": {
+          "model": "muse-spark-1.3-contributor",
+          "max_tokens": 600,
+          "reasoning_effort": "low",
+          "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+              "name": "Mini",
+              "schema": {
+                "properties": {
+                  "animal": {
+                    "title": "Animal",
+                    "type": "string"
+                  },
+                  "legs": {
+                    "title": "Legs",
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "animal",
+                  "legs"
+                ],
+                "title": "Mini",
+                "type": "object",
+                "additionalProperties": false
+              },
+              "strict": true
+            }
+          }
+        },
+        "events": null,
+        "response": {
+          "id": "chatcmpl-01a17e55-8fa7-71b6-a744-5276e004fa28",
+          "choices": [
+            {
+              "finish_reason": "stop",
+              "index": 0,
+              "logprobs": null,
+              "message": {
+                "content": "{\"animal\":\"dog\",\"legs\":4}",
+                "refusal": null,
+                "role": "assistant",
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": null
+              }
+            }
+          ],
+          "created": 1793120898,
+          "model": "muse-spark-1.3-contributor",
+          "object": "chat.completion",
+          "metadata": null,
+          "moderation": null,
+          "service_tier": null,
+          "system_fingerprint": null,
+          "usage": {
+            "completion_tokens": 526,
+            "prompt_tokens": 17,
+            "total_tokens": 543,
+            "completion_tokens_details": {
+              "accepted_prediction_tokens": null,
+              "audio_tokens": null,
+              "reasoning_tokens": 508,
+              "rejected_prediction_tokens": null,
+              "text_tokens": null
+            },
+            "prompt_tokens_details": {
+              "audio_tokens": null,
+              "cache_write_tokens": null,
+              "cached_tokens": 0,
+              "image_tokens": null,
+              "text_tokens": null
+            }
+          }
+        }
+      }
+    ]
+  }
+}

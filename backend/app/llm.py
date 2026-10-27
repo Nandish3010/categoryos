@@ -32,6 +32,7 @@ log = logging.getLogger("categoryos.llm")
 
 FIXTURE_SCHEMA_VERSION = 1
 RETRY_DELAYS = (1.0, 3.0)  # two retries for timeouts and 429
+MAX_LENGTH_RETRIES = 2  # reasoning tokens count against max_tokens: a hit limit retries with 2x, then 4x (live-verified: content=null, finish_reason=length)
 _FENCE = re.compile(r"^```[a-zA-Z]*\s*|\s*```$")
 
 
@@ -226,20 +227,34 @@ def _text(resp: Any) -> tuple[str, str | None]:
 async def _complete(client: Any, kwargs: dict[str, Any], meter: _Meter) -> str:
     """Returns non-empty text; handles reasoning models that burn max_tokens, and empty/refusal retry."""
     empty_retried = False
-    length_retried = False
+    length_retries = 0
     while True:
         resp = await _create(client, kwargs, meter)
         text, finish = _text(resp)
         if text.strip():
             return text
-        if finish == "length" and not length_retried:
-            length_retried = True
+        if finish == "length" and length_retries < MAX_LENGTH_RETRIES:
+            length_retries += 1
             kwargs = {**kwargs, "max_tokens": kwargs["max_tokens"] * 2}
             continue
         if not empty_retried:
             empty_retried = True
             continue
         raise LlmBadOutput(cause="the model returned an empty or refused response twice")
+
+
+def strict_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """A pydantic JSON schema in the form the Meta endpoint's strict json_schema mode accepts (live-verified 2026-10-27:
+    it answers 400 unless every object sets additionalProperties:false and lists every property in ``required``)."""
+    if isinstance(schema, dict):
+        out = {k: strict_schema(v) for k, v in schema.items() if k != "default"}
+        if out.get("type") == "object" or "properties" in out:
+            out["additionalProperties"] = False
+            out["required"] = list(out.get("properties", {}))
+        return out
+    if isinstance(schema, list):
+        return [strict_schema(v) for v in schema]  # type: ignore[return-value]
+    return schema
 
 
 def _schema_instruction(schema: type[BaseModel]) -> str:
@@ -262,13 +277,24 @@ async def _live(
         if schema is not None:
             kwargs["response_format"] = {
                 "type": "json_schema",
-                "json_schema": {"name": schema.__name__, "schema": schema.model_json_schema(), "strict": True},
+                "json_schema": {"name": schema.__name__, "schema": strict_schema(schema.model_json_schema()), "strict": True},
             }
     elif schema is not None:
         msgs.append({"role": "system", "content": _schema_instruction(schema)})
     client = _make_client(provider)
     meter = _Meter(model)
-    content = await _complete(client, kwargs, meter)
+    try:
+        content = await _complete(client, kwargs, meter)
+    except openai.BadRequestError as exc:
+        if "response_format" not in kwargs:
+            raise
+        # the endpoint rejected the structured-output parameter: fall back to asking for JSON in the prompt
+        log.warning("response_format rejected (%s); falling back to a prompt-only JSON instruction", str(exc)[:160])
+        kwargs = {k: v for k, v in kwargs.items() if k != "response_format"}
+        assert schema is not None
+        msgs.append({"role": "system", "content": _schema_instruction(schema)})
+        kwargs["messages"] = msgs
+        content = await _complete(client, kwargs, meter)
     if schema is None:
         return content, None, model, meter
     try:
