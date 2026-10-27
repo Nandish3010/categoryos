@@ -52,6 +52,7 @@ import { ImpactPanel } from "./ImpactPanel";
 import { LeverCard } from "./LeverCard";
 import { NegotiateView } from "./NegotiateView";
 import { Rail } from "./Rail";
+import { SandboxBanner } from "./SandboxBanner";
 import { VerifierCard } from "./RightPanel";
 import { NarrativeCard, RunBar } from "./RunPanels";
 import { ScreenCard } from "./ScreenCard";
@@ -369,6 +370,7 @@ export function Workspace({ vendorId }: { vendorId: string }) {
         impactOpen={impactOpen}
         onToggleImpact={() => setImpactOpen((o) => !o)}
       />
+      {vendor.data?.sandbox ? <SandboxBanner info={vendor.data.sandbox} vendorId={vendorId} /> : null}
       {impactOpen && run?.impact ? <ImpactPanel impact={run.impact} onClose={() => setImpactOpen(false)} /> : null}
 
       <div

@@ -159,6 +159,16 @@ it everywhere, and the model prompts are rendered from it, so no rule exists onl
 * Market facts (units per SKU, price bands) stay in `data/synthetic/category_benchmarks.json`; ops settings (spend caps,
   rate limits, timeouts) stay in env.
 
+## Bring your own vendor
+
+`/try` lets anyone upload a SKU sheet (CSV or XLSX, up to 2 MB and 200 rows), optionally an application and up to 5 documents, pick a starter playbook
+(pet, beauty, electronics) and get the same screening, verdict table, levers and verifier. One-click samples for beauty and electronics ship in
+`data/samples/` with small market-data stubs; a category without market data reports **Needs data** with the reason rather than a guess.
+The rules engine always runs and costs nothing ("Rules-only (no model calls)"). Model stages run only when allowed: a valid demo key, or the
+caller's per-IP budget (`UPLOAD_LIVE_BUDGET_USD_PER_IP`), always under the global `MAX_SPEND_USD` cap; in mock mode a clearly labelled generic mock stands in.
+Sandbox vendors are stored under `STATE_DIR` (a Volume path on Modal), expire after `UPLOAD_TTL_HOURS` (24) and are swept by a cleanup job.
+Ops limits: `UPLOAD_MAX_ROWS`, `UPLOAD_MAX_SHEET_BYTES`, `UPLOAD_MAX_DOCS`, `UPLOAD_MAX_DOC_BYTES`, `UPLOAD_RATE_PER_HOUR`, `UPLOAD_MAX_ACTIVE`, `TRUST_FORWARDED_FOR`.
+
 ## Deploy
 
 Backend on Modal (replay mode), frontend on Vercel. Step by step, including the Modal secret and the post-deploy smoke

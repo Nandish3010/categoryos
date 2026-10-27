@@ -13,3 +13,6 @@ STAGE_META = [
 
 ROUND_DP = 4
 ALLOWED_VENDORS = ("V001", "V002", "V003", "V004")
+# Built-in vendors plus sandbox vendors created at /try ("U-" and 8 random lowercase alphanumerics). The pattern only says
+# an id is well formed; whether it exists is the registry's call (data_loader.check_vendor).
+VENDOR_ID_PATTERN = r"V00[1-9]|U-[a-z0-9]{8}"

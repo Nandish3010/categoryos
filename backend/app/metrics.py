@@ -6,7 +6,7 @@ from functools import cache, lru_cache
 from statistics import median
 from typing import Any
 
-from app import policy
+from app import policy, registry, scope
 from app.constants import ROUND_DP
 from app.data_loader import (
     check_vendor,
@@ -48,6 +48,11 @@ METRIC_UNITS = {
     "mrp": "inr",
     "required_cost": "inr",
 }
+
+
+NO_MARKET_REASON = (
+    "no market data for this category (no benchmark or search-demand rows), so demand and overlap cannot be scored"
+)
 
 
 def r4(value: float) -> float:
@@ -98,8 +103,9 @@ def _jaccard(a: set[str], b: set[str]) -> float:
     return len(a & b) / len(union) if union else 0.0
 
 
-@lru_cache(maxsize=1)
-def _demand_table() -> tuple[tuple[str, set[str], float, float], ...]:
+@lru_cache(maxsize=16)
+def _demand_table(_market: str | None = None) -> tuple[tuple[str, set[str], float, float], ...]:
+    """Per-keyword demand percentile. Cached per market-data folder (a sandbox vendor may bring its own stubs)."""
     keywords = load_keywords()
     raw = [k.monthly_searches * (1 + k.trend_3m_pct / 100) for k in keywords]
     n = len(raw)
@@ -111,6 +117,11 @@ def _demand_table() -> tuple[tuple[str, set[str], float, float], ...]:
     return tuple(rows)
 
 
+def _market_key() -> str | None:
+    sc = scope.current()
+    return sc.market_dir if sc is not None else None
+
+
 def match_keyword(name_toks: set[str], other_toks: set[str]) -> tuple[str | None, float]:
     """Deterministic token-overlap match; returns (keyword, demand percentile) or (None, 0)."""
     km = policy.get().research.keyword_matching
@@ -118,7 +129,7 @@ def match_keyword(name_toks: set[str], other_toks: set[str]) -> tuple[str | None
     best_key: tuple[float, int, int, float] | None = None
     best: tuple[str, float] | None = None
     all_toks = name_toks | other_toks
-    for keyword, ktoks, raw, percentile in _demand_table():
+    for keyword, ktoks, raw, percentile in _demand_table(_market_key()):
         weights = {t: km.generic_weight if t in generic else 1.0 for t in ktoks}
         total = sum(weights.values())
         covered = sum(w for t, w in weights.items() if t in all_toks)
@@ -146,11 +157,18 @@ def decide_verdict(
     overlap: float,
     has_inputs: bool = True,
     min_margin: float | None = None,
+    has_market: bool = True,
 ) -> tuple[str, list[str]]:
     """Verdict from the playbook's research rules. ``min_margin`` is the effective floor (used when
-    research.below_min_margin_action is "reject")."""
+    research.below_min_margin_action is "reject"). ``has_market`` is False when the SKU's category has no benchmark or
+    the vendor has no search-demand rows: demand and overlap cannot be scored, so the verdict is needs_data, never a guess."""
+    missing: list[str] = []
     if not has_inputs or margin is None:
-        return "needs_data", ["missing price or cost"]
+        missing.append("missing price or cost")
+    if not has_market:
+        missing.append(NO_MARKET_REASON)
+    if missing:
+        return "needs_data", missing
     rules = policy.get().research
     reasons: list[str] = []
     if round(demand, ROUND_DP) < rules.demand_min:
@@ -169,7 +187,8 @@ def decide_verdict(
 def build_base(vendor_id: str) -> VendorBase:
     """Per-vendor parsed base, cached per playbook hash (a rule change builds a fresh base)."""
     check_vendor(vendor_id)
-    return _build_base(vendor_id, policy.policy_hash())
+    with registry.scoped(vendor_id):
+        return _build_base(vendor_id, policy.policy_hash())
 
 
 def _clear_base_cache() -> None:
@@ -189,6 +208,7 @@ def _build_base(vendor_id: str, _policy_hash: str) -> VendorBase:
     benchmarks = load_benchmarks()
     catalog = load_catalog()
     listings = load_listings()
+    keywords_loaded = load_keywords()
     brand_words = _brand_words(brand)
     reviews = load_reviews().get(brand) or []
     review_score = r4(sum(r["rating"] for r in reviews) / len(reviews)) if reviews else None
@@ -209,7 +229,10 @@ def _build_base(vendor_id: str, _policy_hash: str) -> VendorBase:
         desc = cell(cells, "description").strip()
         cls = classify(name, desc, hint)
         flags: list[str] = list(cls.flags)
-        bench = benchmarks[cls.category]
+        bench = benchmarks.get(cls.category)
+        has_market = bench is not None and bool(keywords_loaded)
+        if not has_market:
+            flags.append("no_market_data")
 
         mrp = parse_price(cell(cells, "mrp"))
         if mrp is None:
@@ -260,7 +283,7 @@ def _build_base(vendor_id: str, _policy_hash: str) -> VendorBase:
                 overlap, nearest = sim, other.sku_id
         overlap = r4(overlap)
 
-        avg_units = float(bench["avg_monthly_units_per_sku"])
+        avg_units = float(bench["avg_monthly_units_per_sku"]) if bench is not None else 0.0
         skus.append(
             BaseSku(
                 sku_key=sku_key,
@@ -285,6 +308,7 @@ def _build_base(vendor_id: str, _policy_hash: str) -> VendorBase:
                 nearest_sku_id=nearest,
                 review_score=review_score,
                 avg_monthly_units=avg_units,
+                market_data=has_market,
                 est_monthly_units=r4(avg_units * demand * (1 - overlap)),
                 category_target_pct=margins[cls.category].target_pct / 100,
                 category_min_pct=policy.min_pct(cls.category, vendor_type, brand) / 100,
@@ -336,7 +360,8 @@ def _lever_sku(base: BaseSku, offset: float) -> SkuMetrics:
     landed = r4(cost * (1 + pol.freight_pct)) if cost is not None else None
     margin = r4((selling - landed) / selling) if selling and landed is not None else None
     verdict, reasons = decide_verdict(
-        margin, target, base.demand_score, base.overlap, selling is not None and cost is not None, base.category_min_pct
+        margin, target, base.demand_score, base.overlap, selling is not None and cost is not None, base.category_min_pct,
+        base.market_data,
     )
     flags = list(base.flags)
     required = None
@@ -384,6 +409,11 @@ def apply_levers(base: VendorBase, target_offset_pp: float = 0, moq: int | None 
     started = time.perf_counter()
     if moq is None:
         moq = int(base.proposed_terms.get("moq_units") or 0)
+    with registry.scoped(base.vendor_id):
+        return _apply_levers(base, target_offset_pp, moq, started)
+
+
+def _apply_levers(base: VendorBase, target_offset_pp: float, moq: int, started: float) -> LeverResponse:
     skus = [_lever_sku(s, target_offset_pp / 100) for s in base.skus]
     short = [s for s in skus if s.verdict in {"list", "negotiate"}]
     alloc = _allocate(moq, [s.est_monthly_units for s in short])
@@ -412,7 +442,8 @@ def apply_levers(base: VendorBase, target_offset_pp: float = 0, moq: int | None 
             "policy": policy.policy_hash(),
             "offset_pp": float(target_offset_pp),
             "moq": moq,
-            "skus": [s.model_dump() for s in skus],
+            # market_data joins the hash only when it is False, so the built-in vendors' hashes (and golden runs) are unchanged
+            "skus": [s.model_dump(exclude=None if not s.market_data else {"market_data"}) for s in skus],
             "summary": summary.model_dump(),
         }
     )

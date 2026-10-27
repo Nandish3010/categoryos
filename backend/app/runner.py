@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from typing import Any
 
-from app import copilot, impact, replay, store
+from app import copilot, impact, registry, replay, store
 from app.agents import catalog, decide, launch, negotiate, screen
 from app.agents import shortlist as sl
 from app.agents.context import RunContext, Sequencer
@@ -304,6 +304,11 @@ async def _lock_downstream(state: RunState, first_failed: StageResult) -> None:
 
 
 async def _execute(state: RunState) -> None:
+    with registry.scoped(state.vendor_id):  # a sandbox vendor runs under its own playbook, market data and model mode
+        await _execute_scoped(state)
+
+
+async def _execute_scoped(state: RunState) -> None:
     try:
         screened = await _drive_stage(state, "intake", screen.run)
         if screened.status == "failed":
@@ -327,7 +332,8 @@ async def create_run(vendor_id: str) -> str:
         state = RunState(run_id, vendor_id, Sequencer(), db=replay.session_store, golden=golden)
         work = _replay_start(state)
     else:
-        await store.create_run(run_id, vendor_id, settings.effective_mode)
+        meta = registry.read_meta(vendor_id) if registry.is_sandbox_id(vendor_id) else None
+        await store.create_run(run_id, vendor_id, meta["llm_mode"] if meta else settings.effective_mode)
         state = RunState(run_id, vendor_id, Sequencer())
         work = _execute(state)
     _states[run_id] = state
@@ -342,8 +348,10 @@ async def get_state(run_id: str) -> RunState | None:
     state = _states.get(run_id)
     if state is not None:
         return state
-    if replay.pure_replay():
-        return None
+    if replay.pure_replay():  # sandbox runs live in the database even in replay mode, so look once
+        run = await store.get_run(run_id) if run_id.startswith("run_") else None
+        if run is None or not registry.is_sandbox_id(run["vendor_id"]):
+            return None
     run = await store.get_run(run_id)
     if run is None:
         return None
@@ -354,14 +362,14 @@ async def get_state(run_id: str) -> RunState | None:
 
 
 async def latest_run(vendor_id: str) -> str | None:
-    if replay.pure_replay():
+    if replay.pure_replay() and not registry.is_sandbox_id(vendor_id):
         return await replay.session_store.latest_run(vendor_id)
     return await store.latest_run(vendor_id) or await replay.session_store.latest_run(vendor_id)
 
 
 async def require_run(run_id: str) -> dict:
-    if not replay.has_session(run_id) and replay.pure_replay():
-        raise RunNotFound(run_id)  # replay mode never opens the database
+    if not replay.has_session(run_id) and replay.pure_replay() and run_id not in _states:
+        raise RunNotFound(run_id)  # replay mode never opens the database (sandbox runs are in _states)
     run = await _db(run_id).get_run(run_id)
     if run is None:
         raise RunNotFound(run_id)
@@ -491,7 +499,11 @@ async def approve(run_id: str, stage: str, metrics_hash: str) -> StageResult:
     if result.status == "review":  # first approval only: a repeat approve never re-runs the next phase
         state = await get_state(run_id)
         assert state is not None
-        if stage == "research" and not state.busy:
+        if stage == "research" and not state.busy and registry.is_sandbox_id(state.vendor_id):
+            await _db(run_id).save_stage(run_id, sl.shortlist_stage(approved, state.vendor_id, done=True))
+            for later in STAGE_IDS[3:]:  # sandbox vendors are decided at Screen and Decide; the rest needs recorded fixtures
+                await _db(run_id).save_stage(run_id, StageResult(stage=later, status="locked", summary="Locked", locked_reason="Sandbox vendors run Screen and Decide only; the later stages are available on the built-in vendors"))
+        elif stage == "research" and not state.busy:
             await _db(run_id).save_stage(run_id, sl.shortlist_stage(approved, state.vendor_id, done=True))
             _spawn(state, "execute", _replay_phase("execute") if state.golden else _phase_execute)
         elif stage == "catalog" and not state.busy:

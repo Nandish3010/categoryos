@@ -7,7 +7,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
-from app import persist
+from app import persist, scope
 from app.config import settings
 from app.errors import SpendCapExceeded
 
@@ -80,10 +80,22 @@ def record(model: str, usage: dict[str, float]) -> float:
         tmp.write_text(json.dumps(data, indent=2))
         os.replace(tmp, path)
     persist.notify()
+    sc = scope.current()
+    if sc is not None and sc.ip_key:
+        from app import (
+            sandbox_budget,  # sandbox vendors: charge the caller's per-IP bucket too
+        )
+
+        sandbox_budget.charge(sc.ip_key, cost)
     return cost
 
 
 def check_budget() -> None:
+    sc = scope.current()
+    if sc is not None and sc.ip_key:
+        from app import sandbox_budget
+
+        sandbox_budget.check(sc.ip_key)
     spent = total_usd()
     if spent >= settings.max_spend_usd:
         raise SpendCapExceeded(
