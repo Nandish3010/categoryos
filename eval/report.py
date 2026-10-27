@@ -43,19 +43,28 @@ def verifier_table(v: dict) -> str:
 def agent_table(a: dict) -> str:
 
     def cost(m: dict) -> str:
-        return "n/a (mock)" if m["cost_usd"] is None else f"${m['cost_usd']:.4f}"
+        if m["cost_usd"] is None:
+            return "n/a (mock)"
+        if m.get("cost_metered") is False:
+            return "not metered"
+        return f"${m['cost_usd']:.4f}"
 
     def lat(m: dict) -> str:
-        return "n/a (mock)" if m["latency_ms_per_task"] is None else f"{m['latency_ms_per_task']:.0f} ms"
+        if m["latency_ms_per_task"] is None or m.get("extract_call_latency_ms") is None:
+            return "n/a (mock)"
+        return f"{m['latency_ms_per_task']:.0f} ms (extract call {m['extract_call_latency_ms'] / 1000:.1f} s)"
+
+    def tok(m: dict) -> str:
+        return "n/a" if m.get("input_tokens") is None else f"{m['input_tokens']} in / {m['output_tokens']} out"
 
     lines = [
-        "| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Latency / task |",
-        "|---|---|---|---|---|---|---|---|---|",
+        "| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Self-correction rate | Final accuracy | Silent errors | Cost | Tokens | Latency / task |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for m in a["models"]:
         lines.append(
             f"| {m['label']} | {pct(m['first_pass_accuracy'], 1)} | {m['caught_by_verifier']} | {m['corrected']} | "
-            f"{pct(m['self_correction_rate'])} | {pct(m['final_accuracy'], 1)} | {m['silent_errors']} | {cost(m)} | {lat(m)} |"
+            f"{pct(m['self_correction_rate'])} | {pct(m['final_accuracy'], 1)} | {m['silent_errors']} | {cost(m)} | {tok(m)} | {lat(m)} |"
         )
     return "\n".join(lines)
 

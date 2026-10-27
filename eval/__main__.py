@@ -35,6 +35,9 @@ def main(argv: list[str] | None = None) -> int:
     with tempfile.TemporaryDirectory(prefix="categoryos-eval-") as tmp, sheets.data_root(Path(tmp), args.seed) as world:
         verifier = verifier_eval.run(world, args.seed, args.per_class)
         agent = asyncio.run(agent_eval.run(world, mode, args.seed, args.tasks))
+    args.out.mkdir(parents=True, exist_ok=True)  # persist paid agent results before the injection stage can fail
+    for name, data in (("verifier", verifier), ("agent", agent)):
+        (args.out / f"{name}.json").write_text(json.dumps(data, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
     injection = asyncio.run(injection_eval.run(mode, injection_eval.live_model_detect if mode == "live" else None))
 
     args.out.mkdir(parents=True, exist_ok=True)
