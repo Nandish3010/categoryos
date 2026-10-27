@@ -527,6 +527,12 @@ def _assistant_tool_message(msg: Any) -> dict[str, Any]:
     }
 
 
+def _without_tools(kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Force a plain-text answer. The live API supports only tool_choice="auto" (verified: "none"/"required" -> 400), so
+    the way to forbid further tool calls is to stop offering tools."""
+    return {k: v for k, v in kwargs.items() if k not in ("tools", "tool_choice")}
+
+
 async def _live_tools(
     stage: str,
     messages: list[dict[str, Any]],
@@ -563,7 +569,7 @@ async def _live_tools(
     for turn in range(max_steps + 1):
         last_chance = turn == max_steps  # out of steps: force a plain answer
         if last_chance:
-            kwargs["tool_choice"] = "none"
+            kwargs = _without_tools(kwargs)
         resp = await _create(client, kwargs, meter)
         msg = resp.choices[0].message
         calls = getattr(msg, "tool_calls", None) or []
@@ -595,7 +601,7 @@ async def _live_tools(
             {"role": "assistant", "content": content},
             {"role": "user", "content": f"That reply was not valid ({str(first)[:300]}). Reply with only the corrected JSON object."},
         ]
-        repaired = await _complete(client, {**kwargs, "messages": repair, "tool_choice": "none"}, meter)
+        repaired = await _complete(client, {**_without_tools(kwargs), "messages": repair}, meter)
         try:
             final, parsed = _final_from_text(repaired, schema)
         except (ValueError, ValidationError) as second:
