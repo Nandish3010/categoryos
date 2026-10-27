@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch fixtures-run lint live record smoke requirements eval contract
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -77,3 +77,10 @@ data-price-watch:
 # Rebuild the mock model fixtures of those two modules from the engines (after changing the playbook knobs or the data).
 fixtures-run:
 	cd backend && PYTHONPATH=. uv run python ../scripts/build_run_fixtures.py
+
+# Live contract smoke: one tiny real call per external-API contract (chat, structured output, tools, vision, SAM, image,
+# ASR, Baseten). SPENDS CREDITS (a few cents). Needs MODEL_API_KEY / BASETEN_API_KEY in backend/.env or the environment.
+# Writes scrubbed raw responses to backend/fixtures/contract/. Subset: make contract ONLY="chat sam"
+contract:
+	@echo "WARNING: live contract smoke calls paid model APIs."
+	cd backend && MODEL_MODE=live uv run python ../scripts/contract_smoke.py $(if $(ONLY),--only $(ONLY),)
