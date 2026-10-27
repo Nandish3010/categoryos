@@ -473,3 +473,14 @@ class PriceRequestDecided(CategoryOSError):
     problem = "This request has already been decided"
     cause = "A reply was approved or the request was rejected"
     fix = "Open a new request; a decision is final in this demo"
+
+
+class UnknownCatalogLabel(CategoryOSError):
+    status = 404
+    code = "unknown_catalog_label"
+    cause = "The file is not a pack label in data/synthetic/ops/catalog_labels/manifest.json"
+    fix = "Use a label url from GET /api/ops/catalog"
+
+    def __init__(self, name: str) -> None:
+        super().__init__(f"unknown label: {name!r}")
+        self.name = name

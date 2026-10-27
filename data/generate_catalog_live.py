@@ -19,7 +19,7 @@ PLANTED issues (the module's test bench; ids are listing ids):
   banned / unproven claims         L-BK-01 (boosts immunity, supports joint health, BEST), L-PL-04 (cures, No.1, vet formulated),
                                    L-GW-02 (ultimate, unmatched), L-GW-05 (treats ear infections, heals)
   MRP differs from latest list     L-BK-02 (old list price), L-LT-04 (also differs from the label)
-  pack size mismatch               L-BK-03 (2 kg vs 1 kg), L-LT-02 (5 kg vs 10 kg)
+  pack size mismatch               L-BK-03 (2 kg vs 1 kg), L-LT-02 (8 kg vs 10 kg)
   near-duplicate listings          L-BK-06-B (of L-BK-06), L-TW-06-B (of L-TW-06)
   wrong category / subcategory     L-PL-03 (cat food filed under dog dry food), L-LT-03 (tofu litter filed as clumping)
   missing / low-resolution image   L-PL-05 (no image), L-PL-06 (400 px), L-TW-04 (640 px)
@@ -187,7 +187,7 @@ L = {
               A(pack_ml=100),
               ["Gentle ear cleaning solution", "Alcohol free", "100 ml bottle"],
               "A gentle, alcohol free ear cleaner for dogs and cats."),
-    "GW-06": ("Groomwell Tick & Flea Grooming Comb for Pets", "grooming", "tools", "1 pc",
+    "GW-06": ("Groomwell Tick & Flea Grooming Comb for Pets", "grooming", "hygiene", "1 pc",
               A(pack_pc=1),
               ["Fine teeth catch fleas", "Comfort handle", "Rust-free pins"],
               "A fine toothed comb for removing fleas and ticks from pets."),
@@ -247,8 +247,8 @@ def build() -> tuple[list[dict], list[dict]]:
     for k in ("life_stage", "breed_size", "grain_free"):
         del by["L-BK-04"]["attributes"][k]
     by["L-BK-06"]["gmv_share"] = 0.85
-    dup = dict(by["L-BK-06"], listing_id="L-BK-06-B", title="Barkley & Co Beef Pate Wet Dog Food Tin 350 gm", gmv_share=0.15,
-               bullets=["Smooth beef pate", "8% protein", "350 gm tin"], image_count=2, image_width=1000, image_height=1000, listed_on="2026-09-12")
+    dup = dict(by["L-BK-06"], listing_id="L-BK-06-B", title="Barkley & Co Beef Pate Dog Food Can 350 g", gmv_share=0.15,
+               bullets=["Smooth beef pate", "8% protein", "350 g tin"], image_count=2, image_width=1000, image_height=1000, listed_on="2026-09-12")
     dup["attributes"] = dict(by["L-BK-06"]["attributes"])
     edit("PL-01", fssai_number=FSSAI_OLD["E002"])
     edit("PL-02", fssai_number=FSSAI_OLD["E002"])
@@ -256,15 +256,15 @@ def build() -> tuple[list[dict], list[dict]]:
     edit("PL-04", bullets=["Cures hairballs naturally", "No.1 vet formulated hairball relief", "32% protein"])
     edit("PL-05", image_count=0, image_width=0, image_height=0)
     edit("PL-06", image_width=400, image_height=400)
-    edit("LT-02", pack_size="5 kg")
-    by["L-LT-02"]["attributes"]["pack_g"] = 5000
+    edit("LT-02", pack_size="8 kg")
+    by["L-LT-02"]["attributes"]["pack_g"] = 8000
     edit("LT-03", subcategory="clumping")
     edit("LT-04", mrp=429)
     edit("TW-01", title="Rope Tug Toy")
     del by["L-TW-03"]["attributes"]["material"]
     edit("TW-04", image_width=640, image_height=640)
     by["L-TW-06"]["gmv_share"] = 0.85
-    dup2 = dict(by["L-TW-06"], listing_id="L-TW-06-B", title="Tailwind Play Foldable Travel Bowl for Dogs", gmv_share=0.15,
+    dup2 = dict(by["L-TW-06"], listing_id="L-TW-06-B", title="Tailwind Play Collapsible Travel Bowl for Dogs Foldable", gmv_share=0.15,
                 bullets=["Folds flat for travel", "Food-grade silicone", "Carabiner clip"], image_count=2, image_width=1000, image_height=1000, listed_on="2026-09-20")
     dup2["attributes"] = dict(by["L-TW-06"]["attributes"])
     edit("GW-02", title="Groomwell Deshedding Brush for Pets", bullets=["The ultimate deshedding brush", "Unmatched results on every coat", "Comfort grip handle"])

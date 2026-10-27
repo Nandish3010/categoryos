@@ -46,7 +46,8 @@ async def generate(inject: bool = False) -> dict[str, Any]:
             continue
         of = {t: [i for i in mine if i["type"] == t] for t in {i["type"] for i in mine}}
         copy_issues = [i for i in mine if i["type"] in TEXT_ISSUES]
-        rewriting = qc.model_rewrites and bool(copy_issues)
+        pack_only = [i for i in of.get("title_missing_attributes", []) if i["detail"]["missing"] == ["pack"]] if "pack_mismatch" in of else []
+        rewriting = qc.model_rewrites and any(i not in pack_only for i in copy_issues)
         state = x.snapshot()
         got: list[fixes.Fix | None] = []
         if "mrp_mismatch" in of:
@@ -72,6 +73,12 @@ async def generate(inject: bool = False) -> dict[str, Any]:
             if fx is not None:
                 built.append(fx)
                 state = fixes.apply_changes(state, fx.changes)
+        for i in pack_only:  # the title only lacked the pack, and the pack fix settles that
+            if not calc.title_missing(state["title"], state["pack_size"], ctx.brand(x.vendor_id), qc.title_required):
+                pack_fix = next(f for f in built if f.id == f"fix:{x.listing_id}:pack")
+                pack_fix.issue_ids.append(i["id"])
+                pack_fix.issue_types.append(i["type"])
+                copy_issues.remove(i)
         states[x.listing_id] = state
         if qc.model_rewrites and (copy_issues or attrs):
             wants_model.append((x, copy_issues + (of.get("missing_attribute", []) if attrs else []), state, attrs))
@@ -157,7 +164,7 @@ async def generate(inject: bool = False) -> dict[str, Any]:
     listings.sort(key=lambda r: (-r["top_score"], r["listing_id"]))
 
     all_claims = [*scan.claims, *claims]
-    n = lambda status: sum(1 for c in all_claims if c.status == status)  # noqa: E731
+    n = lambda status: sum(1 for c in all_claims if c.status == status)
     mode = llm.resolve_mode(STAGE)
     trace = fg.drain(run)
     by_type: dict[str, int] = {}

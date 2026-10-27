@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "items": [
+      {
+        "listing_id": "L-BK-01",
+        "title": "Barkley & Co Chicken & Rice Adult Dry Dog Food 3 kg",
+        "bullets": [
+          "Real chicken and rice recipe for adult dogs",
+          "Made for dogs of all breeds",
+          "26% protein for daily energy"
+        ],
+        "facts": [
+          {
+            "metric": "pack_qty",
+            "value": 3,
+            "quote": "3 kg"
+          }
+        ],
+        "note": "Removed the superlative and the immunity and joint claims; the protein follows the pack label."
+      },
+      {
+        "listing_id": "L-PL-01",
+        "bullets": [
+          "Ocean fish recipe for adult cats",
+          "34% protein, as printed on the pack",
+          "Fish oil for a glossy coat",
+          "Net quantity 1.2 kg"
+        ],
+        "facts": [
+          {
+            "metric": "pack_qty",
+            "value": 1200,
+            "quote": "Net quantity 1.2 kg"
+          }
+        ],
+        "note": "Bullets now state what the pack label prints."
+      },
+      {
+        "listing_id": "L-PL-04",
+        "bullets": [
+          "Indoor recipe for adult cats",
+          "32% protein",
+          "Added fibre"
+        ],
+        "note": "Removed 'cures', '#1' and vet-formulated claims."
+      },
+      {
+        "listing_id": "L-LT-03",
+        "bullets": [
+          "Plant-based tofu cat litter, original variant",
+          "Low dust",
+          "Comes in a 6 L bag"
+        ],
+        "facts": [
+          {
+            "metric": "pack_qty",
+            "value": 6000,
+            "quote": "6 L bag"
+          }
+        ]
+      },
+      {
+        "listing_id": "L-LT-06",
+        "bullets": [
+          "Stainless steel litter scoop",
+          "Wide slots let litter fall through and keep the clumps",
+          "Easy to clean"
+        ]
+      },
+      {
+        "listing_id": "L-NP-05",
+        "bullets": [
+          "Crunchy tuna treats for adult cats",
+          "Contains 40% protein",
+          "60 g pouch"
+        ],
+        "facts": [
+          {
+            "metric": "pack_qty",
+            "value": 60,
+            "quote": "60 g pouch"
+          }
+        ]
+      },
+      {
+        "listing_id": "L-GW-02",
+        "bullets": [
+          "Removes loose undercoat",
+          "Comfort grip handle",
+          "Self-cleaning button"
+        ],
+        "note": "Removed 'ultimate' and 'unmatched'."
+      },
+      {
+        "listing_id": "L-GW-05",
+        "bullets": [
+          "Gentle ear cleaning solution",
+          "Alcohol free",
+          "100 ml bottle"
+        ],
+        "facts": [
+          {
+            "metric": "pack_qty",
+            "value": 100,
+            "quote": "100 ml bottle"
+          }
+        ],
+        "note": "Removed the infection and healing claims."
+      },
+      {
+        "listing_id": "L-TW-01",
+        "title": "Tailwind Play Rope Tug Toy for Dogs Large"
+      },
+      {
+        "listing_id": "L-BK-04",
+        "attributes": [
+          {
+            "name": "life_stage",
+            "value": "senior",
+            "quote": "senior dogs of all breeds"
+          },
+          {
+            "name": "breed_size",
+            "value": "all breeds",
+            "quote": "senior dogs of all breeds"
+          },
+          {
+            "name": "grain_free",
+            "value": "no",
+            "quote": "Not grain free"
+          }
+        ]
+      },
+      {
+        "listing_id": "L-TW-03",
+        "attributes": [
+          {
+            "name": "material",
+            "value": "feather and plastic",
+            "quote": "made of feather and plastic"
+          }
+        ]
+      }
+    ]
+  }
+}

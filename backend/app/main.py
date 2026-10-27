@@ -31,6 +31,7 @@ from app.errors import AssetNotFound, CategoryOSError, LeverOutOfRange, PolicyRe
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
 from app.ops.api import router as ops_router
+from app.ops.catalog_qc.api import router as catalog_qc_router
 from app.schemas import (
     ApproveBody,
     EndCallBody,
@@ -64,6 +65,7 @@ async def lifespan(_: FastAPI):
 
 app = FastAPI(title="CategoryOS", lifespan=lifespan)
 app.include_router(ops_router)  # Run: weekly review and PO follow-up for existing vendors
+app.include_router(catalog_qc_router)  # Run: catalog QC / fix queue for existing listings
 
 origins = ["http://localhost:3000"]
 if settings.frontend_origin:

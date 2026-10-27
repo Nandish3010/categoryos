@@ -19,7 +19,13 @@ from app import docparse, docs, policy
 from app.agents.context import RunContext
 from app.errors import CategoryOSError
 from app.ops.catalog_qc import calc
-from app.ops.catalog_qc.data import LABEL_DIR, CatalogData, Listing, file_sha256, label_path
+from app.ops.catalog_qc.data import (
+    LABEL_DIR,
+    CatalogData,
+    Listing,
+    file_sha256,
+    label_path,
+)
 from app.parsing import PARSER_VERSION
 from app.schemas import Claim, Evidence, SourceRef
 from app.verify import verify_all

@@ -18,7 +18,16 @@ from collections.abc import Callable
 from app import policy
 from app.errors import CategoryOSError
 from app.ops.catalog_qc import calc
-from app.ops.catalog_qc.data import FILES, LABEL_DIR, LIVE, PRICES, as_of, file_sha256, label_path, load
+from app.ops.catalog_qc.data import (
+    FILES,
+    LABEL_DIR,
+    LIVE,
+    PRICES,
+    as_of,
+    file_sha256,
+    label_path,
+    load,
+)
 from app.ops.data import load as load_ops
 from app.parsing import parse_pack
 from app.schemas import Claim

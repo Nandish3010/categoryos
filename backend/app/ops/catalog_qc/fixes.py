@@ -13,7 +13,7 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from app import llm, policy, selfcorrect
+from app import llm, selfcorrect
 from app.agents.context import RunContext
 from app.errors import CategoryOSError
 from app.ops import figures as fg
@@ -295,10 +295,10 @@ def copy_fix(ctx: Ctx, x: Listing, issues: list[dict[str, Any]], state: dict[str
         if price is None:
             break
         if f.metric == "pack_qty":
-            claims.append(_claim(fid, f"fact{n}", text=f"The rewrite states a pack of {f.value:g} ({f.quote})", value=f.value, metric="qc_stated_pack_qty", unit="qty", x=x, file=PRICES, key=x.sku_key,
+            claims.append(_claim(fid, f"fact{n}", text=f"The rewrite states a pack quantity of {f.value:g}", value=f.value, metric="qc_stated_pack_qty", unit="qty", x=x, file=PRICES, key=x.sku_key,
                                  column="pack_size", raw=f.quote, row=price.row, header="pack_size", origin="model_extraction"))
         else:
-            claims.append(_claim(fid, f"fact{n}", text=f"The rewrite states an MRP of {f.value:g} ({f.quote})", value=f.value, metric="qc_stated_mrp", unit="inr", x=x, file=PRICES, key=x.sku_key,
+            claims.append(_claim(fid, f"fact{n}", text=f"The rewrite states an MRP of {f.value:g}", value=f.value, metric="qc_stated_mrp", unit="inr", x=x, file=PRICES, key=x.sku_key,
                                  column="mrp", raw=f.quote, row=price.row, header="mrp", origin="model_extraction"))
     what = " and ".join(c["label"].lower() for c in changes if c["field"] in ("title", "bullets", "description"))
     fx = _new(x, "copy", "model", f"Rewrite the {what}", issues, changes, claims)

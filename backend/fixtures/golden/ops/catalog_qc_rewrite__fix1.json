@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "fixes": [
+      {
+        "claim_id": "fix:L-BK-01:copy:fact0",
+        "value": 3000
+      }
+    ]
+  }
+}

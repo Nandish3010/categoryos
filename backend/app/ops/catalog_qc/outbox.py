@@ -8,7 +8,13 @@ from datetime import UTC, datetime
 from typing import Any
 
 from app import policy
-from app.errors import BulkLimitExceeded, CatalogFixBlocked, CatalogFixNotPending, EmptySelection, UnknownCatalogFix
+from app.errors import (
+    BulkLimitExceeded,
+    CatalogFixBlocked,
+    CatalogFixNotPending,
+    EmptySelection,
+    UnknownCatalogFix,
+)
 from app.ops.catalog_qc.fixes import ORDER
 
 _decisions: dict[str, dict[str, Any]] = {}  # fix id -> {status, decided_at, note}

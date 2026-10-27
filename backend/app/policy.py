@@ -866,6 +866,13 @@ class CatalogQc(M):
     bulk_approve_limit: int = F(25, "Bulk-approve limit", "Most fixes one bulk approve may apply. A bigger selection is refused, so a person looks at it in batches.", unit="fixes", min=1, max=500, step=1, used_in=["ops_catalog"])
     model_rewrites: bool = F(True, "Model-written fixes", "Let the model (muse-spark) rewrite titles, bullets and fill text attributes. Off: only the deterministic fixes are proposed.", used_in=["ops_catalog"])
 
+    @model_validator(mode="after")
+    def _weights(self) -> "CatalogQc":
+        w = self.priority_weights
+        if w.gmv_at_risk + w.severity + w.return_rate <= 0:
+            raise ValueError("priority_weights cannot all be zero")
+        return self
+
     @field_validator("title_required")
     @classmethod
     def _tr(cls, v: list[str]) -> list[str]:

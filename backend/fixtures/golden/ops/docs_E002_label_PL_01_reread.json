@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "protein_pct",
+        "value": "34.0 %",
+        "sku_code": "PL-01"
+      },
+      {
+        "name": "claims_text",
+        "value": "Rich in ocean fish.",
+        "sku_code": "PL-01"
+      },
+      {
+        "name": "net_quantity",
+        "value": "1.2 kg",
+        "sku_code": "PL-01"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 640",
+        "sku_code": "PL-01"
+      },
+      {
+        "name": "fssai_number",
+        "value": "FSSAI-E002-OLD",
+        "sku_code": "PL-01"
+      }
+    ]
+  }
+}
