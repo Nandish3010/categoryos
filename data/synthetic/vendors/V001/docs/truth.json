@@ -1,0 +1,612 @@
+{
+  "note": "What is really printed on each page. For tests and fixtures only; the pipeline never reads this file.",
+  "documents": [
+    {
+      "file": "fssai_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "fssai_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "FSSAI-DEMO-0001",
+              "px": [
+                327,
+                304,
+                564,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3828,
+                0.2553,
+                0.6654,
+                0.2795
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "Highland Paws Nutrition Pvt Ltd",
+              "px": [
+                327,
+                394,
+                725,
+                425
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3848,
+                0.329,
+                0.8593,
+                0.3617
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "16 AUG 2022",
+              "px": [
+                327,
+                672,
+                496,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3912,
+                0.5682,
+                0.5929,
+                0.5913
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "15 AUG 2027",
+              "px": [
+                327,
+                764,
+                496,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3933,
+                0.6462,
+                0.595,
+                0.6693
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "gst_certificate.jpg",
+      "kind": "licence_certificate",
+      "pages": [
+        {
+          "file": "gst_certificate.jpg",
+          "width": 840,
+          "height": 1180,
+          "fields": [
+            {
+              "name": "licence_number",
+              "value": "GST-DEMO-0001",
+              "px": [
+                327,
+                304,
+                544,
+                328
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3937,
+                0.2566,
+                0.6524,
+                0.2795
+              ]
+            },
+            {
+              "name": "holder_name",
+              "value": "Highland Paws Nutrition Pvt Ltd",
+              "px": [
+                327,
+                394,
+                725,
+                425
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.392,
+                0.3328,
+                0.8663,
+                0.3638
+              ]
+            },
+            {
+              "name": "valid_from",
+              "value": "01 APR 2020",
+              "px": [
+                327,
+                672,
+                492,
+                696
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.3875,
+                0.5684,
+                0.5843,
+                0.5907
+              ]
+            },
+            {
+              "name": "valid_until",
+              "value": "31 MAR 2030",
+              "px": [
+                327,
+                764,
+                499,
+                788
+              ],
+              "sku_code": null,
+              "bbox": [
+                0.386,
+                0.6463,
+                0.5911,
+                0.6687
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "price_list.pdf",
+      "kind": "price_list",
+      "pages": [
+        {
+          "file": "price_list.p1.png",
+          "width": 900,
+          "height": 1280,
+          "fields": [
+            {
+              "name": "price",
+              "value": "956.50",
+              "px": [
+                697,
+                295,
+                773,
+                316
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.7744,
+                0.2305,
+                0.8589,
+                0.2469
+              ]
+            },
+            {
+              "name": "price",
+              "value": "3,150.00",
+              "px": [
+                697,
+                361,
+                791,
+                385
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.7744,
+                0.282,
+                0.8789,
+                0.3008
+              ]
+            },
+            {
+              "name": "price",
+              "value": "1,014.00",
+              "px": [
+                697,
+                427,
+                791,
+                451
+              ],
+              "sku_code": "HP-D03",
+              "bbox": [
+                0.7744,
+                0.3336,
+                0.8789,
+                0.3523
+              ]
+            },
+            {
+              "name": "price",
+              "value": "874.00",
+              "px": [
+                697,
+                493,
+                773,
+                514
+              ],
+              "sku_code": "HP-D04",
+              "bbox": [
+                0.7744,
+                0.3852,
+                0.8589,
+                0.4016
+              ]
+            },
+            {
+              "name": "price",
+              "value": "3,352.00",
+              "px": [
+                697,
+                559,
+                791,
+                583
+              ],
+              "sku_code": "HP-D06",
+              "bbox": [
+                0.7744,
+                0.4367,
+                0.8789,
+                0.4555
+              ]
+            },
+            {
+              "name": "price",
+              "value": "968.00",
+              "px": [
+                697,
+                625,
+                773,
+                646
+              ],
+              "sku_code": "HP-D07",
+              "bbox": [
+                0.7744,
+                0.4883,
+                0.8589,
+                0.5047
+              ]
+            },
+            {
+              "name": "price",
+              "value": "87.00",
+              "px": [
+                697,
+                691,
+                760,
+                712
+              ],
+              "sku_code": "HP-W01",
+              "bbox": [
+                0.7744,
+                0.5398,
+                0.8444,
+                0.5563
+              ]
+            },
+            {
+              "name": "price",
+              "value": "118.00",
+              "px": [
+                697,
+                757,
+                773,
+                778
+              ],
+              "sku_code": "HP-W02",
+              "bbox": [
+                0.7744,
+                0.5914,
+                0.8589,
+                0.6078
+              ]
+            },
+            {
+              "name": "price",
+              "value": "217.00",
+              "px": [
+                697,
+                823,
+                773,
+                844
+              ],
+              "sku_code": "HP-W03",
+              "bbox": [
+                0.7744,
+                0.643,
+                0.8589,
+                0.6594
+              ]
+            },
+            {
+              "name": "price",
+              "value": "247.00",
+              "px": [
+                697,
+                889,
+                773,
+                910
+              ],
+              "sku_code": "HP-T01",
+              "bbox": [
+                0.7744,
+                0.6945,
+                0.8589,
+                0.7109
+              ]
+            },
+            {
+              "name": "price",
+              "value": "212.00",
+              "px": [
+                697,
+                955,
+                773,
+                976
+              ],
+              "sku_code": "HP-T02",
+              "bbox": [
+                0.7744,
+                0.7461,
+                0.8589,
+                0.7625
+              ]
+            }
+          ],
+          "panel": null
+        }
+      ]
+    },
+    {
+      "file": "label_HP-D01.jpg",
+      "kind": "product_label",
+      "pages": [
+        {
+          "file": "label_HP-D01.jpg",
+          "width": 760,
+          "height": 1100,
+          "fields": [
+            {
+              "name": "product_name",
+              "value": "Alpine Chicken & Sweet Potato Adult",
+              "px": [
+                37,
+                180,
+                508,
+                211
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.0613,
+                0.1551,
+                0.6819,
+                0.1952
+              ]
+            },
+            {
+              "name": "protein_pct",
+              "value": "30.0 %",
+              "px": [
+                467,
+                343,
+                546,
+                366
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.6212,
+                0.3141,
+                0.7259,
+                0.337
+              ]
+            },
+            {
+              "name": "claims_text",
+              "value": "Grain-free. Single-source chicken. Supports joint health.",
+              "px": [
+                45,
+                734,
+                591,
+                760
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.0517,
+                0.6587,
+                0.7708,
+                0.6962
+              ]
+            },
+            {
+              "name": "net_quantity",
+              "value": "1.5 kg",
+              "px": [
+                227,
+                814,
+                302,
+                843
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.288,
+                0.736,
+                0.3877,
+                0.7643
+              ]
+            },
+            {
+              "name": "mrp",
+              "value": "Rs. 1,499",
+              "px": [
+                227,
+                863,
+                336,
+                889
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.2863,
+                0.7806,
+                0.4306,
+                0.8069
+              ]
+            },
+            {
+              "name": "fssai_number",
+              "value": "FSSAI-DEMO-0001",
+              "px": [
+                227,
+                911,
+                427,
+                932
+              ],
+              "sku_code": "HP-D01",
+              "bbox": [
+                0.2847,
+                0.8242,
+                0.5486,
+                0.8483
+              ]
+            }
+          ],
+          "panel": [
+            0.0205,
+            0.2366,
+            0.9733,
+            0.9179
+          ]
+        }
+      ]
+    },
+    {
+      "file": "label_HP-D02.jpg",
+      "kind": "product_label",
+      "pages": [
+        {
+          "file": "label_HP-D02.jpg",
+          "width": 760,
+          "height": 1100,
+          "fields": [
+            {
+              "name": "product_name",
+              "value": "Alpine Chicken & Sweet Potato Adult Value Pack",
+              "px": [
+                37,
+                180,
+                654,
+                211
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.0369,
+                0.1577,
+                0.8495,
+                0.1995
+              ]
+            },
+            {
+              "name": "protein_pct",
+              "value": "32.0 %",
+              "px": [
+                467,
+                343,
+                546,
+                366
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.6078,
+                0.3082,
+                0.7124,
+                0.3308
+              ]
+            },
+            {
+              "name": "claims_text",
+              "value": "Grain-free. Single-source chicken.",
+              "px": [
+                45,
+                734,
+                377,
+                760
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.0653,
+                0.6673,
+                0.5028,
+                0.6983
+              ]
+            },
+            {
+              "name": "net_quantity",
+              "value": "6 kg",
+              "px": [
+                227,
+                814,
+                282,
+                843
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.3072,
+                0.7421,
+                0.3805,
+                0.7697
+              ]
+            },
+            {
+              "name": "mrp",
+              "value": "Rs. 4,999",
+              "px": [
+                227,
+                863,
+                336,
+                889
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.3088,
+                0.7854,
+                0.453,
+                0.8115
+              ]
+            },
+            {
+              "name": "fssai_number",
+              "value": "FSSAI-DEMO-0001",
+              "px": [
+                227,
+                911,
+                427,
+                932
+              ],
+              "sku_code": "HP-D02",
+              "bbox": [
+                0.3103,
+                0.827,
+                0.5741,
+                0.8506
+              ]
+            }
+          ],
+          "panel": [
+            0.028,
+            0.2377,
+            0.9775,
+            0.9168
+          ]
+        }
+      ]
+    }
+  ]
+}

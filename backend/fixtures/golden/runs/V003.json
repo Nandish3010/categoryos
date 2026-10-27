@@ -1,15 +1,15 @@
 {
  "approvals": [
   {
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "stage": "research"
   },
   {
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "stage": "catalog"
   },
   {
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "stage": "po"
   }
  ],
@@ -33,17 +33,194 @@
    "model": null,
    "payload": {
     "args": {
-     "today": "2026-10-27",
+     "files": [
+      "gst_certificate.jpg"
+     ],
      "vendor_id": "V003"
     },
     "deterministic": true,
-    "result_summary": "3 documents, 0 problems, blocking=False",
-    "tool": "check_documents"
+    "result_summary": "1 scanned document(s) to read with vision",
+    "tool": "read_documents"
    },
    "run_id": "run_recorded",
    "seq": 2,
    "stage": "intake",
    "t_rel_ms": 1000.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": 0.0,
+   "latency_ms": 900.0,
+   "model": "muse-spark-1.3",
+   "payload": {
+    "document": "gst_certificate.jpg",
+    "input_tokens": 0,
+    "mode": "mock",
+    "output_tokens": 0,
+    "task": "doc_extract",
+    "tool_steps": 0
+   },
+   "run_id": "run_recorded",
+   "seq": 3,
+   "stage": "intake",
+   "t_rel_ms": 2100.0,
+   "type": "model_call"
+  },
+  {
+   "cost_usd": 0.0,
+   "latency_ms": 900.0,
+   "model": "muse-spark-1.3",
+   "payload": {
+    "document": "gst_certificate.jpg",
+    "input_tokens": 0,
+    "mode": "mock",
+    "output_tokens": 0,
+    "task": "doc_reread_fields",
+    "tool_steps": 0
+   },
+   "run_id": "run_recorded",
+   "seq": 4,
+   "stage": "intake",
+   "t_rel_ms": 3200.0,
+   "type": "model_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "as_of": "2026-10-27",
+      "bbox": [
+       0.3905,
+       0.5687,
+       0.5872,
+       0.5908
+      ],
+      "crop_sha256": "6d5dda176fb646af292601905f52a8871d520dd0780a1f8c27f220b9b9c67162",
+      "doc": "gst_certificate.jpg",
+      "header": null,
+      "normalized_value": "2021-04-01",
+      "page": 1,
+      "parser_version": "1.0",
+      "raw_value": "01 APR 2021",
+      "reread_value": "01 APR 2021",
+      "row": null,
+      "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+     },
+     "id": "V003:gst_certificate:p1:valid_from:-:vision",
+     "metric": "doc_date:licence_certificate.valid_from",
+     "origin": "vision_extraction",
+     "reason": null,
+     "recomputed": -2035.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "valid_from",
+      "file": "vendors/V003/docs/gst_certificate.jpg",
+      "key": "p1:valid_from"
+     },
+     "status": "verified",
+     "text": "Valid from on GST registration certificate (scan) reads 2021-04-01 (-2035 days from 2026-10-27)",
+     "unit": "units",
+     "value": -2035.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 5,
+   "stage": "intake",
+   "t_rel_ms": 3320.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "claim": {
+     "evidence": {
+      "as_of": "2026-10-27",
+      "bbox": [
+       0.3918,
+       0.6466,
+       0.5969,
+       0.6687
+      ],
+      "crop_sha256": "1342f932c8b531a13c3e4dbb9c641b0f922971cd914e6d7a2feca5df22c66d63",
+      "doc": "gst_certificate.jpg",
+      "header": null,
+      "normalized_value": "2030-03-31",
+      "page": 1,
+      "parser_version": "1.0",
+      "raw_value": "31 MAR 2030",
+      "reread_value": "31 MAR 2030",
+      "row": null,
+      "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+     },
+     "id": "V003:gst_certificate:p1:valid_until:-:vision",
+     "metric": "doc_date:licence_certificate.valid_until",
+     "origin": "vision_extraction",
+     "reason": null,
+     "recomputed": 1251.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "valid_until",
+      "file": "vendors/V003/docs/gst_certificate.jpg",
+      "key": "p1:valid_until"
+     },
+     "status": "verified",
+     "text": "Valid until on GST registration certificate (scan) reads 2030-03-31 (1251 days from 2026-10-27)",
+     "unit": "units",
+     "value": 1251.0
+    }
+   },
+   "run_id": "run_recorded",
+   "seq": 6,
+   "stage": "intake",
+   "t_rel_ms": 3440.0,
+   "type": "claim_checked"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "args": {
+     "checks": [
+      "certificate_number_vs_application",
+      "certificate_expiry_vs_application",
+      "certificate_holder_vs_application",
+      "price_list_vs_sheet"
+     ],
+     "vendor_id": "V003"
+    },
+    "deterministic": true,
+    "result_summary": "3 comparison(s), 0 to follow up",
+    "tool": "cross_check_documents"
+   },
+   "run_id": "run_recorded",
+   "seq": 7,
+   "stage": "intake",
+   "t_rel_ms": 4140.0,
+   "type": "tool_call"
+  },
+  {
+   "cost_usd": null,
+   "latency_ms": null,
+   "model": null,
+   "payload": {
+    "args": {
+     "today": "2026-10-27",
+     "vendor_id": "V003"
+    },
+    "deterministic": true,
+    "result_summary": "3 documents, 0 problems, blocking=False (scanned certificates override declared dates)",
+    "tool": "check_documents"
+   },
+   "run_id": "run_recorded",
+   "seq": 8,
+   "stage": "intake",
+   "t_rel_ms": 4840.0,
    "type": "tool_call"
   },
   {
@@ -58,9 +235,9 @@
     "tool": "get_application"
    },
    "run_id": "run_recorded",
-   "seq": 3,
+   "seq": 9,
    "stage": "intake",
-   "t_rel_ms": 1700.0,
+   "t_rel_ms": 5540.0,
    "type": "tool_call"
   },
   {
@@ -75,9 +252,9 @@
     "tool": "get_sku_rows"
    },
    "run_id": "run_recorded",
-   "seq": 4,
+   "seq": 10,
    "stage": "intake",
-   "t_rel_ms": 2400.0,
+   "t_rel_ms": 6240.0,
    "type": "tool_call"
   },
   {
@@ -92,9 +269,9 @@
     "tool_steps": 2
    },
    "run_id": "run_recorded",
-   "seq": 5,
+   "seq": 11,
    "stage": "intake",
-   "t_rel_ms": 3500.0,
+   "t_rel_ms": 7340.0,
    "type": "model_call"
   },
   {
@@ -102,7 +279,80 @@
    "latency_ms": null,
    "model": null,
    "payload": {
-    "claims": [],
+    "claims": [
+     {
+      "evidence": {
+       "as_of": "2026-10-27",
+       "bbox": [
+        0.3905,
+        0.5687,
+        0.5872,
+        0.5908
+       ],
+       "crop_sha256": "6d5dda176fb646af292601905f52a8871d520dd0780a1f8c27f220b9b9c67162",
+       "doc": "gst_certificate.jpg",
+       "header": null,
+       "normalized_value": "2021-04-01",
+       "page": 1,
+       "parser_version": "1.0",
+       "raw_value": "01 APR 2021",
+       "reread_value": "01 APR 2021",
+       "row": null,
+       "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+      },
+      "id": "V003:gst_certificate:p1:valid_from:-:vision",
+      "metric": "doc_date:licence_certificate.valid_from",
+      "origin": "vision_extraction",
+      "reason": null,
+      "recomputed": -2035.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "valid_from",
+       "file": "vendors/V003/docs/gst_certificate.jpg",
+       "key": "p1:valid_from"
+      },
+      "status": "verified",
+      "text": "Valid from on GST registration certificate (scan) reads 2021-04-01 (-2035 days from 2026-10-27)",
+      "unit": "units",
+      "value": -2035.0
+     },
+     {
+      "evidence": {
+       "as_of": "2026-10-27",
+       "bbox": [
+        0.3918,
+        0.6466,
+        0.5969,
+        0.6687
+       ],
+       "crop_sha256": "1342f932c8b531a13c3e4dbb9c641b0f922971cd914e6d7a2feca5df22c66d63",
+       "doc": "gst_certificate.jpg",
+       "header": null,
+       "normalized_value": "2030-03-31",
+       "page": 1,
+       "parser_version": "1.0",
+       "raw_value": "31 MAR 2030",
+       "reread_value": "31 MAR 2030",
+       "row": null,
+       "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+      },
+      "id": "V003:gst_certificate:p1:valid_until:-:vision",
+      "metric": "doc_date:licence_certificate.valid_until",
+      "origin": "vision_extraction",
+      "reason": null,
+      "recomputed": 1251.0,
+      "sku_key": null,
+      "source_ref": {
+       "column": "valid_until",
+       "file": "vendors/V003/docs/gst_certificate.jpg",
+       "key": "p1:valid_until"
+      },
+      "status": "verified",
+      "text": "Valid until on GST registration certificate (scan) reads 2030-03-31 (1251 days from 2026-10-27)",
+      "unit": "units",
+      "value": 1251.0
+     }
+    ],
     "data": {
      "decision": "pass",
      "documents": {
@@ -110,7 +360,9 @@
       "documents": [
        {
         "declared_status": "valid",
+        "declared_valid_until": "2030-03-31",
         "number": "GST-DEMO-0003",
+        "source": "scan",
         "state": "valid",
         "type": "GST",
         "valid_until": "2030-03-31"
@@ -161,7 +413,222 @@
        "severity": "low",
        "type": "no_food_licence"
       }
-     ]
+     ],
+     "scanned_documents": {
+      "documents": [
+       {
+        "declares": "GST",
+        "error": null,
+        "expiry": {
+         "as_of": "2026-10-27",
+         "days": 1251,
+         "state": "valid",
+         "valid_until": "2030-03-31"
+        },
+        "fields": [
+         {
+          "bbox": [
+           0.3851,
+           0.2564,
+           0.6438,
+           0.2789
+          ],
+          "claim_id": null,
+          "confidence": 0.97,
+          "label": "Licence number",
+          "name": "licence_number",
+          "page": 1,
+          "raw": "GST-DEMO-0003",
+          "reason": null,
+          "reread": "GST-DEMO-0003",
+          "sku_code": null,
+          "status": "verified",
+          "type": "text",
+          "value": "GST-DEMO-0003"
+         },
+         {
+          "bbox": [
+           0.3865,
+           0.332,
+           0.8095,
+           0.3611
+          ],
+          "claim_id": null,
+          "confidence": 0.97,
+          "label": "Holder",
+          "name": "holder_name",
+          "page": 1,
+          "raw": "SnapTail Accessories Pvt Ltd",
+          "reason": null,
+          "reread": null,
+          "sku_code": null,
+          "status": "read",
+          "type": "text",
+          "value": "SnapTail Accessories Pvt Ltd"
+         },
+         {
+          "bbox": [
+           0.3905,
+           0.5687,
+           0.5872,
+           0.5908
+          ],
+          "claim_id": "V003:gst_certificate:p1:valid_from:-:vision",
+          "confidence": 0.97,
+          "label": "Valid from",
+          "name": "valid_from",
+          "page": 1,
+          "raw": "01 APR 2021",
+          "reason": null,
+          "reread": "01 APR 2021",
+          "sku_code": null,
+          "status": "verified",
+          "type": "date",
+          "value": "2021-04-01"
+         },
+         {
+          "bbox": [
+           0.3918,
+           0.6466,
+           0.5969,
+           0.6687
+          ],
+          "claim_id": "V003:gst_certificate:p1:valid_until:-:vision",
+          "confidence": 0.97,
+          "label": "Valid until",
+          "name": "valid_until",
+          "page": 1,
+          "raw": "31 MAR 2030",
+          "reason": null,
+          "reread": "31 MAR 2030",
+          "sku_code": null,
+          "status": "verified",
+          "type": "date",
+          "value": "2030-03-31"
+         }
+        ],
+        "file": "gst_certificate.jpg",
+        "injection": [],
+        "kind": "licence_certificate",
+        "label": "Licence certificate",
+        "legible": true,
+        "mode": "mock",
+        "notes": "",
+        "pages": [
+         {
+          "file": "gst_certificate.jpg",
+          "height": 1180,
+          "page": 1,
+          "url": "/api/docs/V003/gst_certificate.jpg",
+          "width": 840
+         }
+        ],
+        "panel": null,
+        "sku_code": null,
+        "title": "GST registration certificate (scan)",
+        "url": "/api/docs/V003/gst_certificate.jpg"
+       }
+      ],
+      "enabled": true,
+      "findings": [
+       {
+        "bbox": [
+         0.3851,
+         0.2564,
+         0.6438,
+         0.2789
+        ],
+        "check": "certificate_number_vs_application",
+        "claim_id": null,
+        "claim_status": "verified",
+        "doc": "gst_certificate.jpg",
+        "doc_label": "GST registration certificate (scan)",
+        "document_value": "GST-DEMO-0003",
+        "field": "licence_number",
+        "field_label": "Licence number",
+        "id": "certificate_number_vs_application:gst_certificate.jpg:-",
+        "label": "Licence number on the scan vs the application",
+        "message": "GST registration certificate (scan): Licence number GST-DEMO-0003 matches the application",
+        "other_label": "application",
+        "other_source": {
+         "file": "application.json",
+         "key": "documents[GST].number"
+        },
+        "other_value": "GST-DEMO-0003",
+        "page": 1,
+        "severity": "high",
+        "sku_code": null,
+        "status": "match"
+       },
+       {
+        "bbox": [
+         0.3918,
+         0.6466,
+         0.5969,
+         0.6687
+        ],
+        "check": "certificate_expiry_vs_application",
+        "claim_id": "V003:gst_certificate:p1:valid_until:-:vision",
+        "claim_status": "verified",
+        "doc": "gst_certificate.jpg",
+        "doc_label": "GST registration certificate (scan)",
+        "document_value": "2030-03-31",
+        "field": "valid_until",
+        "field_label": "Valid until",
+        "id": "certificate_expiry_vs_application:gst_certificate.jpg:-",
+        "label": "Valid-until date on the scan vs the application",
+        "message": "GST registration certificate (scan): Valid until 2030-03-31 matches the application",
+        "other_label": "application",
+        "other_source": {
+         "file": "application.json",
+         "key": "documents[GST].valid_until"
+        },
+        "other_value": "2030-03-31",
+        "page": 1,
+        "severity": "high",
+        "sku_code": null,
+        "status": "match"
+       },
+       {
+        "bbox": [
+         0.3865,
+         0.332,
+         0.8095,
+         0.3611
+        ],
+        "check": "certificate_holder_vs_application",
+        "claim_id": null,
+        "claim_status": "read",
+        "doc": "gst_certificate.jpg",
+        "doc_label": "GST registration certificate (scan)",
+        "document_value": "SnapTail Accessories Pvt Ltd",
+        "field": "holder_name",
+        "field_label": "Holder",
+        "id": "certificate_holder_vs_application:gst_certificate.jpg:-",
+        "label": "Holder on the scan vs the applicant",
+        "message": "GST registration certificate (scan): Holder SnapTail Accessories Pvt Ltd matches the application",
+        "other_label": "applicant",
+        "other_source": {
+         "file": "application.json",
+         "key": "company_name"
+        },
+        "other_value": "SnapTail Accessories Pvt Ltd",
+        "page": 1,
+        "severity": "medium",
+        "sku_code": null,
+        "status": "match"
+       }
+      ],
+      "summary": {
+       "claims": 2,
+       "documents": 1,
+       "fields": 4,
+       "mismatches": 0,
+       "rejected": 0,
+       "unverifiable": 0,
+       "verified": 2
+      }
+     }
     },
     "locked_reason": null,
     "metrics_hash": null,
@@ -172,9 +639,9 @@
     "summary": "Screening passed with 3 flag(s) to follow up"
    },
    "run_id": "run_recorded",
-   "seq": 6,
+   "seq": 12,
    "stage": "intake",
-   "t_rel_ms": 3900.0,
+   "t_rel_ms": 7740.0,
    "type": "stage_result"
   },
   {
@@ -185,9 +652,9 @@
     "stage": "research"
    },
    "run_id": "run_recorded",
-   "seq": 7,
+   "seq": 13,
    "stage": "research",
-   "t_rel_ms": 4200.0,
+   "t_rel_ms": 8040.0,
    "type": "stage_started"
   },
   {
@@ -201,13 +668,13 @@
      "vendor_id": "V003"
     },
     "deterministic": true,
-    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=031784e95463",
+    "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=5183f22dda03",
     "tool": "apply_levers"
    },
    "run_id": "run_recorded",
-   "seq": 8,
+   "seq": 14,
    "stage": "research",
-   "t_rel_ms": 4900.0,
+   "t_rel_ms": 8740.0,
    "type": "tool_call"
   },
   {
@@ -219,13 +686,13 @@
      "target_margin_pct_offset": 0,
      "vendor_id": "V003"
     },
-    "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
+    "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f, summary{7}, skus[10]",
     "tool": "get_metrics"
    },
    "run_id": "run_recorded",
-   "seq": 9,
+   "seq": 15,
    "stage": "research",
-   "t_rel_ms": 5600.0,
+   "t_rel_ms": 9440.0,
    "type": "tool_call"
   },
   {
@@ -240,9 +707,9 @@
     "tool": "get_application"
    },
    "run_id": "run_recorded",
-   "seq": 10,
+   "seq": 16,
    "stage": "research",
-   "t_rel_ms": 6300.0,
+   "t_rel_ms": 10140.0,
    "type": "tool_call"
   },
   {
@@ -257,9 +724,9 @@
     "tool": "get_sku_rows"
    },
    "run_id": "run_recorded",
-   "seq": 11,
+   "seq": 17,
    "stage": "research",
-   "t_rel_ms": 7000.0,
+   "t_rel_ms": 10840.0,
    "type": "tool_call"
   },
   {
@@ -274,9 +741,9 @@
     "tool": "get_overlap"
    },
    "run_id": "run_recorded",
-   "seq": 12,
+   "seq": 18,
    "stage": "research",
-   "t_rel_ms": 7700.0,
+   "t_rel_ms": 11540.0,
    "type": "tool_call"
   },
   {
@@ -291,9 +758,9 @@
     "tool": "get_benchmarks"
    },
    "run_id": "run_recorded",
-   "seq": 13,
+   "seq": 19,
    "stage": "research",
-   "t_rel_ms": 8400.0,
+   "t_rel_ms": 12240.0,
    "type": "tool_call"
   },
   {
@@ -308,9 +775,9 @@
     "tool_steps": 5
    },
    "run_id": "run_recorded",
-   "seq": 14,
+   "seq": 20,
    "stage": "research",
-   "t_rel_ms": 9500.0,
+   "t_rel_ms": 13340.0,
    "type": "model_call"
   },
   {
@@ -320,10 +787,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 249.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "249",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -345,9 +818,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 15,
+   "seq": 21,
    "stage": "research",
-   "t_rel_ms": 9620.0,
+   "t_rel_ms": 13460.0,
    "type": "claim_checked"
   },
   {
@@ -375,9 +848,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 16,
+   "seq": 22,
    "stage": "research",
-   "t_rel_ms": 9740.0,
+   "t_rel_ms": 13580.0,
    "type": "claim_checked"
   },
   {
@@ -405,9 +878,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 17,
+   "seq": 23,
    "stage": "research",
-   "t_rel_ms": 9860.0,
+   "t_rel_ms": 13700.0,
    "type": "claim_checked"
   },
   {
@@ -435,9 +908,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 18,
+   "seq": 24,
    "stage": "research",
-   "t_rel_ms": 9980.0,
+   "t_rel_ms": 13820.0,
    "type": "claim_checked"
   },
   {
@@ -447,10 +920,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 349.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 349",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -472,9 +951,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 19,
+   "seq": 25,
    "stage": "research",
-   "t_rel_ms": 10100.0,
+   "t_rel_ms": 13940.0,
    "type": "claim_checked"
   },
   {
@@ -502,9 +981,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 20,
+   "seq": 26,
    "stage": "research",
-   "t_rel_ms": 10220.0,
+   "t_rel_ms": 14060.0,
    "type": "claim_checked"
   },
   {
@@ -532,9 +1011,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 21,
+   "seq": 27,
    "stage": "research",
-   "t_rel_ms": 10340.0,
+   "t_rel_ms": 14180.0,
    "type": "claim_checked"
   },
   {
@@ -562,9 +1041,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 22,
+   "seq": 28,
    "stage": "research",
-   "t_rel_ms": 10460.0,
+   "t_rel_ms": 14300.0,
    "type": "claim_checked"
   },
   {
@@ -574,10 +1053,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 599.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 599",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -599,9 +1084,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 23,
+   "seq": 29,
    "stage": "research",
-   "t_rel_ms": 10580.0,
+   "t_rel_ms": 14420.0,
    "type": "claim_checked"
   },
   {
@@ -629,9 +1114,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 24,
+   "seq": 30,
    "stage": "research",
-   "t_rel_ms": 10700.0,
+   "t_rel_ms": 14540.0,
    "type": "claim_checked"
   },
   {
@@ -659,9 +1144,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 25,
+   "seq": 31,
    "stage": "research",
-   "t_rel_ms": 10820.0,
+   "t_rel_ms": 14660.0,
    "type": "claim_checked"
   },
   {
@@ -689,9 +1174,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 26,
+   "seq": 32,
    "stage": "research",
-   "t_rel_ms": 10940.0,
+   "t_rel_ms": 14780.0,
    "type": "claim_checked"
   },
   {
@@ -701,10 +1186,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 299.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "Rs.299/-",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -726,9 +1217,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 27,
+   "seq": 33,
    "stage": "research",
-   "t_rel_ms": 11060.0,
+   "t_rel_ms": 14900.0,
    "type": "claim_checked"
   },
   {
@@ -756,9 +1247,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 28,
+   "seq": 34,
    "stage": "research",
-   "t_rel_ms": 11180.0,
+   "t_rel_ms": 15020.0,
    "type": "claim_checked"
   },
   {
@@ -786,9 +1277,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 29,
+   "seq": 35,
    "stage": "research",
-   "t_rel_ms": 11300.0,
+   "t_rel_ms": 15140.0,
    "type": "claim_checked"
   },
   {
@@ -816,9 +1307,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 30,
+   "seq": 36,
    "stage": "research",
-   "t_rel_ms": 11420.0,
+   "t_rel_ms": 15260.0,
    "type": "claim_checked"
   },
   {
@@ -846,9 +1337,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 31,
+   "seq": 37,
    "stage": "research",
-   "t_rel_ms": 11540.0,
+   "t_rel_ms": 15380.0,
    "type": "claim_checked"
   },
   {
@@ -858,10 +1349,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 122.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "122",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -883,9 +1380,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 32,
+   "seq": 38,
    "stage": "research",
-   "t_rel_ms": 11660.0,
+   "t_rel_ms": 15500.0,
    "type": "claim_checked"
   },
   {
@@ -895,10 +1392,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 304.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "304",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -920,9 +1423,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 33,
+   "seq": 39,
    "stage": "research",
-   "t_rel_ms": 11780.0,
+   "t_rel_ms": 15620.0,
    "type": "claim_checked"
   },
   {
@@ -932,10 +1435,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 176.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "176",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -957,9 +1466,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 34,
+   "seq": 40,
    "stage": "research",
-   "t_rel_ms": 11900.0,
+   "t_rel_ms": 15740.0,
    "type": "claim_checked"
   },
   {
@@ -969,10 +1478,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 182.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "182",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -994,9 +1509,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 35,
+   "seq": 41,
    "stage": "research",
-   "t_rel_ms": 12020.0,
+   "t_rel_ms": 15860.0,
    "type": "claim_checked"
   },
   {
@@ -1007,10 +1522,16 @@
     "claims": [
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 249.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "249",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1086,10 +1607,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 349.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 349",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1165,10 +1692,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 599.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 599",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1244,10 +1777,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 299.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "Rs.299/-",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1341,10 +1880,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 122.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "122",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1366,10 +1911,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 304.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "304",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1391,10 +1942,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 176.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "176",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1416,10 +1973,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 182.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "182",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -1617,17 +2180,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+    "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
     "summary": "0 of 10 SnapTail SKUs list as proposed, 4 need a price negotiation and 6 are rejected; capital at risk is ₹85,430 at MOQ 400."
    },
    "run_id": "run_recorded",
-   "seq": 36,
+   "seq": 42,
    "stage": "research",
-   "t_rel_ms": 12420.0,
+   "t_rel_ms": 16260.0,
    "type": "stage_result"
   },
   {
@@ -1801,7 +2364,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -1809,9 +2372,9 @@
     "summary": "4 of 10 SKUs shortlisted (0 list, 4 negotiate)"
    },
    "run_id": "run_recorded",
-   "seq": 37,
+   "seq": 43,
    "stage": "shortlist",
-   "t_rel_ms": 12820.0,
+   "t_rel_ms": 16660.0,
    "type": "stage_result"
   },
   {
@@ -1820,9 +2383,9 @@
    "model": null,
    "payload": {},
    "run_id": "run_recorded",
-   "seq": 38,
+   "seq": 44,
    "stage": null,
-   "t_rel_ms": 13320.0,
+   "t_rel_ms": 17160.0,
    "type": "done"
   },
   {
@@ -1996,7 +2559,7 @@
      ]
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "shortlist",
@@ -2004,9 +2567,9 @@
     "summary": "4 of 10 SKUs shortlisted (0 list, 4 negotiate)"
    },
    "run_id": "run_recorded",
-   "seq": 39,
+   "seq": 45,
    "stage": "shortlist",
-   "t_rel_ms": 13720.0,
+   "t_rel_ms": 17560.0,
    "type": "stage_result"
   },
   {
@@ -2017,9 +2580,9 @@
     "stage": "negotiate"
    },
    "run_id": "run_recorded",
-   "seq": 40,
+   "seq": 46,
    "stage": "negotiate",
-   "t_rel_ms": 14020.0,
+   "t_rel_ms": 17860.0,
    "type": "stage_started"
   },
   {
@@ -2041,9 +2604,9 @@
     "tool": "required_terms"
    },
    "run_id": "run_recorded",
-   "seq": 41,
+   "seq": 47,
    "stage": "negotiate",
-   "t_rel_ms": 14720.0,
+   "t_rel_ms": 18560.0,
    "type": "tool_call"
   },
   {
@@ -2190,7 +2753,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "negotiate",
@@ -2198,9 +2761,9 @@
     "summary": "No call transcript on file: the gap table compares the application terms with what we require"
    },
    "run_id": "run_recorded",
-   "seq": 42,
+   "seq": 48,
    "stage": "negotiate",
-   "t_rel_ms": 15120.0,
+   "t_rel_ms": 18960.0,
    "type": "stage_result"
   },
   {
@@ -2211,9 +2774,9 @@
     "stage": "catalog"
    },
    "run_id": "run_recorded",
-   "seq": 43,
+   "seq": 49,
    "stage": "catalog",
-   "t_rel_ms": 15420.0,
+   "t_rel_ms": 19260.0,
    "type": "stage_started"
   },
   {
@@ -2235,9 +2798,9 @@
     "tool": "normalise_rows"
    },
    "run_id": "run_recorded",
-   "seq": 44,
+   "seq": 50,
    "stage": "catalog",
-   "t_rel_ms": 16120.0,
+   "t_rel_ms": 19960.0,
    "type": "tool_call"
   },
   {
@@ -2253,9 +2816,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 45,
+   "seq": 51,
    "stage": "catalog",
-   "t_rel_ms": 17220.0,
+   "t_rel_ms": 21060.0,
    "type": "model_call"
   },
   {
@@ -2270,9 +2833,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 46,
+   "seq": 52,
    "stage": "catalog",
-   "t_rel_ms": 18320.0,
+   "t_rel_ms": 22160.0,
    "type": "model_call"
   },
   {
@@ -2282,10 +2845,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 249.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "249",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2307,9 +2876,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 47,
+   "seq": 53,
    "stage": "catalog",
-   "t_rel_ms": 18440.0,
+   "t_rel_ms": 22280.0,
    "type": "claim_checked"
   },
   {
@@ -2319,10 +2888,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1 Pcs",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2344,9 +2919,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 48,
+   "seq": 54,
    "stage": "catalog",
-   "t_rel_ms": 18560.0,
+   "t_rel_ms": 22400.0,
    "type": "claim_checked"
   },
   {
@@ -2356,10 +2931,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 349.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 349",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2381,9 +2962,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 49,
+   "seq": 55,
    "stage": "catalog",
-   "t_rel_ms": 18680.0,
+   "t_rel_ms": 22520.0,
    "type": "claim_checked"
   },
   {
@@ -2393,10 +2974,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1pcs",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2418,9 +3005,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 50,
+   "seq": 56,
    "stage": "catalog",
-   "t_rel_ms": 18800.0,
+   "t_rel_ms": 22640.0,
    "type": "claim_checked"
   },
   {
@@ -2430,10 +3017,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 599.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 599",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2455,9 +3048,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 51,
+   "seq": 57,
    "stage": "catalog",
-   "t_rel_ms": 18920.0,
+   "t_rel_ms": 22760.0,
    "type": "claim_checked"
   },
   {
@@ -2467,10 +3060,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1 Pcs",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2492,9 +3091,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 52,
+   "seq": 58,
    "stage": "catalog",
-   "t_rel_ms": 19040.0,
+   "t_rel_ms": 22880.0,
    "type": "claim_checked"
   },
   {
@@ -2504,10 +3103,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 299.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "Rs.299/-",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2529,9 +3134,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 53,
+   "seq": 59,
    "stage": "catalog",
-   "t_rel_ms": 19160.0,
+   "t_rel_ms": 23000.0,
    "type": "claim_checked"
   },
   {
@@ -2541,10 +3146,16 @@
    "payload": {
     "claim": {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 750.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "750 ml",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -2566,9 +3177,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 54,
+   "seq": 60,
    "stage": "catalog",
-   "t_rel_ms": 19280.0,
+   "t_rel_ms": 23120.0,
    "type": "claim_checked"
   },
   {
@@ -2579,10 +3190,16 @@
     "claims": [
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 249.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "249",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2604,10 +3221,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Qty/Pack",
        "normalized_value": 1.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "1 Pcs",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2629,10 +3252,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 349.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 349",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2654,10 +3283,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Qty/Pack",
        "normalized_value": 1.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "1pcs",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2679,10 +3314,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 599.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 599",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2704,10 +3345,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Qty/Pack",
        "normalized_value": 1.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "1 Pcs",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2729,10 +3376,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 299.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "Rs.299/-",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2754,10 +3407,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Qty/Pack",
        "normalized_value": 750.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "750 ml",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -2786,6 +3445,20 @@
       "ST-101"
      ],
      "image_mode": "placeholder",
+     "scanned_documents": {
+      "documents": [],
+      "enabled": false,
+      "findings": [],
+      "summary": {
+       "claims": 0,
+       "documents": 0,
+       "fields": 0,
+       "mismatches": 0,
+       "rejected": 0,
+       "unverifiable": 0,
+       "verified": 0
+      }
+     },
      "skus": [
       {
        "attribute_checks": [
@@ -2846,6 +3519,7 @@
          "packshot": "placeholder"
         }
        },
+       "label_check": null,
        "name": "COTTON ROPE TUG TOY",
        "normalized": {
         "category": "toys",
@@ -2932,6 +3606,7 @@
          "packshot": "placeholder"
         }
        },
+       "label_check": null,
        "name": "Nylon Dog Collar Medium",
        "normalized": {
         "category": "accessories",
@@ -3020,6 +3695,7 @@
          "packshot": "placeholder"
         }
        },
+       "label_check": null,
        "name": "Adjustable Dog Harness Medium",
        "normalized": {
         "category": "accessories",
@@ -3104,6 +3780,7 @@
          "packshot": "placeholder"
         }
        },
+       "label_check": null,
        "name": "STAINLESS STEEL PET BOWL 750ML",
        "normalized": {
         "category": "accessories",
@@ -3142,17 +3819,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+    "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "needs_approval": true,
     "stage": "catalog",
     "status": "review",
     "summary": "4 listings drafted, 0 compliance flag(s), classifier agreement 100%"
    },
    "run_id": "run_recorded",
-   "seq": 55,
+   "seq": 61,
    "stage": "catalog",
-   "t_rel_ms": 19680.0,
+   "t_rel_ms": 23520.0,
    "type": "stage_result"
   },
   {
@@ -3163,9 +3840,9 @@
     "phase": "execute"
    },
    "run_id": "run_recorded",
-   "seq": 56,
+   "seq": 62,
    "stage": null,
-   "t_rel_ms": 20180.0,
+   "t_rel_ms": 24020.0,
    "type": "done"
   },
   {
@@ -3176,9 +3853,9 @@
     "stage": "marketing"
    },
    "run_id": "run_recorded",
-   "seq": 57,
+   "seq": 63,
    "stage": "marketing",
-   "t_rel_ms": 20480.0,
+   "t_rel_ms": 24320.0,
    "type": "stage_started"
   },
   {
@@ -3189,9 +3866,9 @@
     "stage": "jbp"
    },
    "run_id": "run_recorded",
-   "seq": 58,
+   "seq": 64,
    "stage": "jbp",
-   "t_rel_ms": 20780.0,
+   "t_rel_ms": 24620.0,
    "type": "stage_started"
   },
   {
@@ -3202,9 +3879,9 @@
     "stage": "po"
    },
    "run_id": "run_recorded",
-   "seq": 59,
+   "seq": 65,
    "stage": "po",
-   "t_rel_ms": 21080.0,
+   "t_rel_ms": 24920.0,
    "type": "stage_started"
   },
   {
@@ -3221,9 +3898,9 @@
     "tool": "build_po"
    },
    "run_id": "run_recorded",
-   "seq": 60,
+   "seq": 66,
    "stage": "po",
-   "t_rel_ms": 21780.0,
+   "t_rel_ms": 25620.0,
    "type": "tool_call"
   },
   {
@@ -3251,9 +3928,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 61,
+   "seq": 67,
    "stage": "po",
-   "t_rel_ms": 21900.0,
+   "t_rel_ms": 25740.0,
    "type": "claim_checked"
   },
   {
@@ -3281,9 +3958,9 @@
     }
    },
    "run_id": "run_recorded",
-   "seq": 62,
+   "seq": 68,
    "stage": "po",
-   "t_rel_ms": 22020.0,
+   "t_rel_ms": 25860.0,
    "type": "claim_checked"
   },
   {
@@ -3298,9 +3975,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 63,
+   "seq": 69,
    "stage": "jbp",
-   "t_rel_ms": 23120.0,
+   "t_rel_ms": 26960.0,
    "type": "model_call"
   },
   {
@@ -3315,9 +3992,9 @@
     "tool_steps": 0
    },
    "run_id": "run_recorded",
-   "seq": 64,
+   "seq": 70,
    "stage": "marketing",
-   "t_rel_ms": 24220.0,
+   "t_rel_ms": 28060.0,
    "type": "model_call"
   },
   {
@@ -3343,7 +4020,7 @@
      "mode": "mock"
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "marketing",
@@ -3351,9 +4028,9 @@
     "summary": "Campaign 'SnapTail Walk-Ready Week' with a 5% brand-funded launch discount"
    },
    "run_id": "run_recorded",
-   "seq": 65,
+   "seq": 71,
    "stage": "marketing",
-   "t_rel_ms": 24620.0,
+   "t_rel_ms": 28460.0,
    "type": "stage_result"
   },
   {
@@ -3407,7 +4084,7 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "narrative_hash": null,
     "needs_approval": false,
     "stage": "jbp",
@@ -3415,9 +4092,9 @@
     "summary": "JBP drafted: 4 SKUs, ₹14,445 monthly GMV target"
    },
    "run_id": "run_recorded",
-   "seq": 66,
+   "seq": 72,
    "stage": "jbp",
-   "t_rel_ms": 25020.0,
+   "t_rel_ms": 28860.0,
    "type": "stage_result"
   },
   {
@@ -3564,17 +4241,17 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+    "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "needs_approval": true,
     "stage": "po",
     "status": "review",
     "summary": "PO PO-V003-20261027: 4 lines, ₹96,930 including GST"
    },
    "run_id": "run_recorded",
-   "seq": 67,
+   "seq": 73,
    "stage": "po",
-   "t_rel_ms": 25420.0,
+   "t_rel_ms": 29260.0,
    "type": "stage_result"
   },
   {
@@ -3585,16 +4262,16 @@
     "phase": "launch"
    },
    "run_id": "run_recorded",
-   "seq": 68,
+   "seq": 74,
    "stage": null,
-   "t_rel_ms": 25920.0,
+   "t_rel_ms": 29760.0,
    "type": "done"
   }
  ],
  "meta": {
-  "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+  "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
   "parser_version": "1.0",
-  "recorded_at": "2026-10-27T02:33:49+00:00",
+  "recorded_at": "2026-10-27T02:57:39+00:00",
   "schema_version": 1,
   "source": "mock"
  },
@@ -3609,7 +4286,7 @@
       "stage": "research"
      },
      "run_id": "run_recorded",
-     "seq": 39,
+     "seq": 45,
      "stage": "research",
      "t_rel_ms": 300.0,
      "type": "stage_started"
@@ -3625,11 +4302,11 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=031784e95463",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=5183f22dda03",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
-     "seq": 40,
+     "seq": 46,
      "stage": "research",
      "t_rel_ms": 1000.0,
      "type": "tool_call"
@@ -3643,11 +4320,11 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
-     "seq": 41,
+     "seq": 47,
      "stage": "research",
      "t_rel_ms": 1700.0,
      "type": "tool_call"
@@ -3664,7 +4341,7 @@
       "tool": "get_application"
      },
      "run_id": "run_recorded",
-     "seq": 42,
+     "seq": 48,
      "stage": "research",
      "t_rel_ms": 2400.0,
      "type": "tool_call"
@@ -3681,7 +4358,7 @@
       "tool": "get_sku_rows"
      },
      "run_id": "run_recorded",
-     "seq": 43,
+     "seq": 49,
      "stage": "research",
      "t_rel_ms": 3100.0,
      "type": "tool_call"
@@ -3698,7 +4375,7 @@
       "tool": "get_overlap"
      },
      "run_id": "run_recorded",
-     "seq": 44,
+     "seq": 50,
      "stage": "research",
      "t_rel_ms": 3800.0,
      "type": "tool_call"
@@ -3715,7 +4392,7 @@
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
-     "seq": 45,
+     "seq": 51,
      "stage": "research",
      "t_rel_ms": 4500.0,
      "type": "tool_call"
@@ -3732,7 +4409,7 @@
       "tool_steps": 5
      },
      "run_id": "run_recorded",
-     "seq": 46,
+     "seq": 52,
      "stage": "research",
      "t_rel_ms": 5600.0,
      "type": "model_call"
@@ -3744,10 +4421,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 249.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "249",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -3769,7 +4452,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 47,
+     "seq": 53,
      "stage": "research",
      "t_rel_ms": 5720.0,
      "type": "claim_checked"
@@ -3799,7 +4482,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 48,
+     "seq": 54,
      "stage": "research",
      "t_rel_ms": 5840.0,
      "type": "claim_checked"
@@ -3829,7 +4512,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 49,
+     "seq": 55,
      "stage": "research",
      "t_rel_ms": 5960.0,
      "type": "claim_checked"
@@ -3859,7 +4542,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 50,
+     "seq": 56,
      "stage": "research",
      "t_rel_ms": 6080.0,
      "type": "claim_checked"
@@ -3871,10 +4554,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 349.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 349",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -3896,7 +4585,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 51,
+     "seq": 57,
      "stage": "research",
      "t_rel_ms": 6200.0,
      "type": "claim_checked"
@@ -3926,7 +4615,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 52,
+     "seq": 58,
      "stage": "research",
      "t_rel_ms": 6320.0,
      "type": "claim_checked"
@@ -3956,7 +4645,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 53,
+     "seq": 59,
      "stage": "research",
      "t_rel_ms": 6440.0,
      "type": "claim_checked"
@@ -3986,7 +4675,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 54,
+     "seq": 60,
      "stage": "research",
      "t_rel_ms": 6560.0,
      "type": "claim_checked"
@@ -3998,10 +4687,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 599.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 599",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4023,7 +4718,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 55,
+     "seq": 61,
      "stage": "research",
      "t_rel_ms": 6680.0,
      "type": "claim_checked"
@@ -4053,7 +4748,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 56,
+     "seq": 62,
      "stage": "research",
      "t_rel_ms": 6800.0,
      "type": "claim_checked"
@@ -4083,7 +4778,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 57,
+     "seq": 63,
      "stage": "research",
      "t_rel_ms": 6920.0,
      "type": "claim_checked"
@@ -4113,7 +4808,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 58,
+     "seq": 64,
      "stage": "research",
      "t_rel_ms": 7040.0,
      "type": "claim_checked"
@@ -4125,10 +4820,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 299.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "Rs.299/-",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4150,7 +4851,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 59,
+     "seq": 65,
      "stage": "research",
      "t_rel_ms": 7160.0,
      "type": "claim_checked"
@@ -4180,7 +4881,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 60,
+     "seq": 66,
      "stage": "research",
      "t_rel_ms": 7280.0,
      "type": "claim_checked"
@@ -4210,7 +4911,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 61,
+     "seq": 67,
      "stage": "research",
      "t_rel_ms": 7400.0,
      "type": "claim_checked"
@@ -4240,7 +4941,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 62,
+     "seq": 68,
      "stage": "research",
      "t_rel_ms": 7520.0,
      "type": "claim_checked"
@@ -4270,7 +4971,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 63,
+     "seq": 69,
      "stage": "research",
      "t_rel_ms": 7640.0,
      "type": "claim_checked"
@@ -4282,10 +4983,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 122.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "122",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4307,7 +5014,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 64,
+     "seq": 70,
      "stage": "research",
      "t_rel_ms": 7760.0,
      "type": "claim_checked"
@@ -4319,10 +5026,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 304.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "304",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4344,7 +5057,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 65,
+     "seq": 71,
      "stage": "research",
      "t_rel_ms": 7880.0,
      "type": "claim_checked"
@@ -4356,10 +5069,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 176.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "176",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4381,7 +5100,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 66,
+     "seq": 72,
      "stage": "research",
      "t_rel_ms": 8000.0,
      "type": "claim_checked"
@@ -4393,10 +5112,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 182.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "182",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -4418,7 +5143,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 67,
+     "seq": 73,
      "stage": "research",
      "t_rel_ms": 8120.0,
      "type": "claim_checked"
@@ -4431,10 +5156,16 @@
       "claims": [
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 249.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "249",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4510,10 +5241,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 349.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 349",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4589,10 +5326,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 599.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 599",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4668,10 +5411,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 299.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "Rs.299/-",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4765,10 +5514,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 122.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "122",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4790,10 +5545,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 304.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "304",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4815,10 +5576,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 176.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "176",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -4840,10 +5607,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 182.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "182",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -5041,15 +5814,15 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-      "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+      "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+      "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
       "summary": "0 list, 4 negotiate and 6 reject out of 10 SKUs at a +0 pp margin offset; capital at risk is ₹85,430 at MOQ 400."
      },
      "run_id": "run_recorded",
-     "seq": 68,
+     "seq": 74,
      "stage": "research",
      "t_rel_ms": 8520.0,
      "type": "stage_result"
@@ -5225,7 +5998,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+      "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -5233,7 +6006,7 @@
       "summary": "4 of 10 SKUs shortlisted (0 list, 4 negotiate)"
      },
      "run_id": "run_recorded",
-     "seq": 69,
+     "seq": 75,
      "stage": "shortlist",
      "t_rel_ms": 8920.0,
      "type": "stage_result"
@@ -5246,23 +6019,29 @@
       "replan": true
      },
      "run_id": "run_recorded",
-     "seq": 70,
+     "seq": 76,
      "stage": null,
      "t_rel_ms": 9420.0,
      "type": "done"
     }
    ],
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "moq": 400,
    "offset": 0.0,
    "research": {
     "claims": [
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 249.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "249",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5338,10 +6117,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 349.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 349",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5417,10 +6202,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 599.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 599",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5496,10 +6287,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 299.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "Rs.299/-",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5593,10 +6390,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 122.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "122",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5618,10 +6421,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 304.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "304",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5643,10 +6452,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 176.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "176",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5668,10 +6483,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 182.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "182",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -5869,8 +6690,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-    "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+    "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+    "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -5887,7 +6708,7 @@
       "stage": "research"
      },
      "run_id": "run_recorded",
-     "seq": 71,
+     "seq": 77,
      "stage": "research",
      "t_rel_ms": 300.0,
      "type": "stage_started"
@@ -5903,11 +6724,11 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=d2713a3bfa18",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=cd662ed0c11d",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
-     "seq": 72,
+     "seq": 78,
      "stage": "research",
      "t_rel_ms": 1000.0,
      "type": "tool_call"
@@ -5921,11 +6742,11 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
-     "seq": 73,
+     "seq": 79,
      "stage": "research",
      "t_rel_ms": 1700.0,
      "type": "tool_call"
@@ -5942,7 +6763,7 @@
       "tool": "get_application"
      },
      "run_id": "run_recorded",
-     "seq": 74,
+     "seq": 80,
      "stage": "research",
      "t_rel_ms": 2400.0,
      "type": "tool_call"
@@ -5959,7 +6780,7 @@
       "tool": "get_sku_rows"
      },
      "run_id": "run_recorded",
-     "seq": 75,
+     "seq": 81,
      "stage": "research",
      "t_rel_ms": 3100.0,
      "type": "tool_call"
@@ -5976,7 +6797,7 @@
       "tool": "get_overlap"
      },
      "run_id": "run_recorded",
-     "seq": 76,
+     "seq": 82,
      "stage": "research",
      "t_rel_ms": 3800.0,
      "type": "tool_call"
@@ -5993,7 +6814,7 @@
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
-     "seq": 77,
+     "seq": 83,
      "stage": "research",
      "t_rel_ms": 4500.0,
      "type": "tool_call"
@@ -6010,7 +6831,7 @@
       "tool_steps": 5
      },
      "run_id": "run_recorded",
-     "seq": 78,
+     "seq": 84,
      "stage": "research",
      "t_rel_ms": 5600.0,
      "type": "model_call"
@@ -6022,10 +6843,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 249.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "249",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6047,7 +6874,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 79,
+     "seq": 85,
      "stage": "research",
      "t_rel_ms": 5720.0,
      "type": "claim_checked"
@@ -6077,7 +6904,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 80,
+     "seq": 86,
      "stage": "research",
      "t_rel_ms": 5840.0,
      "type": "claim_checked"
@@ -6107,7 +6934,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 81,
+     "seq": 87,
      "stage": "research",
      "t_rel_ms": 5960.0,
      "type": "claim_checked"
@@ -6137,7 +6964,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 82,
+     "seq": 88,
      "stage": "research",
      "t_rel_ms": 6080.0,
      "type": "claim_checked"
@@ -6149,10 +6976,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 349.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 349",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6174,7 +7007,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 83,
+     "seq": 89,
      "stage": "research",
      "t_rel_ms": 6200.0,
      "type": "claim_checked"
@@ -6204,7 +7037,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 84,
+     "seq": 90,
      "stage": "research",
      "t_rel_ms": 6320.0,
      "type": "claim_checked"
@@ -6234,7 +7067,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 85,
+     "seq": 91,
      "stage": "research",
      "t_rel_ms": 6440.0,
      "type": "claim_checked"
@@ -6264,7 +7097,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 86,
+     "seq": 92,
      "stage": "research",
      "t_rel_ms": 6560.0,
      "type": "claim_checked"
@@ -6276,10 +7109,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 599.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 599",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6301,7 +7140,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 87,
+     "seq": 93,
      "stage": "research",
      "t_rel_ms": 6680.0,
      "type": "claim_checked"
@@ -6331,7 +7170,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 88,
+     "seq": 94,
      "stage": "research",
      "t_rel_ms": 6800.0,
      "type": "claim_checked"
@@ -6361,7 +7200,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 89,
+     "seq": 95,
      "stage": "research",
      "t_rel_ms": 6920.0,
      "type": "claim_checked"
@@ -6391,7 +7230,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 90,
+     "seq": 96,
      "stage": "research",
      "t_rel_ms": 7040.0,
      "type": "claim_checked"
@@ -6403,10 +7242,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 299.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "Rs.299/-",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6428,7 +7273,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 91,
+     "seq": 97,
      "stage": "research",
      "t_rel_ms": 7160.0,
      "type": "claim_checked"
@@ -6458,7 +7303,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 92,
+     "seq": 98,
      "stage": "research",
      "t_rel_ms": 7280.0,
      "type": "claim_checked"
@@ -6488,7 +7333,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 93,
+     "seq": 99,
      "stage": "research",
      "t_rel_ms": 7400.0,
      "type": "claim_checked"
@@ -6518,7 +7363,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 94,
+     "seq": 100,
      "stage": "research",
      "t_rel_ms": 7520.0,
      "type": "claim_checked"
@@ -6548,7 +7393,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 95,
+     "seq": 101,
      "stage": "research",
      "t_rel_ms": 7640.0,
      "type": "claim_checked"
@@ -6560,10 +7405,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 122.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "122",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6585,7 +7436,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 96,
+     "seq": 102,
      "stage": "research",
      "t_rel_ms": 7760.0,
      "type": "claim_checked"
@@ -6597,10 +7448,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 304.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "304",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6622,7 +7479,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 97,
+     "seq": 103,
      "stage": "research",
      "t_rel_ms": 7880.0,
      "type": "claim_checked"
@@ -6634,10 +7491,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 176.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "176",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6659,7 +7522,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 98,
+     "seq": 104,
      "stage": "research",
      "t_rel_ms": 8000.0,
      "type": "claim_checked"
@@ -6671,10 +7534,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 182.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "182",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -6696,7 +7565,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 99,
+     "seq": 105,
      "stage": "research",
      "t_rel_ms": 8120.0,
      "type": "claim_checked"
@@ -6709,10 +7578,16 @@
       "claims": [
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 249.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "249",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -6788,10 +7663,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 349.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 349",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -6867,10 +7748,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 599.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 599",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -6946,10 +7833,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 299.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "Rs.299/-",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -7043,10 +7936,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 122.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "122",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -7068,10 +7967,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 304.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "304",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -7093,10 +7998,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 176.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "176",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -7118,10 +8029,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 182.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "182",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -7319,15 +8236,15 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
-      "narrative_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+      "metrics_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
+      "narrative_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
       "summary": "0 list, 4 negotiate and 6 reject out of 10 SKUs at a +2 pp margin offset; capital at risk is ₹85,430 at MOQ 400."
      },
      "run_id": "run_recorded",
-     "seq": 100,
+     "seq": 106,
      "stage": "research",
      "t_rel_ms": 8520.0,
      "type": "stage_result"
@@ -7503,7 +8420,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+      "metrics_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -7511,7 +8428,7 @@
       "summary": "4 of 10 SKUs shortlisted (0 list, 4 negotiate)"
      },
      "run_id": "run_recorded",
-     "seq": 101,
+     "seq": 107,
      "stage": "shortlist",
      "t_rel_ms": 8920.0,
      "type": "stage_result"
@@ -7524,23 +8441,29 @@
       "replan": true
      },
      "run_id": "run_recorded",
-     "seq": 102,
+     "seq": 108,
      "stage": null,
      "t_rel_ms": 9420.0,
      "type": "done"
     }
    ],
-   "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+   "metrics_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
    "moq": 400,
    "offset": 2.0,
    "research": {
     "claims": [
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 249.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "249",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7616,10 +8539,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 349.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 349",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7695,10 +8624,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 599.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 599",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7774,10 +8709,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 299.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "Rs.299/-",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7871,10 +8812,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 122.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "122",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7896,10 +8843,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 304.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "304",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7921,10 +8874,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 176.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "176",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -7946,10 +8905,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 182.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "182",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -8147,8 +9112,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
-    "narrative_hash": "d2713a3bfa18da227ab0e50fa2646bfe6c2a9d13a497f1c42bc39644cb132c2f",
+    "metrics_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
+    "narrative_hash": "cd662ed0c11d504acf8814d7cdd2cdbeeeee89f93047f9226612700d1c14c8d6",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -8165,7 +9130,7 @@
       "stage": "research"
      },
      "run_id": "run_recorded",
-     "seq": 103,
+     "seq": 109,
      "stage": "research",
      "t_rel_ms": 300.0,
      "type": "stage_started"
@@ -8181,11 +9146,11 @@
        "vendor_id": "V003"
       },
       "deterministic": true,
-      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=da6f967d1ab4",
+      "result_summary": "counts={'list': 0, 'negotiate': 4, 'reject': 6, 'needs_data': 0}, capital_at_risk_inr=85429.8, metrics_hash=cd82d864e32f",
       "tool": "apply_levers"
      },
      "run_id": "run_recorded",
-     "seq": 104,
+     "seq": 110,
      "stage": "research",
      "t_rel_ms": 1000.0,
      "type": "tool_call"
@@ -8199,11 +9164,11 @@
        "target_margin_pct_offset": 0,
        "vendor_id": "V003"
       },
-      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de, summary{7}, skus[10]",
+      "result_summary": "vendor_id=V003, target_margin_pct_offset=0, metrics_hash=5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f, summary{7}, skus[10]",
       "tool": "get_metrics"
      },
      "run_id": "run_recorded",
-     "seq": 105,
+     "seq": 111,
      "stage": "research",
      "t_rel_ms": 1700.0,
      "type": "tool_call"
@@ -8220,7 +9185,7 @@
       "tool": "get_application"
      },
      "run_id": "run_recorded",
-     "seq": 106,
+     "seq": 112,
      "stage": "research",
      "t_rel_ms": 2400.0,
      "type": "tool_call"
@@ -8237,7 +9202,7 @@
       "tool": "get_sku_rows"
      },
      "run_id": "run_recorded",
-     "seq": 107,
+     "seq": 113,
      "stage": "research",
      "t_rel_ms": 3100.0,
      "type": "tool_call"
@@ -8254,7 +9219,7 @@
       "tool": "get_overlap"
      },
      "run_id": "run_recorded",
-     "seq": 108,
+     "seq": 114,
      "stage": "research",
      "t_rel_ms": 3800.0,
      "type": "tool_call"
@@ -8271,7 +9236,7 @@
       "tool": "get_benchmarks"
      },
      "run_id": "run_recorded",
-     "seq": 109,
+     "seq": 115,
      "stage": "research",
      "t_rel_ms": 4500.0,
      "type": "tool_call"
@@ -8288,7 +9253,7 @@
       "tool_steps": 5
      },
      "run_id": "run_recorded",
-     "seq": 110,
+     "seq": 116,
      "stage": "research",
      "t_rel_ms": 5600.0,
      "type": "model_call"
@@ -8300,10 +9265,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 249.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "249",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8325,7 +9296,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 111,
+     "seq": 117,
      "stage": "research",
      "t_rel_ms": 5720.0,
      "type": "claim_checked"
@@ -8355,7 +9326,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 112,
+     "seq": 118,
      "stage": "research",
      "t_rel_ms": 5840.0,
      "type": "claim_checked"
@@ -8385,7 +9356,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 113,
+     "seq": 119,
      "stage": "research",
      "t_rel_ms": 5960.0,
      "type": "claim_checked"
@@ -8415,7 +9386,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 114,
+     "seq": 120,
      "stage": "research",
      "t_rel_ms": 6080.0,
      "type": "claim_checked"
@@ -8427,10 +9398,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 349.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 349",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8452,7 +9429,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 115,
+     "seq": 121,
      "stage": "research",
      "t_rel_ms": 6200.0,
      "type": "claim_checked"
@@ -8482,7 +9459,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 116,
+     "seq": 122,
      "stage": "research",
      "t_rel_ms": 6320.0,
      "type": "claim_checked"
@@ -8512,7 +9489,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 117,
+     "seq": 123,
      "stage": "research",
      "t_rel_ms": 6440.0,
      "type": "claim_checked"
@@ -8542,7 +9519,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 118,
+     "seq": 124,
      "stage": "research",
      "t_rel_ms": 6560.0,
      "type": "claim_checked"
@@ -8554,10 +9531,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 599.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "INR 599",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8579,7 +9562,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 119,
+     "seq": 125,
      "stage": "research",
      "t_rel_ms": 6680.0,
      "type": "claim_checked"
@@ -8609,7 +9592,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 120,
+     "seq": 126,
      "stage": "research",
      "t_rel_ms": 6800.0,
      "type": "claim_checked"
@@ -8639,7 +9622,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 121,
+     "seq": 127,
      "stage": "research",
      "t_rel_ms": 6920.0,
      "type": "claim_checked"
@@ -8669,7 +9652,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 122,
+     "seq": 128,
      "stage": "research",
      "t_rel_ms": 7040.0,
      "type": "claim_checked"
@@ -8681,10 +9664,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Price",
         "normalized_value": 299.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "Rs.299/-",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8706,7 +9695,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 123,
+     "seq": 129,
      "stage": "research",
      "t_rel_ms": 7160.0,
      "type": "claim_checked"
@@ -8736,7 +9725,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 124,
+     "seq": 130,
      "stage": "research",
      "t_rel_ms": 7280.0,
      "type": "claim_checked"
@@ -8766,7 +9755,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 125,
+     "seq": 131,
      "stage": "research",
      "t_rel_ms": 7400.0,
      "type": "claim_checked"
@@ -8796,7 +9785,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 126,
+     "seq": 132,
      "stage": "research",
      "t_rel_ms": 7520.0,
      "type": "claim_checked"
@@ -8826,7 +9815,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 127,
+     "seq": 133,
      "stage": "research",
      "t_rel_ms": 7640.0,
      "type": "claim_checked"
@@ -8838,10 +9827,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 122.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "122",
+        "reread_value": null,
         "row": 2,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8863,7 +9858,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 128,
+     "seq": 134,
      "stage": "research",
      "t_rel_ms": 7760.0,
      "type": "claim_checked"
@@ -8875,10 +9870,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 304.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "304",
+        "reread_value": null,
         "row": 8,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8900,7 +9901,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 129,
+     "seq": 135,
      "stage": "research",
      "t_rel_ms": 7880.0,
      "type": "claim_checked"
@@ -8912,10 +9913,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 176.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "176",
+        "reread_value": null,
         "row": 10,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8937,7 +9944,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 130,
+     "seq": 136,
      "stage": "research",
      "t_rel_ms": 8000.0,
      "type": "claim_checked"
@@ -8949,10 +9956,16 @@
      "payload": {
       "claim": {
        "evidence": {
+        "as_of": null,
+        "bbox": null,
+        "crop_sha256": null,
+        "doc": null,
         "header": "Landed Cost (Rs)",
         "normalized_value": 182.0,
+        "page": null,
         "parser_version": "1.0",
         "raw_value": "182",
+        "reread_value": null,
         "row": 7,
         "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
        },
@@ -8974,7 +9987,7 @@
       }
      },
      "run_id": "run_recorded",
-     "seq": 131,
+     "seq": 137,
      "stage": "research",
      "t_rel_ms": 8120.0,
      "type": "claim_checked"
@@ -8987,10 +10000,16 @@
       "claims": [
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 249.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "249",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9066,10 +10085,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 349.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 349",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9145,10 +10170,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 599.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "INR 599",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9224,10 +10255,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Price",
          "normalized_value": 299.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "Rs.299/-",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9321,10 +10358,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 122.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "122",
+         "reread_value": null,
          "row": 2,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9346,10 +10389,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 304.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "304",
+         "reread_value": null,
          "row": 8,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9371,10 +10420,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 176.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "176",
+         "reread_value": null,
          "row": 10,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9396,10 +10451,16 @@
        },
        {
         "evidence": {
+         "as_of": null,
+         "bbox": null,
+         "crop_sha256": null,
+         "doc": null,
          "header": "Landed Cost (Rs)",
          "normalized_value": 182.0,
+         "page": null,
          "parser_version": "1.0",
          "raw_value": "182",
+         "reread_value": null,
          "row": 7,
          "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
         },
@@ -9597,15 +10658,15 @@
        }
       },
       "locked_reason": null,
-      "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
-      "narrative_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+      "metrics_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
+      "narrative_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
       "needs_approval": true,
       "stage": "research",
       "status": "review",
       "summary": "0 list, 4 negotiate and 6 reject out of 10 SKUs at a +4 pp margin offset; capital at risk is ₹85,430 at MOQ 400."
      },
      "run_id": "run_recorded",
-     "seq": 132,
+     "seq": 138,
      "stage": "research",
      "t_rel_ms": 8520.0,
      "type": "stage_result"
@@ -9781,7 +10842,7 @@
        ]
       },
       "locked_reason": null,
-      "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+      "metrics_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
       "narrative_hash": null,
       "needs_approval": false,
       "stage": "shortlist",
@@ -9789,7 +10850,7 @@
       "summary": "4 of 10 SKUs shortlisted (0 list, 4 negotiate)"
      },
      "run_id": "run_recorded",
-     "seq": 133,
+     "seq": 139,
      "stage": "shortlist",
      "t_rel_ms": 8920.0,
      "type": "stage_result"
@@ -9802,23 +10863,29 @@
       "replan": true
      },
      "run_id": "run_recorded",
-     "seq": 134,
+     "seq": 140,
      "stage": null,
      "t_rel_ms": 9420.0,
      "type": "done"
     }
    ],
-   "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+   "metrics_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
    "moq": 400,
    "offset": 4.0,
    "research": {
     "claims": [
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 249.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "249",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -9894,10 +10961,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 349.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 349",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -9973,10 +11046,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 599.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "INR 599",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10052,10 +11131,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Price",
        "normalized_value": 299.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "Rs.299/-",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10149,10 +11234,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 122.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "122",
+       "reread_value": null,
        "row": 2,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10174,10 +11265,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 304.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "304",
+       "reread_value": null,
        "row": 8,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10199,10 +11296,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 176.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "176",
+       "reread_value": null,
        "row": 10,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10224,10 +11327,16 @@
      },
      {
       "evidence": {
+       "as_of": null,
+       "bbox": null,
+       "crop_sha256": null,
+       "doc": null,
        "header": "Landed Cost (Rs)",
        "normalized_value": 182.0,
+       "page": null,
        "parser_version": "1.0",
        "raw_value": "182",
+       "reread_value": null,
        "row": 7,
        "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
       },
@@ -10425,8 +11534,8 @@
      }
     },
     "locked_reason": null,
-    "metrics_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
-    "narrative_hash": "da6f967d1ab4d2cfbc564bfa4da0985de519733262d34ab620740296b6661b2b",
+    "metrics_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
+    "narrative_hash": "cd82d864e32f68779ac4ce9937cb37b3789a7851112cfc77d25f0e5638a9f707",
     "needs_approval": true,
     "stage": "research",
     "status": "review",
@@ -10439,10 +11548,16 @@
    "claims": [
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 249.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "249",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10464,10 +11579,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1 Pcs",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10489,10 +11610,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 349.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 349",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10514,10 +11641,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1pcs",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10539,10 +11672,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 599.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 599",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10564,10 +11703,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 1.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "1 Pcs",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10589,10 +11734,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 299.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "Rs.299/-",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10614,10 +11765,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Qty/Pack",
       "normalized_value": 750.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "750 ml",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -10646,6 +11803,20 @@
      "ST-101"
     ],
     "image_mode": "placeholder",
+    "scanned_documents": {
+     "documents": [],
+     "enabled": false,
+     "findings": [],
+     "summary": {
+      "claims": 0,
+      "documents": 0,
+      "fields": 0,
+      "mismatches": 0,
+      "rejected": 0,
+      "unverifiable": 0,
+      "verified": 0
+     }
+    },
     "skus": [
      {
       "attribute_checks": [
@@ -10706,6 +11877,7 @@
         "packshot": "placeholder"
        }
       },
+      "label_check": null,
       "name": "COTTON ROPE TUG TOY",
       "normalized": {
        "category": "toys",
@@ -10792,6 +11964,7 @@
         "packshot": "placeholder"
        }
       },
+      "label_check": null,
       "name": "Nylon Dog Collar Medium",
       "normalized": {
        "category": "accessories",
@@ -10880,6 +12053,7 @@
         "packshot": "placeholder"
        }
       },
+      "label_check": null,
       "name": "Adjustable Dog Harness Medium",
       "normalized": {
        "category": "accessories",
@@ -10964,6 +12138,7 @@
         "packshot": "placeholder"
        }
       },
+      "label_check": null,
       "name": "STAINLESS STEEL PET BOWL 750ML",
       "normalized": {
        "category": "accessories",
@@ -11002,15 +12177,88 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+   "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "needs_approval": false,
    "stage": "catalog",
    "status": "done",
    "summary": "4 listings drafted, 0 compliance flag(s), classifier agreement 100%"
   },
   "intake": {
-   "claims": [],
+   "claims": [
+    {
+     "evidence": {
+      "as_of": "2026-10-27",
+      "bbox": [
+       0.3905,
+       0.5687,
+       0.5872,
+       0.5908
+      ],
+      "crop_sha256": "6d5dda176fb646af292601905f52a8871d520dd0780a1f8c27f220b9b9c67162",
+      "doc": "gst_certificate.jpg",
+      "header": null,
+      "normalized_value": "2021-04-01",
+      "page": 1,
+      "parser_version": "1.0",
+      "raw_value": "01 APR 2021",
+      "reread_value": "01 APR 2021",
+      "row": null,
+      "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+     },
+     "id": "V003:gst_certificate:p1:valid_from:-:vision",
+     "metric": "doc_date:licence_certificate.valid_from",
+     "origin": "vision_extraction",
+     "reason": null,
+     "recomputed": -2035.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "valid_from",
+      "file": "vendors/V003/docs/gst_certificate.jpg",
+      "key": "p1:valid_from"
+     },
+     "status": "verified",
+     "text": "Valid from on GST registration certificate (scan) reads 2021-04-01 (-2035 days from 2026-10-27)",
+     "unit": "units",
+     "value": -2035.0
+    },
+    {
+     "evidence": {
+      "as_of": "2026-10-27",
+      "bbox": [
+       0.3918,
+       0.6466,
+       0.5969,
+       0.6687
+      ],
+      "crop_sha256": "1342f932c8b531a13c3e4dbb9c641b0f922971cd914e6d7a2feca5df22c66d63",
+      "doc": "gst_certificate.jpg",
+      "header": null,
+      "normalized_value": "2030-03-31",
+      "page": 1,
+      "parser_version": "1.0",
+      "raw_value": "31 MAR 2030",
+      "reread_value": "31 MAR 2030",
+      "row": null,
+      "sha256": "24b7ac6295225ef9108a2b3544c3cc10b13e0f0c513da417bf35b31b1d973568"
+     },
+     "id": "V003:gst_certificate:p1:valid_until:-:vision",
+     "metric": "doc_date:licence_certificate.valid_until",
+     "origin": "vision_extraction",
+     "reason": null,
+     "recomputed": 1251.0,
+     "sku_key": null,
+     "source_ref": {
+      "column": "valid_until",
+      "file": "vendors/V003/docs/gst_certificate.jpg",
+      "key": "p1:valid_until"
+     },
+     "status": "verified",
+     "text": "Valid until on GST registration certificate (scan) reads 2030-03-31 (1251 days from 2026-10-27)",
+     "unit": "units",
+     "value": 1251.0
+    }
+   ],
    "data": {
     "decision": "pass",
     "documents": {
@@ -11018,7 +12266,9 @@
      "documents": [
       {
        "declared_status": "valid",
+       "declared_valid_until": "2030-03-31",
        "number": "GST-DEMO-0003",
+       "source": "scan",
        "state": "valid",
        "type": "GST",
        "valid_until": "2030-03-31"
@@ -11069,7 +12319,222 @@
       "severity": "low",
       "type": "no_food_licence"
      }
-    ]
+    ],
+    "scanned_documents": {
+     "documents": [
+      {
+       "declares": "GST",
+       "error": null,
+       "expiry": {
+        "as_of": "2026-10-27",
+        "days": 1251,
+        "state": "valid",
+        "valid_until": "2030-03-31"
+       },
+       "fields": [
+        {
+         "bbox": [
+          0.3851,
+          0.2564,
+          0.6438,
+          0.2789
+         ],
+         "claim_id": null,
+         "confidence": 0.97,
+         "label": "Licence number",
+         "name": "licence_number",
+         "page": 1,
+         "raw": "GST-DEMO-0003",
+         "reason": null,
+         "reread": "GST-DEMO-0003",
+         "sku_code": null,
+         "status": "verified",
+         "type": "text",
+         "value": "GST-DEMO-0003"
+        },
+        {
+         "bbox": [
+          0.3865,
+          0.332,
+          0.8095,
+          0.3611
+         ],
+         "claim_id": null,
+         "confidence": 0.97,
+         "label": "Holder",
+         "name": "holder_name",
+         "page": 1,
+         "raw": "SnapTail Accessories Pvt Ltd",
+         "reason": null,
+         "reread": null,
+         "sku_code": null,
+         "status": "read",
+         "type": "text",
+         "value": "SnapTail Accessories Pvt Ltd"
+        },
+        {
+         "bbox": [
+          0.3905,
+          0.5687,
+          0.5872,
+          0.5908
+         ],
+         "claim_id": "V003:gst_certificate:p1:valid_from:-:vision",
+         "confidence": 0.97,
+         "label": "Valid from",
+         "name": "valid_from",
+         "page": 1,
+         "raw": "01 APR 2021",
+         "reason": null,
+         "reread": "01 APR 2021",
+         "sku_code": null,
+         "status": "verified",
+         "type": "date",
+         "value": "2021-04-01"
+        },
+        {
+         "bbox": [
+          0.3918,
+          0.6466,
+          0.5969,
+          0.6687
+         ],
+         "claim_id": "V003:gst_certificate:p1:valid_until:-:vision",
+         "confidence": 0.97,
+         "label": "Valid until",
+         "name": "valid_until",
+         "page": 1,
+         "raw": "31 MAR 2030",
+         "reason": null,
+         "reread": "31 MAR 2030",
+         "sku_code": null,
+         "status": "verified",
+         "type": "date",
+         "value": "2030-03-31"
+        }
+       ],
+       "file": "gst_certificate.jpg",
+       "injection": [],
+       "kind": "licence_certificate",
+       "label": "Licence certificate",
+       "legible": true,
+       "mode": "mock",
+       "notes": "",
+       "pages": [
+        {
+         "file": "gst_certificate.jpg",
+         "height": 1180,
+         "page": 1,
+         "url": "/api/docs/V003/gst_certificate.jpg",
+         "width": 840
+        }
+       ],
+       "panel": null,
+       "sku_code": null,
+       "title": "GST registration certificate (scan)",
+       "url": "/api/docs/V003/gst_certificate.jpg"
+      }
+     ],
+     "enabled": true,
+     "findings": [
+      {
+       "bbox": [
+        0.3851,
+        0.2564,
+        0.6438,
+        0.2789
+       ],
+       "check": "certificate_number_vs_application",
+       "claim_id": null,
+       "claim_status": "verified",
+       "doc": "gst_certificate.jpg",
+       "doc_label": "GST registration certificate (scan)",
+       "document_value": "GST-DEMO-0003",
+       "field": "licence_number",
+       "field_label": "Licence number",
+       "id": "certificate_number_vs_application:gst_certificate.jpg:-",
+       "label": "Licence number on the scan vs the application",
+       "message": "GST registration certificate (scan): Licence number GST-DEMO-0003 matches the application",
+       "other_label": "application",
+       "other_source": {
+        "file": "application.json",
+        "key": "documents[GST].number"
+       },
+       "other_value": "GST-DEMO-0003",
+       "page": 1,
+       "severity": "high",
+       "sku_code": null,
+       "status": "match"
+      },
+      {
+       "bbox": [
+        0.3918,
+        0.6466,
+        0.5969,
+        0.6687
+       ],
+       "check": "certificate_expiry_vs_application",
+       "claim_id": "V003:gst_certificate:p1:valid_until:-:vision",
+       "claim_status": "verified",
+       "doc": "gst_certificate.jpg",
+       "doc_label": "GST registration certificate (scan)",
+       "document_value": "2030-03-31",
+       "field": "valid_until",
+       "field_label": "Valid until",
+       "id": "certificate_expiry_vs_application:gst_certificate.jpg:-",
+       "label": "Valid-until date on the scan vs the application",
+       "message": "GST registration certificate (scan): Valid until 2030-03-31 matches the application",
+       "other_label": "application",
+       "other_source": {
+        "file": "application.json",
+        "key": "documents[GST].valid_until"
+       },
+       "other_value": "2030-03-31",
+       "page": 1,
+       "severity": "high",
+       "sku_code": null,
+       "status": "match"
+      },
+      {
+       "bbox": [
+        0.3865,
+        0.332,
+        0.8095,
+        0.3611
+       ],
+       "check": "certificate_holder_vs_application",
+       "claim_id": null,
+       "claim_status": "read",
+       "doc": "gst_certificate.jpg",
+       "doc_label": "GST registration certificate (scan)",
+       "document_value": "SnapTail Accessories Pvt Ltd",
+       "field": "holder_name",
+       "field_label": "Holder",
+       "id": "certificate_holder_vs_application:gst_certificate.jpg:-",
+       "label": "Holder on the scan vs the applicant",
+       "message": "GST registration certificate (scan): Holder SnapTail Accessories Pvt Ltd matches the application",
+       "other_label": "applicant",
+       "other_source": {
+        "file": "application.json",
+        "key": "company_name"
+       },
+       "other_value": "SnapTail Accessories Pvt Ltd",
+       "page": 1,
+       "severity": "medium",
+       "sku_code": null,
+       "status": "match"
+      }
+     ],
+     "summary": {
+      "claims": 2,
+      "documents": 1,
+      "fields": 4,
+      "mismatches": 0,
+      "rejected": 0,
+      "unverifiable": 0,
+      "verified": 2
+     }
+    }
    },
    "locked_reason": null,
    "metrics_hash": null,
@@ -11126,7 +12591,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "jbp",
@@ -11152,7 +12617,7 @@
     "mode": "mock"
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "marketing",
@@ -11299,7 +12764,7 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "negotiate",
@@ -11446,8 +12911,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+   "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "needs_approval": false,
    "stage": "po",
    "status": "done",
@@ -11457,10 +12922,16 @@
    "claims": [
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 249.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "249",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11536,10 +13007,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 349.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 349",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11615,10 +13092,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 599.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "INR 599",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11694,10 +13177,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Price",
       "normalized_value": 299.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "Rs.299/-",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11791,10 +13280,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 122.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "122",
+      "reread_value": null,
       "row": 2,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11816,10 +13311,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 304.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "304",
+      "reread_value": null,
       "row": 8,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11841,10 +13342,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 176.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "176",
+      "reread_value": null,
       "row": 10,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -11866,10 +13373,16 @@
     },
     {
      "evidence": {
+      "as_of": null,
+      "bbox": null,
+      "crop_sha256": null,
+      "doc": null,
       "header": "Landed Cost (Rs)",
       "normalized_value": 182.0,
+      "page": null,
       "parser_version": "1.0",
       "raw_value": "182",
+      "reread_value": null,
       "row": 7,
       "sha256": "f8aeff78458a62d2bf3b73c7e2d38e16e21ec376125884198ff4a0e7267c3285"
      },
@@ -12067,8 +13580,8 @@
     }
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
-   "narrative_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
+   "narrative_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "needs_approval": false,
    "stage": "research",
    "status": "done",
@@ -12241,7 +13754,7 @@
     ]
    },
    "locked_reason": null,
-   "metrics_hash": "031784e9546393d1e6056f9009011abeb437d81bab70c6a0e1775994ec8cd2de",
+   "metrics_hash": "5183f22dda0375b6b9a070e0057dff61356e2ca9881019bbff695f25306e766f",
    "narrative_hash": null,
    "needs_approval": false,
    "stage": "shortlist",

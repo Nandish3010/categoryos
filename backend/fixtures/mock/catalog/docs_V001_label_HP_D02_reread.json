@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "model": "muse-spark-1.3",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": {
+    "reads": [
+      {
+        "name": "protein_pct",
+        "value": "32.0 %",
+        "sku_code": "HP-D02"
+      },
+      {
+        "name": "claims_text",
+        "value": "Grain-free. Single-source chicken.",
+        "sku_code": "HP-D02"
+      },
+      {
+        "name": "net_quantity",
+        "value": "6 kg",
+        "sku_code": "HP-D02"
+      },
+      {
+        "name": "mrp",
+        "value": "Rs. 4,999",
+        "sku_code": "HP-D02"
+      },
+      {
+        "name": "fssai_number",
+        "value": "FSSAI-DEMO-0001",
+        "sku_code": "HP-D02"
+      }
+    ]
+  }
+}

@@ -4,7 +4,7 @@ Vendor text is data. A deterministic guard backs the model: blocking documents o
 import re
 from typing import Any
 
-from app import llm, policy, prompts, tools
+from app import docs, llm, policy, prompts, tools
 from app.agents.context import RunContext
 from app.data_loader import load_application, load_sheet
 from app.metrics import build_base
@@ -59,22 +59,58 @@ def missing_application_fields(vendor_id: str) -> list[str]:
     return [f for f in policy.get().onboarding.required_application_fields if application.get(f) in (None, "", [], {})]
 
 
+def scan_flags(scan: docs.DocScan | None, doc_check: dict[str, Any]) -> tuple[list[RiskFlag], list[str]]:
+    """Risk flags and follow-up questions from the scanned documents: cross-document mismatches, and a certificate whose
+    scan (the ground truth) says it is expiring or expired."""
+    if scan is None:
+        return [], []
+    flags: list[RiskFlag] = []
+    followups: list[str] = []
+    for f in scan.findings:
+        if f["status"] == "mismatch":
+            flags.append(RiskFlag(type="document_mismatch", quote=f["message"], severity=f["severity"]))
+            followups.append(f"Please explain or correct: {f['message']}.")
+        elif f["status"] == "unreliable":
+            flags.append(RiskFlag(type="document_unreadable", quote=f["message"], severity="low"))
+            followups.append(f"Please send a clearer scan: {f['doc_label']} ({f['field_label']}).")
+    for d in scan.documents:
+        if d.error:
+            flags.append(RiskFlag(type="document_unreadable", quote=f"{d.entry.get('title') or d.label}: {d.error}", severity="low"))
+    for entry in doc_check["documents"]:
+        if entry.get("source") == "scan" and entry["state"] in {"expired", "expiring_soon"}:
+            word = entry["state"].replace("_", " ")
+            flags.append(
+                RiskFlag(
+                    type=f"document_{entry['state']}",
+                    quote=f"{entry['type']} scan: valid until {entry['valid_until']} ({word})"
+                    + (f"; the application says {entry['declared_valid_until']} ({entry['declared_status']})" if entry["declared_valid_until"] != entry["valid_until"] else ""),
+                    severity="high" if entry["state"] == "expired" else "medium",
+                )
+            )
+            if entry["state"] == "expiring_soon":
+                followups.append(f"Your {entry['type']} scan shows validity ending {entry['valid_until']}. Please send the renewal as soon as it is issued.")
+    return flags, followups
+
+
 async def run(ctx: RunContext) -> StageResult:
-    docs = tools.check_documents(ctx.vendor_id, ctx.today)
+    scan = await docs.run(ctx, ctx.vendor_id, STAGE)
+    doc_check = tools.check_documents(ctx.vendor_id, ctx.today, scan.scans() if scan else None)
     ctx.emit(
         "tool_call",
         STAGE,
         {
             "tool": "check_documents",
             "args": {"vendor_id": ctx.vendor_id, "today": ctx.today},
-            "result_summary": f"{len(docs['documents'])} documents, {len(docs['problems'])} problems, blocking={docs['blocking']}",
+            "result_summary": f"{len(doc_check['documents'])} documents, {len(doc_check['problems'])} problems, blocking={doc_check['blocking']}"
+            + (" (scanned certificates override declared dates)" if scan and scan.scans() else ""),
             "deterministic": True,
         },
     )
+    scan_notes = [f["message"] for f in scan.mismatches()] if scan else []
     res = await llm.run_tools(
         STAGE,
         f"screen_{ctx.vendor_id}",
-        prompts.screen_messages(ctx.vendor_id, docs["today"], docs),
+        prompts.screen_messages(ctx.vendor_id, doc_check["today"], {**doc_check, **({"scan_findings": scan_notes} if scan_notes else {})}),
         tools.select(tools.SCREEN_TOOLS),
         max_steps=6,
         schema=ScreenFinal,
@@ -104,7 +140,7 @@ async def run(ctx: RunContext) -> StageResult:
     guards: list[str] = []
 
     injection = final.injection_detected
-    hits = scan_injection(ctx.vendor_id)
+    hits = scan_injection(ctx.vendor_id) + [h for d in (scan.documents if scan else []) for h in d.injection]
     if hits and not injection:
         injection = True
         guards.append("injection_detected set by deterministic scan")
@@ -115,9 +151,9 @@ async def run(ctx: RunContext) -> StageResult:
     fail_on = set(policy.get().screening.fail_on)
     fail = final.decision == "fail"
     if "blocking_document" in fail_on:
-        for problem in docs["problems"]:
+        for problem in doc_check["problems"]:
             if problem["severity"] == "blocking":
-                if not any(problem["type"].lower() in r.lower() for r in reasons):
+                if not any(problem["type"].lower() in r.lower() and problem["state"] in r.lower() for r in reasons):
                     reasons.append(problem["detail"])
                 fail = True
     if injection and "prompt_injection" in fail_on:
@@ -132,13 +168,16 @@ async def run(ctx: RunContext) -> StageResult:
         if not any(label in r.lower() or quote.lower() in r.lower() for r in reasons):
             reasons.append(f"Listing text makes a {label}: \"{quote}\"")
         fail = True
+    doc_flags, doc_followups = scan_flags(scan, doc_check)
+    flags += doc_flags
     missing = missing_application_fields(ctx.vendor_id)
     if missing:
         flags.append(RiskFlag(type="missing_data", quote=", ".join(missing), severity="low"))
         guards.append("required application field(s) missing: " + ", ".join(missing))
         followups = [*final.followup_questions, *(f"Please provide: {f.replace('_', ' ')}" for f in missing)]
     else:
-        followups = final.followup_questions
+        followups = list(final.followup_questions)
+    followups += [q for q in doc_followups if q not in followups]
     if fail and final.decision == "pass":
         guards.append("decision forced to fail by deterministic guard")
     decision = "fail" if fail else "pass"
@@ -149,10 +188,12 @@ async def run(ctx: RunContext) -> StageResult:
         "risk_flags": [f.model_dump() for f in flags],
         "injection_detected": injection,
         "followup_questions": followups,
-        "documents": docs,
+        "documents": doc_check,
+        "scanned_documents": scan.to_data() if scan else docs.disabled_data(),
         "guards": guards,
         "mode": res.mode,
     }
+    claims = scan.claims if scan else []
     if decision == "fail":
         return StageResult(
             stage=STAGE,
@@ -160,10 +201,12 @@ async def run(ctx: RunContext) -> StageResult:
             summary="Screening failed: " + "; ".join(reasons[:3]),
             data=data,
             locked_reason="; ".join(reasons[:3]),
+            claims=claims,
         )
     return StageResult(
         stage=STAGE,
         status="done",
         summary=f"Screening passed with {len(flags)} flag(s) to follow up",
         data=data,
+        claims=claims,
     )

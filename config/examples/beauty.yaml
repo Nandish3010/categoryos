@@ -377,3 +377,29 @@ verifier:
     score: 0.5
     ratio: 0.005
     qty: 0
+documents:
+  enabled: true
+  min_confidence: 0.6
+  crop_padding: 0.01
+  max_pages: 3
+  kinds:
+  - kind: licence_certificate
+    label: CDSCO registration certificate
+    stage: intake
+    panel: false
+    per_sku: false
+  - kind: product_label
+    label: Product label
+    stage: catalog
+    panel: true
+    per_sku: false
+  fields:
+  - {kind: licence_certificate, name: licence_number, label: Registration number, type: text, critical: true}
+  - {kind: licence_certificate, name: valid_until, label: Valid until, type: date, critical: true}
+  - {kind: product_label, name: net_quantity, label: Net content, type: qty, critical: false}
+  - {kind: product_label, name: spf, label: SPF, type: number, critical: false}
+  - {kind: product_label, name: claims_text, label: Claims on pack, type: text, critical: false}
+  cross_checks:
+  - {id: certificate_number_vs_application, label: Registration number on the scan vs the application, kind: licence_certificate, field: licence_number, against: application_document, target: number, severity: high}
+  - {id: certificate_expiry_vs_application, label: Valid-until date on the scan vs the application, kind: licence_certificate, field: valid_until, against: application_document, target: valid_until, severity: high}
+  - {id: label_spf_vs_sheet, label: SPF on the label vs the SKU sheet, kind: product_label, field: spf, against: sku_sheet, pattern: 'SPF\s*(\d+)', tolerance: 0, severity: high}
