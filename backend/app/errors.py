@@ -297,6 +297,30 @@ class ChangeNotFound(CategoryOSError):
         self.change_id = change_id
 
 
+class ChangeStale(CategoryOSError):
+    status = 409
+    code = "change_stale"
+    problem = "The playbook changed since this was prepared"
+    cause = "A value this change was worked out from is not what it was at preview or request time"
+    fix = "Write the rule again to get a fresh preview"
+
+
+class UndoConflict(CategoryOSError):
+    status = 409
+    code = "undo_conflict"
+    problem = "This change cannot be undone without overwriting a later one"
+    cause = "A later change touched a setting this change set"
+    fix = "Undo the later change first, or edit the setting in the form"
+
+
+class RulesQuota(CategoryOSError):
+    status = 429
+    code = "rules_quota_reached"
+    problem = "Too many open requests"
+    cause = "This session already has the most requests waiting for approval that it may keep"
+    fix = "Ask the head to approve or reject some of them, or withdraw one, then try again"
+
+
 class ChangeNotPending(CategoryOSError):
     status = 409
     code = "change_wrong_state"

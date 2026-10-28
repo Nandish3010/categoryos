@@ -25,7 +25,7 @@ def fresh():
 
 @pytest.fixture
 def client():
-    with TestClient(app) as c:
+    with TestClient(app, headers={"X-Acting-As": "meera"}) as c:
         yield c
 
 

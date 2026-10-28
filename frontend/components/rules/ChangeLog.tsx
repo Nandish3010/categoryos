@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ApiError, type ApiErrorBody } from "@/lib/api";
 import type { PolicyResponse } from "@/lib/policy";
-import { actOnChange, fetchChanges, STATUS_LABEL, type Action, type Change, type ChangeStatus } from "@/lib/rules";
+import { actOnChange, fetchChanges, STATUS_LABEL, sentences, type Action, type Change, type ChangeStatus } from "@/lib/rules";
 import { useAsync } from "@/lib/useAsync";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
@@ -96,7 +96,7 @@ export function ChangeLog({ refreshKey, actingId, onChanged }: { refreshKey: num
     <section aria-label="Change log" className="flex flex-col gap-3">
       {fail ? (
         <Banner tone="bad" title={fail.problem}>
-          {[fail.cause, fail.fix].filter(Boolean).join(" ")}
+          {sentences(fail.cause, fail.fix)}
         </Banner>
       ) : null}
       {changes.length === 0 ? (

@@ -9,6 +9,7 @@ config/policy.local.yaml (overrides written by the UI). Nothing vertical-specifi
 
 import hashlib
 import json
+import math
 import os
 import re
 import string
@@ -61,7 +62,7 @@ def F(default: Any = ..., label: str | None = None, help: str = "", *, unit: str
 
 
 class M(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
 
 def _compile_all(patterns: list[str]) -> list[str]:
@@ -1480,11 +1481,26 @@ def effective_with(overrides: dict[str, Any]) -> Policy:
     return _validate(merge(defaults_raw, overrides) if overrides else defaults_raw)
 
 
+def _non_finite(v: Any, path: str = "") -> str | None:
+    """Dotted path of the first NaN or infinity anywhere in a partial, else None."""
+    if isinstance(v, float) and not math.isfinite(v):
+        return path or "playbook"
+    items = v.items() if isinstance(v, dict) else enumerate(v) if isinstance(v, list) else ()
+    for k, x in items:
+        found = _non_finite(x, f"{path}.{k}" if path else str(k))
+        if found:
+            return found
+    return None
+
+
 def plan_partial(partial: dict[str, Any], base: dict[str, Any]) -> tuple[Policy, dict[str, Any]]:
     """Dry run of a save: apply a nested partial to the playbook that ``base`` overrides give. Returns (the validated playbook it
     would produce, the overrides to store: only the diff vs defaults). Writes nothing."""
     if not isinstance(partial, dict):
         raise PolicyInvalid("The request body must be an object", cause="Expected a partial playbook", fix='Send e.g. {"research": {"demand_min": 0.5}}')
+    bad = _non_finite(partial)
+    if bad:
+        raise PolicyInvalid(f"{bad}: not a finite number", cause="NaN and infinity are not valid playbook values, so nothing was saved", fix="Enter an ordinary number", errors=[{"path": bad, "message": "not a finite number"}])
     defaults_raw = _read_yaml(defaults_path())
     eff = _apply_partial(merge(defaults_raw, base), partial)
     policy = _validate(eff)

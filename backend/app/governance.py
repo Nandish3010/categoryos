@@ -38,26 +38,27 @@ class Outcome:
         return {"action": self.action, "reason": self.reason}
 
 
-def default_member_id(pol: Policy) -> str:
-    """The playbook owner: the first head. Callers that send no X-Acting-As (scripts, older clients) act as this member."""
-    for mid, m in pol.governance.members.items():
-        if m.role == HEAD:
-            return mid
-    return next(iter(pol.governance.members))
+ANONYMOUS = "anonymous"
+
+
+def anonymous_actor(pol: Policy) -> Actor:
+    """Who a request acts as when it names nobody: the least-privileged role (analyst), so a missing X-Acting-As fails closed."""
+    rule = pol.governance.roles["analyst"]
+    return Actor(ANONYMOUS, "Unidentified caller", "analyst", rule.label, rule.can_apply, rule.can_approve)
 
 
 def actor_for(pol: Policy, member_id: str | None, *, lenient: bool = False) -> Actor:
-    """The acting member. Unknown ids raise UnknownActor, or with ``lenient`` (read-only views) fall back to the owner."""
-    gov = pol.governance
-    mid = member_id or default_member_id(pol)
-    member = gov.members.get(mid)
+    """The acting member. No id acts as the least-privileged role. An unknown id raises UnknownActor, or with ``lenient``
+    (read-only views) acts the same way."""
+    if not member_id:
+        return anonymous_actor(pol)
+    member = pol.governance.members.get(member_id)
     if member is None:
         if not lenient:
-            raise UnknownActor(mid)
-        mid = default_member_id(pol)
-        member = gov.members[mid]
-    rule = gov.roles[member.role]
-    return Actor(mid, member.name, member.role, rule.label, rule.can_apply, rule.can_approve)
+            raise UnknownActor(member_id)
+        return anonymous_actor(pol)
+    rule = pol.governance.roles[member.role]
+    return Actor(member_id, member.name, member.role, rule.label, rule.can_apply, rule.can_approve)
 
 
 def covers(sections: list[str], keys: list[str]) -> bool:
@@ -79,8 +80,25 @@ def _num(v: float) -> str:
     return f"{v:g}"
 
 
-def decide(pol: Policy, actor: Actor, diff: list[dict[str, Any]]) -> Outcome:
-    """What happens if ``actor`` applies this diff (lines carry keys, label, unit, before, after)."""
+def limits_for(pol: Policy, actor: Actor, line: dict[str, Any]) -> list[Any]:
+    """The limits that apply to this role on this changed setting (right section, and the setting's unit)."""
+    out = []
+    for lim in pol.governance.limits.values():
+        prefix = lim.path.split(".")
+        if lim.role != actor.role or line["keys"][: len(prefix)] != prefix:
+            continue
+        unit = line.get("unit") or ""
+        if lim.unit and not (unit == lim.unit or (unit in PERCENT_LIKE and lim.unit in PERCENT_LIKE)):
+            continue
+        out.append(lim)
+    return out
+
+
+def decide(pol: Policy, actor: Actor, diff: list[dict[str, Any]], anchors: dict[str, Any] | None = None) -> Outcome:
+    """What happens if ``actor`` applies this diff (lines carry path, keys, label, unit, before, after).
+
+    A limit is cumulative: it bounds how far the setting ends up from its anchor, the last value set without a limit applying
+    (the committed default until someone unlimited, or an approval, sets another). Repeated small steps cannot add up past it."""
     gov = pol.governance
     rule = gov.roles[actor.role]
     if not rule.can_apply:
@@ -92,22 +110,20 @@ def decide(pol: Policy, actor: Actor, diff: list[dict[str, Any]]) -> Outcome:
             sections = ", ".join(rule.sections) or "none"
             return Outcome("refuse", f"{rule.label} may not change {line['keys'][0]} ({line['label']}); this role covers: {sections}")
     over: list[str] = []
-    for lim in gov.limits.values():
-        if lim.role != actor.role:
-            continue
-        prefix = lim.path.split(".")
-        for line in diff:
-            if line["keys"][: len(prefix)] != prefix:
-                continue
-            unit = line.get("unit") or ""
-            if lim.unit and not (unit == lim.unit or (unit in PERCENT_LIKE and lim.unit in PERCENT_LIKE)):
-                continue
+    anchors = anchors or {}
+    for line in diff:
+        for lim in limits_for(pol, actor, line):
             before, after = line["before"], line["after"]
             if _is_number(before) and _is_number(after):
-                delta = abs(after - before)
+                anchor = anchors.get(".".join(line["keys"]), before)
+                anchor = anchor if _is_number(anchor) else before
+                delta = abs(after - anchor)
                 if delta > lim.max_abs_change + 1e-9:
                     u = f" {lim.unit}" if lim.unit else ""
-                    over.append(f"{line['label']}: {rule.label.lower()} limit is {_num(lim.max_abs_change)}{u} per change; this change is {_num(round(delta, 6))}{u}")
+                    over.append(
+                        f"{line['label']}: {rule.label.lower()} limit is {_num(lim.max_abs_change)}{u} from the last approved value "
+                        f"({_num(anchor)}); this change would end {_num(round(delta, 6))}{u} away"
+                    )
             else:
                 over.append(f"{line['label']}: adding, removing or replacing a whole row is beyond the {rule.label.lower()} limit on {lim.path}")
     if over:

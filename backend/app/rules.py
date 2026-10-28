@@ -14,6 +14,7 @@ write cannot interleave with another request's."""
 
 import difflib
 import hashlib
+import math
 import re
 import secrets
 import threading
@@ -28,15 +29,19 @@ from app.errors import (
     ChangeNotFound,
     ChangeNotPending,
     ChangeRefused,
+    ChangeStale,
     PolicyInvalid,
     RulePathUnknown,
+    RulesQuota,
     RuleUnavailable,
+    UndoConflict,
 )
 from app.governance import Actor
 from app.policy import Policy
 
 STAGE = "rules"
 MAX_EDITS = 8
+MAX_REFUSED_EVENTS = 5
 DRAFT_TTL = timedelta(hours=1)
 Source = Literal["prompt", "form", "undo", "reset"]
 
@@ -55,6 +60,7 @@ EXAMPLES: list[dict[str, str]] = [
 
 class RuleEdit(BaseModel):
     path: str = Field(description="Dotted path of an existing playbook setting, copied from the list")
+    op: Literal["set", "add"] = Field(default="set", description="set: number is the new value. add: number is a signed amount added to the current value (use for 'by N')")
     number: float | None = None
     boolean: bool | None = None
     choice: str | None = None
@@ -170,13 +176,20 @@ def edits_to_partial(dump: dict[str, Any], edits: list[RuleEdit]) -> dict[str, A
         meta = describe(keys)
         given = {"number": e.number, "boolean": e.boolean, "choice": e.choice}
         used = [n for n, v in given.items() if v is not None]
+        if e.number is not None and not math.isfinite(e.number):
+            raise PolicyInvalid(f"{e.path}: not a finite number", cause="NaN and infinity are not valid playbook values", fix="Rephrase the rule with an ordinary number", errors=[{"path": e.path, "message": "not a finite number"}])
         want = "boolean" if isinstance(cur, bool) else "number" if isinstance(cur, (int, float)) else "choice" if isinstance(cur, str) and meta["kind"] == "enum" else None
         if want is None:
             raise RulePathUnknown(e.path, cause="This setting is free text or a list; a rule can only set a number, a switch or a choice", fix="Edit it in the form below")
         if used != [want]:
             msg = f"{meta['label']} needs a {want}"
             raise PolicyInvalid(f"{e.path}: {msg}", cause="The translation gave a value of the wrong type for this setting", fix="Rephrase the rule with the value you mean", errors=[{"path": e.path, "message": msg}])
-        _set_nested(partial, keys, given[want])
+        value = given[want]
+        if e.op == "add":
+            if want != "number":
+                raise PolicyInvalid(f"{e.path}: {meta['label']} cannot be changed by an amount", cause="Only numbers can be raised or lowered by an amount", fix="Say the value you want instead", errors=[{"path": e.path, "message": "not a number"}])
+            value = round(cur + value, 6)  # relative edits are resolved here, against the playbook as it is when the preview is built
+        _set_nested(partial, keys, value)
     return partial
 
 
@@ -282,7 +295,7 @@ def mock_translate(prompt: str, leaves: list[dict[str, Any]]) -> RuleProposal:
     leaf, value = best[1], float(nums[0])
     if re.search(r"\bby\b", text):
         down = bool(words & {"cut", "lower", "reduce", "decrease", "drop", "less", "trim"})
-        value = leaf["current"] + (-value if down else value)
+        return RuleProposal(edits=[RuleEdit(path=leaf["path"], op="add", number=-value if down else value)])
     return RuleProposal(edits=[RuleEdit(path=leaf["path"], number=round(value, 6))])
 
 
@@ -328,8 +341,7 @@ def _commit(visitor: str, over: dict[str, Any]) -> None:
         policy.commit_overrides(over)
         return
     store.set_visitor_overrides(visitor, over)
-    cutoff = (datetime.now(UTC) - timedelta(hours=settings.upload_ttl_hours)).isoformat(timespec="milliseconds")
-    store.expire_visitors(cutoff, settings.rules_max_visitors)
+    _expire(visitor)
 
 
 def _plan(ch: Change, base: dict[str, Any]) -> tuple[Policy, dict[str, Any]]:
@@ -340,14 +352,23 @@ def _plan(ch: Change, base: dict[str, Any]) -> tuple[Policy, dict[str, Any]]:
 
 def _save(visitor: str, ch: Change, *, bump: bool = False) -> Change:
     store.save_change(visitor, ch.id, ch.at, ch.status, ch.model_dump(), bump=bump)
+    draft_cutoff = (datetime.now(UTC) - DRAFT_TTL).isoformat(timespec="milliseconds")
+    store.trim_changes(visitor, settings.rules_max_changes_per_visitor if visitor else settings.rules_max_local_changes, draft_cutoff, settings.rules_max_drafts)
     if visitor:
-        draft_cutoff = (datetime.now(UTC) - DRAFT_TTL).isoformat(timespec="milliseconds")
-        store.trim_changes(visitor, settings.rules_max_changes_per_visitor, draft_cutoff)
+        _expire(visitor)
     return ch
+
+
+def _expire(visitor: str) -> None:
+    cutoff = (datetime.now(UTC) - timedelta(hours=settings.upload_ttl_hours)).isoformat(timespec="milliseconds")
+    store.expire_visitors(cutoff, settings.rules_max_visitors)
 
 
 def _event(ch: Change, actor: Actor, action: str, reason: str | None = None) -> None:
     ch.events.append({"at": _now(), "actor": actor.ref(), "action": action, "reason": reason})
+    refused = [i for i, e in enumerate(ch.events) if e["action"].endswith("_refused")]
+    for i in reversed(refused[:-MAX_REFUSED_EVENTS]):  # a hammered request keeps only its latest few refused attempts
+        del ch.events[i]
 
 
 def _finish(visitor: str, ch: Change, actor: Actor, status: str, reason: str | None) -> Change:
@@ -362,6 +383,36 @@ def _refuse(ch: Change) -> ChangeRefused:
     return ChangeRefused("This change was refused", cause=ch.reason, change=ch.model_dump())
 
 
+def _value_at(dump: Any, keys: list[str]) -> Any:
+    for k in keys:
+        if not isinstance(dump, dict) or k not in dump:
+            return None
+        dump = dump[k]
+    return dump
+
+
+def _anchors(visitor: str, diff: list[dict[str, Any]]) -> dict[str, Any]:
+    """Baselines for the limited roles' cumulative drift: the last value set without a limit applying, else the committed default."""
+    stored = store.get_anchors(visitor)
+    defaults = policy.load().defaults.model_dump(mode="json")
+    return {line["path"]: stored.get(line["path"], _value_at(defaults, line["keys"])) for line in diff}
+
+
+def _move_anchors(visitor: str, pol: Policy, actor: Actor, diff: list[dict[str, Any]], *, approved: bool) -> None:
+    """After a change is applied, every number set without a limit applying (by someone unlimited, or approved by one) becomes the
+    new baseline."""
+    fresh = {
+        line["path"]: line["after"]
+        for line in diff
+        if isinstance(line["after"], (int, float)) and not isinstance(line["after"], bool) and (approved or not governance.limits_for(pol, actor, line))
+    }
+    store.set_anchors(visitor, fresh)
+
+
+def _same_befores(old: list[dict[str, Any]], new: list[dict[str, Any]]) -> bool:
+    return {x["path"]: x["before"] for x in old} == {x["path"]: x["before"] for x in new}
+
+
 def _settle(visitor: str, ch: Change, actor: Actor) -> Change:
     """Plan ``ch`` on the playbook as it is now, check what ``actor`` may do, then apply it, park it for approval or refuse it.
     The result is always logged."""
@@ -373,15 +424,22 @@ def _settle(visitor: str, ch: Change, actor: Actor) -> Change:
         after, over = _plan(ch, base)
     except PolicyInvalid as exc:
         return _finish(visitor, ch, actor, "refused", f"No longer valid on the current playbook: {exc.problem}")
+    draft = ch.diff if ch.source == "prompt" else []  # a preview's values were worked out against the playbook of that moment
     ch.diff = diff_dumps(before.model_dump(mode="json"), after.model_dump(mode="json"))
+    if draft and not _same_befores(draft, ch.diff):
+        store.delete_change(visitor, ch.id)
+        raise ChangeStale(cause="A setting this rule changes has a different value now than when it was previewed")
     if not ch.diff:
         return _finish(visitor, ch, actor, "refused", "Nothing to change: the playbook already has these values")
-    out = governance.decide(before, actor, ch.diff)
+    out = governance.decide(before, actor, ch.diff, _anchors(visitor, ch.diff))
     if out.action == "refuse":
         return _finish(visitor, ch, actor, "refused", out.reason)
     if out.action == "request_approval":
+        if store.count_changes(visitor, "pending_approval") >= settings.rules_max_pending:
+            raise RulesQuota(cause=f"{settings.rules_max_pending} requests are already waiting for approval")
         return _finish(visitor, ch, actor, "pending_approval", out.reason)
     _commit(visitor, over)
+    _move_anchors(visitor, before, actor, ch.diff, approved=False)
     ch.hash_after = policy.full_digest(after)
     return _finish(visitor, ch, actor, "applied", None)
 
@@ -403,7 +461,7 @@ def build_preview(visitor: str, member_id: str | None, prompt: str, proposal: Ru
     with _lock:
         pol = current_policy(visitor)
         actor = governance.actor_for(pol, member_id)
-        base = {"prompt": prompt, "translator": translator, "actor": actor.ref(), "changes": [], "outcome": None, "error": None, "id": None}
+        base = {"prompt": prompt, "translator": translator, "actor": {**actor.ref(), "can_apply": actor.can_apply}, "changes": [], "outcome": None, "error": None, "id": None}
         if not proposal.edits:
             reason = (proposal.unmapped_reason or "").strip()[:200]
             msg = "I couldn't map this to a playbook setting." + (f" {reason}" if reason else "")
@@ -417,7 +475,7 @@ def build_preview(visitor: str, member_id: str | None, prompt: str, proposal: Ru
         diff = diff_dumps(dump, after.model_dump(mode="json"))
         if not diff:
             return {**base, "status": "unchanged", "message": "The playbook already has these values; nothing to change."}
-        outcome = governance.decide(pol, actor, diff)
+        outcome = governance.decide(pol, actor, diff, _anchors(visitor, diff))
         ch = Change(id=_new_id(), at=_now(), actor=actor.ref(), source="prompt", prompt=prompt, translator=translator, partial=partial, diff=diff,
                     status="proposed", hash_before=policy.full_digest(pol))
         _save(visitor, ch)
@@ -483,10 +541,15 @@ def approve_change(visitor: str, member_id: str | None, change_id: str) -> Chang
         except PolicyInvalid as exc:
             raise _refuse(_finish(visitor, ch, actor, "refused", f"No longer valid when approved: {exc.problem}")) from exc
         diff = diff_dumps(before.model_dump(mode="json"), after.model_dump(mode="json"))
-        out = governance.decide(before, actor, diff)  # the approver must themselves be allowed to make this change
+        if not _same_befores(ch.diff, diff):
+            # closed, not left pending: its numbers were worked out against a playbook that no longer exists
+            _finish(visitor, ch, actor, "rejected", "Stale: the playbook changed since this request was made")
+            raise ChangeStale(cause="The playbook changed since this request was made, so it was closed", fix="Ask for the change again to get a fresh request")
+        out = governance.decide(before, actor, diff, _anchors(visitor, diff))  # the approver must themselves be allowed to make this change
         if out.action != "apply":
             raise _note_refused(visitor, ch, actor, "approve", out.reason or "The approver may not make this change either")
         _commit(visitor, over)
+        _move_anchors(visitor, before, actor, diff, approved=True)
         ch.diff, ch.hash_before, ch.hash_after, ch.approver = diff, policy.full_digest(before), policy.full_digest(after), actor.ref()
         done = _finish(visitor, ch, actor, "applied", ch.reason)
         if ch.undo_of:
@@ -525,6 +588,23 @@ def _mark_undone(visitor: str, original_id: str, by: str, actor: Actor) -> None:
     _save(visitor, orig)
 
 
+def _check_undo_conflicts(visitor: str, orig: Change) -> None:
+    """Undo restores the old values, so it must not trample a later change: every setting has to still hold what ``orig`` set."""
+    dump = current_policy(visitor).model_dump(mode="json")
+    stale = [line for line in orig.diff if _value_at(dump, line["keys"]) != line["after"]]
+    if not stale:
+        return
+    later = None
+    for e in store.list_changes(visitor, 200):  # newest first
+        if e["id"] == orig.id:
+            break
+        if e["status"] == "applied" and any(a["keys"][: len(b["keys"])] == b["keys"] or b["keys"][: len(a["keys"])] == a["keys"] for a in e["diff"] for b in stale):
+            later = e
+            break
+    who = f"{later['id']} by {later['actor']['name']}" if later else "a later change"
+    raise UndoConflict(cause=f"{stale[0]['label']} no longer holds the value this change set; {who} touched it", fix="Undo the later change first, or edit the setting in the form")
+
+
 def undo_change(visitor: str, member_id: str | None, change_id: str) -> Change:
     """Put the previous values back. It is a new change (source "undo") that goes through the same permission check, so it can be
     refused or wait for approval like any other; the original becomes "undone" only once the undo has been applied."""
@@ -533,6 +613,10 @@ def undo_change(visitor: str, member_id: str | None, change_id: str) -> Change:
         if orig.status != "applied":
             raise ChangeNotPending(cause=f"This change is {orig.status.replace('_', ' ')}; only an applied change can be undone")
         actor = _actor(visitor, member_id)
+        for e in store.list_changes(visitor, 200):
+            if e.get("undo_of") == orig.id and e["status"] in ("pending_approval", "applied"):
+                raise ChangeNotPending(cause=f"{e['id']} already undoes this change ({e['status'].replace('_', ' ')})")
+        _check_undo_conflicts(visitor, orig)
         ch = Change(id=_new_id(), at=_now(), actor=actor.ref(), source="undo", partial=reverse_partial(orig.diff), status="proposed", undo_of=orig.id,
                     prompt=f"Undo {orig.id}", translator="undo")
         out = _settle(visitor, ch, actor)

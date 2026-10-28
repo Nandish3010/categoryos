@@ -7,5 +7,5 @@
   "prompt": "Cut the target margin on toys by 5 points",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"margins.categories.toys.target_pct\", \"number\": 35, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"margins.categories.toys.target_pct\", \"op\": \"add\", \"number\": -5, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

@@ -15,6 +15,7 @@ import {
   touches,
   type PolicyResponse,
 } from "@/lib/policy";
+import { sentences } from "@/lib/rules";
 import { useAsync } from "@/lib/useAsync";
 import { BackendBanner } from "../BackendBanner";
 import { Banner } from "../Banner";
@@ -215,7 +216,7 @@ function RulesEditor({
       {topErrors.map((e, i) => (
         <div key={i} className="mb-4">
           <Banner tone="bad" title={e.body.problem}>
-            {[e.body.cause, e.body.fix].filter(Boolean).join(" ")}
+            {sentences(e.body.cause, e.body.fix)}
           </Banner>
         </div>
       ))}

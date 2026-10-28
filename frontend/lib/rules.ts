@@ -25,6 +25,7 @@ export type Preview = {
   id: string | null;
   prompt: string;
   translator: string;
+  actor?: Member & { can_apply: boolean };
   changes: ChangeLine[];
   outcome: Outcome | null;
   error: PreviewError | null;
@@ -73,6 +74,15 @@ export function membersOf(policy: Record<string, unknown> | undefined): (Member 
     | { members?: Record<string, { name: string; role: string }>; roles?: Record<string, { label?: string }> }
     | undefined;
   return Object.entries(gov?.members ?? {}).map(([id, m]) => ({ id, name: m.name, role: m.role, roleLabel: gov?.roles?.[m.role]?.label ?? m.role }));
+}
+
+/** Cause and fix as running text: each part ends in a full stop, so "...is wrong" and "Send X-Demo-Key" do not run together. */
+export function sentences(...parts: (string | null | undefined)[]): string {
+  return parts
+    .map((p) => (p ?? "").trim())
+    .filter(Boolean)
+    .map((p) => (/[.!?]$/.test(p) ? p : `${p}.`))
+    .join(" ");
 }
 
 export function formatValue(v: unknown, unit?: string | null): string {

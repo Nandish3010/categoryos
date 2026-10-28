@@ -152,7 +152,16 @@ describe("Write a rule and the change log", () => {
     fireEvent.click(screen.getByRole("button", { name: "Preview rule" }));
     fireEvent.click(await screen.findByRole("button", { name: "Apply" }));
     expect(await screen.findByText("This change was refused")).toBeInTheDocument();
-    expect(screen.getByText(/cannot apply it/)).toBeInTheDocument();
+    expect(screen.getByText(/cannot apply it\. Ask someone with a higher role\./)).toBeInTheDocument();
+  });
+
+  it("puts a full stop between cause and fix in the form's error banner", async () => {
+    backend({ "PUT /api/policy": () => json({ code: "demo_key_required", problem: "This route needs the demo key", cause: "The X-Demo-Key header is missing or wrong", fix: "Send X-Demo-Key with the value of DEMO_KEY" }, 403) });
+    render(<RulesPage />);
+    fireEvent.click(await screen.findByRole("button", { name: "Research" }));
+    fireEvent.change(await screen.findByRole("spinbutton", { name: "Demand min" }), { target: { value: "0.9" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    expect(await screen.findByText("The X-Demo-Key header is missing or wrong. Send X-Demo-Key with the value of DEMO_KEY.")).toBeInTheDocument();
   });
 
   it("tells a public visitor their edits are sandboxed", async () => {

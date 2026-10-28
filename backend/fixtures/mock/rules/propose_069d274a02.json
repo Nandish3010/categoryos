@@ -7,5 +7,5 @@
   "prompt": "Set the target margin on treats to 120%",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"number\": 120, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"op\": \"set\", \"number\": 120, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

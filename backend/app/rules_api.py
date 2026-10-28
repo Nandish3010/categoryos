@@ -2,7 +2,7 @@
 preview), the change log and the apply / approve / reject / undo / discard actions. Logic lives in app.rules and app.governance.
 
 The acting team member is the X-Acting-As header, a DEMO identity picker and not authentication; a request without it acts as the
-playbook's head. On a replay deploy the X-Visitor-Id header, with the caller's address, picks a private sandbox (see rules.visitor_key)."""
+least-privileged role (analyst), so a missing header fails closed. On a replay deploy the X-Visitor-Id header, with the caller's address, picks a private sandbox (see rules.visitor_key)."""
 
 import asyncio
 from typing import Annotated, Any
@@ -42,10 +42,8 @@ async def _model_access(request: Request, prompt: str, x_demo_key: str | None) -
         return None
     ip = sandbox.client_ip(request)
     if mode == "live" and sandbox.demo_key_ok(x_demo_key):
-        check_rate(ip)
         return None
     if public_live.enabled("rules"):
-        check_rate(ip)
         key = sandbox.ip_key(ip)
         public_live.check(key)
         return key
@@ -97,6 +95,7 @@ async def get_examples() -> dict[str, Any]:
 async def propose(body: ProposeBody, request: Request, x_acting_as: ActingAs = None, x_demo_key: str | None = Header(default=None)) -> dict[str, Any]:
     """Turn a plain-English rule into a preview. The model only picks existing settings and numbers; Python dry-runs the result
     through the playbook's validation and the acting member's permissions. Nothing is written to the playbook."""
+    check_rate(sandbox.client_ip(request))  # every preview, recorded example or not, costs a draft row and a validation
     visitor = _visitor(request)
     prompt = " ".join(body.prompt.split())
     pol = await asyncio.to_thread(rules.current_policy, visitor)

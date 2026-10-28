@@ -7,5 +7,5 @@
   "prompt": "Raise the target margin on treats by 2 points",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"number\": 37, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"op\": \"add\", \"number\": 2, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

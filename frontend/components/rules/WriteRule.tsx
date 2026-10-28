@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ApiError, type ApiErrorBody } from "@/lib/api";
 import type { Acting, PolicyResponse } from "@/lib/policy";
-import { actOnChange, discardChange, fetchExamples, proposeRule, type Change, type Example, type Preview } from "@/lib/rules";
+import { actOnChange, discardChange, fetchExamples, proposeRule, type Change, type Example, sentences, type Preview } from "@/lib/rules";
 import { Banner } from "../Banner";
 import { ChangePreview } from "./ChangePreview";
 
@@ -127,7 +127,7 @@ export function WriteRule({
       {error ? (
         <div className="mt-3">
           <Banner tone="bad" title={error.problem}>
-            {[error.cause, error.fix].filter(Boolean).join(" ")}
+            {sentences(error.cause, error.fix)}
           </Banner>
         </div>
       ) : null}

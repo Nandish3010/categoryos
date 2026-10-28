@@ -2,7 +2,7 @@
 
 import { ArrowRight } from "lucide-react";
 import type { Acting } from "@/lib/policy";
-import { formatValue, type ChangeLine, type Preview } from "@/lib/rules";
+import { formatValue, sentences, type ChangeLine, type Preview } from "@/lib/rules";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
 
@@ -68,7 +68,7 @@ export function ChangePreview({
     const e = preview.error;
     return (
       <Banner tone="bad" title={e?.problem ?? preview.message ?? "This rule is not valid"}>
-        {[e?.cause, e?.fix].filter(Boolean).join(" ")} Nothing was changed.
+        {sentences(e?.cause, e?.fix)} Nothing was changed.
       </Banner>
     );
   }
@@ -78,7 +78,7 @@ export function ChangePreview({
   const outcome = preview.outcome;
   const refused = outcome?.action === "refuse";
   const request = outcome?.action === "request_approval";
-  const cannotApply = acting ? !acting.can_apply : false;
+  const cannotApply = preview.actor ? !preview.actor.can_apply : acting ? !acting.can_apply : false;
   return (
     <section aria-label="Rule preview" className="flex flex-col gap-3 rounded-card border border-border bg-surface p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">

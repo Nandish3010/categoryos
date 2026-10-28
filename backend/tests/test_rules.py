@@ -2,6 +2,8 @@
 approve / reject / undo, the change log, and per-visitor sandboxes on a replay deploy. The model is never called: examples come
 from recorded fixtures, free-form prompts from the deterministic mock translator or a patched gateway."""
 
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 
@@ -216,12 +218,16 @@ def test_losing_every_approver_is_invalid():
 def test_unknown_actor_is_rejected(client):
     res = client.post("/api/policy/propose", json={"prompt": TREATS_UP}, headers={"X-Acting-As": "mallory"})
     assert res.status_code == 422 and res.json()["code"] == "unknown_actor"
-    assert client.get("/api/policy", headers={"X-Acting-As": "mallory"}).json()["acting"]["id"] == "meera"  # reads fall back to the owner
+    assert client.get("/api/policy", headers={"X-Acting-As": "mallory"}).json()["acting"]["id"] == "anonymous"  # reads fall back to the least-privileged role
 
 
-def test_no_header_acts_as_the_head(client):
+def test_no_header_fails_closed_as_the_least_privileged_role(client):
     res = client.put("/api/policy", json={"research": {"demand_min": 0.5}})
-    assert res.status_code == 200 and log(client)[0]["actor"]["id"] == "meera"
+    assert res.status_code == 403 and policy.get().research.demand_min == 0.4
+    entry = log(client)[0]
+    assert entry["actor"] == {"id": "anonymous", "name": "Unidentified caller", "role": "analyst"} and entry["status"] == "refused"
+    pre = client.post("/api/policy/propose", json={"prompt": TREATS_UP}).json()
+    assert pre["outcome"]["action"] == "refuse" and pre["actor"]["can_apply"] is False
 
 
 # ---------- undo ----------
@@ -268,12 +274,12 @@ def test_apply_twice_and_discard(client):
     assert client.post(f"/api/policy/changes/{done['id']}/discard").status_code == 409
 
 
-def test_a_preview_applied_after_the_playbook_moved_is_planned_again(client):
-    pre = propose(client, TREATS_UP)  # 35 -> 37
+def test_a_preview_is_refused_if_the_playbook_moved_under_it(client):
+    pre = propose(client, TREATS_UP)  # 35 -> 37, worked out against 35
     client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 33}}}}, headers=MEERA)
     res = client.post(f"/api/policy/changes/{pre['id']}/apply", headers=MEERA)
-    assert res.status_code == 200 and target() == 37  # the stored edit is an absolute value, re-planned on the playbook as it is now
-    assert res.json()["change"]["diff"][0]["before"] == 33  # and the log records the value it really replaced
+    assert res.status_code == 409 and res.json()["code"] == "change_stale" and res.json()["fix"] and target() == 33
+    assert client.post(f"/api/policy/changes/{pre['id']}/apply", headers=MEERA).status_code == 404  # the stale draft is gone
 
 
 def test_a_preview_that_no_longer_validates_is_refused_and_logged(client):
@@ -383,7 +389,7 @@ def test_visitor_scope_is_per_address_and_id(monkeypatch):
 
 def test_replay_form_edits_are_sandboxed_too(client, monkeypatch):
     replay(monkeypatch)
-    a, b = {"X-Visitor-Id": "visitor-aaaaaaaa"}, {"X-Visitor-Id": "visitor-bbbbbbbb"}
+    a, b = {"X-Visitor-Id": "visitor-aaaaaaaa", **MEERA}, {"X-Visitor-Id": "visitor-bbbbbbbb", **MEERA}
     assert client.put("/api/policy", json={"research": {"demand_min": 0.6}}, headers=a).status_code == 200
     assert client.get("/api/policy", headers=a).json()["policy"]["research"]["demand_min"] == 0.6
     assert client.get("/api/policy", headers=b).json()["policy"]["research"]["demand_min"] == 0.4
@@ -396,11 +402,11 @@ def test_visitor_log_is_capped_and_pending_requests_survive(client, monkeypatch)
     monkeypatch.setattr(settings, "rules_max_changes_per_visitor", 3)
     h = {"X-Visitor-Id": "visitor-aaaaaaaa", **ARJUN}
     pending = client.post(f"/api/policy/changes/{propose(client, TOYS_DOWN, h)['id']}/apply", headers=h).json()["change"]["id"]
-    for v in (36, 35, 34, 33, 32):
+    for v in (36, 35, 36, 35, 36):
         assert client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": v}}}}, headers=h).status_code == 200
     entries = client.get("/api/policy/changes", headers=h).json()["changes"]
     assert len(entries) == 4 and entries[-1]["id"] == pending  # three settled entries kept, plus the open request
-    assert [e["diff"][0]["after"] for e in entries[:3]] == [32, 33, 34]
+    assert [e["diff"][0]["after"] for e in entries[:3]] == [36, 35, 36]
 
 
 def test_visitor_sandboxes_are_capped_and_expire(monkeypatch):
@@ -509,3 +515,139 @@ def test_diff_and_reverse_round_trip():
     assert changed.model_dump(mode="json") == new
     back, back_over = policy.plan_partial(rules.reverse_partial(diff), over)
     assert back.model_dump(mode="json") == now and back_over == {}
+
+
+# ---------- review follow-ups: growth, cumulative limits, relative edits, stale state, non-finite numbers ----------
+
+
+def pend(client, prompt=TOYS_DOWN, who=ARJUN):
+    return client.post(f"/api/policy/changes/{propose(client, prompt, who)['id']}/apply", headers=who)
+
+
+def test_propose_is_rate_limited_per_address_even_for_examples(client, monkeypatch):
+    monkeypatch.setattr(settings, "rate_limit_per_min", 3)
+    codes = [client.post("/api/policy/propose", json={"prompt": TREATS_UP}, headers=MEERA).status_code for _ in range(5)]
+    assert codes == [200, 200, 200, 429, 429]
+
+
+def test_drafts_are_capped_and_expire(client, monkeypatch):
+    monkeypatch.setattr(settings, "rules_max_drafts", 3)
+    for pct in range(1, 8):
+        propose(client, f"set minimum demand to 0.{pct}")
+    assert store.count_changes("", "proposed") == 3
+    store.trim_changes("", 100, "9999", 10)  # a cutoff in the future: every draft is stale
+    assert store.count_changes("", "proposed") == 0
+
+
+def test_draft_only_visitors_count_toward_the_visitor_cap(client, monkeypatch):
+    replay(monkeypatch)
+    monkeypatch.setattr(settings, "rules_max_visitors", 2)
+    for i in range(4):
+        propose(client, TREATS_UP, {"X-Visitor-Id": f"visitor-{i}aaaaaaa", **MEERA})
+    assert len(store._rows("SELECT DISTINCT visitor FROM policy_changes")) == 2
+
+
+def test_visitors_expire_by_last_activity_not_creation():
+    from contextlib import closing
+
+    store.set_visitor_overrides("old", {"research": {"demand_min": 0.5}})
+    store.save_change("busy", "chg_busy", "2020-01-01T00:00:00.000+00:00", "applied", {"id": "chg_busy"})  # created long ago ...
+    with closing(store._connect()) as conn, conn:
+        conn.execute("UPDATE visitor_playbooks SET updated_at = '2020-01-01T00:00:00.000+00:00'")
+    store.save_change("busy", "chg_busy2", "2020-01-01T00:00:00.000+00:00", "applied", {"id": "chg_busy2"})  # ... but active now
+    store.expire_visitors("2025-01-01T00:00:00.000+00:00", 100)
+    assert store.get_visitor_overrides("old") == {} and store.list_changes("busy", 10)
+
+
+def test_refused_attempts_on_one_request_keep_only_the_latest_few(client):
+    cid = pend(client).json()["change"]["id"]
+    for _ in range(9):
+        assert client.post(f"/api/policy/changes/{cid}/approve", headers=PRIYA).status_code == 403
+    entry = log(client)[0]
+    assert [e["action"] for e in entry["events"]].count("approve_refused") == rules.MAX_REFUSED_EVENTS and entry["status"] == "pending_approval"
+
+
+def test_pending_requests_are_capped(client, monkeypatch):
+    monkeypatch.setattr(settings, "rules_max_pending", 2)
+    assert pend(client).status_code == 202 and pend(client).status_code == 202
+    res = pend(client)
+    assert res.status_code == 429 and res.json()["code"] == "rules_quota_reached" and res.json()["fix"]
+    cid = log(client)[0]["id"]
+    client.post(f"/api/policy/changes/{cid}/reject", headers=MEERA)  # room again
+    assert pend(client).status_code == 202
+
+
+def test_local_log_has_a_retention_cap_too(client, monkeypatch):
+    monkeypatch.setattr(settings, "rules_max_local_changes", 2)
+    for v in (36, 35, 36, 35):
+        client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": v}}}}, headers=MEERA)
+    assert [e["diff"][0]["after"] for e in log(client)] == [35, 36]
+
+
+def test_manager_limit_is_cumulative_not_per_step(client):
+    assert apply(client, TREATS_UP, ARJUN).status_code == 200 and target() == 37  # 2 pp from the default
+    pre = propose(client, TREATS_UP, ARJUN)  # a second 2 pp step would end 4 pp from where the head last set it
+    assert pre["outcome"]["action"] == "request_approval" and "last approved value (35)" in pre["outcome"]["reason"] and "4 pp away" in pre["outcome"]["reason"]
+    assert client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 36}}}}, headers=ARJUN).status_code == 200  # back toward it is fine
+    pending = client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 38}}}}, headers=ARJUN)
+    assert pending.status_code == 202 and target() == 36
+    # once the head approves (or sets) a value, that is the new baseline
+    assert client.post(f"/api/policy/changes/{pending.json()['change']['id']}/approve", headers=MEERA).status_code == 200 and target() == 38
+    assert propose(client, TREATS_UP, ARJUN)["outcome"]["action"] == "apply"  # 38 -> 40, 2 pp from the approved 38
+    client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 50}}}}, headers=MEERA)
+    assert propose(client, "Cut the target margin on treats by 3 points", ARJUN)["outcome"]["action"] == "request_approval"
+
+
+def test_relative_edits_resolve_against_the_current_value_at_preview(client):
+    client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 33}}}}, headers=MEERA)
+    line = propose(client, TREATS_UP, MEERA)["changes"][0]
+    assert (line["before"], line["after"]) == (33, 35)  # "by 2 points" adds 2 to what it is now; it does not set 37
+    assert propose(client, TOYS_DOWN, MEERA)["changes"][0]["after"] == 35
+    assert propose(client, OUT_OF_RANGE, MEERA)["error"]["path"] == "margins.categories.treats.target_pct"  # "to 120%" is absolute
+    for ex in rules.EXAMPLES:
+        raw = llm.fixture_path("mock", rules.STAGE, rules.task_for(ex["prompt"])).read_text()
+        edit = json.loads(json.loads(raw)["content"])["edits"][0]
+        assert edit["op"] == ("add" if " by " in ex["prompt"] and "up to" not in ex["prompt"] else "set"), ex["prompt"]
+
+
+def test_undo_refuses_to_overwrite_a_later_change(client):
+    first = apply(client, TREATS_UP, MEERA).json()["change"]
+    later = client.put("/api/policy", json={"margins": {"categories": {"treats": {"target_pct": 40}}}}, headers=MEERA).json()["change"]
+    res = client.post(f"/api/policy/changes/{first['id']}/undo", headers=MEERA)
+    assert res.status_code == 409 and res.json()["code"] == "undo_conflict" and later["id"] in res.json()["cause"] and "Meera" in res.json()["cause"]
+    assert target() == 40
+    assert client.post(f"/api/policy/changes/{later['id']}/undo", headers=MEERA).status_code == 200 and target() == 37  # newest first ...
+    assert client.post(f"/api/policy/changes/{first['id']}/undo", headers=MEERA).status_code == 200 and target() == 35  # ... then the first
+
+
+def test_non_finite_numbers_are_rejected_and_nothing_is_written(client, monkeypatch):
+    for raw in (b'{"research": {"demand_min": NaN}}', b'{"research": {"demand_min": Infinity}}', b'{"research": {"fit_weights": {"margin": -Infinity}}}'):
+        res = client.put("/api/policy", content=raw, headers={**MEERA, "Content-Type": "application/json"})
+        assert res.status_code == 422 and res.json()["code"] == "policy_invalid", raw
+    assert log(client) == [] and not policy.local_path().exists()
+    with pytest.raises(PolicyInvalid):
+        policy.plan_partial({"research": {"demand_min": float("nan")}}, {})
+    monkeypatch.setattr(rules, "mock_translate", lambda p, leaves: rules.RuleProposal(edits=[rules.RuleEdit(path="research.demand_min", number=float("inf"))]))
+    pre = propose(client, "set it to infinity")
+    assert pre["status"] == "invalid" and "finite" in pre["error"]["problem"]
+
+
+def test_approving_a_stale_request_is_refused_and_closes_it(client):
+    cid = pend(client).json()["change"]["id"]  # toys 40 -> 35, waiting
+    client.put("/api/policy", json={"margins": {"categories": {"toys": {"target_pct": 38}}}}, headers=MEERA)
+    res = client.post(f"/api/policy/changes/{cid}/approve", headers=MEERA)
+    assert res.status_code == 409 and res.json()["code"] == "change_stale" and "fresh request" in res.json()["fix"]
+    assert target("toys") == 38
+    closed = next(e for e in log(client) if e["id"] == cid)
+    assert closed["status"] == "rejected" and closed["reason"].startswith("Stale")  # closed explicitly, not left pending
+    assert client.post(f"/api/policy/changes/{cid}/approve", headers=MEERA).status_code == 409
+
+
+def test_a_change_cannot_be_undone_twice(client):
+    first = apply(client, "Cut the target margin on toys by 3 points", MEERA).json()["change"]
+    waiting = client.post(f"/api/policy/changes/{first['id']}/undo", headers=ARJUN)  # reversing 3 pp is over a manager's limit
+    assert waiting.status_code == 202
+    again = client.post(f"/api/policy/changes/{first['id']}/undo", headers=MEERA)  # an undo is already pending
+    assert again.status_code == 409 and waiting.json()["change"]["id"] in again.json()["cause"] and target("toys") == 37
+    assert client.post(f"/api/policy/changes/{waiting.json()['change']['id']}/approve", headers=MEERA).status_code == 200
+    assert client.post(f"/api/policy/changes/{first['id']}/undo", headers=MEERA).status_code == 409

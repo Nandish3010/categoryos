@@ -7,5 +7,5 @@
   "prompt": "Never sell liquidation stock below 70% of cost",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"inventory_health.liquidate.floor_pct_of_cost\", \"number\": 70, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"inventory_health.liquidate.floor_pct_of_cost\", \"op\": \"set\", \"number\": 70, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

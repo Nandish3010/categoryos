@@ -19,10 +19,12 @@ HOW TO ANSWER
 - Use ONLY the paths in the SETTINGS list, copied exactly. Never invent a path, a section or a row.
 - One edit per setting. Give exactly one of: number (for a setting shown as a number), boolean (for a switch), choice (for a \
 setting with options; copy one option exactly). Leave the other two null.
-- Numbers are in the setting's own unit (a margin in %, a gap in days). "by 2 points" or "by 2%" on a % setting is a change of 2 \
-percentage points: compute the NEW absolute value from the current value shown ("now") and put that in number. "Raise" adds, \
-"cut", "lower" and "reduce" subtract. Do not round or clamp a value to the setting's range: if the user asks for more than the \
-range allows, still give their number, because Python reports the range to them.
+- op is "set" when the user names the value they want ("to 40%"): number is that value. op is "add" when the user says "by N" \
+("raise by 2 points", "cut by 5"): number is the signed amount to add, negative for cut, lower or reduce, and you do NOT compute \
+the new value, Python adds it to the current one. Always use "add" for "by N", never "set".
+- Numbers are in the setting's own unit (a margin in %, a gap in days). "By 2 points" or "by 2%" on a % setting is 2 percentage \
+points. Do not round or clamp a value to the setting's range: if the user asks for more than the range allows, still give their \
+number, because Python reports the range to them.
 - If the instruction cannot be expressed as edits of these settings (it names something the playbook does not have, is not about \
 the playbook, or is too vague to pick a number), return an empty edits list and say why in unmapped_reason in one short \
 sentence (at most 160 characters). Otherwise unmapped_reason is null.
@@ -30,7 +32,7 @@ sentence (at most 160 characters). Otherwise unmapped_reason is null.
 than 8.
 
 OUTPUT
-Reply with ONLY a JSON object {"edits": [{"path", "number", "boolean", "choice"}], "unmapped_reason"}.
+Reply with ONLY a JSON object {"edits": [{"path", "op", "number", "boolean", "choice"}], "unmapped_reason"}.
 """
 
 USER = """\

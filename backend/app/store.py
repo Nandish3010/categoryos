@@ -69,7 +69,14 @@ CREATE TABLE IF NOT EXISTS policy_changes (
     visitor TEXT NOT NULL,
     at TEXT NOT NULL,
     status TEXT NOT NULL,
-    body TEXT NOT NULL
+    body TEXT NOT NULL,
+    touched TEXT NOT NULL DEFAULT ''
+);
+CREATE TABLE IF NOT EXISTS limit_anchors (
+    visitor TEXT NOT NULL,
+    path TEXT NOT NULL,
+    value TEXT NOT NULL,
+    PRIMARY KEY (visitor, path)
 );
 CREATE INDEX IF NOT EXISTS policy_changes_visitor ON policy_changes (visitor, seq);
 CREATE TABLE IF NOT EXISTS visitor_playbooks (
@@ -199,9 +206,9 @@ def save_change(visitor: str, change_id: str, at: str, status: str, body: dict[s
         if bump:
             conn.execute("DELETE FROM policy_changes WHERE id = ?", (change_id,))
         conn.execute(
-            "INSERT INTO policy_changes (id, visitor, at, status, body) VALUES (?, ?, ?, ?, ?) "
-            "ON CONFLICT(id) DO UPDATE SET status = excluded.status, body = excluded.body",
-            (change_id, visitor, at, status, json.dumps(body)),
+            "INSERT INTO policy_changes (id, visitor, at, status, body, touched) VALUES (?, ?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET status = excluded.status, body = excluded.body, touched = excluded.touched",
+            (change_id, visitor, at, status, json.dumps(body), now_iso()),
         )
     persist.notify()
 
@@ -217,18 +224,45 @@ def list_changes(visitor: str, limit: int) -> list[dict[str, Any]]:
     return [json.loads(r[0]) for r in rows]
 
 
+def count_changes(visitor: str, status: str) -> int:
+    return int(_rows("SELECT COUNT(*) FROM policy_changes WHERE visitor = ? AND status = ?", (visitor, status))[0][0])
+
+
 def delete_change(visitor: str, change_id: str) -> None:
     _exec("DELETE FROM policy_changes WHERE id = ? AND visitor = ?", (change_id, visitor))
 
 
-def trim_changes(visitor: str, keep: int, draft_cutoff: str) -> None:
-    """A public visitor keeps only the newest ``keep`` log entries (pending requests are never trimmed); stale drafts go too."""
+def trim_changes(visitor: str, keep: int, draft_cutoff: str, max_drafts: int) -> None:
+    """Retention for one playbook: drafts older than ``draft_cutoff`` go and at most ``max_drafts`` newest stay; only the newest
+    ``keep`` settled entries stay (pending requests are never trimmed, they are capped where they are created)."""
     with closing(_connect()) as conn, conn:
-        conn.execute("DELETE FROM policy_changes WHERE visitor = ? AND status = 'proposed' AND at < ?", (visitor, draft_cutoff))
+        conn.execute("DELETE FROM policy_changes WHERE visitor = ? AND status = 'proposed' AND touched < ?", (visitor, draft_cutoff))
+        conn.execute(
+            "DELETE FROM policy_changes WHERE visitor = ? AND status = 'proposed' AND seq NOT IN "
+            "(SELECT seq FROM policy_changes WHERE visitor = ? AND status = 'proposed' ORDER BY seq DESC LIMIT ?)",
+            (visitor, visitor, max_drafts),
+        )
         conn.execute(
             "DELETE FROM policy_changes WHERE visitor = ? AND status NOT IN ('proposed', 'pending_approval') AND seq NOT IN "
             "(SELECT seq FROM policy_changes WHERE visitor = ? AND status NOT IN ('proposed', 'pending_approval') ORDER BY seq DESC LIMIT ?)",
             (visitor, visitor, keep),
+        )
+    persist.notify()
+
+
+def get_anchors(visitor: str) -> dict[str, Any]:
+    """Per setting, the last value set without a limit applying (by someone unlimited, or approved by one): the baseline a limited
+    role's cumulative drift is measured from."""
+    return {path: json.loads(v) for path, v in _rows("SELECT path, value FROM limit_anchors WHERE visitor = ?", (visitor,))}
+
+
+def set_anchors(visitor: str, anchors: dict[str, Any]) -> None:
+    if not anchors:
+        return
+    with closing(_connect()) as conn, conn:
+        conn.executemany(
+            "INSERT INTO limit_anchors (visitor, path, value) VALUES (?, ?, ?) ON CONFLICT(visitor, path) DO UPDATE SET value = excluded.value",
+            [(visitor, p, json.dumps(v)) for p, v in anchors.items()],
         )
     persist.notify()
 
@@ -247,19 +281,19 @@ def set_visitor_overrides(visitor: str, overrides: dict[str, Any]) -> None:
 
 
 def expire_visitors(cutoff: str, max_visitors: int) -> None:
-    """Forget visitors idle since ``cutoff`` and, past ``max_visitors``, the least recently active ones (their log with them)."""
+    """Forget public visitors idle since ``cutoff`` (by last activity: a saved playbook, a preview, any decision) and, past
+    ``max_visitors``, the least recently active ones, with their playbook, log and limit baselines. Draft-only visitors count."""
     with closing(_connect()) as conn, conn:
-        conn.execute("DELETE FROM visitor_playbooks WHERE updated_at < ?", (cutoff,))
-        conn.execute(
-            "DELETE FROM visitor_playbooks WHERE visitor NOT IN (SELECT visitor FROM visitor_playbooks ORDER BY updated_at DESC LIMIT ?)",
-            (max_visitors,),
-        )
-        conn.execute("DELETE FROM policy_changes WHERE visitor != '' AND at < ?", (cutoff,))
-        conn.execute(
-            "DELETE FROM policy_changes WHERE visitor != '' AND visitor NOT IN (SELECT visitor FROM visitor_playbooks) "
-            "AND visitor NOT IN (SELECT visitor FROM policy_changes GROUP BY visitor ORDER BY MAX(seq) DESC LIMIT ?)",
-            (max_visitors,),
-        )
+        last: dict[str, str] = {}
+        for v, t in conn.execute("SELECT visitor, updated_at FROM visitor_playbooks"):
+            last[v] = max(last.get(v, ""), t)
+        for v, t in conn.execute("SELECT visitor, MAX(touched) FROM policy_changes WHERE visitor != '' GROUP BY visitor"):
+            last[v] = max(last.get(v, ""), t or "")
+        keep = {v for v, _ in sorted(last.items(), key=lambda kv: kv[1], reverse=True)[:max_visitors]}
+        for v, t in last.items():
+            if t < cutoff or v not in keep:
+                for table in ("visitor_playbooks", "policy_changes", "limit_anchors"):
+                    conn.execute(f"DELETE FROM {table} WHERE visitor = ?", (v,))
     persist.notify()
 
 

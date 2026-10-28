@@ -16,7 +16,7 @@ from app.main import app
 from app.metrics import apply_levers, build_base
 from app.taxonomy import classify
 
-client = TestClient(app)
+client = TestClient(app, headers={"X-Acting-As": "meera"})  # the demo head; a request naming nobody acts as the least-privileged role
 EXAMPLES = Path(__file__).resolve().parents[2] / "config" / "examples"
 
 
