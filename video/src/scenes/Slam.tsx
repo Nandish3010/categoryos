@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from 'remotion';
 import { Meera } from '../components/Meera';
+import { OFF_R } from '../components/MeeraWalker';
 import { ScreenView, TiltFrame, vt } from '../components/AppParts';
 import { VoCaptions } from '../components/Captions';
 import { body, C, display, E, FPS, pop, prog, rnd, sceneOf, T } from '../theme';
@@ -16,10 +17,13 @@ export const Slam: React.FC = () => {
   const sc = sceneOf('a2-slam');
   const SLAM = slamLocalFrame(T, script); // the button goes down as she says the name
   const cool = prog(lf, SLAM + 2, SLAM + 22, E.inOut); // warm -> cool grade change
-  // pile burst at the start (continuation of the buried frame)
-  const shake = lf < 12 ? Math.sin(lf * 3.1) * 8 * (1 - lf / 12) : 0;
+  // the paperwork bursts as she leaps off
   const burst = prog(lf, 10, 40, E.out);
-  // jump arc from the pile (x=1380) to beside the button (x=640)
+  // she has just walked off to the right at the end of the team scene: she dashes back in from that edge (2110 -> 1380), then jumps
+  const dash = prog(lf, 0, 12, E.out);
+  const dashX = OFF_R + (1380 - OFF_R) * dash;
+  const dashBob = Math.abs(Math.sin(dash * Math.PI * 3)) * 22 * (1 - dash);
+  // jump arc from the dash end (x=1380) to beside the button (x=470)
   const jump = prog(lf, 12, 42, E.inOut);
   const mx = 1380 + (470 - 1380) * jump;
   const my = FLOOR - Math.sin(Math.PI * jump) * 260;
@@ -49,12 +53,13 @@ export const Slam: React.FC = () => {
           <div style={{ position: 'absolute', left: 1180 - 270, top: 560 - 85 + press * 40, width: 540, height: 170 * (1 - press), transform: `scale(${btn})`, borderRadius: 34, background: `linear-gradient(180deg, ${C.blue}, #3b6fd1)`, boxShadow: `0 ${14 - press * 80}px 0 #2a4f99, 0 0 ${80 * glow}px ${C.blue}, 0 0 ${200 * glow}px ${C.blue}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: display, fontWeight: 700, fontSize: 64, color: '#0F1117' }}>
             Run CategoryOS
           </div>
-          {lf < 42 ? (
+          {lf < 12 ? (
+            <Meera pose="running" flip x={dashX} y={FLOOR - dashBob} h={520} rot={-8 * (1 - dash)} sy={1 + 0.04 * (1 - dash)} />
+          ) : lf < 42 ? (
             <Meera pose="celebrating" x={mx} y={my} h={520} sx={1 - stretch * 0.5 + landSq * 0.6} sy={1 + stretch - landSq} rot={lean} shadow={lf > 40} />
           ) : (
             <Meera pose="pointing" x={mx} y={FLOOR} h={520} sx={1 + landSq * 0.6} sy={1 - landSq} rot={lean} />
           )}
-          {lf < 14 ? <Meera pose="buried" x={1380} y={FLOOR + 10} h={620} sx={1 + shake * 0.002} shadow={false} z={7} /> : null}
         </AbsoluteFill>
       ) : null}
       {zt > 0 ? (

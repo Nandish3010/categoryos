@@ -1,6 +1,6 @@
 {
   "voice": "af_heart",
-  "speed": 1.0,
+  "speed": 1,
   "sayVoice": "Tara",
   "rate": 178,
   "breathMs": 160,
@@ -11,7 +11,9 @@
       "minSec": 5,
       "vo": "Hi, I'm Meera, a category manager. Nine a.m., and a new vendor wants to go live. Here we go.",
       "caption": "Hi, I'm Meera, a category manager. 9 a.m., and a new vendor wants to go live. Here we go.",
-      "emph": ["live"]
+      "emph": [
+        "live"
+      ]
     },
     {
       "id": "a1-mid",
@@ -19,7 +21,12 @@
       "minSec": 8,
       "vo": "Their price sheet is a mess. My inbox is at forty-seven. A vendor is on the phone with a deal that sounds too good to be true. The licence scans need checking, and a competitor just dropped their price. All before lunch.",
       "caption": "Their price sheet is a mess. My inbox is at 47. A vendor is on the phone with a deal that sounds too good to be true. The licence scans need checking, and a competitor just dropped their price. All before lunch.",
-      "emph": ["mess", "forty-seven", "too good", "dropped"]
+      "emph": [
+        "mess",
+        "forty-seven",
+        "too good",
+        "dropped"
+      ]
     },
     {
       "id": "a1-end",
@@ -27,16 +34,35 @@
       "minSec": 5,
       "vo": "By evening, that's about eighteen hours for a single vendor. And tomorrow, there's another one.",
       "caption": "By evening, that's about 18 hours for a single vendor. And tomorrow, there's another one.",
-      "emph": ["eighteen", "another"]
+      "emph": [
+        "eighteen",
+        "another"
+      ]
+    },
+    {
+      "id": "a2-team",
+      "act": 2,
+      "minSec": 6,
+      "vo": "Meet the team behind the fix. Nandish designed and built CategoryOS, end to end, on Meta’s models. And I’m the category manager it was built for.",
+      "caption": "Meet the team behind the fix. Nandish designed and built CategoryOS, end to end, on Meta’s models. And I’m the category manager it was built for.",
+      "emph": [
+        "team",
+        "Nandish",
+        "category manager"
+      ]
     },
     {
       "id": "a2-slam",
       "act": 2,
       "minSec": 4,
-      "tailSec": 1.0,
-      "vo": "So I built a teammate that does the legwork. Meet CategoryOS.",
-      "caption": "So I built a teammate that does the legwork. Meet CategoryOS.",
-      "emph": ["teammate", "CategoryOS"]
+      "tailSec": 1,
+      "vo": "Together, we built a teammate that does the legwork. Meet CategoryOS.",
+      "caption": "Together, we built a teammate that does the legwork. Meet CategoryOS.",
+      "emph": [
+        "Together",
+        "teammate",
+        "CategoryOS"
+      ]
     },
     {
       "id": "m1-call",
@@ -44,7 +70,13 @@
       "minSec": 20,
       "vo": "First, negotiation. On a live call, it listens, writes down every term, and checks it against my targets. The vendor offers fifteen percent margin, plus twenty percent marketing support if I sell two thousand units in ninety days. Sounds like thirty-five. But it simulates our real demand, and the chance of hitting two thousand is under a tenth of a percent. So it tells me not to accept, and gives me my next line: set the target at two hundred and fifty units, or make twenty-two percent guaranteed. No spreadsheet after the call.",
       "caption": "First, negotiation. On a live call, it listens, writes down every term, and checks it against my targets. The vendor offers 15% margin, plus 20% marketing support if I sell 2,000 units in 90 days. Sounds like 35%. But it simulates our real demand, and the chance of hitting 2,000 is under 0.1%. So it tells me not to accept, and gives me my next line: set the target at 250 units, or make 22% guaranteed. No spreadsheet after the call.",
-      "emph": ["negotiation", "thirty-five", "tenth", "not to accept", "next line"]
+      "emph": [
+        "negotiation",
+        "thirty-five",
+        "tenth",
+        "not to accept",
+        "next line"
+      ]
     },
     {
       "id": "m2-verifier",
@@ -52,7 +84,13 @@
       "minSec": 14,
       "vo": "Second, trust. Every number it shows me points to where it came from, and code double-checks it. In this live run, it read the same GST certificate twice and got two different dates. Instead of guessing, it flagged it for me. On two hundred planted errors, it caught one hundred and ninety-eight, with zero false alarms.",
       "caption": "Second, trust. Every number it shows me points to where it came from, and code double-checks it. In this live run, it read the same GST certificate twice and got two different dates. Instead of guessing, it flagged it for me. On 200 planted errors, it caught 198, with zero false alarms.",
-      "emph": ["trust", "two different dates", "flagged", "one hundred and ninety-eight", "zero"]
+      "emph": [
+        "trust",
+        "two different dates",
+        "flagged",
+        "one hundred and ninety-eight",
+        "zero"
+      ]
     },
     {
       "id": "m3-vision",
@@ -60,7 +98,14 @@
       "minSec": 16,
       "vo": "Third, the paperwork. Vendors send scans, not data. It reads the food licence and spots that it expires on the thirtieth of November, though the application said twenty twenty-seven. It cuts out the label, reads it again, and sees thirty percent protein where the sheet claims thirty-two. It even catches a price-list mismatch. All before the product goes live, not after a customer complaint.",
       "caption": "Third, the paperwork. Vendors send scans, not data. It reads the food licence and spots that it expires on 30 November, though the application said 2027. It cuts out the label, reads it again, and sees 30% protein where the sheet claims 32%. It even catches a price-list mismatch. All before the product goes live, not after a customer complaint.",
-      "emph": ["paperwork", "thirtieth", "thirty percent", "thirty-two", "mismatch", "before"]
+      "emph": [
+        "paperwork",
+        "thirtieth",
+        "thirty percent",
+        "thirty-two",
+        "mismatch",
+        "before"
+      ]
     },
     {
       "id": "m4-run",
@@ -68,7 +113,11 @@
       "minSec": 16,
       "vo": "And after launch, it keeps running the category with me. It drafts my weekly vendor review, answers price-increase requests with a counter-offer, chases late purchase orders, queues catalog fixes, plans promotions, watches competitor prices, and flags stock that's running out or not moving. Every rule lives in one playbook I control, for pet, beauty, electronics, or any category.",
       "caption": "And after launch, it keeps running the category with me. It drafts my weekly vendor review, answers price-increase requests with a counter-offer, chases late purchase orders, queues catalog fixes, plans promotions, watches competitor prices, and flags stock that's running out or not moving. Every rule lives in one playbook I control, for pet, beauty, electronics, or any category.",
-      "emph": ["after launch", "playbook", "any category"]
+      "emph": [
+        "after launch",
+        "playbook",
+        "any category"
+      ]
     },
     {
       "id": "a3-week",
@@ -76,7 +125,11 @@
       "minSec": 14,
       "vo": "Here's what that means for a category team. Onboarding, weekly reviews, catalog fixes, purchase-order follow-ups: about a third of the week comes back. For a team of three, that's roughly two hundred hours a month, for vendors, strategy and growth. These numbers are modelled from research, not yet measured.",
       "caption": "Here's what that means for a category team. Onboarding, weekly reviews, catalog fixes, purchase-order follow-ups: about a third of the week comes back. For a team of three, that's roughly 200 hours a month, for vendors, strategy and growth. These numbers are modelled from research, not yet measured.",
-      "emph": ["third", "two hundred hours", "modelled"]
+      "emph": [
+        "third",
+        "two hundred hours",
+        "modelled"
+      ]
     },
     {
       "id": "a3-close",
@@ -84,7 +137,11 @@
       "minSec": 9,
       "vo": "It runs on five Meta models, and every number is checked before I see it. I'm Meera, and this is CategoryOS. Try it at category O S dot vercel dot app.",
       "caption": "It runs on five Meta models, and every number is checked before I see it. I'm Meera, and this is CategoryOS. Try it at categoryos.vercel.app.",
-      "emph": ["five", "checked", "Try it"]
+      "emph": [
+        "five",
+        "checked",
+        "Try it"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
-import { Meera } from '../components/Meera';
+import { MeeraWalker } from '../components/MeeraWalker';
 import { VoCaptions } from '../components/Captions';
 import { body, C, display, E, FPS, H, MARGIN_X, phraseFrame, pop, prog, rnd, sceneOf, W } from '../theme';
 import { IMPACT, MODELS, URL } from '../config';
@@ -46,6 +46,10 @@ const CELL_NTH: Record<number, number> = {};
   counts.forEach((c, mi) => { for (let k = 0; k < c; k++) { CELL_MOD[order[cur]] = mi; CELL_NTH[order[cur]] = k; cur++; } });
 }
 const TEAM = ((IMPACT.roles as { headcount: number }[]) ?? []).reduce((n, r) => n + r.headcount, 0);
+
+/** Meera never pops in: in the week scene she walks in from the right once the first block has melted, in the close she walks in and waves. */
+const WEEK_WALK = { floor: H - 70, h: 330, enterFrom: 'right' as const, beats: [{ at: Math.min(...MODS.map((m) => phraseFrame('a3-week', m.say))) + 58, x: 1700, pose: 'relaxed' as const }] };
+const CLOSE_WALK = { floor: H - 120, h: 640, enterFrom: 'right' as const, enterSpeed: 520, beats: [{ at: 40, x: 1560, pose: 'waving' as const }] };
 
 export const WeekScene: React.FC = () => {
   const lf = useCurrentFrame();
@@ -97,8 +101,9 @@ export const WeekScene: React.FC = () => {
         })}
       </div>
       <WeekCaption lf={lf} start={firstMelt + 40} />
-      {lf > firstMelt + 40 ? <Meera pose="relaxed" x={1700} y={H - 70} h={330} sy={1 + Math.sin(lf * 0.12) * 0.006} z={5} /> : null}
-      {lf > firstMelt + 40 ? <Steam lf={lf} x={1650} y={H - 70 - 205} /> : null}
+      {/* she walks in from the right (where she left the Run scene) and settles with her coffee */}
+      <MeeraWalker {...WEEK_WALK} z={5} />
+      {lf > firstMelt + 58 ? <Steam lf={lf} x={1650} y={H - 70 - 205} /> : null}
       <VoCaptions sceneId="a3-week" accent={C.green} bottom={40} />
     </AbsoluteFill>
   );
@@ -125,8 +130,6 @@ const WeekCaption: React.FC<{ lf: number; start: number }> = ({ lf, start }) => 
 export const CloseScene: React.FC = () => {
   const lf = useCurrentFrame();
   const sc = sceneOf('a3-close');
-  const waveP = pop(lf, 0, FPS, 11, 140, 0.8);
-  const wave = Math.sin(lf * 0.35) * 5;
   const urlAt = phraseFrame('a3-close', 'Try it');
   const url = prog(lf, urlAt, urlAt + 14, E.out);
   return (
@@ -143,7 +146,7 @@ export const CloseScene: React.FC = () => {
         <div style={{ fontFamily: display, fontWeight: 700, fontSize: 108, color: C.green, textShadow: `0 0 60px ${C.green}55` }}>categoryos.vercel.app</div>
         <div style={{ fontFamily: body, fontWeight: 500, fontSize: 34, color: C.dim, marginTop: 6 }}>{URL}</div>
       </div>
-      <Meera pose="waving" x={1560} y={H - 120} h={640} sx={0.9 + 0.1 * waveP} sy={0.9 + 0.1 * waveP} rot={wave} z={5} />
+      <MeeraWalker {...CLOSE_WALK} z={5} extraRot={(f) => Math.sin(f * 0.35) * 5} />
       <Sequence from={0} layout="none"><VoCaptions sceneId="a3-close" accent={C.green} bottom={40} /></Sequence>
     </AbsoluteFill>
   );

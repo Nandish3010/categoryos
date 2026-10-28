@@ -2,6 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Composition, Sequence } from 'remotion';
 import { Act1 } from './scenes/Act1';
 import { Slam } from './scenes/Slam';
+import { TeamScene } from './scenes/Team';
 import { M1Scene, M2Scene, M3Scene, M4Scene } from './scenes/Act2';
 import { CloseScene, WeekScene } from './scenes/Act3';
 import { XCut, X_FRAMES } from './scenes/XCut';
@@ -18,6 +19,7 @@ export const Demo: React.FC = () => {
   return (
     <AbsoluteFill style={{ background: '#0F1117' }}>
       <Sequence from={a1[0].start} durationInFrames={a1Frames} name="act1"><Act1 /></Sequence>
+      {S('a2-team', TeamScene)}
       {S('a2-slam', Slam)}
       {S('m1-call', M1Scene)}
       {S('m2-verifier', M2Scene)}

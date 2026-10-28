@@ -18,3 +18,13 @@ export const MODELS = ['muse-spark-1.3', 'sam-3.1', 'muse-image-1.0', 'muse-voic
 
 /** Figures read from the live GET /api/impact (captured by `make video`); see capture/capture.mjs impact flow. */
 export const IMPACT = impact as Record<string, unknown>;
+
+/**
+ * The people shown in the "Meet the team" scene (a2-team). Edit this list to change the cast:
+ *   { name, role, photo }  where `photo` is an optional file under video/assets/team/ (e.g. 'nandish.jpg'), served via staticFile('team/<file>').
+ * With `photo: null` the card shows an initials avatar. One member gets a wide card, several share the row.
+ */
+export type TeamMember = { name: string; role: string; photo: string | null };
+export const TEAM: TeamMember[] = [{ name: 'Nandish', role: 'Builder: product, agents and code', photo: null as string | null }];
+/** The line under the team card. */
+export const TEAM_BUILT_FOR = ['Built for the Meta hackathon', 'Muse Spark', 'SAM 3.1', 'Muse Image', 'Muse Voice'];

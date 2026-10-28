@@ -6,6 +6,7 @@
 // Arrangement follows the colour script and the scene timing in src/timing.json:
 //   Act 1  busier and tense: A minor (Am F Dm E), 16th hats, pulsing bass and a plucked arpeggio
 //   buried the music drops out to a hush (held bass, a heartbeat kick, a soft tick)
+//   team   "Meet the team": a calm, warm resolve in F | C (two-bar phrase, repeated): soft kick on 1, brushed hats, round bass, rolling EP, a bell sparkle on the high-five
 //   riser  two bars of tonal rise and an accelerating clap roll, one beat of air, then
 //   slam   the drop: kick, sub boom, bright chord stab into the main groove (C G Am F = the vi-IV-I-V loop, rotated to start on I)
 //   Act 2  driving but sparse under dense VO (four on the floor, offbeat hats, syncopated bass, EP comping), denser for the Run montage,
@@ -149,13 +150,15 @@ function render({ total, A, name }) {
   const riserStart = slam - riserBars * bar;
   const hushStart = A.buried ?? Infinity; // exact time the avalanche lands
   const hushEnd = riserStart;
+  const teamStart = A.teamStart ?? Infinity; // the "Meet the team" scene (main film only)
   const weekStart = A.weekStart;
   const m4 = A.m4, m4End = A.m4 + (A.m4Len ?? 23);
-  const sec = (t) => (t >= url - 1e-6 ? 'ring' : t >= weekStart ? 'week' : t >= slam - 1e-6 ? 'groove' : t >= riserStart - 1e-6 ? 'riser' : t >= hushStart ? 'hush' : 'act1');
-  const chordAt = (k, s) => { const j = Math.floor(k / 4); const m = ((j % 4) + 4) % 4; return CH[s === 'act1' || s === 'hush' ? PROG1[m] : s === 'riser' ? RISE[((j % 2) + 2) % 2] : PROG2[m]]; };
+  const sec = (t) => (t >= url - 1e-6 ? 'ring' : t >= weekStart ? 'week' : t >= slam - 1e-6 ? 'groove' : t >= riserStart - 1e-6 ? 'riser' : t >= teamStart - 1e-6 ? 'team' : t >= hushStart ? 'hush' : 'act1');
+  const TEAM_PROG = ['F', 'C']; // two-bar phrase for the team scene
+  const chordAt = (k, s) => { const j = Math.floor(k / 4); const m = ((j % 4) + 4) % 4; if (s === 'team') return CH[TEAM_PROG[((j % 2) + 2) % 2]]; return CH[s === 'act1' || s === 'hush' ? PROG1[m] : s === 'riser' ? RISE[((j % 2) + 2) % 2] : PROG2[m]]; };
   const heroAt = (t) => (A.hero || []).some(([a, b]) => t >= a && t < b);
   const limit = (t, len) => { // clamp note lengths at section edges so nothing rings across a hard cut
-    for (const e of [hushStart, slam, url, riserStart]) if (e > t + 1e-6 && e < t + len) len = e - t - 0.01;
+    for (const e of [hushStart, teamStart, slam, url, riserStart]) if (e > t + 1e-6 && e < t + len) len = e - t - 0.01;
     return Math.max(0.05, len);
   };
 
@@ -190,6 +193,13 @@ function render({ total, A, name }) {
       if (beatInBar === 0 && t > hushStart + 0.15) { bass(t, ch.r, limit(t, bar * 0.95), 0.55); ep(t, ch.v[2] + 12, limit(t, bar), 0.34, 0.1); }
       if ((beatInBar === 0 || beatInBar === 2.5) && t > hushStart + 0.15) kick(t, 0.38, 0.2);
       if (isBeat && t > hushStart + 0.5) hat(t + 0.001, 0.12);
+    } else if (s === 'team') {
+      // calm and warm: soft kick on 1, brushed offbeat hats, round bass, rolling EP arpeggio and a low held chord per bar (sparse: it sits under the voice)
+      if (beatInBar === 0) kick(t, 0.42, 0.25);
+      if (eighth && beatInBar % 1 !== 0) hat(t, 0.15);
+      if (beatInBar === 0 || beatInBar === 2.5) bass(t, ch.r, (beatInBar === 0 ? 2.2 : 1.2) * beat, 0.6);
+      if (eighth) ep(t, ch.arp[e8 % 4], limit(t, beat * 0.9), 0.3, ((e8 % 4) - 1.5) * 0.12);
+      if (beatInBar === 0) ch.v.forEach((m, i) => ep(t + i * 0.01, m - 12, limit(t, bar), 0.3, 0));
     } else if (s === 'riser') {
       if (isBeat && t < slam - beat * 0.99) { bass(t, ch.r, beat * 0.9, 0.5); }
       if (beatInBar === 0) ep(t, ch.v[1] + 12, limit(t, bar), 0.32, 0.1);
@@ -237,6 +247,14 @@ function render({ total, A, name }) {
   riser(riserStart, slam - beat * 0.5);
   // the avalanche hit (kills the busy section): low thud plus a short falling tone
   if (Number.isFinite(hushStart)) { subBoom(hushStart, 0.8); tone(B.fx, hushStart, 57, 0.2, 0.18, [[1, 1, 6], [1.5, 0.4, 8]], { att: 0.003, tail: 0.5 }); }
+  // team: a soft arrival chord (Fmaj9) as the hush resolves, and a bell sparkle on the high-five
+  if (Number.isFinite(teamStart)) {
+    [41, 53, 60, 64, 69].forEach((m, i) => ep(teamStart + i * 0.02, m, 2.2, 0.5, (i - 2) * 0.1));
+    if (A.hi5) {
+      [84, 88, 91, 96].forEach((m, i) => pluck(A.hi5 + i * 0.06, m, 0.5, (i - 1.5) * 0.2));
+      tone(B.fx, A.hi5, 96, 0.2, 0.12, [[1, 1, 3], [2.76, 0.35, 5]], { att: 0.002, tail: 1.2 });
+    }
+  }
   // URL: final hit and a ring-out, nothing else after it
   kick(url, 1.0, 0.6); subBoom(url, 0.8);
   [36, 48, 55, 64, 67, 71, 74].forEach((m, i) => ep(url + i * 0.012, m, 2.4, 0.95, (i - 3) * 0.1));

@@ -32,6 +32,10 @@ export function anchors(T, script) {
     act1Mid: sc('a1-mid').start / fps,
     buried: A.buried, // Act 1 timeline starts at 0
     freeze: A.freeze,
+    // the team scene: the card rises on "Nandish designed", the high-five lands on "category manager" (kept in step with src/scenes/Team.tsx)
+    teamStart: sc('a2-team').start / fps,
+    cardLand: at('a2-team', 'Nandish designed', 0.18),
+    hi5: at('a2-team', 'category manager', 0),
     slamScene: sc('a2-slam').start / fps,
     slam,
     m1: sc('m1-call').start / fps,
@@ -75,6 +79,10 @@ export function demoCues(T, script) {
   add(A.buried, 'thud', 0.85);
   add(A.buried + 0.04, 'whoosh', 0.5); // key transition 1: the avalanche
   add(A.freeze, 'error', 0.35);
+  // --- team: a soft pop as the builder card lands, a sparkle chime on the high-five ---
+  add(an.cardLand, 'pop', 0.3);
+  add(an.hi5, 'chime', 0.5);
+  add(an.hi5 + 0.02, 'pop', 0.35);
   // --- slam ---
   const s = an.slamScene;
   add(s + 26 / fps, 'pop', 0.5); // the button pops up

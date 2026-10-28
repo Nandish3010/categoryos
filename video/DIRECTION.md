@@ -7,7 +7,7 @@
 | Act | Time | Feeling | What the audience should think |
 |---|---|---|---|
 | 1 The chaos | 0:00-0:35 | Frantic, funny | "I have lived this day." Hook in 3 s: a clock reads 9:00 AM, Meera sprints into frame, the inbox counter is already racing |
-| 2 CategoryOS takes over | 0:35-2:25 | Relief, then respect | The button slam is the exhale. Then three proofs: it refuses a trap offer, corrects its own number, catches a lapsing licence |
+| 2 Team, then CategoryOS takes over | 0:35-2:35 | Relief, then respect | The button slam is the exhale. Then three proofs: it refuses a trap offer, corrects its own number, catches a lapsing licence |
 | 3 Her week, back | 2:25-3:00 | Delight, calm | Red calendar melts into green. Meera finally sits down with coffee, waves, URL |
 
 ## Shot list and transitions
@@ -21,9 +21,9 @@ Act 1 cuts every 1-2 s. All speed is carried by Meera and the stations; the came
 8. Close-up: buried in paper. **Freeze** frame, caption "about 18 hours. One vendor." with "research estimate" tag.
 
 Act 2:
-9. Pop out of pile, slam the glowing button -> **zoom-through** into the app (screen scales from the button position).
+8b. "Meet the team" (v3): warm-to-neutral backdrop, Meera walks in from the left, a builder card springs up, she turns to camera on "And I'm the category manager", high-five and sparkle burst, then she walks off right. 9. She dashes back in from the right, jumps, slams the glowing button -> **zoom-through** into the app (screen scales from the button position).
 10. App in a tilted browser frame (perspective, 6 deg). Zoom-in callouts on key numbers: wide to close-up to wide. Numbers hold at least 2.5 s.
-11. Meera pops in from screen edges (pointing, thinking, celebrating) with speech bubbles, then exits the way she came.
+11. Meera is persistent and WALKS (v3, `components/MeeraWalker.tsx`): along a floor beside the tilted frame she paces with the phone (m1), leans in to the flagged dates (m2), carries a wobbly paper stack that the agent takes off her plate sheet by sheet (m3), hands task cards to the frame (m4). She walks in from the side she left and walks out at the end; no pop-ins.
 12. Montage: 7 shots of 1.6-2 s with **whip pans** and a bottom-left caption chip per shot.
 
 Act 3:
