@@ -120,11 +120,14 @@ const FLOWS = {
   async montage(p, t) {
     for (const [u, tag, scrollBy] of [['/run', 'run', 380], ['/run/price-requests', 'price', 420], ['/run/pos', 'pos', 380], ['/run/catalog', 'catalog', 400], ['/run/promotions', 'promos', 360], ['/run/price-watch', 'watch', 360], ['/run/inventory-health', 'inventory', 380], ['/rules', 'rules', 500], ['/try', 'try', 250]]) {
       await t.goto(u);
+      await p.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {}); // let the page fill in (no skeletons on screen)
+      await t.until(async () => (await p.locator('.animate-pulse').count()) === 0, 20000, 300);
+      await t.wait(500);
       t.mark(tag);
       await t.moveTo(1200, 500);
-      await t.wait(700);
+      await t.wait(900);
       await t.scroll(scrollBy, 1000);
-      await t.wait(1000);
+      await t.wait(900);
     }
   },
   // Impact meter (also captures the /api/impact JSON the app fetches)

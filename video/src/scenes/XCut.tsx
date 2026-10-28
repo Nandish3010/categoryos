@@ -6,7 +6,8 @@ import { Callout, Focus, ScreenView, Src, vt } from '../components/AppParts';
 import { body, C, display, E, FPS, pop, prog } from '../theme';
 import { baselineTag, chaosCaption, IMPACT } from '../config';
 import { act1Times } from '../act1Timing.js';
-import { sceneOf } from '../theme';
+import { sceneOf, T } from '../theme';
+import script from '../../script.json';
 import { bx, FB, focusOn, ring, union } from '../boxes';
 
 const SEG = (s: number) => Math.round(s * FPS);
@@ -44,7 +45,7 @@ const Cap: React.FC<{ text: string; sub?: string; color?: string; top?: boolean;
 const ChaosPart: React.FC = () => {
   const lf = useCurrentFrame();
   const a = sceneOf('a1-intro'), b = sceneOf('a1-mid'), c = sceneOf('a1-end');
-  const t = act1Times(a.frames / FPS, b.frames / FPS, c.frames / FPS);
+  const t = act1Times(T, script);
   // play the busiest 3.4 s of Act 1 (stations 2-4 and the first notes), then jump to the buried freeze
   const f = lf < SEG(3.2) ? Math.round((t.stations[2] - 0.6) * FPS) + lf : Math.round(t.freeze * FPS) + (lf - SEG(3.2));
   return (

@@ -33,6 +33,7 @@
       "id": "a2-slam",
       "act": 2,
       "minSec": 4,
+      "tailSec": 1.0,
       "vo": "So I built a teammate that does the legwork. Meet CategoryOS.",
       "caption": "So I built a teammate that does the legwork. Meet CategoryOS.",
       "emph": ["teammate", "CategoryOS"]

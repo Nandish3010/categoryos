@@ -2,33 +2,39 @@ import React from 'react';
 import { useCurrentFrame } from 'remotion';
 import script from '../../script.json';
 import { body, C, E, FPS, MARGIN_X, prog, sceneOf } from '../theme';
+import { splitSentences } from '../voTime.js';
 
-/** Split a VO line into short caption chunks (<= ~9 words), timed by character share of the spoken duration. */
+/** Split a scene's caption into short chunks (<= ~9 words). Each caption sentence is timed by the REAL spoken sentence timing from timing.json,
+ *  and chunks share that sentence's span by character count. The caption text is script.json "caption" (written properly), else the VO text. */
 export function chunksFor(sceneId: string): { text: string; a: number; b: number }[] {
   const sc = sceneOf(sceneId);
-  const vo = (script.scenes.find((s) => s.id === sceneId)?.vo ?? '').replace(/\s+/g, ' ');
-  const sentences = vo.match(/[^.!?]+[.!?]*/g)?.map((s) => s.trim()).filter(Boolean) ?? [];
-  const chunks: string[] = [];
-  for (const s of sentences) {
-    const words = s.split(' ');
-    if (words.length <= 9) { chunks.push(s); continue; }
-    // break long sentences at clause marks nearest the middle
-    let cur: string[] = [];
-    for (const w of words) {
-      cur.push(w);
-      if (cur.length >= 5 && /[,:;]$/.test(w)) { chunks.push(cur.join(' ')); cur = []; }
-      else if (cur.length >= 9) { chunks.push(cur.join(' ')); cur = []; }
+  const scene = script.scenes.find((s) => s.id === sceneId) as { vo: string; caption?: string } | undefined;
+  const sentences: string[] = splitSentences(scene?.caption ?? scene?.vo ?? '');
+  const out: { text: string; a: number; b: number }[] = [];
+  sentences.forEach((sent, si) => {
+    const words = sent.split(' ');
+    const chunks: string[] = [];
+    if (words.length <= 9) chunks.push(sent);
+    else {
+      let cur: string[] = [];
+      for (const w of words) {
+        cur.push(w);
+        if (cur.length >= 5 && /[,:;]$/.test(w)) { chunks.push(cur.join(' ')); cur = []; }
+        else if (cur.length >= 9) { chunks.push(cur.join(' ')); cur = []; }
+      }
+      if (cur.length) chunks.push(cur.join(' '));
     }
-    if (cur.length) chunks.push(cur.join(' '));
-  }
-  const total = chunks.reduce((n, c) => n + c.length, 0);
-  let t = sc.voLead * FPS;
-  const span = sc.voSec * FPS;
-  return chunks.map((text) => {
-    const a = t;
-    t += (text.length / total) * span;
-    return { text, a, b: t };
+    const span = sc.sentences[Math.min(si, sc.sentences.length - 1)];
+    const a0 = (sc.voLead + span.a) * FPS, b0 = (sc.voLead + span.b) * FPS;
+    const total = chunks.reduce((n, c) => n + c.length, 0);
+    let t = a0;
+    for (const text of chunks) {
+      const a = t;
+      t += (text.length / total) * (b0 - a0);
+      out.push({ text, a, b: t });
+    }
   });
+  return out;
 }
 
 /** Burned-in captions for a scene's VO (local frame). Words rise in with a 1-frame stagger; chunk fades as one block. */

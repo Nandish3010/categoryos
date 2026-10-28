@@ -30,6 +30,9 @@ export function phraseSec(T, script, sceneId, phrase, nth = 0) {
   throw new Error(`phrase not found in ${sceneId}: ${phrase}`);
 }
 
+/** Local frame (inside the a2-slam scene) where the button goes down: as the name is spoken. */
+export const slamLocalFrame = (T, script) => Math.max(62, Math.round(phraseSec(T, script, 'a2-slam', 'CategoryOS') * T.fps) + 4);
+
 /** Seconds (from the start of the scene) at which sentence i starts / ends. */
 export const sentenceSec = (T, sceneId, i, end = false) => {
   const sc = T.scenes.find((s) => s.id === sceneId);

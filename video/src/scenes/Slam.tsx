@@ -3,7 +3,9 @@ import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from 'remotion';
 import { Meera } from '../components/Meera';
 import { ScreenView, TiltFrame, vt } from '../components/AppParts';
 import { VoCaptions } from '../components/Captions';
-import { body, C, display, E, FPS, pop, prog, rnd, sceneOf } from '../theme';
+import { body, C, display, E, FPS, pop, prog, rnd, sceneOf, T } from '../theme';
+import script from '../../script.json';
+import { slamLocalFrame } from '../voTime.js';
 
 const NOTE = [C.yellow, C.orange, '#F9A8D4', C.blue, '#86EFAC', '#EDEEF2'];
 const FLOOR = 880;
@@ -12,7 +14,7 @@ const FLOOR = 880;
 export const Slam: React.FC = () => {
   const lf = useCurrentFrame();
   const sc = sceneOf('a2-slam');
-  const SLAM = 62;
+  const SLAM = slamLocalFrame(T, script); // the button goes down as she says the name
   const cool = prog(lf, SLAM + 2, SLAM + 22, E.inOut); // warm -> cool grade change
   // pile burst at the start (continuation of the buried frame)
   const shake = lf < 12 ? Math.sin(lf * 3.1) * 8 * (1 - lf / 12) : 0;
@@ -24,7 +26,7 @@ export const Slam: React.FC = () => {
   const landSq = lf > 42 ? 0.14 * Math.exp(-(lf - 42) * 0.2) * Math.cos((lf - 42) * 0.8) : 0;
   const stretch = jump > 0 && jump < 1 ? 0.09 * Math.sin(Math.PI * jump) : 0;
   // pre-slam: arm-raise anticipation via lean back, then lunge forward
-  const lean = lf < 50 ? 0 : lf < SLAM ? -8 * E.out((lf - 50) / 12) : 12 * Math.exp(-(lf - SLAM) * 0.25);
+  const lean = lf < SLAM - 12 ? 0 : lf < SLAM ? -8 * E.out((lf - (SLAM - 12)) / 12) : 12 * Math.exp(-(lf - SLAM) * 0.25);
   const btn = pop(lf, 26, FPS, 11, 200, 0.7);
   const press = lf >= SLAM ? 0.13 * Math.exp(-(lf - SLAM) * 0.3) : 0;
   const glow = 0.6 + 0.4 * Math.sin(lf * 0.3);

@@ -2,6 +2,8 @@ import { loadFont as loadDisplay } from '@remotion/google-fonts/SpaceGrotesk';
 import { loadFont as loadText } from '@remotion/google-fonts/DMSans';
 import { Easing, interpolate, spring } from 'remotion';
 import timing from './timing.json';
+import script from '../script.json';
+import { phraseSec, sentenceSec } from './voTime.js';
 
 export const C = {
   bg: '#0F1117', surface: '#171A23', surface2: '#1E2230', text: '#EDEEF2', dim: '#A6ABB8',
@@ -23,7 +25,7 @@ export const E = {
   inOut: Easing.bezier(0.65, 0, 0.35, 1),
 };
 
-export type SceneT = { id: string; act: number; start: number; frames: number; voSec: number; voLead: number; source: string };
+export type SceneT = { id: string; act: number; start: number; frames: number; voSec: number; voLead: number; source: string; sentences: { a: number; b: number }[] };
 export const T = timing as { fps: number; total: number; scenes: SceneT[] };
 export const sceneOf = (id: string): SceneT => {
   const s = T.scenes.find((x) => x.id === id);
@@ -43,3 +45,9 @@ export const rnd = (seed: number) => {
   const x = Math.sin(seed * 127.1 + 311.7) * 43758.5453;
   return x - Math.floor(x);
 };
+
+
+/** Local frame (inside scene `id`) at which `phrase` (spoken spelling) begins to be spoken. */
+export const phraseFrame = (id: string, phrase: string, nth = 0) => Math.round(phraseSec(timing, script, id, phrase, nth) * FPS);
+/** Local frame at which sentence i of scene `id` starts (or ends). */
+export const sentenceFrame = (id: string, i: number, end = false) => Math.round(sentenceSec(timing, id, i, end) * FPS);
