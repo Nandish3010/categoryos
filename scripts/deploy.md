@@ -47,7 +47,7 @@ features you list may make real model calls, within a hard dollar budget. Set at
 config, not playbook), and make sure the Modal secret holds a real `MODEL_API_KEY`:
 
 ```bash
-PUBLIC_LIVE_BUDGET_USD=10 PUBLIC_LIVE_PER_IP_USD=0.50 PUBLIC_LIVE_FEATURES=byo,copilot \
+PUBLIC_LIVE_BUDGET_USD=10 PUBLIC_LIVE_PER_IP_USD=0.50 PUBLIC_LIVE_FEATURES=byo,copilot,rules \
 FRONTEND_ORIGIN=https://<your-app>.vercel.app modal deploy backend/modal_app.py
 ```
 
@@ -55,7 +55,7 @@ FRONTEND_ORIGIN=https://<your-app>.vercel.app modal deploy backend/modal_app.py
 | --- | --- | --- |
 | `PUBLIC_LIVE_BUDGET_USD` | `0` (disabled) | Total model spend the public may cause, in total (kept in `STATE_DIR/public_live.json`). |
 | `PUBLIC_LIVE_PER_IP_USD` | `0.50` | Most one address may cause per UTC day. Uses `TRUST_FORWARDED_FOR` like the upload limits; behind a proxy that is not trusted every visitor shares one address. |
-| `PUBLIC_LIVE_FEATURES` | empty | Comma list, allowed values `byo` (model stages of uploaded vendors) and `copilot` (live push-to-talk / typed call). Unknown names are ignored. |
+| `PUBLIC_LIVE_FEATURES` | empty | Comma list, allowed values `byo` (model stages of uploaded vendors), `copilot` (live push-to-talk / typed call) and `rules` (free-form playbook rules written as prompts; the five example prompts always work without it). Unknown names are ignored. |
 
 Limits stack: the shared public budget, the per-IP share, the per-call budget (`CALL_BUDGET_USD` for the copilot), the
 global `MAX_SPEND_USD` ledger cap and the existing rate limits. When any of them is hit nothing breaks: a BYO vendor is

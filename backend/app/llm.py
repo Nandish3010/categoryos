@@ -343,6 +343,8 @@ def resolve_mode(stage: str) -> str:
     pc = public_live.current()
     if pc is not None and pc.feature == "copilot" and stage == "negotiate" and settings.model_api_key:
         return "live"  # a public live call (no demo key): only the copilot's Negotiate calls, only inside its request context
+    if pc is not None and pc.feature == "rules" and stage == "rules" and settings.model_api_key:
+        return "live"  # a free-form playbook rule on a public deploy: only the translator call, only inside its request context
     mode = settings.effective_mode
     if mode == "live" and settings.live_stages.strip():
         live = {s.strip() for s in settings.live_stages.split(",") if s.strip()}

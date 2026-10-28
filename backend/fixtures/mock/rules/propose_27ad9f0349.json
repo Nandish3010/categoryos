@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "rules",
+  "task": "propose_27ad9f0349",
+  "model": "hand-written (the expected translation, not a model output)",
+  "prompt": "Cut the target margin on toys by 5 points",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": "{\"edits\": [{\"path\": \"margins.categories.toys.target_pct\", \"number\": 35, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+}

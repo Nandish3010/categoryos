@@ -602,3 +602,20 @@ operations:                      # Run: weekly review and PO follow-up for EXIST
     vague_reply_bumps_rung: true # a reply with no dated commitment moves a late PO up one rung
     stockout_buffer_days: 2      # cover must beat the remaining lead time by this many days
     default_lead_days: 7         # assumed wait for an overdue PO with no dated commitment
+
+governance:                      # Rules page: who may change which rule. DEMO identities (synthetic names) picked in the UI, not authentication
+  members:                       # the key is the member id sent as X-Acting-As
+    meera: {name: Meera, role: head}
+    arjun: {name: Arjun, role: manager}
+    priya: {name: Priya, role: analyst}
+  roles:
+    head: {label: Head of category, can_apply: true, can_approve: true, sections: ["*"]}   # changes anything, approves requests
+    manager:                     # own sections only, and only changes within the limits below; a bigger change becomes a request for approval
+      label: Category manager
+      can_apply: true
+      can_approve: false
+      sections: [margins, negotiation, promotions, price_watch, inventory_health, price_requests]
+    analyst: {label: Category analyst, can_apply: false, can_approve: false, sections: []}   # can write a rule and see the preview, cannot apply it
+  limits:                        # per change, per numeric setting under the path; only settings in this unit count (pp and % alike)
+    manager_margins: {role: manager, path: margins, max_abs_change: 2, unit: pp}
+  # Changing this governance section is always head-only, whatever the roles above say.

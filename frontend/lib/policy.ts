@@ -1,4 +1,5 @@
 import { post, put, request } from "./api";
+import type { Change } from "./rules";
 
 export type FieldKind = "number" | "bool" | "enum" | "string_list" | "table" | "text";
 
@@ -12,10 +13,15 @@ export type SchemaHint = {
   kind?: FieldKind;
   options?: string[];
   used_in?: string[];
+  /** Tables: one entry per column, with the same metadata as a field. */
+  columns?: (SchemaHint & { key: string })[];
 };
 
 export type Json = unknown;
 export type PolicyObject = Record<string, Json>;
+
+/** Who the request acted as, as the server resolved it (the picker's choice, or the head when none was sent). */
+export type Acting = { id: string; name: string; role: string; role_label: string; can_apply: boolean; can_approve: boolean };
 
 export type PolicyResponse = {
   policy: PolicyObject;
@@ -24,6 +30,11 @@ export type PolicyResponse = {
   hash: string;
   editable: boolean;
   schema_hints: Record<string, SchemaHint>;
+  /** "visitor": a public deploy, where edits go to this visitor's own sandbox playbook. "global": the real playbook. */
+  scope?: "global" | "visitor";
+  acting?: Acting;
+  /** Present on a save or reset that was logged: the change record (pending_approval when it needs the head). */
+  change?: Change;
 };
 
 export const SECTIONS = [
@@ -45,6 +56,7 @@ export const SECTIONS = [
   { id: "price_watch", label: "Price watch (Run)" },
   { id: "inventory_health", label: "Inventory health (Run)" },
   { id: "impact", label: "Impact" },
+  { id: "governance", label: "Team and permissions" },
 ] as const;
 
 export const fetchPolicy = (signal?: AbortSignal) =>

@@ -182,6 +182,17 @@ it everywhere, and the model prompts are rendered from it, so no rule exists onl
 * Market facts (units per SKU, price bands) stay in `data/synthetic/category_benchmarks.json`; ops settings (spend caps,
   rate limits, timeouts) stay in env.
 
+## Rules written as prompts, roles and a change log
+
+On the Playbook page, **Write a rule** turns a plain-English sentence ("raise the target margin on treats by 2 points") into a preview of changes to existing playbook settings. The playbook stays structured data: the model (Muse Spark, strict `json_schema`) only picks settings that already exist and a number, switch or choice for each; Python builds the override, dry-runs it through the playbook's own validation and shows before/after values and the stages that read them from the validated result. A sentence is never stored as a rule, and free text, lists and whole rows cannot be set this way. A value the playbook rejects, or a setting that does not exist, comes back as an error with cause and fix and writes nothing.
+
+* **Roles** live in the playbook's `governance` section (`config/policy.yaml`): team members (synthetic Meera = head, Arjun = manager, Priya = analyst), what each role may change and numeric limits (a manager may move a margin by at most 2 pp per change; a bigger change becomes a request the head approves; an analyst can preview but not apply). Changing `governance` is head-only. The "Signed in as" picker is a **demo identity, not authentication**: it sends `X-Acting-As`, anyone can pick anyone, and the server checks the role on every action. Real SSO is out of scope. A request with no header acts as the head.
+* **Change log** (SQLite `policy_changes`): every attempt, refused ones included, with who, role, source (prompt, form, undo, reset), the prompt, the structured diff, status (applied, pending_approval, refused, rejected, undone), the reason, the approver and the playbook hash before and after. Form edits and resets go through the same permission check and are logged. Undo is itself a checked, logged change that restores the previous values.
+* **Public demo**: on a replay deploy rule changes work per visitor. Edits go to a private sandbox playbook and log keyed by the caller's address plus the browser's random `X-Visitor-Id` (kept 24 h, capped at `RULES_MAX_CHANGES_PER_VISITOR` log entries and `RULES_MAX_VISITORS` sandboxes), so nobody else's playbook, and none of the recorded runs, is affected. The five example prompts use recorded translations and cost nothing; free-form prompts need `PUBLIC_LIVE_FEATURES` to list `rules` and go through the public live budget.
+* The engine's playbook hash (which approvals and recorded runs key on) deliberately ignores `governance`: changing who may edit a rule changes no number.
+
+API: `POST /api/policy/propose`, `GET /api/policy/examples`, `GET /api/policy/changes`, `POST /api/policy/changes/{id}/apply|approve|reject|undo|discard`; `PUT /api/policy` and `POST /api/policy/reset` return `202` with the change when it needs approval and `403 change_refused` when the role may not make it.
+
 ## Bring your own vendor
 
 `/try` lets anyone upload a SKU sheet (CSV or XLSX, up to 2 MB and 200 rows), optionally an application and up to 5 documents, pick a starter playbook

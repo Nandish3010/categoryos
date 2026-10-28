@@ -1,4 +1,5 @@
 import { getDemoKey } from "./demoKey";
+import { identityHeaders } from "./identity";
 import type { Provenance } from "./provenance";
 import type { PublicLiveStatus } from "./publicLive";
 
@@ -168,6 +169,8 @@ export type ApiErrorBody = {
   fix?: string;
   /** Dotted policy path the error is about (playbook 422s). */
   path?: string;
+  /** The logged change behind a refused playbook edit (403 change_refused). */
+  change?: unknown;
 };
 
 export class ApiError extends Error {
@@ -198,6 +201,7 @@ export function parseErrorBody(status: number, raw: unknown): ApiErrorBody {
         cause: typeof inner.cause === "string" ? inner.cause : undefined,
         fix: typeof inner.fix === "string" ? inner.fix : undefined,
         path: typeof inner.path === "string" ? inner.path : undefined,
+        change: inner.change ?? undefined,
       };
     }
     if (typeof r.detail === "string") {
@@ -213,7 +217,7 @@ export async function request<T>(
   opts: { body?: unknown; signal?: AbortSignal; headers?: Record<string, string> } = {},
 ): Promise<T> {
   const { signal } = opts;
-  const headers: Record<string, string> = { ...opts.headers };
+  const headers: Record<string, string> = { ...(path.startsWith("/api/policy") ? identityHeaders() : {}), ...opts.headers };
   if (opts.body !== undefined) headers["Content-Type"] = "application/json";
   if (method !== "GET") {
     const key = getDemoKey();

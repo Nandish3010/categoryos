@@ -1,5 +1,7 @@
 """SQLite persistence (stdlib sqlite3, run in a worker thread). One short-lived connection per call,
-so it is safe across threads. Tables: runs, events, stage_results, approvals, overrides, marks (review clock, re-plans)."""
+so it is safe across threads. Tables: runs, events, stage_results, approvals, overrides, marks (review clock, re-plans),
+policy_changes (the playbook change log) and visitor_playbooks (a public visitor's own playbook overrides). The last two are not
+in TABLES: ``reset`` is the demo reset for runs, and the change log is an audit trail that must survive it."""
 
 import asyncio
 import json
@@ -60,6 +62,20 @@ CREATE TABLE IF NOT EXISTS marks (
     stage TEXT NOT NULL,
     kind TEXT NOT NULL,
     created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS policy_changes (
+    seq INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT NOT NULL UNIQUE,
+    visitor TEXT NOT NULL,
+    at TEXT NOT NULL,
+    status TEXT NOT NULL,
+    body TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS policy_changes_visitor ON policy_changes (visitor, seq);
+CREATE TABLE IF NOT EXISTS visitor_playbooks (
+    visitor TEXT PRIMARY KEY,
+    overrides TEXT NOT NULL,
+    updated_at TEXT NOT NULL
 );
 """
 TABLES = ("runs", "events", "stage_results", "approvals", "overrides", "marks")
@@ -171,6 +187,80 @@ def _list_table(table: str, run_id: str) -> list[dict[str, Any]]:
     with closing(_connect()) as conn:
         conn.row_factory = sqlite3.Row
         return [dict(r) for r in conn.execute(f"SELECT * FROM {table} WHERE run_id = ? ORDER BY id", (run_id,))]
+
+
+# ---------- playbook change log (visitor "" is the real local playbook, anything else a public visitor's sandbox) ----------
+# Plain sync functions, no async twins: the rules service runs its whole read, check, write step in one worker thread under a lock.
+
+
+def save_change(visitor: str, change_id: str, at: str, status: str, body: dict[str, Any], *, bump: bool = False) -> None:
+    """Insert or update one change. ``bump`` moves it to the top of the log (a decision was just made on it)."""
+    with closing(_connect()) as conn, conn:
+        if bump:
+            conn.execute("DELETE FROM policy_changes WHERE id = ?", (change_id,))
+        conn.execute(
+            "INSERT INTO policy_changes (id, visitor, at, status, body) VALUES (?, ?, ?, ?, ?) "
+            "ON CONFLICT(id) DO UPDATE SET status = excluded.status, body = excluded.body",
+            (change_id, visitor, at, status, json.dumps(body)),
+        )
+    persist.notify()
+
+
+def get_change(visitor: str, change_id: str) -> dict[str, Any] | None:
+    rows = _rows("SELECT body FROM policy_changes WHERE id = ? AND visitor = ?", (change_id, visitor))
+    return json.loads(rows[0][0]) if rows else None
+
+
+def list_changes(visitor: str, limit: int) -> list[dict[str, Any]]:
+    """Newest first. Previews that were never applied or discarded (status "proposed") are drafts, not log entries."""
+    rows = _rows("SELECT body FROM policy_changes WHERE visitor = ? AND status != 'proposed' ORDER BY seq DESC LIMIT ?", (visitor, limit))
+    return [json.loads(r[0]) for r in rows]
+
+
+def delete_change(visitor: str, change_id: str) -> None:
+    _exec("DELETE FROM policy_changes WHERE id = ? AND visitor = ?", (change_id, visitor))
+
+
+def trim_changes(visitor: str, keep: int, draft_cutoff: str) -> None:
+    """A public visitor keeps only the newest ``keep`` log entries (pending requests are never trimmed); stale drafts go too."""
+    with closing(_connect()) as conn, conn:
+        conn.execute("DELETE FROM policy_changes WHERE visitor = ? AND status = 'proposed' AND at < ?", (visitor, draft_cutoff))
+        conn.execute(
+            "DELETE FROM policy_changes WHERE visitor = ? AND status NOT IN ('proposed', 'pending_approval') AND seq NOT IN "
+            "(SELECT seq FROM policy_changes WHERE visitor = ? AND status NOT IN ('proposed', 'pending_approval') ORDER BY seq DESC LIMIT ?)",
+            (visitor, visitor, keep),
+        )
+    persist.notify()
+
+
+def get_visitor_overrides(visitor: str) -> dict[str, Any]:
+    rows = _rows("SELECT overrides FROM visitor_playbooks WHERE visitor = ?", (visitor,))
+    return json.loads(rows[0][0]) if rows else {}
+
+
+def set_visitor_overrides(visitor: str, overrides: dict[str, Any]) -> None:
+    _exec(
+        "INSERT INTO visitor_playbooks (visitor, overrides, updated_at) VALUES (?, ?, ?) "
+        "ON CONFLICT(visitor) DO UPDATE SET overrides = excluded.overrides, updated_at = excluded.updated_at",
+        (visitor, json.dumps(overrides), now_iso()),
+    )
+
+
+def expire_visitors(cutoff: str, max_visitors: int) -> None:
+    """Forget visitors idle since ``cutoff`` and, past ``max_visitors``, the least recently active ones (their log with them)."""
+    with closing(_connect()) as conn, conn:
+        conn.execute("DELETE FROM visitor_playbooks WHERE updated_at < ?", (cutoff,))
+        conn.execute(
+            "DELETE FROM visitor_playbooks WHERE visitor NOT IN (SELECT visitor FROM visitor_playbooks ORDER BY updated_at DESC LIMIT ?)",
+            (max_visitors,),
+        )
+        conn.execute("DELETE FROM policy_changes WHERE visitor != '' AND at < ?", (cutoff,))
+        conn.execute(
+            "DELETE FROM policy_changes WHERE visitor != '' AND visitor NOT IN (SELECT visitor FROM visitor_playbooks) "
+            "AND visitor NOT IN (SELECT visitor FROM policy_changes GROUP BY visitor ORDER BY MAX(seq) DESC LIMIT ?)",
+            (max_visitors,),
+        )
+    persist.notify()
 
 
 # ---------- async API ----------

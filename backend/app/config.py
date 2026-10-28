@@ -71,7 +71,11 @@ class Settings(BaseSettings):
     # demo key. 0 = disabled. Applies on top of MAX_SPEND_USD, which always wins. See app/public_live.py.
     public_live_budget_usd: float = 0.0
     public_live_per_ip_usd: float = 0.50
-    public_live_features: str = ""  # comma list, any of: byo, copilot
+    public_live_features: str = ""  # comma list, any of: byo, copilot, rules
+
+    # Playbook rules written as prompts (ops env, not playbook). On a replay deploy each visitor gets a private playbook and change log.
+    rules_max_changes_per_visitor: int = 50  # log entries one public visitor keeps (the oldest settled ones are dropped)
+    rules_max_visitors: int = 500  # visitor sandboxes kept at once; the least recently active are forgotten first
 
     backend_port: int = 8001
     frontend_origin: str | None = None

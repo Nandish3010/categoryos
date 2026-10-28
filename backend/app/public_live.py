@@ -3,7 +3,8 @@
 Ops config (env vars, not the playbook):
   PUBLIC_LIVE_BUDGET_USD   total model spend the public may cause, ever (0 = disabled, the default)
   PUBLIC_LIVE_PER_IP_USD   most one address may cause per UTC day (default 0.50)
-  PUBLIC_LIVE_FEATURES     comma list; allowed: ``byo`` (bring-your-own-vendor model stages), ``copilot`` (live call copilot)
+  PUBLIC_LIVE_FEATURES     comma list; allowed: ``byo`` (bring-your-own-vendor model stages), ``copilot`` (live call copilot),
+                           ``rules`` (free-form playbook rules written as prompts; the examples always work without it)
 
 Everything else stays as it was: the built-in vendor runs keep replaying, the demo key path is untouched, the global
 MAX_SPEND_USD ledger cap always applies on top, and the existing rate limits still apply. When any limit is hit the
@@ -25,7 +26,7 @@ from app import ledger
 from app.config import settings
 from app.errors import PublicBudgetExhausted
 
-ALLOWED_FEATURES = ("byo", "copilot")
+ALLOWED_FEATURES = ("byo", "copilot", "rules")
 
 _lock = threading.Lock()
 

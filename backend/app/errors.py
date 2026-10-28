@@ -235,12 +235,74 @@ class PolicyInvalid(CategoryOSError):
         return {**super().to_dict(run_id), "path": first, "errors": self.errors}
 
 
-class PolicyReadOnly(CategoryOSError):
+class RulePathUnknown(CategoryOSError):
+    status = 422
+    code = "rule_path_unknown"
+    problem = "That is not a playbook setting a rule can change"
+    cause = "A rule written as a prompt can only set a number, a switch or a choice that already exists in the playbook"
+    fix = "Pick a setting shown in the playbook, or edit it in the form below"
+
+    def __init__(self, path: str, *, cause: str | None = None, fix: str | None = None) -> None:
+        super().__init__(f"{path!r} is not a playbook setting a rule can change", cause=cause, fix=fix)
+        self.path = path
+
+    def to_dict(self, run_id: str | None = None) -> dict:  # type: ignore[override]
+        return {**super().to_dict(run_id), "path": self.path}
+
+
+class RuleUnavailable(CategoryOSError):
+    status = 422
+    code = "rule_prompt_unavailable"
+    problem = "Free-form rules need a model, and none is available here"
+    cause = "Only the example prompts have recorded translations in this mode, and the public live budget for rules is off or not configured"
+    fix = "Click one of the examples, edit the rule in the form, or run the backend locally (mock translates simple rules without a model)"
+
+
+class UnknownActor(CategoryOSError):
+    status = 422
+    code = "unknown_actor"
+    problem = "That team member is not in the playbook"
+    cause = "The X-Acting-As header names an id that is not under governance.members"
+    fix = "Pick a member from the Signed in as list"
+
+    def __init__(self, member_id: str) -> None:
+        super().__init__(f"unknown team member: {member_id!r}")
+        self.member_id = member_id
+
+
+class ChangeRefused(CategoryOSError):
     status = 403
-    code = "policy_read_only"
-    problem = "The playbook is read-only in this mode"
-    cause = "Replay mode serves recorded runs, which were made under the default playbook"
-    fix = "Run the backend locally (MODEL_MODE=mock or live) to edit the playbook"
+    code = "change_refused"
+    problem = "You are not allowed to make this change"
+    cause = "The playbook's governance section does not give this role the permission"
+    fix = "Ask someone with a higher role, or write the rule as a request the head can approve"
+
+    def __init__(self, problem: str | None = None, *, cause: str | None = None, fix: str | None = None, change: dict | None = None) -> None:
+        super().__init__(problem, cause=cause, fix=fix)
+        self.change = change
+
+    def to_dict(self, run_id: str | None = None) -> dict:  # type: ignore[override]
+        return {**super().to_dict(run_id), "change": self.change}
+
+
+class ChangeNotFound(CategoryOSError):
+    status = 404
+    code = "change_not_found"
+    problem = "No change with this id"
+    cause = "The id is unknown, belongs to another session, or has expired"
+    fix = "Reload the change log and use one of its ids"
+
+    def __init__(self, change_id: str) -> None:
+        super().__init__(f"unknown change: {change_id!r}")
+        self.change_id = change_id
+
+
+class ChangeNotPending(CategoryOSError):
+    status = 409
+    code = "change_wrong_state"
+    problem = "This change cannot take that action now"
+    cause = "The change is not in the state that action needs (a preview to apply, a request to approve, an applied change to undo)"
+    fix = "Reload the change log to see its current status"
 
 
 class LeverOutOfRange(CategoryOSError):
