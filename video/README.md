@@ -7,7 +7,7 @@ make video          # capture the app, voiceover, synth SFX, compose music, mix,
 make video-render   # same without re-capturing (after editing scenes or swapping VO)
 ```
 
-Outputs (git-ignored): `video/out/categoryos-demo.mp4` (about 2:35, 1920x1080, 30 fps), `video/out/categoryos-x-30s.mp4` (30 s, 1080x1080) and review stills in `video/out/stills/`.
+Outputs (git-ignored): `video/out/categoryos-demo.mp4` (about 2:42, 1920x1080, 30 fps), `video/out/categoryos-x-30s.mp4` (30 s, 1080x1080) and review stills in `video/out/stills/`.
 
 The creative brief is in [DIRECTION.md](DIRECTION.md).
 
@@ -20,11 +20,12 @@ The creative brief is in [DIRECTION.md](DIRECTION.md).
 | `scripts/vo.mjs` | Voiceover per scene into `out/vo/`; writes `src/timing.json` (scene frames, per-sentence timing). **`video/vo/<scene>.wav` wins over TTS.** See *Voice* below. |
 | `scripts/sfx.mjs`, `scripts/music.mjs`, `scripts/mix.mjs` | ffmpeg-synthesised SFX (tonal pops, ticks and chimes; three noise swishes at most), the composed music bed (`audio/music.wav`), cue sheet in `src/cues.js`. `mix.mjs` ducks the music under the voice and masters to -14 LUFS. `scripts/audio-report.mjs` prints levels, duck depth and VO gaps. |
 | `src/voTime.js`, `src/act1Timing.js` | "When is this phrase spoken" helpers. Scenes, captions, SFX cues and music cut on the words, so changing the script or the voice re-times the film. |
-| `src/` | Remotion project: `scenes/Act1` (chaos), `Slam`, `Act2` (app scenes), `Act3` (week back, close), `XCut` (30 s cut). |
+| `src/` | Remotion project: `scenes/Act1` (chaos, the problem), `Team` (meet the team), `Slam`, `Act2` (app scenes), `Act3` (week back, close), `XCut` (30 s cut). `components/MeeraWalker.tsx` is the walk system (beats of `{at, x, pose, text?}`; she walks, idles and never pops in) and `components/WalkerProps.tsx` the paper stack, thrown documents, task cards and sparkles. |
 | `assets/meera/` | Presenter cut-outs. `tools/gen.py` makes new poses with Muse Image, `tools/cutout.py` cuts them out. |
 
 ## Replacing things
 
+- **Team members and photos:** edit the `TEAM` list in `src/config.ts` (`{ name, role, photo }`); put an optional photo in `video/assets/team/` and set `photo: 'nandish.jpg'` (it is served via `staticFile('team/nandish.jpg')`; with `photo: null` the card shows an initials avatar). The "Meet the team" voiceover and caption live in `script.json` (`a2-team`).
 - **Your own voice:** record each scene to `video/vo/<scene-id>.wav` (ids are in `script.json`, e.g. `m1-call.wav`) and run `make video-render`. Scene lengths follow your recording (sentence timing is estimated by character share).
 - **Voice engine:** see *Voice* below.
 - **Music:** `make video-render` composes `audio/music.wav` (about 110 BPM, original, additive sines plus a synthesised kick, clap and hats; arrangement follows the scene timing). To use your own track instead, delete `audio/music.wav` and put `audio/music.mp3` there; `mix.mjs` takes either (the `.wav` wins). The mix ducks music about 9 dB under speech. No file means no music.
