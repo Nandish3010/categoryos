@@ -118,7 +118,7 @@ const FLOWS = {
   },
   // The Run pages: weekly review, price requests, PO follow-up, catalog, promotions, price watch, inventory health (a short look at each), then playbook and bring-your-own
   async montage(p, t) {
-    for (const [u, tag, scrollBy] of [['/run', 'run', 380], ['/run/price-requests', 'price', 420], ['/run/pos', 'pos', 380], ['/run/catalog', 'catalog', 400], ['/run/promotions', 'promos', 360], ['/run/price-watch', 'watch', 360], ['/run/inventory-health', 'inventory', 380], ['/rules', 'rules', 500], ['/try', 'try', 250]]) {
+    for (const [u, tag, scrollBy] of [['/run', 'run', 220], ['/run/price-requests', 'price', 240], ['/run/pos', 'pos', 220], ['/run/catalog', 'catalog', 240], ['/run/promotions', 'promos', 220], ['/run/price-watch', 'watch', 220], ['/run/inventory-health', 'inventory', 220], ['/rules', 'rules', 300], ['/try', 'try', 200]]) {
       await t.goto(u);
       await p.waitForLoadState('networkidle', { timeout: 60000 }).catch(() => {}); // let the page fill in (no skeletons on screen)
       await t.until(async () => (await p.locator('.animate-pulse').count()) === 0, 20000, 300);
@@ -126,7 +126,7 @@ const FLOWS = {
       t.mark(tag);
       await t.moveTo(1200, 500);
       await t.wait(900);
-      await t.scroll(scrollBy, 1000);
+      await t.scroll(scrollBy, 1400);
       await t.wait(900);
     }
   },

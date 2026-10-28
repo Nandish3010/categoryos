@@ -20,7 +20,7 @@ const MODS: Mod[] = [
   { key: 'po_followup', label: 'PO follow-up', say: 'purchase-order' },
   { key: 'promotions_planner', label: 'Promotions', say: 'about a third' },
   { key: 'price_increase_evaluator', label: 'Price requests', say: 'about a third' },
-  { key: 'competitor_monitor', label: 'Competitor watch', say: 'about a third' },
+  { key: 'competitor_monitor', label: 'Price watch', say: 'about a third' },
   { key: 'inventory_health_module', label: 'Inventory', say: 'about a third' },
 ];
 const OTHER = ['Emails', 'Sheets', 'Calls', 'Licences', 'Chasing', 'Reports', 'Follow-ups', 'Approvals'];

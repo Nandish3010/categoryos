@@ -41,11 +41,11 @@ const M3: Seg[] = [
 ];
 
 // The Run pages: one short look at each, labelled with what it takes off your plate. Words in the VO choose the cut.
-const F = { x: 408, y: 96, w: 900, h: 500 };
+const F = { x: 400, y: 20, w: 1060, h: 600 };
 const run = (from: string | null, to: string, mark: string, tag: string, extra: Partial<Seg> = {}): Seg => S('m4-run', from, to, { src: 'montage', mark, d: 0.3, whip: true, focus: F, tag, tagSub: 'off your plate', ...extra });
 const M4: Seg[] = [
   S('m4-run', null, 'It drafts my weekly', { src: 'montage', mark: 'run', d: 0.2, tag: 'Runs the category with you', focus: F }),
-  run('It drafts my weekly', 'answers price-increase', 'run', 'Weekly vendor review: drafted', { d: 1.3 }),
+  run('It drafts my weekly', 'answers price-increase', 'run', 'Weekly vendor review: drafted', { d: 0.6 }),
   run('answers price-increase', 'chases late', 'price', 'Price-increase requests: answered', { meera: { pose: 'pointing', side: 'right', at: 20, dur: 50 } }),
   run('chases late', 'queues catalog', 'pos', 'Late PO follow-ups: chased'),
   run('queues catalog', 'plans promotions', 'catalog', 'Catalog fixes: queued'),
