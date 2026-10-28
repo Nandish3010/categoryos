@@ -65,10 +65,10 @@ const M4: Seg[] = [
 const FLOOR = 1056, MH = 350, XL = 140, XR = 1780;
 const pf = (id: string, p: string) => phraseFrame(id, p);
 
-const W1 = { floor: FLOOR, h: MH, enterFrom: 'left' as const, beats: [
-  { at: 22, x: XL, pose: 'phone' as const, text: 'Live vendor call!', textAt: 24, textDur: 62 },
-  { at: 145, x: XR, pose: 'phone' as const, walkPose: 'phone' as const }, // pacing while the call runs
-  { at: 290, x: XL, pose: 'phone' as const, walkPose: 'phone' as const },
+const W1 = { floor: FLOOR, h: MH, enterFrom: 'right' as const, beats: [
+  { at: 24, x: XR, pose: 'phone' as const, text: 'Live vendor call!', textAt: 26, textDur: 62 },
+  // pacing while the call runs: she turns around at the ends of the right-hand strip (x 1580-1800) and never crosses the app or the caption plate
+  ...[70, 120, 170, 220, 270, 320, 370].map((at, i) => ({ at, x: i % 2 ? XR : 1580, pose: 'phone' as const, walkPose: 'phone' as const })),
   { at: pf('m1-call', 'Sounds like thirty-five') + 4, x: XR, pose: 'thinking' as const, walkPose: 'phone' as const, text: 'Sounds like 35%... is it?', textAt: pf('m1-call', 'Sounds like thirty-five') + 8, textDur: 56 },
   { at: pf('m1-call', 'under a tenth') + 8, x: 1650, pose: 'pointing' as const }, // a couple of steps toward the frame as the verdict lands
   { at: pf('m1-call', 'set the target') + 8, x: XR, pose: 'pointing' as const },
