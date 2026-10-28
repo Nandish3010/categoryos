@@ -2,7 +2,8 @@ import React from 'react';
 import { AbsoluteFill, interpolate, Sequence, useCurrentFrame } from 'remotion';
 import { Meera, Pose } from '../components/Meera';
 import { VoCaptions } from '../components/Captions';
-import { body, C, display, E, FPS, H, MARGIN_X, pop, prog, rnd, sceneOf, W } from '../theme';
+import { body, C, display, E, FPS, H, MARGIN_X, pop, prog, rnd, sceneOf, T, W } from '../theme';
+import script from '../../script.json';
 import { act1Times, DASH_LEN, DASH_PRE, IDLE_POSE, XS } from '../act1Timing.js';
 import { baselineHours, baselineTag, chaosCaption } from '../config';
 
@@ -14,17 +15,17 @@ type Wp = { f: number; x: number; pose: Pose; len: number };
 
 function useTimes() {
   const a = sceneOf('a1-intro'), b = sceneOf('a1-mid'), c = sceneOf('a1-end');
-  return { t: act1Times(a.frames / FPS, b.frames / FPS, c.frames / FPS), a, b, c };
+  return { t: act1Times(T, script), a, b, c };
 }
 
 function waypoints(t: ReturnType<typeof act1Times>): Wp[] {
   const w: Wp[] = [];
-  XS.forEach((x, i) => w.push({ f: sec(t.dashStart[i]), x, pose: IDLE_POSE[i] as Pose, len: i === 0 ? 18 : DASH_LEN }));
+  t.visits.forEach((v, i) => w.push({ f: sec(t.dashStart[i]), x: XS[v.st], pose: IDLE_POSE[v.st] as Pose, len: i === 0 ? 18 : DASH_LEN }));
   t.rainWps.forEach((r) => w.push({ f: sec(r.t), x: r.x, pose: r.pose as Pose, len: 16 }));
   return w;
 }
 
-type MS = { x: number; pose: Pose; sx: number; sy: number; rot: number; hop: number; vx: number; blur: number; phase: string; dashT: number; landT: number; from: number };
+type MS = { flip: boolean; x: number; pose: Pose; sx: number; sy: number; rot: number; hop: number; vx: number; blur: number; phase: string; dashT: number; landT: number; from: number };
 
 function meeraState(f: number, wps: Wp[]): MS | null {
   let idx = -1;
@@ -34,7 +35,8 @@ function meeraState(f: number, wps: Wp[]): MS | null {
   const from = idx === 0 ? -320 : wps[idx - 1].x;
   const pre = DASH_PRE;
   const lf = f - w.f;
-  const base: MS = { x: from, pose: 'running', sx: 1, sy: 1, rot: 0, hop: 0, vx: 0, blur: 0, phase: 'pre', dashT: 0, landT: 0, from };
+  const flip = idx > 0 && w.x < from;
+  const base: MS = { flip, x: from, pose: 'running', sx: 1, sy: 1, rot: 0, hop: 0, vx: 0, blur: 0, phase: 'pre', dashT: 0, landT: 0, from };
   if (lf < pre) {
     const u = E.out(lf / pre);
     // anticipation: crouch and lean back before the dash (slow-in)
@@ -128,9 +130,9 @@ const Card: React.FC<{ i: number; f: number; at: number; color: string; title: s
   );
 };
 
-const Inbox: React.FC<{ f: number; at: number }> = ({ f, at }) => {
-  const n = Math.round(47 * Math.pow(prog(f, at + 6, at + 55, E.in), 1.6)); // racing: accelerates to 47
-  const done = f > at + 55;
+const Inbox: React.FC<{ f: number; at: number; full: number }> = ({ f, at, full }) => {
+  const n = Math.round(47 * Math.pow(prog(f, at + 6, full, E.in), 1.6)); // racing: accelerates to 47 right as she says it
+  const done = f > full;
   const flash = done ? 1 + 0.06 * Math.sin((f - at) * 0.6) : 1;
   return (
     <Card i={0} f={f} at={at} color={C.red} title="Inbox">
@@ -199,12 +201,12 @@ const Alert: React.FC<{ f: number; at: number }> = ({ f, at }) => {
 };
 
 // ---- HUD ----
-const Clock: React.FC<{ f: number; big: number }> = ({ f, big }) => {
+const Clock: React.FC<{ f: number; big: number; endF: number }> = ({ f, big, endF }) => {
   const spin = f * 14; // spinning minute hand
   const dia = 150 + big * 330;
   const left = MARGIN_X + big * (W / 2 - MARGIN_X - dia / 2);
   const top = 30 + big * 220;
-  const mins = 9 * 60 + Math.floor(prog(f, 30, sec(33), (x) => x * x * 0.5 + x * 0.5) * 12 * 60);
+  const mins = 9 * 60 + Math.floor(prog(f, 30, endF, (x) => x * x * 0.5 + x * 0.5) * 12 * 60);
   const h12 = Math.floor(mins / 60) % 12 || 12, mm = mins % 60;
   const label = `${h12}:${String(mm).padStart(2, '0')} ${mins >= 12 * 60 && mins < 24 * 60 ? 'PM' : 'AM'}`;
   return (
@@ -256,7 +258,7 @@ export const Act1Visual: React.FC<{ f: number }> = ({ f }) => {
       <div style={{ position: 'absolute', inset: 0, transform: `translateX(${camX}px) scale(${cam})`, transformOrigin: '50% 70%' }}>
         <div style={{ position: 'absolute', left: 0, right: 0, top: FLOOR - 12, height: 90, background: 'linear-gradient(180deg,#3a211c,#1a0f0c)' }} />
         <div style={{ opacity: 1 - 0.92 * prog(f, sec(t.freeze), sec(t.freeze) + 12) }}>
-        <Inbox f={f} at={stF[0]} />
+        <Inbox f={f} at={stF[0]} full={sec(t.inboxFull)} />
         <Sheet f={f} at={stF[1]} />
         <Phone f={f} at={stF[2]} />
         <Licences f={f} at={stF[3]} />
@@ -267,11 +269,11 @@ export const Act1Visual: React.FC<{ f: number }> = ({ f }) => {
           <>
             {dashing ? (
               <>
-                {[2, 1].map((k) => <Meera key={k} pose="running" x={ms.x - ms.vx * k * 1.6} y={FLOOR - ms.hop} h={MEERA_H} sx={ms.sx} sy={ms.sy} rot={ms.rot} opacity={0.22 / k} blur={3 * k} shadow={false} z={4} />)}
+                {[2, 1].map((k) => <Meera key={k} pose="running" flip={ms.flip} x={ms.x - ms.vx * k * 1.6} y={FLOOR - ms.hop} h={MEERA_H} sx={ms.sx} sy={ms.sy} rot={ms.rot} opacity={0.22 / k} blur={3 * k} shadow={false} z={4} />)}
                 <SpeedLines x={ms.x} u={ms.dashT} vx={ms.vx} />
               </>
             ) : null}
-            <Meera pose={ms.pose} x={ms.x} y={FLOOR - ms.hop} h={MEERA_H} sx={ms.sx} sy={ms.sy} rot={ms.rot} blur={ms.blur} />
+            <Meera pose={ms.pose} flip={ms.flip && ms.pose === 'running'} x={ms.x} y={FLOOR - ms.hop} h={MEERA_H} sx={ms.sx} sy={ms.sy} rot={ms.rot} blur={ms.blur} />
           </>
         ) : null}
         {wps.map((w, i) => {
@@ -289,7 +291,7 @@ export const Act1Visual: React.FC<{ f: number }> = ({ f }) => {
       </div>
       <div style={{ position: 'absolute', inset: 0, background: `rgba(248,113,113,${alertPulse})`, pointerEvents: 'none', zIndex: 15 }} />
       <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 280px rgba(0,0,0,.75)', zIndex: 16, pointerEvents: 'none' }} />
-      <Clock f={f} big={bigClock} />
+      <Clock f={f} big={bigClock} endF={endF} />
       <TimeSpent f={f} endF={endF - sec(1.5)} />
       {f >= sec(t.freeze) ? <ChaosCard f={f - sec(t.freeze)} /> : null}
       {f < sec(0.35) ? <div style={{ position: 'absolute', inset: 0, background: '#fff', opacity: 1 - f / sec(0.35), zIndex: 30 }} /> : null}

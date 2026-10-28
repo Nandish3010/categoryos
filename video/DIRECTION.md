@@ -59,10 +59,10 @@ Act 3:
 
 ## Audio plan
 
-- VO: macOS `say -v Tara` draft, one file per scene, replaceable by video/vo/<scene>.wav. Act 1 has 3 punchy lines.
-- SFX synthesised with ffmpeg (no sampled audio): whoosh (filtered noise sweep), pop (decaying sine chirp), ding (two sine partials), phone ring (440+480 Hz warble), tick, thud/slam, paper rustle (noise burst), success chord.
-- Music slot video/audio/music.mp3 (optional), ducked to -18 dB under VO with sidechain-style volume automation; no music means SFX only.
-- Loudness normalised to about -16 LUFS integrated (loudnorm).
+- VO: Kokoro-82M (local neural TTS, `video/tools/tts.sh`), one file per scene, replaceable by video/vo/<scene>.wav. Scenes are VO + 0.4 s, so there is speech under almost every second; the only deliberate silences are the buried freeze and the slam.
+- SFX synthesised with ffmpeg (no sampled audio): tonal pops, ticks, blips, ding/chime, phone ring, thud/slam. Noise is limited to three short swishes (avalanche, slam zoom, red-to-green melt).
+- Music: composed in code (`scripts/music.mjs`), about 110 BPM, original. Act 1 busy and minor-leaning (16th hats, plucked arpeggio); the avalanche drops it to a hush; a riser and the drop land on the slam; Act 2 is a driving four-on-the-floor groove kept sparse under dense VO, with a lead motif on the hero numbers; Act 3 is a warm resolve with a final hit on the URL.
+- Mix: music sidechain-ducked about 9 dB under speech, master about -14 LUFS, true peak -1 dBFS.
 
 ## Honesty
 

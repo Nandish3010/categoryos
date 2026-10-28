@@ -88,11 +88,11 @@ contract:
 	@echo "WARNING: live contract smoke calls paid model APIs."
 	cd backend && MODEL_MODE=live uv run python ../scripts/contract_smoke.py $(if $(ONLY),--only $(ONLY),)
 
-# Demo video (video/): re-capture the app flows, draft VO (video/vo/<scene>.wav overrides TTS), synth SFX, mix, render both cuts.
+# Demo video (video/): re-capture the app flows, voiceover (Kokoro via video/tools/tts.sh; video/vo/<scene>.wav overrides it), synth SFX, compose music, mix, render both cuts.
 # Outputs: video/out/categoryos-demo.mp4, video/out/categoryos-x-30s.mp4, video/out/stills/. BASE_URL overrides the target app.
 video:
 	cd video && npm ci && node capture/capture.mjs && $(MAKE) -C .. video-render
 
 # Everything except the screen captures (re-uses video/captures/): handy after editing scenes or swapping the VO.
 video-render:
-	cd video && node scripts/vo.mjs && node scripts/sfx.mjs && node scripts/mix.mjs && node scripts/render.mjs
+	cd video && node scripts/vo.mjs && node scripts/sfx.mjs && node scripts/music.mjs && node scripts/mix.mjs && node scripts/render.mjs
