@@ -1,96 +1,276 @@
 {
   "fps": 30,
-  "total": 5325,
+  "total": 4557,
   "scenes": [
     {
       "id": "a1-intro",
       "act": 1,
       "start": 0,
-      "frames": 225,
-      "voSec": 3.63941,
-      "voLead": 0.35,
-      "source": "tts"
+      "frames": 188,
+      "voSec": 5.881,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 2.146
+        },
+        {
+          "a": 2.286,
+          "b": 4.993
+        },
+        {
+          "a": 5.133,
+          "b": 5.881
+        }
+      ]
     },
     {
       "id": "a1-mid",
       "act": 1,
-      "start": 225,
-      "frames": 510,
-      "voSec": 6.83542,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 188,
+      "frames": 383,
+      "voSec": 12.371,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 1.452
+        },
+        {
+          "a": 1.592,
+          "b": 3.195
+        },
+        {
+          "a": 3.335,
+          "b": 6.968
+        },
+        {
+          "a": 7.108,
+          "b": 11.194
+        },
+        {
+          "a": 11.334,
+          "b": 12.371
+        }
+      ]
     },
     {
       "id": "a1-end",
       "act": 1,
-      "start": 735,
-      "frames": 240,
-      "voSec": 3.604036,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 571,
+      "frames": 159,
+      "voSec": 4.903,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 3.136
+        },
+        {
+          "a": 3.276,
+          "b": 4.903
+        }
+      ]
     },
     {
       "id": "a2-slam",
       "act": 2,
-      "start": 975,
-      "frames": 150,
-      "voSec": 2.738503,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 730,
+      "frames": 120,
+      "voSec": 3.597,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 2.199
+        },
+        {
+          "a": 2.339,
+          "b": 3.597
+        }
+      ]
     },
     {
       "id": "m1-call",
       "act": 2,
-      "start": 1125,
-      "frames": 960,
-      "voSec": 29.730703,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 850,
+      "frames": 930,
+      "voSec": 30.602,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 1.313
+        },
+        {
+          "a": 1.453,
+          "b": 6.255
+        },
+        {
+          "a": 6.395,
+          "b": 13.751
+        },
+        {
+          "a": 13.891,
+          "b": 15.119
+        },
+        {
+          "a": 15.259,
+          "b": 20.682
+        },
+        {
+          "a": 20.822,
+          "b": 28.93
+        },
+        {
+          "a": 29.07,
+          "b": 30.602
+        }
+      ]
     },
     {
       "id": "m2-verifier",
       "act": 2,
-      "start": 2085,
-      "frames": 720,
-      "voSec": 22.626757,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 1780,
+      "frames": 557,
+      "voSec": 18.157,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 0.899
+        },
+        {
+          "a": 1.039,
+          "b": 4.997
+        },
+        {
+          "a": 5.137,
+          "b": 10.45
+        },
+        {
+          "a": 10.59,
+          "b": 12.628
+        },
+        {
+          "a": 12.768,
+          "b": 18.157
+        }
+      ]
     },
     {
       "id": "m3-vision",
       "act": 2,
-      "start": 2805,
-      "frames": 840,
-      "voSec": 24.58,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 2337,
+      "frames": 694,
+      "voSec": 22.747,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 1.238
+        },
+        {
+          "a": 1.378,
+          "b": 3.31
+        },
+        {
+          "a": 3.45,
+          "b": 10.876
+        },
+        {
+          "a": 11.016,
+          "b": 16.779
+        },
+        {
+          "a": 16.919,
+          "b": 18.969
+        },
+        {
+          "a": 19.109,
+          "b": 22.747
+        }
+      ]
     },
     {
       "id": "m4-run",
       "act": 2,
-      "start": 3645,
-      "frames": 750,
-      "voSec": 15.669116,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 3031,
+      "frames": 709,
+      "voSec": 23.249,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 2.868
+        },
+        {
+          "a": 3.008,
+          "b": 17.631
+        },
+        {
+          "a": 17.771,
+          "b": 23.249
+        }
+      ]
     },
     {
       "id": "a3-week",
       "act": 3,
-      "start": 4395,
-      "frames": 510,
-      "voSec": 5.139229,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 3740,
+      "frames": 525,
+      "voSec": 17.1,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 2.157
+        },
+        {
+          "a": 2.297,
+          "b": 8.673
+        },
+        {
+          "a": 8.813,
+          "b": 13.852
+        },
+        {
+          "a": 13.992,
+          "b": 17.1
+        }
+      ]
     },
     {
       "id": "a3-close",
       "act": 3,
-      "start": 4905,
-      "frames": 420,
-      "voSec": 6.684399,
-      "voLead": 0.35,
-      "source": "tts"
+      "start": 4265,
+      "frames": 292,
+      "voSec": 9.318,
+      "voLead": 0.15,
+      "source": "kokoro:af_heart",
+      "sentences": [
+        {
+          "a": 0,
+          "b": 4.25
+        },
+        {
+          "a": 4.39,
+          "b": 6.436
+        },
+        {
+          "a": 6.576,
+          "b": 9.318
+        }
+      ]
     }
   ]
 }
