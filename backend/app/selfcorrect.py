@@ -25,13 +25,21 @@ from typing import Any, Literal
 from app import llm, policy
 from app.agents.context import RunContext
 from app.config import settings
-from app.errors import CategoryOSError
+from app.errors import CategoryOSError, LlmBadOutput
 from app.schemas import Claim, ClaimAttempt, ClaimFix, FixFinal
 from app.verify import VerifySummary
 
 Ask = Callable[[list[Claim], int], Awaitable[tuple[dict[str, ClaimFix] | None, str | None]]]  # (rejected, attempt) -> fixes
 Rebuild = Callable[[Claim, ClaimFix], Claim | None]  # claim carrying the corrected answer, still unverified (same id)
 Check = Callable[[list[Claim]], list[Claim]]  # verify them (the verifier plus any extra rule the stage applies)
+
+
+def _fix_for(claim: Claim, fixes: dict[str, ClaimFix]) -> ClaimFix | None:
+    """The fix for a claim. Models often drop an id's leading namespace ("T012" for "hard:T012"), so that is accepted too."""
+    if claim.id in fixes:
+        return fixes[claim.id]
+    _, sep, short = claim.id.partition(":")
+    return fixes.get(short) if sep else None
 
 
 def shown_value(claim: Claim) -> str:
@@ -139,7 +147,7 @@ async def self_correct(
         ctx.emit("claim_rejected", stage, {"claim": claim.model_dump(mode="json"), "attempt": 0})
 
     attempt = 0
-    retried = False  # at least one normal retry was answered and checked, so a rejection after it is "twice"
+    retried = False  # at least one normal retry was answered, so a claim still rejected after it was rejected "twice"
     while attempt < limit and (todo := pending()):
         attempt += 1
         if ask is not None:
@@ -159,11 +167,14 @@ async def self_correct(
             },
         )
         if fixes is None:
+            # the model was asked but gave nothing usable (empty, refused, unparseable): a case for the stronger model.
+            # No answer at all (no fixture, no credits, provider down) is not.
+            retried = retried or (note or "").startswith(LlmBadOutput.code)
             break
-        rebuilt = [new for c in todo if c.id in fixes and (new := rebuild(c, fixes[c.id])) is not None]
+        retried = True  # the model answered: whatever it said, a claim still rejected now goes to the escalation model
+        rebuilt = [new for c in todo if (fix := _fix_for(c, fixes)) is not None and (new := rebuild(c, fix)) is not None]
         if not rebuilt:
             break
-        retried = True
         for new in check(rebuilt):
             out[index[new.id]] = new
             history[new.id].append(_attempt(attempt, new))
@@ -193,7 +204,7 @@ async def self_correct(
                 **({"note": note} if note else {}),
             },
         )
-        rebuilt = [new for c in todo if fixes is not None and c.id in fixes and (new := rebuild(c, fixes[c.id])) is not None]
+        rebuilt = [new for c in todo if fixes is not None and (fix := _fix_for(c, fixes)) is not None and (new := rebuild(c, fix)) is not None]
         for new in check(rebuilt) if rebuilt else []:
             out[index[new.id]] = new
             history[new.id].append(_attempt(attempt, new, escalated=True))

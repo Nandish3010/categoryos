@@ -63,7 +63,7 @@ eval:
 # For the real models: MODEL_MODE=live make eval-hard   (needs MODEL_API_KEY / BASETEN_API_KEY; SPENDS CREDITS, stops at $3, see --budget-usd).
 # Writes eval/results/hard.json and refreshes the hard table in the README. The generated set lives in eval/hard_set/.
 eval-hard:
-	cd backend && uv run python ../scripts/measure_hard.py $(if $(filter live,$(MODEL_MODE)),--live,)
+	cd backend && LLM_TIMEOUT_S=$${LLM_TIMEOUT_S:-240} uv run python ../scripts/measure_hard.py $(if $(filter live,$(MODEL_MODE)),--live,)
 
 # Regenerate the pinned requirements used by the Modal image (commit the result).
 requirements:

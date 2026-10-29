@@ -10,7 +10,7 @@ from app import ledger, llm, policy, selfcorrect
 from app.agents import catalog, decide, negotiate
 from app.agents.context import RunContext, Sequencer
 from app.config import settings
-from app.errors import FixtureMissing
+from app.errors import FixtureMissing, LlmBadOutput
 from app.metrics import apply_levers, build_base
 from app.schemas import (
     Claim,
@@ -450,3 +450,26 @@ def test_the_limit_is_validated(limit):
         policy.reset()
     with pytest.raises(Exception, match="max_self_corrections"):
         policy.save_overrides({"verifier": {"max_self_corrections": 9}})
+
+
+def test_a_fix_whose_id_drops_the_namespace_still_applies():
+    fixes = {"T012": fix(1.0), "HP-D01:cost:extracted": fix(2.0)}
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": "hard:T012"}), fixes)["value"] == 1.0
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": HP_D01}), fixes)["value"] == 2.0
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": "hard:T013"}), fixes) is None
+
+
+def test_an_answered_retry_that_fixes_nothing_still_escalates(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: [fix(1.0, claim_id="no-such-claim")]}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert len(fake.esc_calls) == 1 and claim.status == "verified" and claim.attempts[-1].escalated is True
+
+
+def test_a_retry_whose_output_is_unusable_escalates(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: LlmBadOutput(cause="the model returned an empty or refused response twice")}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert len(fake.esc_calls) == 1 and claim.status == "verified" and claim.attempts[-1].escalated is True

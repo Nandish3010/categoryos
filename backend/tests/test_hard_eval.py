@@ -53,8 +53,8 @@ def test_every_ground_truth_answer_is_accepted_by_the_real_verifier(world):
 
 
 def test_predictable_wrong_readings_are_caught_except_where_the_verifier_cannot_tell(world):
-    """Decoys: paise, unit, multipack and injection slips are rejected. A figure read from the wrong but real cell (the old
-    cost, the swapped column) or the wrong number inside the right quote passes the verifier: those are the silent errors."""
+    """Decoys: paise, unit, multipack, injection and swapped-column slips are rejected (the row plausibility check catches a
+    cost not below its MRP). A figure read from the wrong but real cell (the old cost) or the wrong number inside the right quote passes the verifier: those are the silent errors."""
     agent = hard_eval.MockAgent(hard_eval.MODELS[0], world, 42)
     by_id = {hard_eval.claim_id(t): t for t in world.tasks}
     verdict: dict[str, set[str]] = {}
@@ -69,9 +69,9 @@ def test_predictable_wrong_readings_are_caught_except_where_the_verifier_cannot_
         claim = hard_eval.verify(by_id, [hard_eval.build_claim(t, ans)])[0]
         assert not hard_eval.is_right(t, claim) or claim.status != "verified"
         verdict.setdefault(t.category, set()).add(claim.status)
-    for caught in ("paise_trap", "unit_mix", "multipack", "injection_sheet", "spelled"):
+    for caught in ("paise_trap", "unit_mix", "multipack", "injection_sheet", "spelled", "swapped_block"):
         assert verdict[caught] == {"rejected"}, caught
-    for silent in ("revised_conflict", "swapped_block", "conflict_turns", "injection_call"):
+    for silent in ("revised_conflict", "conflict_turns", "injection_call"):
         assert "verified" in verdict[silent], silent
 
 
@@ -122,3 +122,14 @@ def test_the_tables_render_and_inject_between_the_markers(world, tmp_path):
     bare = tmp_path / "bare.md"
     bare.write_text("no markers here", encoding="utf-8")
     assert not hard_report.inject(bare, block)
+
+
+def test_the_swapped_block_truth_verifies_and_the_decoy_is_rejected(world):
+    by_id = {hard_eval.claim_id(x): x for x in world.tasks}
+    tasks = [t for t in world.tasks if t.category == "swapped_block"]
+    assert tasks
+    for t in tasks:
+        ok = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(t.truth, t.row, t.header))])[0]
+        assert ok.status == "verified" and hard_eval.is_right(t, ok)
+        bad = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(t.decoy, t.row, t.decoy_header))])[0]
+        assert bad.status == "rejected" and "look swapped" in bad.reason

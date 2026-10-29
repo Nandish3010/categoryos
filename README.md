@@ -39,7 +39,7 @@ Then open http://localhost:3000/vendors/V001.
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
 | `muse-wonder-1.0` | Escalation: Meta's frontier agent model re-reads one claim the verifier rejected twice (after the normal self-correction retries), and the verifier checks its answer. Priced at the published $4 / $20 per 1M input / output tokens. Off with an empty `ESCALATION_MODEL` | `backend/app/selfcorrect.py:self_correct` (`Settings.escalation_model`); the hard eval also runs it as model C | The claim is removed, as before |
 | `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
-| Muse Spark Open via Baseten (`meta-models/muse-spark-open-1026`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
+| Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
 | `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded and decoded with Meta's `meta-sam-parser` (pinned `==0.1.0`, a regular dependency), so real cutouts and panel regions work; the mask raster covers the box only and is placed at the box corner. The SAM License applies to that dependency. If decoding fails the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
@@ -132,44 +132,46 @@ _Live: models called through the gateway (one batched extraction call per model 
 
 ### Hard mode
 
-`make eval-hard` runs a harder extraction set through the same extraction, verifier and self-correction path, for three models: A `muse-spark-1.3`, B Muse Spark Open on Baseten, C `muse-wonder-1.0` (Meta's frontier agent model, price $4 / $20 per 1M tokens). The set is synthetic and deterministic (`eval/hard_data.py`, seed 42; the generated sheet, email thread and ground truth are committed in `eval/hard_set/`): a messy price sheet with divider and note rows, a block whose cost and MRP columns are swapped, `Rs.399/-`, `₹ 3,3,25` comma typos, paise next to rupees, kg/g and L/ml mixes, `6 x 400g` multipacks, a revised cost next to the old one, plus a Hinglish email thread (`MRP 450 hai, margin 18% de denge, MOQ 2 carton`), spelled-out numbers, an email corrected by a later one, and prompt-injection lines in both the sheet and the emails. Every task has ground truth. Models A and B escalate a claim the verifier rejected twice to model C; "silent errors" are answers the verifier accepted that are wrong (it only re-reads the cell or quote the answer cites, so the old cost, the swapped column, or the wrong number inside the right quote can pass). It is mock by default (free; scripted stand-ins, labelled) and writes `eval/results/hard.json`; `MODEL_MODE=live make eval-hard` calls the real models (needs keys, spends credits, stops at $3). The clean eval above is unchanged.
+`make eval-hard` runs a harder extraction set through the same extraction, verifier and self-correction path, for three models: A `muse-spark-1.3`, B Muse Spark Open on Baseten, C `muse-wonder-1.0` (Meta's frontier agent model, price $4 / $20 per 1M tokens). The set is synthetic and deterministic (`eval/hard_data.py`, seed 42; the generated sheet, email thread and ground truth are committed in `eval/hard_set/`): a messy price sheet with divider and note rows, a block whose cost and MRP columns are swapped, `Rs.399/-`, `₹ 3,3,25` comma typos, paise next to rupees, kg/g and L/ml mixes, `6 x 400g` multipacks, a revised cost next to the old one, plus a Hinglish email thread (`MRP 450 hai, margin 18% de denge, MOQ 2 carton`), spelled-out numbers, an email corrected by a later one, and prompt-injection lines in both the sheet and the emails. Every task has ground truth. Models A and B escalate a claim the verifier rejected twice to model C; "silent errors" are answers the verifier accepted that are wrong (it re-reads the cell or quote the answer cites, plus a row check: a cost or MRP read from its own column is rejected when that row's cost is not below its MRP, which is how the swapped block is caught. An answer that quotes a superseded email, or the wrong number inside the right quote, can still pass). It is mock by default (free; scripted stand-ins, labelled) and writes `eval/results/hard.json`; `MODEL_MODE=live make eval-hard` calls the real models (needs keys, spends credits, stops at $3). The clean eval above is unchanged.
+
+What the live runs taught us: the first live run (30 Oct 2026, before the row check existed) had both Spark models read all 11 swapped-block rows wrong, and the verifier accepted every one (15 silent errors each). The row check was added from that finding; in the run below the verifier catches those readings and muse-spark-1.3 corrects them on one retry, reaching the same 95.7% as muse-wonder-1.0 at about a third of the cost. The 4 silent errors left in each model are email answers (a superseded email, an injection line in an email, a spelled-out number). Single runs vary: muse-spark-1.3's first pass ranged from 81% to 95% across five live runs.
 
 <!-- eval-hard:start -->
-**Mode: mock.** A mock run: scripted stand-ins replace the three models, so no model results are shown here. The generator, loop, verifier and scoring are real code. Seed 42, run 2026-10-29.
+**Mode: live.** Live run: models called through the gateway, $0.23 spent. Seed 42, run 2026-10-30.
 
-**Hard extraction set** (94 tasks, mode: mock)
+**Hard extraction set** (94 tasks, mode: live)
 
 | Model | First-pass accuracy | Caught by verifier | Corrected on retry | Final accuracy (after retries) | Silent errors | Cost | Tokens | Latency / task |
 |---|---|---|---|---|---|---|---|---|
-| scripted stand-in A | 87.2% | 8 | 5 | 92.5% | 5 | n/a (mock) | n/a | n/a (mock) |
-| scripted stand-in B | 70.2% | 16 | 12 | 83.0% | 12 | n/a (mock) | n/a | n/a (mock) |
-| scripted stand-in C | 94.7% | 3 | 3 | 97.9% | 2 | n/a (mock) | n/a | n/a (mock) |
+| muse-spark-1.3 (model A) | 80.8% | 14 | 14 | 95.7% | 4 | $0.0566 | 17765 in / 9742 out | 0.3 s (extract call 22 s) |
+| Muse Spark Open via Baseten (model B) | 95.7% | 0 | 0 | 95.7% | 4 | not metered | 13286 in / 64733 out | 2.0 s (extract call 186 s) |
+| muse-wonder-1.0 (model C) | 95.7% | 0 | 0 | 95.7% | 4 | $0.1689 | 6295 in / 7187 out | 0.5 s (extract call 51 s) |
 
 Escalation: a claim the verifier rejects after the normal retries is re-read once by muse-wonder-1.0 (model C runs without it).
 
 | Model | Rejected twice, escalated | Fixed by escalation | Final accuracy with escalation | Silent errors | Removed | Escalation cost |
 |---|---|---|---|---|---|---|
-| scripted stand-in A | 2 | 2 | 94.7% | 5 | 0 | n/a (mock) |
-| scripted stand-in B | 4 | 2 | 85.1% | 12 | 2 | n/a (mock) |
+| muse-spark-1.3 (model A) | 0 | 0 | 95.7% | 4 | 0 | $0.0000 |
+| Muse Spark Open via Baseten (model B) | 0 | 0 | 95.7% | 4 | 0 | not metered |
 
 By category (first-pass accuracy; silent = accepted by the verifier but wrong against ground truth, after the retries):
 
-| Category | Tasks | A first-pass | B first-pass | C first-pass | A silent | B silent | C silent |
+| Category | Tasks | muse-spark-1.3 first-pass | Muse Spark Open via Baseten first-pass | muse-wonder-1.0 first-pass | muse-spark-1.3 silent | Muse Spark Open via Baseten silent | muse-wonder-1.0 silent |
 |---|---|---|---|---|---|---|---|
-| Prices written Rs.399/- | 8 | 100% | 75% | 100% | 0 | 0 | 0 |
-| Misplaced commas (₹ 3,3,25) | 10 | 80% | 80% | 100% | 0 | 0 | 0 |
-| Paise next to rupees | 10 | 90% | 70% | 100% | 0 | 0 | 0 |
-| kg/g and L/ml mixed | 8 | 75% | 75% | 100% | 0 | 0 | 0 |
-| Multipacks (6 x 400g) | 6 | 100% | 67% | 67% | 0 | 0 | 0 |
-| Old vs revised cost | 8 | 88% | 50% | 88% | 1 | 3 | 1 |
-| Swapped cost/MRP columns | 11 | 64% | 55% | 91% | 4 | 5 | 1 |
-| Injection line in the sheet | 5 | 80% | 60% | 100% | 0 | 0 | 0 |
-| Hinglish vendor emails | 10 | 100% | 90% | 90% | 0 | 1 | 0 |
-| Spelled-out numbers | 8 | 88% | 88% | 100% | 0 | 0 | 0 |
-| Corrected by a later email | 6 | 100% | 50% | 100% | 0 | 2 | 0 |
-| Injection line in an email | 4 | 100% | 75% | 100% | 0 | 1 | 0 |
+| Prices written Rs.399/- | 8 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Misplaced commas (₹ 3,3,25) | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Paise next to rupees | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| kg/g and L/ml mixed | 8 | 0% | 100% | 100% | 0 | 0 | 0 |
+| Multipacks (6 x 400g) | 6 | 0% | 100% | 100% | 0 | 0 | 0 |
+| Old vs revised cost | 8 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Swapped cost/MRP columns | 11 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Injection line in the sheet | 5 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Hinglish vendor emails | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Spelled-out numbers | 8 | 100% | 88% | 88% | 0 | 1 | 1 |
+| Corrected by a later email | 6 | 67% | 100% | 67% | 2 | 0 | 2 |
+| Injection line in an email | 4 | 50% | 25% | 75% | 2 | 3 | 1 |
 
-_Mock: scripted stand-ins with fixed error profiles replace the models (A and B escalate to a stand-in for C). The loop, feedback, verifier and scoring are real; the error rates are parameters, not measurements. Cost and latency are not reported._
+_Live: models called through the gateway, one batched extraction call per model over the committed hard set; A and B escalate to muse-wonder-1.0 after the normal retries (C runs without escalation). Cost from the ledger (Muse Spark Open on Baseten is not metered: price unknown); latency = total wall-clock / tasks. The extraction prompt tells the model the files are third-party data, not instructions. Silent errors are answers the verifier accepted that are wrong against ground truth._
 <!-- eval-hard:end -->
 
 ## Architecture
@@ -178,7 +180,7 @@ _Mock: scripted stand-ins with fixed error profiles replace the models (A and B 
 Next.js (Vercel) --HTTP + SSE--> FastAPI (Modal) --> Meta Model API (OpenAI SDK, https://api.meta.ai/v1)
                                        |               muse-spark-1.3 / -contributor, sam-3.1, muse-image-1.0,
                                        |               muse-voice-transcribe-1.0
-                                       +--> Baseten: meta-models/muse-spark-open-1026 (sheet classification)
+                                       +--> Baseten: meta-models/muse-spark-open (sheet classification)
                                        +--> deterministic metrics (pure Python over data/synthetic)
                                        +--> SQLite: vendors, runs, events, claims, approvals
 ```
