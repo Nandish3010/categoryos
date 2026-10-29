@@ -65,13 +65,28 @@
       ]
     },
     {
-      "id": "m1-call",
+      "id": "m1-asr",
       "act": 2,
-      "minSec": 20,
-      "vo": "First, negotiation. On a live call, it listens, writes down every term, and checks it against my targets. The vendor offers fifteen percent margin, plus twenty percent marketing support if I sell two thousand units in ninety days. Sounds like thirty-five. But it simulates our real demand, and the chance of hitting two thousand is under a tenth of a percent. So it tells me not to accept, and gives me my next line: set the target at two hundred and fifty units, or make twenty-two percent guaranteed. No spreadsheet after the call.",
-      "caption": "First, negotiation. On a live call, it listens, writes down every term, and checks it against my targets. The vendor offers 15% margin, plus 20% marketing support if I sell 2,000 units in 90 days. Sounds like 35%. But it simulates our real demand, and the chance of hitting 2,000 is under 0.1%. So it tells me not to accept, and gives me my next line: set the target at 250 units, or make 22% guaranteed. No spreadsheet after the call.",
+      "minSec": 5,
+      "tailSec": 0.2,
+      "vo": "First, negotiation. On a live call, it listens and transcribes.",
+      "caption": "First, negotiation. On a live call, it listens and transcribes.",
+      "clip": {
+        "file": "assets/live/vendor-offer.wav",
+        "gap": 0.35
+      },
       "emph": [
         "negotiation",
+        "transcribes"
+      ]
+    },
+    {
+      "id": "m1-call",
+      "act": 2,
+      "minSec": 10,
+      "vo": "Then it writes down every term and checks it against my targets. The vendor offers fifteen percent margin, plus twenty percent marketing support for two thousand units. Sounds like thirty-five. But it simulates our real demand, and the chance of hitting two thousand is under a tenth of a percent. So it tells me not to accept, and gives me my next line: set the target at two hundred and fifty units, or make twenty-two percent guaranteed. No spreadsheet after the call.",
+      "caption": "Then it writes down every term and checks it against my targets. The vendor offers 15% margin, plus 20% marketing support for 2,000 units. Sounds like 35%. But it simulates our real demand, and the chance of hitting 2,000 is under 0.1%. So it tells me not to accept, and gives me my next line: set the target at 250 units, or make 22% guaranteed. No spreadsheet after the call.",
+      "emph": [
         "thirty-five",
         "tenth",
         "not to accept",
@@ -117,6 +132,19 @@
         "after launch",
         "playbook",
         "any category"
+      ]
+    },
+    {
+      "id": "m4-rules",
+      "act": 2,
+      "minSec": 6,
+      "tailSec": 0.25,
+      "vo": "I can even write a rule in plain English. Arjun’s cut is over his limit, so it waits for me. I approve it, and every change is logged.",
+      "caption": "I can even write a rule in plain English. Arjun’s cut is over his limit, so it waits for me. I approve it, and every change is logged.",
+      "emph": [
+        "plain English",
+        "over his limit",
+        "logged"
       ]
     },
     {

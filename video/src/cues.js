@@ -9,12 +9,14 @@ export const CUTS = {
   'm1-call': ['The vendor offers', 'Sounds like thirty-five', 'But it simulates', 'So it tells me', 'No spreadsheet'],
   'm2-verifier': ['In this live run', 'On two hundred'],
   'm3-vision': ['It reads the food licence', 'It cuts out', 'It even catches', 'All before'],
+  'm4-rules': ['Arjun\u2019s cut', 'so it waits', 'I approve it'],
   'm4-run': ['It drafts my weekly', 'answers price-increase', 'chases late', 'queues catalog', 'plans promotions', 'watches competitor', 'and flags stock', 'Every rule lives', 'for pet, beauty'],
 };
 /** [phrase, offset seconds, sfx] where a big number / highlight lands. */
 export const HITS = {
   'm1-call': [['under a tenth', 0.0, 'error'], ['set the target', 0.0, 'ding']],
   'm2-verifier': [['two different dates', 0.0, 'error'], ['one hundred and ninety-eight', 0.0, 'chime']],
+  'm4-rules': [['over his limit', 0.0, 'error'], ['and every change', 0.2, 'chime']],
   'm3-vision': [['thirtieth', 0.0, 'error'], ['thirty percent', 0.0, 'error'], ['It even catches', 0.4, 'error'], ['All before', 0.2, 'chime']],
 };
 
@@ -42,6 +44,7 @@ export function anchors(T, script) {
     m2: sc('m2-verifier').start / fps,
     m3: sc('m3-vision').start / fps,
     m4: sc('m4-run').start / fps,
+    m4Len: (sc('m4-run').frames + sc('m4-rules').frames) / fps,
     weekStart: week.start / fps,
     melt: at('a3-week', 'Onboarding'),
     closeStart: close.start / fps,
@@ -90,10 +93,11 @@ export function demoCues(T, script) {
   add(an.slam, 'slam', 0.9);
   add(an.slam + 0.05, 'whoosh', 0.55); // key transition 2: zoom-through
   add(an.slam + 100 / fps, 'chime', 0.45);
-  // --- Act 2 ---
+  // --- Act 2: the live Muse Voice moment (the vendor clip is inside the m1-asr voice file): a pop as the clip starts, a chime when the transcript is complete ---
+  { const a = sc('m1-asr'); add(a.start / fps + a.voLead + a.clip.a, 'pop', 0.4); add(a.start / fps + a.voLead + a.clip.b + 0.05, 'chime', 0.45); }
   for (const [id, phrases] of Object.entries(CUTS)) {
     const t0 = sc(id).start / fps;
-    phrases.forEach((p) => add(t0 + phraseSec(T, script, id, p) - 0.02, id === 'm4-run' ? 'blip' : 'tock', id === 'm4-run' ? 0.4 : 0.35));
+    phrases.forEach((p) => add(t0 + phraseSec(T, script, id, p) - 0.02, id.startsWith('m4') ? 'blip' : 'tock', id.startsWith('m4') ? 0.4 : 0.35));
   }
   for (const [id, hits] of Object.entries(HITS)) {
     const t0 = sc(id).start / fps;

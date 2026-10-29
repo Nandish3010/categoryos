@@ -18,6 +18,7 @@ const rows = [];
 for (const s of T.scenes) {
   const t0 = s.start / T.fps;
   s.sentences.forEach((x) => speech.push([t0 + s.voLead + x.a, t0 + s.voLead + x.b]));
+  if (s.clip) speech.push([t0 + s.voLead + s.clip.a, t0 + s.voLead + s.clip.b]); // the live-ASR vendor clip is speech too
 }
 let maxGap = { gap: 0, at: 0 };
 const gaps = [];
@@ -27,7 +28,8 @@ maxGap = gaps[0];
 for (const s of T.scenes) {
   const t0 = s.start / T.fps, t1 = (s.start + s.frames) / T.fps;
   const inGaps = s.sentences.slice(1).map((x, i) => x.a - s.sentences[i].b);
-  rows.push(`${s.id.padEnd(13)} ${s.voSec.toFixed(1).padStart(5)}s ${(s.frames / T.fps).toFixed(1).padStart(6)}s   inner ${Math.max(0, ...inGaps).toFixed(2)}s   tail+lead ${(t1 - (t0 + s.voLead + s.sentences[s.sentences.length - 1].b)).toFixed(2)}s`);
+  if (s.clip) inGaps.push(s.clip.a - s.sentences[s.sentences.length - 1].b);
+  rows.push(`${s.id.padEnd(13)} ${s.voSec.toFixed(1).padStart(5)}s ${(s.frames / T.fps).toFixed(1).padStart(6)}s   inner ${Math.max(0, ...inGaps).toFixed(2)}s   tail+lead ${(t1 - (t0 + s.voLead + (s.clip ? s.clip.b : s.sentences[s.sentences.length - 1].b))).toFixed(2)}s`);
 }
 console.log(rows.join('\n'));
 console.log(`total ${(T.total / T.fps).toFixed(1)}s; VO covers ${speech.reduce((n, [a, b]) => n + b - a, 0).toFixed(1)}s`);

@@ -68,7 +68,7 @@ const pf = (id: string, p: string) => phraseFrame(id, p);
 const W1 = { floor: FLOOR, h: MH, enterFrom: 'right' as const, beats: [
   { at: 24, x: XR, pose: 'phone' as const, text: 'Live vendor call!', textAt: 26, textDur: 62 },
   // pacing while the call runs: she turns around at the ends of the right-hand strip (x 1580-1800) and never crosses the app or the caption plate
-  ...[70, 120, 170, 220, 270, 320, 370].map((at, i) => ({ at, x: i % 2 ? XR : 1580, pose: 'phone' as const, walkPose: 'phone' as const })),
+  ...[70, 120, 170, 220, 270, 320, 370].filter((at) => at < pf('m1-call', 'Sounds like thirty-five') - 34).map((at, i) => ({ at, x: i % 2 ? XR : 1580, pose: 'phone' as const, walkPose: 'phone' as const })),
   { at: pf('m1-call', 'Sounds like thirty-five') + 4, x: XR, pose: 'thinking' as const, walkPose: 'phone' as const, text: 'Sounds like 35%... is it?', textAt: pf('m1-call', 'Sounds like thirty-five') + 8, textDur: 56 },
   { at: pf('m1-call', 'under a tenth') + 8, x: 1650, pose: 'pointing' as const }, // a couple of steps toward the frame as the verdict lands
   { at: pf('m1-call', 'set the target') + 8, x: XR, pose: 'pointing' as const },
@@ -118,6 +118,35 @@ const Walk: React.FC<{ o: WalkOpts; extra?: (p: Plan, f: number) => React.ReactN
   const p = React.useMemo(() => plan ?? planWalk(o), [plan, o]);
   return (<><MeeraWalker {...o} plan={p} prop={prop} />{extra ? extra(p, f) : null}</>);
 };
+
+
+// ---- m4-rules (v5): the new plain-English rules feature, captured live as Arjun then Meera (capture/capture.mjs `rules`) ----
+const prev = bx('rules', 'previewCard', { x: 425, y: 561, w: 1070, h: 302 }), over = bx('rules', 'overLimit', { x: 483, y: 737, w: 982, h: 20 });
+const applied = bx('rules', 'appliedRow', { x: 408, y: 338, w: 1104, h: 256 });
+const RU = 'm4-rules';
+const RF = sceneOf(RU).frames;
+const rs = (phrase: string) => phraseFrame(RU, phrase) / 30; // seconds into the scene
+const x1 = rs('Arjun’s cut'), x2 = rs('so it waits'), x3 = rs('I approve it'), rEnd = RF / 30;
+const rem = rEnd - x3;
+const RS = (a: number, b: number, s: Omit<Seg, 'a' | 'b'>): Seg => ({ a: (a * 30) / RF, b: Math.min(1, (b * 30) / RF), src: 'rules', whip: a > 0, ...s });
+const bigAt = (a: number, phrase: string, plus = 0) => Math.max(4, Math.round(rs(phrase) * 30 - a * 30) + plus);
+const M4R: Seg[] = [
+  RS(0, 0.55 * x1, { src: 'rules', mark: 'clickExample', d: -1.0, rate: 1.5, tag: 'Signed in as Arjun, manager', tagSub: 'a plain-English rule', focus: { x: 380, y: 100, w: 1160, h: 560 } }),
+  RS(0.55 * x1, x2, { src: 'rules', mark: 'preview', d: -0.25, focus: focusOn(prev, 1100, 520), callouts: [ring(over, C.orange, 6)], big: { text: 'Toys margin 40% → 35%', sub: 'over his limit: the head decides', color: C.orange, at: bigAt(0.55 * x1, 'over his limit', -6), y: 700 } }),
+  RS(x2, x3, { src: 'rules', mark: 'requested', d: -0.3, rate: 3.0, tag: 'Sent to the head for approval', tagSub: 'then switch to Meera' }),
+  RS(x3, x3 + 0.6, { src: 'rules', mark: 'log', d: -0.9, rate: 1.2, tag: 'Change log' }),
+  RS(x3 + 0.6, x3 + 1.2, { src: 'rules', mark: 'clickApprove', d: 0.1, tag: 'Change log' }),
+  RS(x3 + 1.2, rEnd, { src: 'rules', mark: 'applied', d: -0.45, focus: focusOn(applied, 1100, 360), callouts: [ring({ x: applied.x, y: applied.y, w: applied.w, h: applied.h }, C.green, 6)], big: { text: 'Applied · decided by Meera', sub: 'every change logged, even refused ones', color: C.green, at: 8, y: 700 } }),
+];
+const W5 = { floor: FLOOR, h: MH, enterFrom: 'right' as const, beats: [
+  { at: 34, x: XR, pose: 'pointing' as const, text: 'A rule, in plain English.', textAt: 38, textDur: 70 },
+  { at: Math.round(x2 * 30) - 6, x: 1650, pose: 'thinking' as const, text: 'Over his limit. Mine to decide.', textAt: Math.round(x2 * 30), textDur: 34 },
+  { at: Math.round(x3 * 30) + 14, x: XR, pose: 'pointing' as const },
+  { at: Math.round((x3 + 1.3) * 30), x: XR, pose: 'celebrating' as const, hop: 30 },
+], exit: { at: RF - 28, to: 'right' as const } };
+export const M4RulesScene = () => (
+  <AppScene sceneId={RU} segs={M4R} hours={[1.0, 1.0]}><Walk o={W5} /></AppScene>
+);
 
 export const M1Scene = () => <AppScene sceneId="m1-call" segs={M1} hours={[0.0, 0.3]}><Walk o={W1} /></AppScene>;
 export const M2Scene = () => <AppScene sceneId="m2-verifier" segs={M2} hours={[0.3, 0.55]}><Walk o={W2} /></AppScene>;
