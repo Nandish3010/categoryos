@@ -28,7 +28,42 @@ A category team's data lives in a dozen places that do not talk to each other. V
 | Finance approvals | Approval tiers in the playbook; approvals recorded in SQLite; `ops/outbox.py` queues drafts and approving marks them `sent_simulated` | Approval request into the company's approval tool or email; sign-off written back | Tiers and queue **exist**; integration **roadmap** |
 | Company rules (the playbook) | `config/policy.yaml`, edited at `/rules`; `rules.py` turns a plain-English rule into a checked change | Same file, owned by the head of category | **exists** |
 
-## 3. The pipeline
+## 3. Different companies, different stacks
+
+No two category teams run the same systems. CategoryOS does not integrate per company; it integrates per **kind of system**, into one canonical format.
+
+**One canonical format is the contract.** Agents, the verifier and the playbook only ever see vendors, SKUs, prices, costs, purchase orders, stock and documents in one shape (today: the parsed vendor, SKU and ops records in `backend/app/data_loader.py` and `backend/app/uploads.py`). They never know whether a number came from SAP, Zoho or an Excel sheet, which is what makes the product portable.
+
+**A few adapter types cover almost every stack:**
+
+| Adapter type | Typical systems | Data | Status |
+|---|---|---|---|
+| File drop (folder, S3, SFTP, forwarded attachment) | Any export: CSV, Excel, PDF, scans | Everything, as a starting point | **exists** as upload (`/try`); folder/S3/SFTP watcher is an **adapter needed** |
+| Mailbox | Gmail, Outlook (IMAP or their APIs) | Vendor emails, price lists, PO replies | **adapter needed** (fixture emails are read today) |
+| ERP / order system, read first | SAP, Oracle NetSuite, Zoho, Unicommerce, Tally | POs, costs, vendor master | **adapter needed** |
+| Catalog and marketplace | Shopify, Amazon, Flipkart, an in-house PIM | Listings, prices, catalog fixes | **adapter needed** |
+| Stock | Warehouse or inventory feeds | Stock, ageing, reorders | **adapter needed** |
+
+Where an off-the-shelf connector exists (Airbyte, Fivetran, or an MCP server for that system), the adapter wraps it rather than re-implementing the API.
+
+**Start with the file drop.** Every company, whatever its stack, can export a CSV or forward an email. So every pilot begins there: read-only, no IT project. Live connectors are added only for the sources that prove worth it in the pilot.
+
+**Mapping: the model proposes, a person confirms once.** Each company's exports name things differently ("Cost Price", "Landed Rate", "Purchase Rate"). On first connect, Muse Spark proposes how each column maps to the canonical format from the headers and a few sample rows (strict `json_schema`, the same pattern as rules written as prompts); a person confirms or corrects it once; the confirmed mapping is saved as structured configuration with the same roles, approvals and change log as the playbook. The verifier keeps re-checking mapped values against their source cells, so a wrong mapping is caught rather than trusted. **Status:** rule-based header mapping for uploaded sheets **exists** (`backend/app/parsing.py:map_columns`); the confirm-once mapping screen and saved per-company mappings are **roadmap**.
+
+**Discovery checklist (one page per company, before the pilot):**
+
+| Question | Why it matters |
+|---|---|
+| Which systems hold vendors, POs, catalog and stock? | Picks the adapter types |
+| What can each export, and does it have an API? | File drop now, connector later, or not needed |
+| Who owns each system? | Access and sign-off |
+| Where must the data stay? | Data residency and hosting choice |
+| Which login does the company use? | SSO in place of the demo identity picker |
+| Which two or three systems should ever be written to? | Keeps write-back narrow and approved |
+
+**Write-back stays narrow.** Reading from many systems is easy to standardise; writing is risky. Write-back targets two or three systems at most (POs, catalog updates, email drafts), always through approvals and the change log, and comes last in the rollout.
+
+## 4. The pipeline
 
 ```mermaid
 flowchart LR
@@ -56,7 +91,7 @@ flowchart LR
 
 **Why "Python decides numbers, models read and explain, verifier checks" makes messy data safe.** A model that both reads a messy sheet and decides a margin can be wrong twice and still sound confident. Here the model has two jobs: reading (turning a scan or email into fields) and explaining (writing sentences from engine numbers). Margins, MOQ, capital at risk, verdicts and approval tiers are computed by deterministic Python over the parsed values. The verifier then recomputes every number the model states from its source cell, so a misread has to survive an independent check before it reaches a person. The measured evidence is the README's eval: on 200 planted errors (digit swaps, decimal shifts, kg vs g, Rs vs paise, wrong row or column) the verifier caught 198; the two misses were errors smaller than the playbook tolerance (₹1 on money, 1 point on percentages). That eval uses synthetic sheets, not a customer's.
 
-## 4. Messy-data handling
+## 5. Messy-data handling
 
 | Problem | What the repo does today | Gap |
 |---|---|---|
@@ -71,7 +106,7 @@ flowchart LR
 
 **A real conflict from the live run (2026-10-27).** For synthetic vendor V002, the model read the GST certificate's "valid from" date as 01 APR 2023 on the full page, and the cropped re-read said 01 APR 2025. The "valid until" date came back as 31 MAR 2030 and then 01 MAR 2030. The verifier rejected both claims instead of choosing one. In that run the first reads matched the synthetic ground truth and the re-reads were the wrong ones, so the verifier was conservative, not lucky: it flags a disagreement without deciding which read is correct, and a person looks at the page. Source: README, "What the live verifier actually caught".
 
-## 5. Rollout plan
+## 6. Rollout plan
 
 | Phase | What happens | Who is involved | What is built |
 |---|---|---|---|
@@ -91,7 +126,7 @@ flowchart LR
 
 **Cost per vendor onboarded, from our own ledger.** The four final live recordings of the full onboarding pipeline on synthetic vendors V001-V004 cost about $1.0 in Meta credits, roughly $0.25 per vendor. Total spend including an aborted first attempt, a repeated V002 recording and the SAM cut-out regeneration was about $1.83 (README, "Built during the hackathon"). In the live extraction eval, one batched extraction over 160 tasks cost $0.0383 with Muse Spark. These are small synthetic vendors of about 12 SKUs. A real vendor with hundreds of SKUs and dozens of scanned pages will cost more, and we have not measured that. Baseten usage for Muse Spark Open is not metered in the ledger.
 
-## 6. Security and governance
+## 7. Security and governance
 
 | Control | Status | Detail |
 |---|---|---|
@@ -104,7 +139,7 @@ flowchart LR
 | PII | Partly | The demo holds no customer data, and the pipeline reads vendor and catalog data. Vendor contact names in documents do reach the model API; a redaction step before extraction is **roadmap**. |
 | Synthetic data | | Every vendor, SKU, price, certificate and email in this repo is synthetic, generated by `data/generate.py` (seed 42); scans are marked SAMPLE. No real company data is used. |
 
-## 7. Business case
+## 8. Business case
 
 | Figure | Value | Basis |
 |---|---|---|
