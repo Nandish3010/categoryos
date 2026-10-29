@@ -53,9 +53,11 @@ export const Slam: React.FC = () => {
           <div style={{ position: 'absolute', left: 1180 - 270, top: 560 - 85 + press * 40, width: 540, height: 170 * (1 - press), transform: `scale(${btn})`, borderRadius: 34, background: `linear-gradient(180deg, ${C.blue}, #3b6fd1)`, boxShadow: `0 ${14 - press * 80}px 0 #2a4f99, 0 0 ${80 * glow}px ${C.blue}, 0 0 ${200 * glow}px ${C.blue}66`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: display, fontWeight: 700, fontSize: 64, color: '#0F1117' }}>
             Run CategoryOS
           </div>
-          {lf < 12 ? (
-            <Meera pose="running" flip x={dashX} y={FLOOR - dashBob} h={520} rot={-8 * (1 - dash)} sy={1 + 0.04 * (1 - dash)} />
-          ) : lf < 42 ? (
+          {/* the desk she ended Act 1 at: she springs up out of it (desk shakes, then drops away as the paper bursts) */}
+          {lf < 26 ? (
+            <Meera pose="imfine" x={1380} y={FLOOR + 42 + 30 * prog(lf, 12, 26, E.in)} h={700} sx={1 + 0.03 * Math.sin(lf * 1.6) * (1 - prog(lf, 0, 12))} sy={1 - 0.05 * prog(lf, 6, 12) + 0.05 * prog(lf, 12, 16)} opacity={1 - prog(lf, 12, 26)} shadow={false} z={7} />
+          ) : null}
+          {lf < 12 ? null : lf < 42 ? (
             <Meera pose="celebrating" x={mx} y={my} h={520} sx={1 - stretch * 0.5 + landSq * 0.6} sy={1 + stretch - landSq} rot={lean} shadow={lf > 40} />
           ) : (
             <Meera pose="pointing" x={mx} y={FLOOR} h={520} sx={1 + landSq * 0.6} sy={1 - landSq} rot={lean} />

@@ -51,7 +51,7 @@ const ChaosPart: React.FC = () => {
   return (
     <AbsoluteFill style={{ overflow: 'hidden' }}>
       <div style={{ position: 'absolute', left: -(1920 - SQ) / 2, top: 0, width: 1920, height: 1080 }}>
-        <Act1Visual f={f} />
+        <Act1Visual f={f} deskX={960} deskH={640} bare />
       </div>
       {lf < SEG(3.2) ? <Cap text="One vendor onboarding..." color={C.orange} top at={4} /> : <Cap text={chaosCaption} sub={baselineTag} color={C.orange} top at={2} />}
     </AbsoluteFill>

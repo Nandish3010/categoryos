@@ -1,7 +1,7 @@
 import React from 'react';
 import { Img, staticFile } from 'remotion';
 
-export type Pose = 'waving' | 'pointing' | 'thinking' | 'celebrating' | 'running' | 'juggling' | 'buried' | 'phone' | 'relaxed';
+export type Pose = 'waving' | 'pointing' | 'thinking' | 'celebrating' | 'running' | 'juggling' | 'buried' | 'imfine' | 'phone' | 'relaxed';
 
 type Props = {
   pose: Pose;
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export const Meera: React.FC<Props> = ({ pose, x, y, h, rot = 0, sx = 1, sy = 1, flip = false, opacity = 1, blur = 0, shadow = true, z = 5, glow }) => {
-  const sw = pose === 'buried' ? h * 0.95 : h * 0.5;
+  const sw = pose === 'imfine' ? h * 1.0 : pose === 'buried' ? h * 0.95 : h * 0.5;
   return (
     <>
       {shadow ? (
