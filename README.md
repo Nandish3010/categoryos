@@ -34,7 +34,7 @@ Then open http://localhost:3000/vendors/V001.
 | `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies`, `ops/promotions/agent.py:generate` (reads funding replies, writes the event brief and funding emails), `ops/pricewatch/agent.py:generate` (daily summary, vendor parity messages), `ops/inventory_health/agent.py:generate` (weekly summary, action notes, vendor messages) | No agent output; only the deterministic metrics remain |
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
 | `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
-| Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
+| Muse Spark Open via Baseten (`meta-models/muse-spark-open-1026`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
 | `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded and decoded with Meta's `meta-sam-parser` (pinned `==0.1.0`, a regular dependency), so real cutouts and panel regions work; the mask raster covers the box only and is placed at the box corner. The SAM License applies to that dependency. If decoding fails the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
@@ -131,7 +131,7 @@ _Live: models called through the gateway (one batched extraction call per model 
 Next.js (Vercel) --HTTP + SSE--> FastAPI (Modal) --> Meta Model API (OpenAI SDK, https://api.meta.ai/v1)
                                        |               muse-spark-1.3 / -contributor, sam-3.1, muse-image-1.0,
                                        |               muse-voice-transcribe-1.0
-                                       +--> Baseten: meta-models/muse-spark-open (sheet classification)
+                                       +--> Baseten: meta-models/muse-spark-open-1026 (sheet classification)
                                        +--> deterministic metrics (pure Python over data/synthetic)
                                        +--> SQLite: vendors, runs, events, claims, approvals
 ```

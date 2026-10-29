@@ -3,9 +3,9 @@
   "parser_version": "1.0",
   "stage": "rules",
   "task": "propose_069d274a02",
-  "model": "hand-written (the expected translation, not a model output)",
+  "model": "muse-spark-1.3 (recorded live 2026-10-29; 5 examples cost $0.08 in total)",
   "prompt": "Set the target margin on treats to 120%",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"op\": \"set\", \"number\": 120, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"margins.categories.treats.target_pct\", \"op\": \"set\", \"number\": 120.0, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

@@ -1,57 +1,52 @@
 {
   "contract": "baseten",
-  "model": "meta-models/muse-spark-open",
+  "model": "meta-models/muse-spark-open-1026",
   "status": "PASS",
-  "note": "parsed=animal='bird' legs=2 api_calls=1 raw='{\"animal\": \"bird\", \"legs\": 2}' tokens=228/298",
-  "recorded_at": "2026-10-27",
+  "note": "parsed=animal='bird' legs=2 api_calls=1 raw='{\"animal\":\"bird\",\"legs\":2}' tokens=228/110",
+  "recorded_at": "2026-10-29",
   "raw": {
     "client.chat.completions.create": [
       {
         "request_params": {
-          "model": "meta-models/muse-spark-open",
+          "model": "meta-models/muse-spark-open-1026",
           "max_tokens": 800
         },
         "events": null,
         "response": {
-          "id": "chatcmpl-f7275bc8940640f7845a6c2d6fe3887d",
+          "id": "chatcmpl-ce21d93c3dcc49c29691b62ccf3839e1",
           "choices": [
             {
               "finish_reason": "stop",
               "index": 0,
               "logprobs": null,
               "message": {
-                "content": "{\"animal\": \"bird\", \"legs\": 2}",
+                "content": "{\"animal\":\"bird\",\"legs\":2}",
                 "refusal": null,
                 "role": "assistant",
                 "annotations": null,
                 "audio": null,
                 "function_call": null,
                 "tool_calls": null,
-                "reasoning_content": {
-                  "_truncated": true,
-                  "prefix": "We need to reply with only JSON object matching schema, no prose.\n\nAnimal: a bird. Fill JSON. Need animal string, legs i",
-                  "length": 1226,
-                  "sha256": "41cb4ff436b02f55226b75f2bcc4a44cc8451046e74d508b5103c6f896da8f86"
-                }
+                "reasoning_content": "Need to respond with only a JSON object matching schema. Schema requires animal string, legs integer. Animal: a bird. Fill JSON.\n\nWe need infer legs for bird. Bird has 2 legs. So animal: \"bird\", legs: 2\n\nMust reply with only JSON object. No prose.\n\nEnsure valid JSON.\n\nShould be {\"animal\": \"bird\", \"legs\": 2}\n\nTitle Mini etc not needed, just properties.\n\nProvide that."
               }
             }
           ],
-          "created": 1793121493,
-          "model": "meta-models/muse-spark-open",
+          "created": 1793282321,
+          "model": "meta-models/muse-spark-open-1026",
           "object": "chat.completion",
           "metadata": null,
           "moderation": null,
           "service_tier": null,
           "system_fingerprint": null,
           "usage": {
-            "completion_tokens": 298,
+            "completion_tokens": 110,
             "prompt_tokens": 228,
-            "total_tokens": 526,
+            "total_tokens": 338,
             "completion_tokens_details": {
-              "accepted_prediction_tokens": 207,
+              "accepted_prediction_tokens": 74,
               "audio_tokens": 0,
-              "reasoning_tokens": 276,
-              "rejected_prediction_tokens": 430,
+              "reasoning_tokens": 91,
+              "rejected_prediction_tokens": 178,
               "text_tokens": null
             },
             "prompt_tokens_details": {
