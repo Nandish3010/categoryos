@@ -108,8 +108,8 @@ flowchart LR
 
 | Figure | Value | Basis |
 |---|---|---|
-| Vendor onboarding elapsed time | About 1 week down to about 2 hours | **Anecdote** from the team's own experience, reported to us. It is elapsed time, not measured active time, and no timing in this repo backs it. The impact meter and `docs/submission/baseline-timing-kit.md` exist to replace it with measured minutes. |
-| Team time saved across the whole job | About 34.6% of the week, about 202 hours per month for a team of 3 | **Modelled**, not measured. It assumes every module is shipped and uses research-estimate task times and savings (`potential_saved_pct`, asserted in `backend/tests/test_impact.py`). The hours figure is 3 people x 45 h x about 4.33 weeks x 34.6%. The workload shares are our estimates (`docs/research/category-manager-workload.md`), not survey data. |
+| Vendor onboarding elapsed time | About 1 week down to about 2 hours | **Anecdote** from our own category team's experience. It is elapsed time, not measured active time, and no timing in this repo backs it. The impact meter and `docs/submission/baseline-timing-kit.md` exist to replace it with measured minutes. |
+| Team time saved across the whole job | About 34.6% of the week, about 202 hours per month for a team of 3 | **Modelled**, not measured. It assumes every module is shipped and uses research-estimate task times and savings (`potential_saved_pct`, asserted in `backend/tests/test_impact.py`). The hours figure comes from the live `GET /api/impact`: 584.5 team hours a month (category managers and executives weighted by headcount) x 34.6% = 202 h. The workload shares are our estimates (`docs/research/category-manager-workload.md`), not survey data. |
 | Onboarding alone | About 9% of a steady-state team's week | Same research doc: onboarding is a minority of the week once the team is not expanding. |
 
 Read the 34.6% as a ceiling to test in the pilot, not a promise. The research note itself suggests discounting by 20-30% for adoption and review overhead (about 25%) and says the freed time is capacity, not headcount. Weeks 0-2 of the rollout exist to replace the modelled numbers with the pilot team's own.
