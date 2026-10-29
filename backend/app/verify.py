@@ -139,6 +139,22 @@ def _recompute_engine(claim: Claim) -> float:
     return compute_metric(sku_key.split(":", 1)[0], claim.metric, sku_key)
 
 
+def _swapped_price_columns(claim: Claim, ev: Evidence, cells: dict[str, str], columns: dict[str, str]) -> str | None:
+    """Row plausibility: a cost or MRP read from its own column is rejected when that row's cost cell is not below its MRP
+    cell (the columns are swapped on this row, so the cell holds the other price). A claim citing the other price's
+    column is the correct cross-header reading and is left alone, as is a row where either cell is missing or unparseable."""
+    field = claim.metric
+    if field not in ("cost", "mrp") or ev.header != columns.get(field) or claim.unit != "inr":
+        return None
+    cost, mrp = (parse_price(cells.get(columns.get(f, ""))) for f in ("cost", "mrp"))
+    if cost is None or mrp is None or cost < mrp:
+        return None
+    return (
+        f"on row {ev.row} the cost cell ({cost:g}) is not below the MRP cell ({mrp:g}): the Cost and MRP columns look "
+        f"swapped on this row; check the row's remark and report the value that is really the {field}"
+    )
+
+
 def _verify_extraction(claim: Claim, rel_file: str) -> Claim:
     ev = claim.evidence
     if ev is None or ev.row is None or not ev.header:
@@ -148,7 +164,7 @@ def _verify_extraction(claim: Claim, rel_file: str) -> Claim:
         return _finish(claim, "unverifiable", "extraction claims are only checked against vendor sku sheets")
     if file_sha256(rel_file) != ev.sha256:
         return _finish(claim, "rejected", "source changed: evidence sha256 does not match the file")
-    _, rows = load_sheet(match.group(1))
+    headers, rows = load_sheet(match.group(1))
     row = next((r for r in rows if r.row == ev.row), None)
     if row is None or ev.header not in row.cells:
         return _finish(claim, "rejected", f"evidence cell not found (row {ev.row}, header {ev.header!r})")
@@ -157,7 +173,8 @@ def _verify_extraction(claim: Claim, rel_file: str) -> Claim:
     if parsed is None:
         return _finish(claim, "rejected", f"cell {raw!r} could not be parsed as {claim.unit}")
     if abs(parsed - claim.value) <= policy.tol(claim.unit):
-        return _finish(claim, "verified", None, parsed)
+        swapped = _swapped_price_columns(claim, ev, row.cells, map_columns(headers))
+        return _finish(claim, "rejected", swapped) if swapped else _finish(claim, "verified", None, parsed)
     return _finish(claim, "rejected", f"sheet cell {raw!r} parses to {parsed:g}, claim says {claim.value:g}", parsed)
 
 

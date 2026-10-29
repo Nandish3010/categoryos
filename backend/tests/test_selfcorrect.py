@@ -6,13 +6,15 @@ import json
 
 import pytest
 
-from app import llm, policy, selfcorrect
+from app import ledger, llm, policy, selfcorrect
 from app.agents import catalog, decide, negotiate
 from app.agents.context import RunContext, Sequencer
-from app.errors import FixtureMissing
+from app.config import settings
+from app.errors import FixtureMissing, LlmBadOutput
 from app.metrics import apply_levers, build_base
 from app.schemas import (
     Claim,
+    ClaimFix,
     Commitment,
     Evidence,
     FixFinal,
@@ -42,14 +44,26 @@ def story(events):
 class FakeFixes:
     """Replaces llm.call for the ``__fix<n>`` tasks: scripted answers per attempt, everything else goes through."""
 
-    def __init__(self, monkeypatch, answers):
+    def __init__(self, monkeypatch, answers, esc=None, esc_cost=0.0):
         self.answers = answers  # attempt -> list of fix dicts, or an exception
+        self.esc = esc  # the escalation's answer: a list of fix dicts, or an exception
+        self.esc_cost = esc_cost
         self.calls = []
+        self.esc_calls = []
         self.real = llm.call
         monkeypatch.setattr(llm, "call", self)
 
     async def __call__(self, stage, messages, **kw):
         task = kw.get("task", "")
+        if task.endswith("__esc"):
+            self.esc_calls.append({"task": task, "messages": messages, "model": kw.get("model"), "provider": kw.get("provider")})
+            if isinstance(self.esc, Exception):
+                raise self.esc
+            parsed = FixFinal.model_validate({"fixes": self.esc or []})
+            return llm.LlmResult(
+                content=json.dumps(parsed.model_dump()), parsed=parsed, model=kw.get("model") or "muse-wonder-1.0", provider="meta",
+                mode="live", input_tokens=1000, output_tokens=500, cost_usd=self.esc_cost, latency_ms=2.0,
+            )
         if "__fix" not in task:
             return await self.real(stage, messages, **kw)
         attempt = int(task.rsplit("__fix", 1)[1])
@@ -193,6 +207,121 @@ def test_apply_corrections_keeps_commas_and_decimals():
     assert narrative["counter_offer"]["terms"][0]["rationale"] == "Was 3105.50."
 
 
+# ---------- escalation ----------
+
+WONDER = "muse-wonder-1.0"
+
+
+def test_escalation_fixes_a_claim_the_normal_retries_could_not(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: [fix(965.5)], 2: [fix(965.0)]}, esc=[fix(956.5)])
+    result, events = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert claim.status == "verified" and claim.value == 956.5
+    assert [(a.attempt, a.status, a.escalated) for a in claim.attempts] == [
+        (0, "rejected", False), (1, "rejected", False), (2, "rejected", False), (3, "verified", True),
+    ]
+    assert len(fake.calls) == 2 and len(fake.esc_calls) == 1
+    esc = fake.esc_calls[0]
+    assert esc["task"] == "decide_V001__esc" and esc["model"] == WONDER and esc["provider"] == "meta"
+    assert "Earlier corrections of these claims were rejected too" in esc["messages"][-1]["content"]
+    traced = [e for e in events if e.type == "self_correction" and e.payload.get("escalated")]
+    assert len(traced) == 1 and traced[0].payload["model"] == WONDER and traced[0].payload["answered"] is True
+    assert traced[0].payload["attempt"] == 3 and traced[0].payload["claim_ids"] == [HP_D01]
+    assert story(events)[-2:] == [("self_correction", 3), ("claim_verified", 3)]
+    assert not [e for e in events if e.type == "claim_unresolved"]
+    assert result.data["struck"] == []
+    assert selfcorrect.fixed_by_escalation(result.claims) == [claim] and selfcorrect.escalated(result.claims) == [claim]
+
+
+def test_escalation_that_fails_too_leaves_the_claim_removed_as_before(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: [fix(965.5)], 2: [fix(965.0)]}, esc=[fix(960.0)])
+    result, events = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert claim.status == "rejected" and [a.attempt for a in claim.attempts] == [0, 1, 2, 3]
+    assert claim.attempts[-1].escalated is True
+    assert len(fake.esc_calls) == 1
+    assert story(events)[-3:] == [("self_correction", 3), ("claim_rejected", 3), ("claim_unresolved", None)]
+    assert len(result.data["struck"]) == 1 and result.data["self_correction"]["unresolved"] == [HP_D01]
+    assert selfcorrect.fixed_by_escalation(result.claims) == [] and selfcorrect.escalated(result.claims) == [claim]
+
+
+def test_an_escalation_that_cannot_answer_is_traced_and_the_claim_is_removed(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    FakeFixes(monkeypatch, {1: [fix(965.5)], 2: [fix(965.0)]}, esc=FixtureMissing("no fixture", cause="x", fix="y"))
+    result, events = drive(decide.run, "V001")
+    traced = [e for e in events if e.type == "self_correction" and e.payload.get("escalated")]
+    assert len(traced) == 1 and traced[0].payload["answered"] is False and "note" in traced[0].payload
+    assert next(c for c in result.claims if c.id == HP_D01).status == "rejected" and len(result.data["struck"]) == 1
+
+
+def test_with_escalation_disabled_the_old_behaviour_stands(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", "")
+    fake = FakeFixes(monkeypatch, {1: [fix(965.5)], 2: [fix(965.0)]}, esc=[fix(956.5)])
+    result, events = drive(decide.run, "V001")
+    assert fake.esc_calls == []
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert claim.status == "rejected" and [a.attempt for a in claim.attempts] == [0, 1, 2]
+    assert not [e for e in events if e.payload.get("escalated")]
+    assert story(events)[-1][0] == "claim_unresolved"
+
+
+def test_no_escalation_when_the_normal_retry_never_got_an_answer(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: FixtureMissing("no fixture", cause="x", fix="y")}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    assert fake.esc_calls == [] and next(c for c in result.claims if c.id == HP_D01).status == "rejected"
+
+
+def test_a_claim_fixed_by_a_normal_retry_is_never_escalated(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: [fix(956.5)]}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    assert fake.esc_calls == [] and selfcorrect.escalated(result.claims) == []
+
+
+def test_the_escalation_call_is_recorded_with_its_model_and_cost(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    FakeFixes(monkeypatch, {1: [fix(965.5)], 2: [fix(965.0)]}, esc=[fix(956.5)], esc_cost=0.014)
+    _result, events = drive(decide.run, "V001")
+    call = next(e for e in events if e.type == "model_call" and e.payload["task"].endswith("__esc"))
+    assert call.model == WONDER and call.cost_usd == 0.014 and call.payload["input_tokens"] == 1000
+    # the published price ($4 / $20 per 1M tokens) is what the ledger charges for 1000 in / 500 out
+    assert ledger.price(WONDER, {"input_tokens": 1000, "output_tokens": 500}) == pytest.approx(0.014)
+
+
+def test_a_custom_ask_escalates_only_when_given_an_escalate_callable(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    bad = sheet_claim()
+
+    async def run(with_escalate):
+        ctx = RunContext("run_test", "V001", "2026-10-27", Sequencer())
+        calls = []
+
+        async def ask(todo, attempt):
+            calls.append(("ask", attempt))
+            return {c.id: ClaimFix(claim_id=c.id, value=965.5, row=2, header="Cost to Us") for c in todo}, None
+
+        async def esc(todo, attempt):
+            calls.append(("esc", attempt))
+            return {c.id: ClaimFix(claim_id=c.id, value=956.5, row=2, header="Cost to Us") for c in todo}, None
+
+        def rebuild(claim, f):
+            return claim.model_copy(update={"value": f.value, "status": "pending", "reason": None})
+
+        out = await selfcorrect.self_correct(
+            ctx, "research", [bad], task="t", messages=[], previous="", rebuild=rebuild,
+            check=lambda batch: [verify_claim(c) for c in batch], ask=ask, escalate=esc if with_escalate else None,
+        )
+        return out, calls
+
+    out, calls = asyncio.run(run(False))
+    assert calls == [("ask", 1), ("ask", 2)] and out[0].status == "rejected"
+    out, calls = asyncio.run(run(True))
+    assert calls == [("ask", 1), ("ask", 2), ("esc", 3)] and out[0].status == "verified" and out[0].attempts[-1].escalated
+
+
 # ---------- negotiate ----------
 
 
@@ -321,3 +450,26 @@ def test_the_limit_is_validated(limit):
         policy.reset()
     with pytest.raises(Exception, match="max_self_corrections"):
         policy.save_overrides({"verifier": {"max_self_corrections": 9}})
+
+
+def test_a_fix_whose_id_drops_the_namespace_still_applies():
+    fixes = {"T012": fix(1.0), "HP-D01:cost:extracted": fix(2.0)}
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": "hard:T012"}), fixes)["value"] == 1.0
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": HP_D01}), fixes)["value"] == 2.0
+    assert selfcorrect._fix_for(sheet_claim().model_copy(update={"id": "hard:T013"}), fixes) is None
+
+
+def test_an_answered_retry_that_fixes_nothing_still_escalates(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: [fix(1.0, claim_id="no-such-claim")]}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert len(fake.esc_calls) == 1 and claim.status == "verified" and claim.attempts[-1].escalated is True
+
+
+def test_a_retry_whose_output_is_unusable_escalates(monkeypatch):
+    monkeypatch.setattr(settings, "escalation_model", WONDER)
+    fake = FakeFixes(monkeypatch, {1: LlmBadOutput(cause="the model returned an empty or refused response twice")}, esc=[fix(956.5)])
+    result, _ = drive(decide.run, "V001")
+    claim = next(c for c in result.claims if c.id == HP_D01)
+    assert len(fake.esc_calls) == 1 and claim.status == "verified" and claim.attempts[-1].escalated is True

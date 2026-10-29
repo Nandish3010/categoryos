@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     sse_heartbeat_s: float = 15.0
     demo_today: str | None = None  # ISO date; freezes the clock used by check_documents
     rate_limit_per_min: int = 20
+    llm_timeout_s: float = 60.0  # per model call; long batch calls (make eval-hard on Baseten) need more
     warn_spend_usd: float = 100
 
     model_text: str = "muse-spark-1.3"
@@ -36,7 +37,9 @@ class Settings(BaseSettings):
     model_image: str = "muse-image-1.0"
     model_seg: str = "sam-3.1"
     model_voice: str = "muse-voice-transcribe-1.0"
-    baseten_model: str = "meta-models/muse-spark-open-1026"  # the undated alias answers 403 on new keys
+    # A claim the verifier rejects after the normal self-correction retries is re-read once by this model. Empty: no escalation.
+    escalation_model: str = "muse-wonder-1.0"
+    baseten_model: str = "meta-models/muse-spark-open"  # Baseten retired the dated id muse-spark-open-1026 on 2026-10-30 (404)
 
     assets_dir: Path = BACKEND_DIR / "fixtures" / "assets"
     sam_enabled: bool = True  # SAM go/no-go: False -> cutouts are "unavailable" and the packshot is shown

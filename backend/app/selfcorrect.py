@@ -6,6 +6,13 @@ caller falls back to its old behaviour (strike the sentence, use the sheet value
 
 Trace events per claim: ``claim_rejected`` -> ``self_correction`` -> ``claim_verified`` (or ``claim_unresolved``).
 
+Escalation: a claim the verifier still rejects after the last normal retry gets one more re-read by a stronger model
+(``Settings.escalation_model``, default ``muse-wonder-1.0``; an empty string turns it off), checked by the same verifier.
+It is traced as one more ``self_correction`` event carrying ``escalated: true`` and the model, and the claim's last
+``attempts`` entry has ``escalated: true``. A claim that is still wrong is left unresolved, exactly as before. In mock and
+replay the escalation reads the scripted fixture ``<task>__esc.json``; with none it is not answered, so the old behaviour
+(the claim is removed) stands.
+
 Live shape (assumed, unverified): the retry is one more chat completion with the original messages, the agent's previous
 final answer as an assistant message and the verifier feedback as a user message, replying ``{"fixes": [...]}`` (see
 ``FixFinal``). In mock and replay it reads the scripted fixture ``<task>__fix<attempt>.json``; with none, the claim
@@ -17,13 +24,22 @@ from typing import Any, Literal
 
 from app import llm, policy
 from app.agents.context import RunContext
-from app.errors import CategoryOSError
+from app.config import settings
+from app.errors import CategoryOSError, LlmBadOutput
 from app.schemas import Claim, ClaimAttempt, ClaimFix, FixFinal
 from app.verify import VerifySummary
 
 Ask = Callable[[list[Claim], int], Awaitable[tuple[dict[str, ClaimFix] | None, str | None]]]  # (rejected, attempt) -> fixes
 Rebuild = Callable[[Claim, ClaimFix], Claim | None]  # claim carrying the corrected answer, still unverified (same id)
 Check = Callable[[list[Claim]], list[Claim]]  # verify them (the verifier plus any extra rule the stage applies)
+
+
+def _fix_for(claim: Claim, fixes: dict[str, ClaimFix]) -> ClaimFix | None:
+    """The fix for a claim. Models often drop an id's leading namespace ("T012" for "hard:T012"), so that is accepted too."""
+    if claim.id in fixes:
+        return fixes[claim.id]
+    _, sep, short = claim.id.partition(":")
+    return fixes.get(short) if sep else None
 
 
 def shown_value(claim: Claim) -> str:
@@ -39,9 +55,8 @@ def feedback(claim: Claim) -> str:
     ev = claim.evidence
     cited = ""
     if ev is not None and ev.row is not None:
-        cited = f"the evidence cites {'turn' if claim.metric.startswith('commit_') else 'sheet row'} {ev.row}" + (
-            f" '{ev.header}'" if ev.header and not claim.metric.startswith("commit_") else ""
-        )
+        quoted = claim.metric.startswith(("commit_", "deal_term_"))  # figures quoted from a call turn, not read off a sheet row
+        cited = f"the evidence cites {'turn' if quoted else 'sheet row'} {ev.row}" + (f" '{ev.header}'" if ev.header and not quoted else "")
     parts = [f"Claim {claim.id} rejected: you said {shown_value(claim)}"]
     if cited:
         parts.append(cited)
@@ -49,8 +64,10 @@ def feedback(claim: Claim) -> str:
     return "; ".join(parts) + f". {detail}. Re-read and correct."
 
 
-def _attempt(n: int, claim: Claim) -> ClaimAttempt:
-    return ClaimAttempt(attempt=n, value=claim.value, status=claim.status, reason=claim.reason, recomputed=claim.recomputed)
+def _attempt(n: int, claim: Claim, *, escalated: bool = False) -> ClaimAttempt:
+    return ClaimAttempt(
+        attempt=n, value=claim.value, status=claim.status, reason=claim.reason, recomputed=claim.recomputed, escalated=escalated
+    )
 
 
 async def _ask(
@@ -64,21 +81,25 @@ async def _ask(
     *,
     model: str | None = None,
     provider: Literal["meta", "baseten"] = "meta",
+    escalated: bool = False,
 ) -> tuple[dict[str, ClaimFix] | None, str | None]:
     notes = "\n".join(feedback(c) for c in pending)
+    if escalated:
+        notes = f"Earlier corrections of these claims were rejected too. Read the source again with care.\n{notes}"
     ask = (
         f"{notes}\nReply with only a JSON object {{\"fixes\": [{{\"claim_id\", \"value\", and where it applies "
         "\"row\", \"header\", \"turn\", \"transcript_quote\"}}]}} with one entry per rejected claim."
     )
     msgs = [*messages, {"role": "assistant", "content": previous}, {"role": "user", "content": ask}]
+    name = f"{task}__esc" if escalated else f"{task}__fix{attempt}"
     try:
-        res = await llm.call(stage, msgs, task=f"{task}__fix{attempt}", schema=FixFinal, model=model, provider=provider)
+        res = await llm.call(stage, msgs, task=name, schema=FixFinal, model=model, provider=provider)
     except CategoryOSError as exc:  # no scripted fixture, no credits, provider down: stay unresolved, never block
         return None, f"{exc.code}: no corrected answer available"
     ctx.emit(
         "model_call",
         stage,
-        {"task": f"{task}__fix{attempt}", "mode": res.mode, "input_tokens": res.input_tokens, "output_tokens": res.output_tokens, "tool_steps": 0},
+        {"task": name, "mode": res.mode, "input_tokens": res.input_tokens, "output_tokens": res.output_tokens, "tool_steps": 0},
         model=res.model,
         latency_ms=res.latency_ms,
         cost_usd=res.cost_usd,
@@ -98,6 +119,8 @@ async def self_correct(
     rebuild: Rebuild,
     check: Check,
     ask: Ask | None = None,
+    escalate: Ask | None = None,
+    escalation_model: str | None = None,
     model: str | None = None,
     provider: Literal["meta", "baseten"] = "meta",
 ) -> list[Claim]:
@@ -106,7 +129,11 @@ async def self_correct(
     ``claims`` are already verified. ``rebuild`` turns a claim plus the agent's fix into a new unverified claim and
     ``check`` verifies it; the caller keeps whatever other state (narrative, structured output) it needs in those two
     closures. Corrected claims carry their ``attempts`` timeline. ``ask`` replaces the model call (the eval harness drives
-    its own agents through the same loop); ``model`` / ``provider`` pick which model is asked."""
+    its own agents through the same loop); ``model`` / ``provider`` pick which model is asked.
+
+    Escalation runs once, after the last retry, for the claims still rejected. ``escalation_model`` overrides
+    ``Settings.escalation_model`` (empty: off). With a custom ``ask`` there is no escalation unless ``escalate`` (the same
+    shape as ``ask``) is given."""
     limit = policy.get().verifier.max_self_corrections
     out = list(claims)
     index = {c.id: i for i, c in enumerate(out)}
@@ -120,6 +147,7 @@ async def self_correct(
         ctx.emit("claim_rejected", stage, {"claim": claim.model_dump(mode="json"), "attempt": 0})
 
     attempt = 0
+    retried = False  # at least one normal retry was answered, so a claim still rejected after it was rejected "twice"
     while attempt < limit and (todo := pending()):
         attempt += 1
         if ask is not None:
@@ -139,8 +167,12 @@ async def self_correct(
             },
         )
         if fixes is None:
+            # the model was asked but gave nothing usable (empty, refused, unparseable): a case for the stronger model.
+            # No answer at all (no fixture, no credits, provider down) is not.
+            retried = retried or (note or "").startswith(LlmBadOutput.code)
             break
-        rebuilt = [new for c in todo if c.id in fixes and (new := rebuild(c, fixes[c.id])) is not None]
+        retried = True  # the model answered: whatever it said, a claim still rejected now goes to the escalation model
+        rebuilt = [new for c in todo if (fix := _fix_for(c, fixes)) is not None and (new := rebuild(c, fix)) is not None]
         if not rebuilt:
             break
         for new in check(rebuilt):
@@ -150,6 +182,34 @@ async def self_correct(
                 ctx.emit("claim_verified", stage, {"claim": new.model_dump(mode="json"), "attempt": attempt})
             else:
                 ctx.emit("claim_rejected", stage, {"claim": new.model_dump(mode="json"), "attempt": attempt})
+
+    esc_model = settings.escalation_model.strip() if escalation_model is None else escalation_model.strip()
+    if retried and esc_model and (todo := pending()) and (escalate is not None or ask is None):
+        attempt += 1
+        if escalate is not None:
+            fixes, note = await escalate(todo, attempt)
+        else:
+            fixes, note = await _ask(ctx, stage, task, messages, previous, todo, attempt, model=esc_model, provider="meta", escalated=True)
+        ctx.emit(
+            "self_correction",
+            stage,
+            {
+                "attempt": attempt,
+                "of": limit,
+                "escalated": True,
+                "model": esc_model,
+                "claim_ids": [c.id for c in todo],
+                "feedback": [feedback(c) for c in todo],
+                "answered": fixes is not None,
+                **({"note": note} if note else {}),
+            },
+        )
+        rebuilt = [new for c in todo if fixes is not None and (fix := _fix_for(c, fixes)) is not None and (new := rebuild(c, fix)) is not None]
+        for new in check(rebuilt) if rebuilt else []:
+            out[index[new.id]] = new
+            history[new.id].append(_attempt(attempt, new, escalated=True))
+            kind = "claim_verified" if new.status == "verified" else "claim_rejected"
+            ctx.emit(kind, stage, {"claim": new.model_dump(mode="json"), "attempt": attempt, "escalated": True})
 
     for claim in pending():
         ctx.emit("claim_unresolved", stage, {"claim": claim.model_dump(mode="json"), "attempts": attempt})
@@ -162,6 +222,16 @@ async def self_correct(
 def corrected(claims: list[Claim]) -> list[Claim]:
     """Claims the verifier first rejected and the agent then got right."""
     return [c for c in claims if c.status == "verified" and len(c.attempts) > 1]
+
+
+def escalated(claims: list[Claim]) -> list[Claim]:
+    """Claims that were escalated to the stronger model (whether or not it got them right)."""
+    return [c for c in claims if any(a.escalated for a in c.attempts)]
+
+
+def fixed_by_escalation(claims: list[Claim]) -> list[Claim]:
+    """Claims the normal retries could not fix and the escalation then got right."""
+    return [c for c in claims if c.status == "verified" and c.attempts and c.attempts[-1].escalated]
 
 
 def unresolved(claims: list[Claim]) -> list[Claim]:

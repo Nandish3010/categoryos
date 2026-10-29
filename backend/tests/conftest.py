@@ -13,6 +13,7 @@ def isolated_settings(monkeypatch, tmp_path):
     monkeypatch.setattr(settings, "demo_key", None)
     monkeypatch.setattr(settings, "live_stages", "")
     monkeypatch.setattr(settings, "record", False)
+    monkeypatch.setattr(settings, "escalation_model", "")  # tests that exercise escalation switch it on
     monkeypatch.setattr(settings, "ledger_path", tmp_path / "ledger.json")
     monkeypatch.setattr(settings, "db_path", tmp_path / "test.db")
     monkeypatch.setattr(settings, "assets_dir", tmp_path / "assets")

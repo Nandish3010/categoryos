@@ -63,6 +63,7 @@ class ClaimAttempt(BaseModel):
     status: ClaimStatus
     reason: str | None = None
     recomputed: float | None = None
+    escalated: bool = False  # this try was made by the escalation model after the normal retries failed
 
 
 class Claim(BaseModel):

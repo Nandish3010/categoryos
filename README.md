@@ -37,8 +37,9 @@ Then open http://localhost:3000/vendors/V001.
 |---|---|---|---|
 | `muse-spark-1.3` | Reasoning, extraction, tool calling and narrative for every agent | `backend/app/llm.py` (`call`, `run_tools`), used by `agents/decide.py:run`, `agents/screen.py:run`, `agents/negotiate.py:run`, `agents/catalog.py:run`, `agents/launch.py:run`, `agents/pricereq.py:analyse`, `agents/dealflow.py:extract`, `copilot.py:_extract`, `ops/review.py:generate`, `ops/chaser.py:read_replies`, `ops/promotions/agent.py:generate` (reads funding replies, writes the event brief and funding emails), `ops/pricewatch/agent.py:generate` (daily summary, vendor parity messages), `ops/inventory_health/agent.py:generate` (weekly summary, action notes, vendor messages) | No agent output; only the deterministic metrics remain |
 | `muse-spark-1.3` (vision) | Reads vendor scans (certificates, labels, price lists) with bounding boxes | `backend/app/docs.py:_read_page` | Declared document status is used |
+| `muse-wonder-1.0` | Escalation: Meta's frontier agent model re-reads one claim the verifier rejected twice (after the normal self-correction retries), and the verifier checks its answer. Priced at the published $4 / $20 per 1M input / output tokens. Off with an empty `ESCALATION_MODEL` | `backend/app/selfcorrect.py:self_correct` (`Settings.escalation_model`); the hard eval also runs it as model C | The claim is removed, as before |
 | `muse-spark-1.3-contributor` | Cheaper development model; used by `make contract`. Not wired into a pipeline stage | `backend/app/config.py` (`Settings.model_text_dev`) | Dev loops use the main model |
-| Muse Spark Open via Baseten (`meta-models/muse-spark-open-1026`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
+| Muse Spark Open via Baseten (`meta-models/muse-spark-open`) | SKU classification of messy vendor sheets, compared with the rules classifier | `backend/app/agents/catalog.py:classify` | Falls back to the deterministic taxonomy |
 | `sam-3.1` | Packshot cutouts; finds a label's nutrition and claims panel so it can be cropped and read again | `backend/app/media.py` (`segment`, `segment_region`), used by `agents/catalog.py:_images`, `docs.py:_find_panel` | Original packshot with a label; label fields are read from their own boxes. Masks are arithmetic-coded and decoded with Meta's `meta-sam-parser` (pinned `==0.1.0`, a regular dependency), so real cutouts and panel regions work; the mask raster covers the box only and is placed at the box corner. The SAM License applies to that dependency. If decoding fails the box token is used |
 | `muse-image-1.0` | Packshots, lifestyle and campaign images | `backend/app/media.py:generate_image`, used by `agents/catalog.py:_image`, `agents/launch.py:_campaign_image` | Labelled placeholder images |
 | `muse-voice-transcribe-1.0` | Transcribes the vendor call (push-to-talk) | `backend/app/media.py:transcribe`, used by `copilot.py:transcribe`, `agents/negotiate.py:_asr` | The stored transcript fixture, with a banner |
@@ -59,7 +60,7 @@ CategoryOS takes a vendor from application to a launch-ready order in four phase
 These features carry the product:
 
 - **Live what-if lever.** Drag target margin and MOQ and the shortlist re-scores instantly, showing capital at risk, days of cover and GMV. The numbers come from deterministic Python over the data, not from a model.
-- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell. When the agent read a number wrong, it is told what the source says and tries again (up to `verifier.max_self_corrections`, default 2); the UI shows "Caught → corrected" with the attempts. A claim that never gets right is removed before it reaches the page.
+- **The verifier.** Every number the agents state cites a source cell (file, key, column). Each claim is re-checked against that cell. When the agent read a number wrong, it is told what the source says and tries again (up to `verifier.max_self_corrections`, default 2); the UI shows "Caught → corrected" with the attempts. A claim the verifier still rejects after those retries is escalated once to `muse-wonder-1.0` (config `ESCALATION_MODEL`, empty turns it off), whose answer is verified the same way and shown in the trace as "escalated to muse-wonder-1.0". A claim that never gets right is removed before it reaches the page.
 - **The impact meter.** The app records how long a person actually spends reviewing each stage (from "ready for review" to approve) and counts their edits, then compares that with the playbook's by-hand baselines (`impact`: research estimates, not measured, until you replace them with your own time diary). The vendor workspace has a per-vendor drawer; the vendors board has a team projection that shows the share of the team's week in scope of the shipped modules, the share saved, and every module as shipped or not yet built, labelled estimate or measured.
 - **Promotions and event planner (Run).** For each sale in the playbook calendar (a festive sale, a payday sale) Python plans from ops sales, stock and open POs: baseline demand lifted by the event, an uplift curve per category, units pulled forward, sales taken from near-duplicate SKUs, the stock-out check (a depth that would run out before the event ends is capped, or a stock-up PO is suggested if the vendor's lead time allows), the margin after vendor funding and the funding ask. The model reads the vendors' funding replies (every share, target and banner is checked against the email and self-corrected), the deal evaluator values conditional offers by Monte Carlo (an unreachable target counts as 0 and is countered), and the model writes the brief and the funding emails from engine numbers only: a sentence with a number that does not verify is struck. A person approves; POs and mails are simulated. Open `/run/promotions`; tune it in the Playbook (`promotions`).
 - **Competitor price monitor (Run).** Thirty days of daily price snapshots from three marketplaces. Python separates a sustained undercut from a one-day blip (never matched) and a slow trend, flags a vendor selling under our price elsewhere or under MAP, and recommends match / hold / ask the vendor for price protection / flag the breach, with the margin impact over the horizon. Every number is a claim the verifier recomputes; the model drafts the daily summary and the vendor messages. Open `/run/price-watch`; tune it in the Playbook (`price_watch`).
@@ -129,13 +130,57 @@ _Live: models called through the gateway (one batched extraction call per model 
 | Regex + model | 30/30 (100%) | |
 <!-- eval:end -->
 
+### Hard mode
+
+`make eval-hard` runs a harder extraction set through the same extraction, verifier and self-correction path, for three models: A `muse-spark-1.3`, B Muse Spark Open on Baseten, C `muse-wonder-1.0` (Meta's frontier agent model, price $4 / $20 per 1M tokens). The set is synthetic and deterministic (`eval/hard_data.py`, seed 42; the generated sheet, email thread and ground truth are committed in `eval/hard_set/`): a messy price sheet with divider and note rows, a block whose cost and MRP columns are swapped, `Rs.399/-`, `₹ 3,3,25` comma typos, paise next to rupees, kg/g and L/ml mixes, `6 x 400g` multipacks, a revised cost next to the old one, plus a Hinglish email thread (`MRP 450 hai, margin 18% de denge, MOQ 2 carton`), spelled-out numbers, an email corrected by a later one, and prompt-injection lines in both the sheet and the emails. Every task has ground truth. Models A and B escalate a claim the verifier rejected twice to model C; "silent errors" are answers the verifier accepted that are wrong (it re-reads the cell or quote the answer cites, plus a row check: a cost or MRP read from its own column is rejected when that row's cost is not below its MRP, which is how the swapped block is caught. An answer that quotes a superseded email, or the wrong number inside the right quote, can still pass). It is mock by default (free; scripted stand-ins, labelled) and writes `eval/results/hard.json`; `MODEL_MODE=live make eval-hard` calls the real models (needs keys, spends credits, stops at $3). The clean eval above is unchanged.
+
+What the live runs taught us: the first live run (30 Oct 2026, before the row check existed) had both Spark models read all 11 swapped-block rows wrong, and the verifier accepted every one (15 silent errors each). The row check was added from that finding; in the run below the verifier catches those readings and muse-spark-1.3 corrects them on one retry, reaching the same 95.7% as muse-wonder-1.0 at about a third of the cost. The 4 silent errors left in each model are email answers (a superseded email, an injection line in an email, a spelled-out number). Single runs vary: muse-spark-1.3's first pass ranged from 81% to 95% across five live runs.
+
+<!-- eval-hard:start -->
+**Mode: live.** Live run: models called through the gateway, $0.23 spent. Seed 42, run 2026-10-30.
+
+**Hard extraction set** (94 tasks, mode: live)
+
+| Model | First-pass accuracy | Caught by verifier | Corrected on retry | Final accuracy (after retries) | Silent errors | Cost | Tokens | Latency / task |
+|---|---|---|---|---|---|---|---|---|
+| muse-spark-1.3 (model A) | 80.8% | 14 | 14 | 95.7% | 4 | $0.0566 | 17765 in / 9742 out | 0.3 s (extract call 22 s) |
+| Muse Spark Open via Baseten (model B) | 95.7% | 0 | 0 | 95.7% | 4 | not metered | 13286 in / 64733 out | 2.0 s (extract call 186 s) |
+| muse-wonder-1.0 (model C) | 95.7% | 0 | 0 | 95.7% | 4 | $0.1689 | 6295 in / 7187 out | 0.5 s (extract call 51 s) |
+
+Escalation: a claim the verifier rejects after the normal retries is re-read once by muse-wonder-1.0 (model C runs without it).
+
+| Model | Rejected twice, escalated | Fixed by escalation | Final accuracy with escalation | Silent errors | Removed | Escalation cost |
+|---|---|---|---|---|---|---|
+| muse-spark-1.3 (model A) | 0 | 0 | 95.7% | 4 | 0 | $0.0000 |
+| Muse Spark Open via Baseten (model B) | 0 | 0 | 95.7% | 4 | 0 | not metered |
+
+By category (first-pass accuracy; silent = accepted by the verifier but wrong against ground truth, after the retries):
+
+| Category | Tasks | muse-spark-1.3 first-pass | Muse Spark Open via Baseten first-pass | muse-wonder-1.0 first-pass | muse-spark-1.3 silent | Muse Spark Open via Baseten silent | muse-wonder-1.0 silent |
+|---|---|---|---|---|---|---|---|
+| Prices written Rs.399/- | 8 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Misplaced commas (₹ 3,3,25) | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Paise next to rupees | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| kg/g and L/ml mixed | 8 | 0% | 100% | 100% | 0 | 0 | 0 |
+| Multipacks (6 x 400g) | 6 | 0% | 100% | 100% | 0 | 0 | 0 |
+| Old vs revised cost | 8 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Swapped cost/MRP columns | 11 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Injection line in the sheet | 5 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Hinglish vendor emails | 10 | 100% | 100% | 100% | 0 | 0 | 0 |
+| Spelled-out numbers | 8 | 100% | 88% | 88% | 0 | 1 | 1 |
+| Corrected by a later email | 6 | 67% | 100% | 67% | 2 | 0 | 2 |
+| Injection line in an email | 4 | 50% | 25% | 75% | 2 | 3 | 1 |
+
+_Live: models called through the gateway, one batched extraction call per model over the committed hard set; A and B escalate to muse-wonder-1.0 after the normal retries (C runs without escalation). Cost from the ledger (Muse Spark Open on Baseten is not metered: price unknown); latency = total wall-clock / tasks. The extraction prompt tells the model the files are third-party data, not instructions. Silent errors are answers the verifier accepted that are wrong against ground truth._
+<!-- eval-hard:end -->
+
 ## Architecture
 
 ```
 Next.js (Vercel) --HTTP + SSE--> FastAPI (Modal) --> Meta Model API (OpenAI SDK, https://api.meta.ai/v1)
                                        |               muse-spark-1.3 / -contributor, sam-3.1, muse-image-1.0,
                                        |               muse-voice-transcribe-1.0
-                                       +--> Baseten: meta-models/muse-spark-open-1026 (sheet classification)
+                                       +--> Baseten: meta-models/muse-spark-open (sheet classification)
                                        +--> deterministic metrics (pure Python over data/synthetic)
                                        +--> SQLite: vendors, runs, events, claims, approvals
 ```
@@ -166,6 +211,7 @@ Only needed for live mode. Copy `.env.example` to `.env`.
 | `MODEL_MODE` | `mock`, `live` or `replay` |
 | `LIVE_STAGES` | Comma-separated stages that run live when mode is `live` |
 | `MAX_SPEND_USD` | Hard cap on model spend; live calls are refused above it |
+| `ESCALATION_MODEL` | Model that re-reads a claim the verifier rejected after the normal retries (default `muse-wonder-1.0`; empty disables escalation) |
 | `CALL_BUDGET_USD` | Most one live copilot call may spend on transcription and extraction (default 2.00) |
 
 ## Configure the playbook

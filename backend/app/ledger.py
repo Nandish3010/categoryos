@@ -23,11 +23,11 @@ TOKEN_PRICES: dict[str, tuple[float, float, float]] = {
     "muse-spark-1.1-contributor": _CONTRIB,
     "muse-spark-1.2-contributor": _CONTRIB,
     "muse-spark-1.3-contributor": _CONTRIB,
+    # Published price: $4 per 1M input tokens, $20 per 1M output tokens. The cached-input rate is our own assumption.
     "muse-wonder-1.0": (4.00, 0.20, 20.00),
     # TODO: Baseten open-weight pricing is not known yet; counted as $0 until confirmed.
     "muse-spark-open": (0.0, 0.0, 0.0),
     "meta-models/muse-spark-open": (0.0, 0.0, 0.0),
-    "meta-models/muse-spark-open-1026": (0.0, 0.0, 0.0),
 }
 PER_IMAGE_USD = {"muse-image-1.0": 0.01, "sam-3.1": 2.50 / 1000}
 PER_HOUR_USD = {"muse-voice-transcribe-1.0": 0.18}

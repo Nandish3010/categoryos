@@ -215,3 +215,48 @@ def test_model_extraction_verified_against_messy_cost_cell(row, sku, raw, value)
     ok = verify_claim(claim(value))
     assert ok.status == "verified" and ok.recomputed == value, raw
     assert verify_claim(claim(value + 50)).status == "rejected"
+
+
+def _price_row_claim(metric: str, value: float, header: str) -> Claim:
+    ev = Evidence(row=2, header=header, raw_value="x", parser_version="1.0", sha256=file_sha256(SHEET))
+    return Claim(
+        id="p", text=f"X {metric}", value=value, metric=metric, unit="inr", sku_key="V001:X",
+        source_ref=SourceRef(file=SHEET, key="V001:X", column=header), evidence=ev, origin="model_extraction",
+    )  # fmt: skip
+
+
+def _with_price_row(monkeypatch, cost_cell: str, mrp_cell: str) -> None:
+    from app import verify
+    from app.data_loader import SheetRow
+
+    headers = ["Code", "MRP", "Cost to Us"]
+    row = SheetRow(row=2, cells={"Code": "X", "MRP": mrp_cell, "Cost to Us": cost_cell})
+    monkeypatch.setattr(verify, "load_sheet", lambda _vendor: (headers, (row,)))
+
+
+def test_swapped_columns_row_rejects_own_column_reading(monkeypatch):
+    _with_price_row(monkeypatch, cost_cell="1499", mrp_cell="900")  # cost 900 sits under MRP, MRP 1499 under Cost
+    out = verify_claim(_price_row_claim("cost", 1499, "Cost to Us"))
+    assert out.status == "rejected"
+    assert out.reason == (
+        "on row 2 the cost cell (1499) is not below the MRP cell (900): the Cost and MRP columns look swapped "
+        "on this row; check the row's remark and report the value that is really the cost"
+    )
+    assert verify_claim(_price_row_claim("mrp", 900, "MRP")).status == "rejected"
+
+
+def test_swapped_columns_row_verifies_cross_header_reading(monkeypatch):
+    _with_price_row(monkeypatch, cost_cell="1499", mrp_cell="900")
+    assert verify_claim(_price_row_claim("cost", 900, "MRP")).status == "verified"
+    assert verify_claim(_price_row_claim("mrp", 1499, "Cost to Us")).status == "verified"
+
+
+def test_plausible_row_is_unaffected(monkeypatch):
+    _with_price_row(monkeypatch, cost_cell="900", mrp_cell="1499")
+    assert verify_claim(_price_row_claim("cost", 900, "Cost to Us")).status == "verified"
+    assert verify_claim(_price_row_claim("mrp", 1499, "MRP")).status == "verified"
+
+
+def test_unparseable_price_cell_is_not_rejected_for_plausibility(monkeypatch):
+    _with_price_row(monkeypatch, cost_cell="1499", mrp_cell="on request")
+    assert verify_claim(_price_row_claim("cost", 1499, "Cost to Us")).status == "verified"

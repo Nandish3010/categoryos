@@ -31,7 +31,7 @@ from app.tools import run_tool, summarize
 log = logging.getLogger("categoryos.llm")
 
 FIXTURE_SCHEMA_VERSION = 1
-RETRY_DELAYS = (1.0, 3.0)  # two retries for timeouts and 429
+RETRY_DELAYS = (1.0, 3.0)  # two retries for timeouts, dropped connections and 429
 MAX_LENGTH_RETRIES = 2  # reasoning tokens count against max_tokens: a hit limit retries with 2x, then 4x (live-verified: content=null, finish_reason=length)
 _FENCE = re.compile(r"^```[a-zA-Z]*\s*|\s*```$")
 
@@ -162,7 +162,7 @@ def _api_key(provider: str) -> str | None:
 
 def _make_client(provider: str) -> Any:
     base = settings.baseten_base_url if provider == "baseten" else settings.model_api_base_url
-    return openai.AsyncOpenAI(base_url=base, api_key=_api_key(provider), timeout=60.0, max_retries=0)
+    return openai.AsyncOpenAI(base_url=base, api_key=_api_key(provider), timeout=settings.llm_timeout_s, max_retries=0)
 
 
 def _status(exc: Exception) -> int | None:
@@ -170,7 +170,8 @@ def _status(exc: Exception) -> int | None:
 
 
 def _is_transient(exc: Exception) -> bool:
-    return isinstance(exc, openai.APITimeoutError | openai.RateLimitError | asyncio.TimeoutError) or _status(exc) in (429, 408)
+    # APIConnectionError covers dropped connections and TLS handshake failures (APITimeoutError is a subclass)
+    return isinstance(exc, openai.APIConnectionError | openai.RateLimitError | asyncio.TimeoutError) or _status(exc) in (429, 408)
 
 
 def _usage(resp: Any) -> tuple[int, int, int]:
@@ -210,6 +211,9 @@ async def _create(client: Any, kwargs: dict[str, Any], meter: _Meter) -> Any:
                     await _sleep(RETRY_DELAYS[attempt])
                     continue
                 raise LlmUnavailable(cause=f"{type(exc).__name__} persisted after {attempt + 1} attempts") from exc
+            resp = getattr(exc, "response", None)
+            if resp is not None:  # unmapped HTTP error: say which call failed and what the provider said (never the key)
+                log.warning("model call failed: HTTP %s %s model=%s body=%r", status, resp.request.url, kwargs.get("model"), resp.text[:500])
             raise
         meter.add(resp)
         return resp

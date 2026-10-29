@@ -136,6 +136,9 @@ describe("trace", () => {
       describeEvent(traceEvent(3, { type: "self_correction", payload: { attempt: 1, of: 2, answered: true, feedback: ["Claim X rejected: you said ₹965.50. Re-read and correct."] } })),
     ).toEqual({ title: "research · self-correction 1/2", detail: "Claim X rejected: you said ₹965.50. Re-read and correct." });
     expect(describeEvent(traceEvent(4, { type: "self_correction", payload: { attempt: 1, of: 2, answered: false, note: "fixture_missing: no corrected answer available" } })).detail).toMatch(/fixture_missing/);
+    expect(
+      describeEvent(traceEvent(7, { type: "self_correction", payload: { attempt: 3, of: 2, escalated: true, model: "muse-wonder-1.0", answered: true, feedback: ["f"] } })).title,
+    ).toBe("research · escalated to muse-wonder-1.0");
     expect(describeEvent(traceEvent(5, { type: "claim_verified", payload: { claim } }))).toEqual({ title: "research · claim corrected", detail: "HP-D01 cost is ₹965.5" });
     expect(describeEvent(traceEvent(6, { type: "claim_unresolved", payload: { claim } })).title).toBe("research · claim unresolved");
   });
