@@ -235,7 +235,7 @@ const TimeSpent: React.FC<{ f: number; endF: number }> = ({ f, endF }) => {
 };
 
 // ---- Act 1 ----
-export const Act1Visual: React.FC<{ f: number; deskX?: number; deskH?: number }> = ({ f, deskX = DESK_X, deskH = 700 }) => {
+export const Act1Visual: React.FC<{ f: number; deskX?: number; deskH?: number; bare?: boolean }> = ({ f, deskX = DESK_X, deskH = 700, bare = false }) => {
   const { t } = useTimes();
   const wps = React.useMemo(() => waypoints(t), [t]);
   const ms = meeraState(f, wps);
@@ -287,13 +287,13 @@ export const Act1Visual: React.FC<{ f: number; deskX?: number; deskH?: number }>
           );
         })}
         {f >= buriedF ? <BuriedBeat f={f} at={buriedF} frozen={frozen} x={deskX} dh={deskH} /> : null}
-        <Notes f={f} start={sec(t.notesStart)} end={rainEnd + 20} front />
+        {bare ? null : <Notes f={f} start={sec(t.notesStart)} end={rainEnd + 20} front />}
       </div>
       <div style={{ position: 'absolute', inset: 0, background: `rgba(248,113,113,${alertPulse})`, pointerEvents: 'none', zIndex: 15 }} />
       <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 280px rgba(0,0,0,.75)', zIndex: 16, pointerEvents: 'none' }} />
       <Clock f={f} big={bigClock} endF={endF} />
       <TimeSpent f={f} endF={endF - sec(1.5)} />
-      {f >= sec(t.freeze) ? <ChaosCard f={f - sec(t.freeze)} /> : null}
+      {f >= sec(t.freeze) && !bare ? <ChaosCard f={f - sec(t.freeze)} /> : null}
       {f < sec(0.35) ? <div style={{ position: 'absolute', inset: 0, background: '#fff', opacity: 1 - f / sec(0.35), zIndex: 30 }} /> : null}
     </AbsoluteFill>
   );
@@ -326,6 +326,7 @@ const BuriedBeat: React.FC<{ f: number; at: number; frozen: boolean; x: number; 
         const ang = (i / 26) * Math.PI * 2;
         const dist = (160 + r * 420) * E.out(u);
         const x = DX + Math.cos(ang) * dist, yy = y - 340 + Math.sin(ang) * dist * 0.7 + 340 * u * u;
+        if (Math.abs(x + 30 - DX) < 200 && yy < FLOOR - 140) return null; // keep the desk centre and her face clear
         return <div key={i} style={{ position: 'absolute', left: x, top: Math.min(yy, FLOOR - 30 + r2 * 40), width: 44 + r2 * 30, height: 44 + r2 * 30, background: NOTE_COLORS[i % NOTE_COLORS.length], transform: `rotate(${u * 360 * (r2 - 0.5) * 2}deg)`, opacity: 1 - u * 0.5, borderRadius: 3, zIndex: 8 }} />;
       })}
     </>
