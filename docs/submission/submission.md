@@ -8,7 +8,7 @@ An AI category manager that onboards vendors, negotiates and runs the category, 
 
 ## The short pitch (about 60 words)
 
-Category teams are among the largest in e-commerce, and most of their week is manual work on messy vendor data. CategoryOS reads the sheets, scans and calls with five Meta models, decides with Python, and re-checks every number against its source before a person approves. On our own team, onboarding a vendor takes about a week; with CategoryOS it took two hours.
+Category teams are among the largest in e-commerce, and most of their week is manual work on messy vendor data. CategoryOS reads the sheets, scans and calls with six Meta models, decides with Python, and re-checks every number against its source before a person approves. On our own team, onboarding a vendor takes about a week; with CategoryOS it took two hours.
 
 ## What makes it different: the verifier
 
@@ -19,6 +19,7 @@ Most AI assistants are confidently wrong some of the time. In a category team, o
 - **It caught real disagreements in the live runs, unscripted.** On 27 Oct 2026, the model read vendor V002's GST certificate as valid from 01 APR 2023 on the full page and 01 APR 2025 on the cropped re-read. The verifier refused to pick one and flagged it for a person.
 - **Measured:** 198 of 200 planted errors caught (digit swaps, decimal shifts, kg vs g, rupees vs paise, wrong row or column), with 0 false alarms on 200 correct values. The two misses were below the playbook's tolerance by design.
 - **Prompt injection hidden in vendor text:** the model detector caught 30 of 30 variants, against 9 of 30 for a regex.
+- **A harder test, run live and used to improve the verifier:** 94 messy figures with ground truth (swapped columns, `Rs.399/-`, comma typos, paise, Hinglish emails, injection lines). The first live run found a blind spot: both Spark models read 11 rows with swapped cost and MRP columns wrong, and the verifier passed them. We added a row check (cost must be below MRP), and in the next live run muse-spark-1.3 went from 81% on the first read to 95.7% after one verifier-driven retry, matching muse-wonder-1.0 at about a third of the cost. The 4 errors still accepted are email answers, which we report rather than hide.
 
 ## What it does
 
@@ -37,6 +38,7 @@ Most AI assistants are confidently wrong some of the time. In a category team, o
 | muse-image-1.0 | Packshots, lifestyle and campaign images |
 | muse-voice-transcribe-1.0 | Transcribes the live vendor call for the negotiation copilot |
 | Muse Spark Open (Baseten) | Open-weight SKU classification, benchmarked head to head against Spark 1.3 |
+| muse-wonder-1.0 | Steps in when a claim is still rejected after the normal retries; also benchmarked on the hard test |
 
 All four demo vendor runs were recorded live against the Meta API, and the public site can make real model calls within a capped budget.
 
