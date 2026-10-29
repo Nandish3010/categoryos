@@ -294,6 +294,6 @@ function render({ total, A, name }) {
 
 // ----- main film: anchors come from the VO timing -----
 const an = anchors(T, script);
-render({ total: T.total / T.fps, name: 'music.wav', A: { ...an, m4Len: T.scenes.find((s) => s.id === 'm4-run').frames / T.fps } });
+render({ total: T.total / T.fps, name: 'music.wav', A: { ...an } });
 // ----- 30 s X cut: a short tense run-up, the drop at 4.6 s, groove, resolve and the hit on the URL card at 28 s -----
 render({ total: 30, name: 'music-x.wav', A: { slam: 4.6, url: 28.0, riserBars: 1, buried: undefined, act1Mid: 0, weekStart: 23.5, m4: 19, m4Len: 4.5, hero: [[8.8, 12.2], [15.8, 19], [23.5, 28]] } });

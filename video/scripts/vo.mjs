@@ -192,9 +192,25 @@ for (const s of script.scenes) {
     if (POST) ff(['-i', r.dry, '-af', POLISH, '-ar', '44100', '-ac', '1', dst]);
     else fs.copyFileSync(r.dry, dst);
   }
+  let clip = null;
+  if (s.clip) {
+    // a pre-recorded clip (the live-ASR vendor audio) follows the spoken lines inside the same scene wav; it counts as speech for ducking and gap checks
+    const cw = path.join(work, `${s.id}.clip.wav`);
+    ff(['-i', path.join(root, s.clip.file), '-af', 'loudnorm=I=-19:TP=-1.5:LRA=9,aresample=44100', '-ar', '44100', '-ac', '1', cw]);
+    const gw = path.join(work, `${s.id}.clipgap.wav`);
+    silence(s.clip.gap ?? 0.35, gw);
+    const list = path.join(work, `${s.id}.cliplist.txt`);
+    const base = path.join(work, `${s.id}.base.wav`);
+    fs.copyFileSync(dst, base);
+    fs.writeFileSync(list, [base, gw, cw].map((f) => `file '${f}'`).join('\n'));
+    ff(['-f', 'concat', '-safe', '0', '-i', list, '-ar', '44100', '-ac', '1', dst]);
+    const a = voSec + (s.clip.gap ?? 0.35);
+    voSec = dur(dst);
+    clip = { a: +a.toFixed(3), b: +voSec.toFixed(3) };
+  }
   const sec = Math.max(s.minSec, voSec + LEAD + (s.tailSec ?? TAIL));
   const frames = Math.round(sec * FPS);
-  scenes.push({ id: s.id, act: s.act, start, frames, voSec: +voSec.toFixed(3), voLead: LEAD, source, sentences: sentTiming });
+  scenes.push({ id: s.id, act: s.act, start, frames, voSec: +voSec.toFixed(3), voLead: LEAD, source, sentences: sentTiming, ...(clip ? { clip } : {}) });
   start += frames;
 }
 fs.writeFileSync(path.join(root, 'src/timing.json'), JSON.stringify({ fps: FPS, total: start, scenes }, null, 2));

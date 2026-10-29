@@ -47,7 +47,7 @@ export async function warm(browser) {
 
 /** Record a flow via CDP screencast (no Playwright-bundled ffmpeg needed) and encode with system ffmpeg.
  *  fn(page, t) gets a helper kit; t.mark(name) stamps the time offset (ms) into <name>.json. */
-export async function record(browser, name, fn) {
+export async function record(browser, name, fn, opts = {}) {
   fs.mkdirSync(RAW, { recursive: true });
   const dir = path.join(RAW, `_tmp_${name}`);
   fs.rmSync(dir, { recursive: true, force: true });
@@ -57,6 +57,7 @@ export async function record(browser, name, fn) {
   await ctx.addInitScript(CURSOR_JS);
   // dismiss the judges' guided tour (frontend/lib/tour.ts: categoryos.tour.v1 === 'done')
   await ctx.addInitScript("try { localStorage.setItem('categoryos.tour.v1', 'done'); } catch (e) {}");
+  if (opts.init) await ctx.addInitScript(opts.init);
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
   const frames = [];

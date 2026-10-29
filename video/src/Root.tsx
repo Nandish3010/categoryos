@@ -3,7 +3,8 @@ import { AbsoluteFill, Composition, Sequence } from 'remotion';
 import { Act1 } from './scenes/Act1';
 import { Slam } from './scenes/Slam';
 import { TeamScene } from './scenes/Team';
-import { M1Scene, M2Scene, M3Scene, M4Scene } from './scenes/Act2';
+import { M1Scene, M2Scene, M3Scene, M4Scene, M4RulesScene } from './scenes/Act2';
+import { AsrScene } from './scenes/Asr';
 import { CloseScene, WeekScene } from './scenes/Act3';
 import { XCut, X_FRAMES } from './scenes/XCut';
 import { FPS, sceneOf, T } from './theme';
@@ -21,10 +22,12 @@ export const Demo: React.FC = () => {
       <Sequence from={a1[0].start} durationInFrames={a1Frames} name="act1"><Act1 /></Sequence>
       {S('a2-team', TeamScene)}
       {S('a2-slam', Slam)}
+      {S('m1-asr', AsrScene)}
       {S('m1-call', M1Scene)}
       {S('m2-verifier', M2Scene)}
       {S('m3-vision', M3Scene)}
       {S('m4-run', M4Scene)}
+      {S('m4-rules', M4RulesScene)}
       {S('a3-week', WeekScene)}
       {S('a3-close', CloseScene)}
     </AbsoluteFill>

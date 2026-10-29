@@ -7,7 +7,7 @@ make video          # capture the app, voiceover, synth SFX, compose music, mix,
 make video-render   # same without re-capturing (after editing scenes or swapping VO)
 ```
 
-Outputs (git-ignored): `video/out/categoryos-demo.mp4` (about 2:42, 1920x1080, 30 fps), `video/out/categoryos-x-30s.mp4` (30 s, 1080x1080) and review stills in `video/out/stills/`.
+Outputs (git-ignored): `video/out/categoryos-demo.mp4` (v5: 2:57; v4 was 2:42, 1920x1080, 30 fps), `video/out/categoryos-x-30s.mp4` (30 s, 1080x1080) and review stills in `video/out/stills/`.
 
 The creative brief is in [DIRECTION.md](DIRECTION.md).
 
@@ -18,6 +18,7 @@ The creative brief is in [DIRECTION.md](DIRECTION.md).
 | `capture/` | `capture.mjs` flows (V001 decide/verifier/levers/docs, V001 label check, V002 intake and live call, Run pages, impact). `lib.mjs` has the CDP screencast recorder, smooth cursor and click ripple. `probe.mjs` / `explore.mjs` are selector-discovery helpers. `BASE_URL=... node capture/capture.mjs v2` re-records one flow, e.g. against a live-mode deploy. |
 | `script.json` | Per scene: `vo` (spoken spelling), `caption` (written properly, shown on screen), `emph` (stress words for the `say` fallback), `minSec`, optional `tailSec`. Top level: `voice`/`speed` (Kokoro), `sayVoice`/`rate` (fallback). Scene durations are VO + 0.4 s (0.15 s lead, 0.25 s tail). |
 | `scripts/vo.mjs` | Voiceover per scene into `out/vo/`; writes `src/timing.json` (scene frames, per-sentence timing). **`video/vo/<scene>.wav` wins over TTS.** See *Voice* below. |
+| `scripts/live-asr.mjs`, `src/data/live_asr.json` | v5: the ONE live call to `muse-voice-transcribe-1.0` (vendor offer synthesised with Kokoro `am_michael` into `assets/live/vendor-offer.wav`; the response, latency and date are the committed fixture the `m1-asr` scene shows). Not re-run by `make video`; `FORCE=1` calls again (a fraction of a cent). A scene with `clip` in `script.json` appends that wav to its voice file. The `rules` capture flow (`capture.mjs rules`) records the plain-English rule as Arjun, then Meera's approval, on a fresh visitor sandbox. |
 | `scripts/sfx.mjs`, `scripts/music.mjs`, `scripts/mix.mjs` | ffmpeg-synthesised SFX (tonal pops, ticks and chimes; three noise swishes at most), the composed music bed (`audio/music.wav`), cue sheet in `src/cues.js`. `mix.mjs` ducks the music under the voice and masters to -14 LUFS. `scripts/audio-report.mjs` prints levels, duck depth and VO gaps. |
 | `src/voTime.js`, `src/act1Timing.js` | "When is this phrase spoken" helpers. Scenes, captions, SFX cues and music cut on the words, so changing the script or the voice re-times the film. |
 | `src/` | Remotion project: `scenes/Act1` (chaos, the problem), `Team` (meet the team), `Slam`, `Act2` (app scenes), `Act3` (week back, close), `XCut` (30 s cut). `components/MeeraWalker.tsx` is the walk system (beats of `{at, x, pose, text?}`; she walks, idles and never pops in) and `components/WalkerProps.tsx` the paper stack, thrown documents, task cards and sparkles. |

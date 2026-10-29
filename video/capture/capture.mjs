@@ -130,6 +130,57 @@ const FLOWS = {
       await t.wait(900);
     }
   },
+  // Rules: write a rule in plain English as Arjun (manager): it is over his limit, so it becomes a request; switch to Meera (head), approve it in the change log.
+  // A fresh visitor id gives an isolated sandbox playbook (see frontend/lib/identity.ts), so nothing is shared with other visitors and the recorded runs keep the original playbook.
+  async rules(p, t) {
+    await t.goto('/rules');
+    await t.until(() => p.getByText('Write a rule').first().isVisible(), 60000);
+    await t.until(() => p.getByRole('button', { name: /Cut the target margin on toys/ }).isVisible(), 60000);
+    await t.until(async () => (await p.locator('.animate-pulse').count()) === 0, 20000, 300);
+    await t.wait(900);
+    t.mark('start');
+    await t.box('actingAs', p.getByLabel('Signed in as'));
+    await t.moveTo(1040, 420);
+    await t.wait(700);
+    t.mark('clickExample');
+    await t.clickBtn(/Cut the target margin on toys/);
+    await t.until(() => p.getByText(/Over your limit/).first().isVisible(), 60000);
+    await t.wait(1000);
+    t.mark('preview');
+    await t.box('write', p.getByRole('region', { name: 'Write a rule' }));
+    await t.box('previewCard', p.getByRole('region', { name: 'Rule preview' }));
+    await t.box('overLimit', p.getByText(/Over your limit/));
+    await t.wait(2400);
+    t.mark('clickRequest');
+    await t.clickBtn('Request approval');
+    await t.until(() => p.getByText(/Sent to the head/).first().isVisible(), 20000, 150);
+    t.mark('requested');
+    await t.box('sentToast', p.getByText(/Sent to the head/));
+    await t.wait(1700);
+    // switch to Meera
+    const sel = p.getByLabel('Signed in as');
+    await t.point(sel);
+    await t.wait(300);
+    await p.mouse.down(); await p.mouse.up();
+    await t.wait(300);
+    await sel.selectOption({ value: 'meera' });
+    await t.wait(1300);
+    t.mark('meera');
+    await t.clickTab('Change log');
+    await t.until(() => p.getByRole('button', { name: 'Approve' }).first().isVisible(), 30000);
+    await t.wait(1500);
+    t.mark('log');
+    await t.box('logRow', p.locator('li[data-status="pending_approval"]'));
+    await t.wait(1500);
+    t.mark('clickApprove');
+    await t.clickBtn('Approve');
+    await t.until(() => p.locator('li[data-status="applied"]').first().isVisible(), 30000);
+    await t.wait(1300);
+    t.mark('applied');
+    await t.box('appliedRow', p.locator('li[data-status="applied"]'));
+    await t.wait(3200);
+    t.mark('done');
+  },
   // Impact meter (also captures the /api/impact JSON the app fetches)
   async impact(p, t) {
     let json = null;
@@ -160,8 +211,12 @@ fs.mkdirSync(path.resolve(import.meta.dirname, '../src/data'), { recursive: true
 const browser = await launch();
 console.log('warming', BASE);
 await warm(browser);
+// per-flow context setup: the rules flow runs as Arjun with a fresh visitor id (isolated sandbox playbook); the tour is dismissed by lib.mjs
+const INIT = {
+  rules: `try { localStorage.setItem('categoryos.visitorId', 'video-' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36)); localStorage.setItem('categoryos.actingAs', 'arjun'); localStorage.setItem('categoryos.tour.v1', 'done'); } catch (e) {}`,
+};
 for (const n of names) {
-  await record(browser, n, FLOWS[n]);
+  await record(browser, n, FLOWS[n], { init: INIT[n] });
   fs.copyFileSync(path.join(RAW, `${n}.mp4`), path.join(OUT, `${n}.mp4`));
   fs.copyFileSync(path.join(RAW, `${n}.json`), path.join(OUT, `${n}.json`));
 }

@@ -34,6 +34,8 @@ if (!only || only === 'demo' || only === 'stills') {
   // stills land on the words: scene start + the frame at which a phrase is spoken (+ a few frames for the animation to settle)
   const script = JSON.parse(fs.readFileSync(path.join(root, 'script.json'), 'utf8'));
   const ph = (id, phrase, plus = 30) => { const s = T.scenes.find((x) => x.id === id); return s.start + Math.round(phraseSec(T, script, id, phrase) * T.fps) + plus; };
+  const asr = T.scenes.find((x) => x.id === 'm1-asr');
+  const asrF = (k, _c, plus = 0) => asr.start + Math.round((asr.voLead + asr.clip.a + k * (asr.clip.b - asr.clip.a)) * T.fps) + plus;
   const stills = [['01-hook', 75], ['02-chaos', ph('a1-mid', 'A vendor is on the phone', 100)], ['03-buried', Math.round(act1Times(T, script).freeze * T.fps) + 24], ['04-slam', T.scenes.find((x) => x.id === 'a2-slam').start + slamLocalFrame(T, script) + 6],
     ['05-call-reject', ph('m1-call', 'under a tenth', 40)], ['06-say-next', ph('m1-call', 'set the target', 50)], ['07-verifier', ph('m2-verifier', 'two different dates', 40)], ['07b-198', ph('m2-verifier', 'one hundred and ninety-eight', 40)],
     ['08-vision', ph('m3-vision', 'thirtieth', 45)], ['08b-label', ph('m3-vision', 'thirty percent', 45)], ['08c-price', ph('m3-vision', 'It even catches', 50)],
@@ -44,6 +46,9 @@ if (!only || only === 'demo' || only === 'stills') {
     ['12b-team-highfive', ph('a2-team', 'category manager', 8)],
     ['13-m1-pacing', T.scenes.find((x) => x.id === 'm1-call').start + 95], ['13b-m1-thinking', ph('m1-call', 'Sounds like thirty-five', 24)], ['13c-m1-celebrating', ph('m1-call', 'No spreadsheet', 14)],
     ['14-m3-stack-full', ph('m3-vision', 'Vendors send', 40)], ['14b-m3-stack-half', ph('m3-vision', 'thirty percent', 6)], ['14c-m3-stack-empty', ph('m3-vision', 'All before', 36)],
+    // v5: the live Muse Voice transcription (m1-asr) and the plain-English rules beat (m4-rules)
+    ['16-asr-listening', asrF(0.5)], ['16b-asr-transcript', asrF(0.5, true)], ['16c-asr-done', asrF(1, true, 3)],
+    ['17-rules-write', ph('m4-rules', 'I can even', 14)], ['17b-rules-preview', ph('m4-rules', 'Arjun’s cut', 40)], ['17c-rules-sent', ph('m4-rules', 'so it waits', 8)], ['17d-rules-log', ph('m4-rules', 'I approve it', 12)], ['17e-rules-applied', T.scenes.find((x) => x.id === 'm4-rules').start + T.scenes.find((x) => x.id === 'm4-rules').frames - 16],
     ['15-m4-handoff-1', ph('m4-run', 'It drafts my weekly', 20)], ['15b-m4-handoff-4', ph('m4-run', 'queues catalog', 20)], ['15c-m4-handoff-6', ph('m4-run', 'watches competitor', 20)]];
   for (const [n, f] of stills) run(['still', 'src/index.ts', 'Demo', path.join(out, 'stills', `${n}.png`), `--frame=${f}`, '--log=error']);
 }
