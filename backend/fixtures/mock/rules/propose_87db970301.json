@@ -3,9 +3,9 @@
   "parser_version": "1.0",
   "stage": "rules",
   "task": "propose_87db970301",
-  "model": "hand-written (the expected translation, not a model output)",
+  "model": "muse-spark-1.3 (recorded live 2026-10-29; 5 examples cost $0.08 in total)",
   "prompt": "Never sell liquidation stock below 70% of cost",
   "input_tokens": 0,
   "output_tokens": 0,
-  "content": "{\"edits\": [{\"path\": \"inventory_health.liquidate.floor_pct_of_cost\", \"op\": \"set\", \"number\": 70, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+  "content": "{\"edits\": [{\"path\": \"inventory_health.liquidate.floor_pct_of_cost\", \"op\": \"set\", \"number\": 70.0, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
 }

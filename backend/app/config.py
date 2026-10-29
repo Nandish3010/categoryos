@@ -36,7 +36,7 @@ class Settings(BaseSettings):
     model_image: str = "muse-image-1.0"
     model_seg: str = "sam-3.1"
     model_voice: str = "muse-voice-transcribe-1.0"
-    baseten_model: str = "meta-models/muse-spark-open"
+    baseten_model: str = "meta-models/muse-spark-open-1026"  # the undated alias answers 403 on new keys
 
     assets_dir: Path = BACKEND_DIR / "fixtures" / "assets"
     sam_enabled: bool = True  # SAM go/no-go: False -> cutouts are "unavailable" and the packshot is shown

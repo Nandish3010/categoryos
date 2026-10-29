@@ -27,6 +27,7 @@ TOKEN_PRICES: dict[str, tuple[float, float, float]] = {
     # TODO: Baseten open-weight pricing is not known yet; counted as $0 until confirmed.
     "muse-spark-open": (0.0, 0.0, 0.0),
     "meta-models/muse-spark-open": (0.0, 0.0, 0.0),
+    "meta-models/muse-spark-open-1026": (0.0, 0.0, 0.0),
 }
 PER_IMAGE_USD = {"muse-image-1.0": 0.01, "sam-3.1": 2.50 / 1000}
 PER_HOUR_USD = {"muse-voice-transcribe-1.0": 0.18}
