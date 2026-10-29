@@ -14,6 +14,8 @@ Plugging a real company's data in: [docs/pitch/enterprise-integration.md](docs/p
 
 **Run** the existing category (`/run`): a weekly **MIS** review of vendor performance, a **PO tracker** that reads vendor replies and drafts the chaser, **price requests** (a vendor wants an 8-12% rise: the agent reads the email, Python decides each SKU, a person approves) **catalog fixes** (a queue of listing errors with a fix per row), a **promotions and event planner** (which SKUs to put on a sale, at what depth, with what stock and vendor funding) and a **competitor price monitor** (undercuts, blips, vendor parity breaches).
 
+**Rules in plain English** (`/rules`): write "raise the target margin on treats by 2 points" and Muse Spark turns it into a change to the structured playbook, which code validates before you see a before/after preview. Team roles and limits decide who may apply it; over-limit changes wait for the head, and every attempt, refused ones included, lands in a change log with undo.
+
 **The playbook** (`config/policy.yaml`, edited at `/rules`) holds every rule a category manager would tune: margins, thresholds, compliance documents, negotiation requirements, approval tiers, the SKU taxonomy. Nothing is hardcoded to pets; beauty and electronics playbooks ship in `config/examples/`.
 
 **The verifier**: every number an agent states cites a source cell and is re-checked by Python; a wrong reading is sent back for correction, and a claim that never gets right is removed before it reaches the page.

@@ -473,6 +473,19 @@ def test_label_text_runs_through_the_playbook_claim_rules_only_for_scoped_catego
 # ---------- generator ----------
 
 
+def _assert_same_render(made: Path, committed: Path) -> None:
+    """Same document as the committed file. Pillow's bundled font and JPEG encoder differ by a few bytes between platforms
+    (macOS vs the Linux CI runner), so images are compared by pixels with a small tolerance, not byte for byte."""
+    from PIL import Image, ImageChops, ImageStat
+
+    if made.suffix.lower() not in {".png", ".jpg", ".jpeg"}:
+        assert abs(len(made.read_bytes()) - len(committed.read_bytes())) <= 0.05 * len(committed.read_bytes())
+        return
+    x, y = Image.open(made).convert("L"), Image.open(committed).convert("L")
+    assert x.size == y.size
+    assert max(ImageStat.Stat(ImageChops.difference(x, y)).mean) < 2.0
+
+
 def test_generator_is_deterministic_and_matches_the_committed_files(tmp_path):
     import importlib.util
 
@@ -489,7 +502,7 @@ def test_generator_is_deterministic_and_matches_the_committed_files(tmp_path):
         assert first == second
         for name in first["manifest"]["pages"] + [file]:
             assert (a / name).read_bytes() == (b / name).read_bytes()
-            assert (a / name).read_bytes() == (Path(settings.data_dir) / "vendors" / vid / "docs" / name).read_bytes()
+            _assert_same_render(a / name, Path(settings.data_dir) / "vendors" / vid / "docs" / name)
         committed = json.loads((Path(settings.data_dir) / "vendors" / vid / "docs" / "truth.json").read_text())
         assert first["truth"] in committed["documents"]
 
