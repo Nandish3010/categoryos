@@ -1,0 +1,487 @@
+{
+  "generated_at": "2026-10-29",
+  "mode": "mock",
+  "models": [
+    {
+      "categories": [
+        {
+          "category": "plain_rs",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Prices written Rs.399/-",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "comma_typo",
+          "final_accuracy": 0.9,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.8,
+          "label": "Misplaced commas (₹ 3,3,25)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "paise_trap",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.9,
+          "label": "Paise next to rupees",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "unit_mix",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.75,
+          "label": "kg/g and L/ml mixed",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "multipack",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Multipacks (6 x 400g)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 6
+        },
+        {
+          "category": "revised_conflict",
+          "final_accuracy": 0.875,
+          "final_accuracy_with_escalation": 0.875,
+          "first_pass_accuracy": 0.875,
+          "label": "Old vs revised cost",
+          "silent_errors": 1,
+          "silent_errors_with_escalation": 1,
+          "tasks": 8
+        },
+        {
+          "category": "swapped_block",
+          "final_accuracy": 0.6364,
+          "final_accuracy_with_escalation": 0.6364,
+          "first_pass_accuracy": 0.6364,
+          "label": "Swapped cost/MRP columns",
+          "silent_errors": 4,
+          "silent_errors_with_escalation": 4,
+          "tasks": 11
+        },
+        {
+          "category": "injection_sheet",
+          "final_accuracy": 0.8,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.8,
+          "label": "Injection line in the sheet",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 5
+        },
+        {
+          "category": "hinglish",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Hinglish vendor emails",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "spelled",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.875,
+          "label": "Spelled-out numbers",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "conflict_turns",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Corrected by a later email",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 6
+        },
+        {
+          "category": "injection_call",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Injection line in an email",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 4
+        }
+      ],
+      "caught_by_verifier": 8,
+      "corrected": 5,
+      "cost_metered": true,
+      "cost_usd": null,
+      "escalated": 2,
+      "escalation": true,
+      "escalation_cost_usd": null,
+      "extract_call_latency_ms": null,
+      "false_rejects": 0,
+      "final_accuracy": 0.9255,
+      "final_accuracy_with_escalation": 0.9468,
+      "first_pass_accuracy": 0.8723,
+      "fixed_by_escalation": 2,
+      "input_tokens": null,
+      "key": "scripted_stand_in_A",
+      "label": "scripted stand-in A",
+      "latency_ms_per_task": null,
+      "output_tokens": null,
+      "profile": {
+        "error_rate": 0.12,
+        "fix_rate": 0.6
+      },
+      "provider": null,
+      "removed": 2,
+      "removed_with_escalation": 0,
+      "self_correction_rate": 0.625,
+      "silent_errors": 5,
+      "silent_errors_with_escalation": 5,
+      "stand_in": true,
+      "tasks": 94
+    },
+    {
+      "categories": [
+        {
+          "category": "plain_rs",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.75,
+          "label": "Prices written Rs.399/-",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "comma_typo",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.8,
+          "label": "Misplaced commas (₹ 3,3,25)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "paise_trap",
+          "final_accuracy": 0.8,
+          "final_accuracy_with_escalation": 0.9,
+          "first_pass_accuracy": 0.7,
+          "label": "Paise next to rupees",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "unit_mix",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.75,
+          "label": "kg/g and L/ml mixed",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "multipack",
+          "final_accuracy": 0.8333,
+          "final_accuracy_with_escalation": 0.8333,
+          "first_pass_accuracy": 0.6667,
+          "label": "Multipacks (6 x 400g)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 6
+        },
+        {
+          "category": "revised_conflict",
+          "final_accuracy": 0.625,
+          "final_accuracy_with_escalation": 0.625,
+          "first_pass_accuracy": 0.5,
+          "label": "Old vs revised cost",
+          "silent_errors": 3,
+          "silent_errors_with_escalation": 3,
+          "tasks": 8
+        },
+        {
+          "category": "swapped_block",
+          "final_accuracy": 0.5455,
+          "final_accuracy_with_escalation": 0.5455,
+          "first_pass_accuracy": 0.5455,
+          "label": "Swapped cost/MRP columns",
+          "silent_errors": 5,
+          "silent_errors_with_escalation": 5,
+          "tasks": 11
+        },
+        {
+          "category": "injection_sheet",
+          "final_accuracy": 0.8,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.6,
+          "label": "Injection line in the sheet",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 5
+        },
+        {
+          "category": "hinglish",
+          "final_accuracy": 0.9,
+          "final_accuracy_with_escalation": 0.9,
+          "first_pass_accuracy": 0.9,
+          "label": "Hinglish vendor emails",
+          "silent_errors": 1,
+          "silent_errors_with_escalation": 1,
+          "tasks": 10
+        },
+        {
+          "category": "spelled",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.875,
+          "label": "Spelled-out numbers",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "conflict_turns",
+          "final_accuracy": 0.6667,
+          "final_accuracy_with_escalation": 0.6667,
+          "first_pass_accuracy": 0.5,
+          "label": "Corrected by a later email",
+          "silent_errors": 2,
+          "silent_errors_with_escalation": 2,
+          "tasks": 6
+        },
+        {
+          "category": "injection_call",
+          "final_accuracy": 0.75,
+          "final_accuracy_with_escalation": 0.75,
+          "first_pass_accuracy": 0.75,
+          "label": "Injection line in an email",
+          "silent_errors": 1,
+          "silent_errors_with_escalation": 1,
+          "tasks": 4
+        }
+      ],
+      "caught_by_verifier": 16,
+      "corrected": 12,
+      "cost_metered": false,
+      "cost_usd": null,
+      "escalated": 4,
+      "escalation": true,
+      "escalation_cost_usd": null,
+      "extract_call_latency_ms": null,
+      "false_rejects": 0,
+      "final_accuracy": 0.8298,
+      "final_accuracy_with_escalation": 0.8511,
+      "first_pass_accuracy": 0.7021,
+      "fixed_by_escalation": 2,
+      "input_tokens": null,
+      "key": "scripted_stand_in_B",
+      "label": "scripted stand-in B",
+      "latency_ms_per_task": null,
+      "output_tokens": null,
+      "profile": {
+        "error_rate": 0.22,
+        "fix_rate": 0.4
+      },
+      "provider": null,
+      "removed": 4,
+      "removed_with_escalation": 2,
+      "self_correction_rate": 0.75,
+      "silent_errors": 12,
+      "silent_errors_with_escalation": 12,
+      "stand_in": true,
+      "tasks": 94
+    },
+    {
+      "categories": [
+        {
+          "category": "plain_rs",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Prices written Rs.399/-",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "comma_typo",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Misplaced commas (₹ 3,3,25)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "paise_trap",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Paise next to rupees",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "unit_mix",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "kg/g and L/ml mixed",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "multipack",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.6667,
+          "label": "Multipacks (6 x 400g)",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 6
+        },
+        {
+          "category": "revised_conflict",
+          "final_accuracy": 0.875,
+          "final_accuracy_with_escalation": 0.875,
+          "first_pass_accuracy": 0.875,
+          "label": "Old vs revised cost",
+          "silent_errors": 1,
+          "silent_errors_with_escalation": 1,
+          "tasks": 8
+        },
+        {
+          "category": "swapped_block",
+          "final_accuracy": 0.9091,
+          "final_accuracy_with_escalation": 0.9091,
+          "first_pass_accuracy": 0.9091,
+          "label": "Swapped cost/MRP columns",
+          "silent_errors": 1,
+          "silent_errors_with_escalation": 1,
+          "tasks": 11
+        },
+        {
+          "category": "injection_sheet",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Injection line in the sheet",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 5
+        },
+        {
+          "category": "hinglish",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 0.9,
+          "label": "Hinglish vendor emails",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 10
+        },
+        {
+          "category": "spelled",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Spelled-out numbers",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 8
+        },
+        {
+          "category": "conflict_turns",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Corrected by a later email",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 6
+        },
+        {
+          "category": "injection_call",
+          "final_accuracy": 1.0,
+          "final_accuracy_with_escalation": 1.0,
+          "first_pass_accuracy": 1.0,
+          "label": "Injection line in an email",
+          "silent_errors": 0,
+          "silent_errors_with_escalation": 0,
+          "tasks": 4
+        }
+      ],
+      "caught_by_verifier": 3,
+      "corrected": 3,
+      "cost_metered": true,
+      "cost_usd": null,
+      "escalated": 0,
+      "escalation": false,
+      "escalation_cost_usd": null,
+      "extract_call_latency_ms": null,
+      "false_rejects": 0,
+      "final_accuracy": 0.9787,
+      "final_accuracy_with_escalation": 0.9787,
+      "first_pass_accuracy": 0.9468,
+      "fixed_by_escalation": 0,
+      "input_tokens": null,
+      "key": "scripted_stand_in_C",
+      "label": "scripted stand-in C",
+      "latency_ms_per_task": null,
+      "output_tokens": null,
+      "profile": {
+        "error_rate": 0.05,
+        "fix_rate": 0.8
+      },
+      "provider": null,
+      "removed": 0,
+      "removed_with_escalation": 0,
+      "self_correction_rate": 1.0,
+      "silent_errors": 2,
+      "silent_errors_with_escalation": 2,
+      "stand_in": true,
+      "tasks": 94
+    }
+  ],
+  "note": "Mock: scripted stand-ins with fixed error profiles replace the models (A and B escalate to a stand-in for C). The loop, feedback, verifier and scoring are real; the error rates are parameters, not measurements. Cost and latency are not reported.",
+  "seed": 42,
+  "spent_usd": null,
+  "stand_in": true,
+  "task_counts": {
+    "comma_typo": 10,
+    "conflict_turns": 6,
+    "hinglish": 10,
+    "injection_call": 4,
+    "injection_sheet": 5,
+    "multipack": 6,
+    "paise_trap": 10,
+    "plain_rs": 8,
+    "revised_conflict": 8,
+    "spelled": 8,
+    "swapped_block": 11,
+    "unit_mix": 8
+  },
+  "tasks": 94
+}

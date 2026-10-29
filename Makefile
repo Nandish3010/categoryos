@@ -1,4 +1,4 @@
-.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch data-inventory-health fixtures-run lint live record smoke requirements eval contract video video-render
+.PHONY: setup dev demo test data data-docs data-price-requests data-catalog data-promotions data-price-watch data-inventory-health fixtures-run lint live record smoke requirements eval eval-hard contract video video-render
 
 BACKEND_PORT ?= 8001
 BACKEND_URL := http://localhost:$(BACKEND_PORT)
@@ -57,6 +57,13 @@ record:
 # refreshes the table in the README. For the real models: cd backend && MODEL_MODE=live uv run python ../scripts/measure.py --live
 eval:
 	cd backend && uv run python ../scripts/measure.py
+
+# Hard-mode extraction eval: messy sheet + Hinglish emails + injections, models A (muse-spark-1.3), B (Muse Spark Open) and
+# C (muse-wonder-1.0), with escalation of twice-rejected claims to C. Mock by default (free; scripted stand-ins, labelled mock).
+# For the real models: MODEL_MODE=live make eval-hard   (needs MODEL_API_KEY / BASETEN_API_KEY; SPENDS CREDITS, stops at $3, see --budget-usd).
+# Writes eval/results/hard.json and refreshes the hard table in the README. The generated set lives in eval/hard_set/.
+eval-hard:
+	cd backend && uv run python ../scripts/measure_hard.py $(if $(filter live,$(MODEL_MODE)),--live,)
 
 # Regenerate the pinned requirements used by the Modal image (commit the result).
 requirements:

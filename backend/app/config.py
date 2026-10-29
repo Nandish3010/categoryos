@@ -36,6 +36,8 @@ class Settings(BaseSettings):
     model_image: str = "muse-image-1.0"
     model_seg: str = "sam-3.1"
     model_voice: str = "muse-voice-transcribe-1.0"
+    # A claim the verifier rejects after the normal self-correction retries is re-read once by this model. Empty: no escalation.
+    escalation_model: str = "muse-wonder-1.0"
     baseten_model: str = "meta-models/muse-spark-open-1026"  # the undated alias answers 403 on new keys
 
     assets_dir: Path = BACKEND_DIR / "fixtures" / "assets"

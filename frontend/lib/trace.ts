@@ -48,8 +48,11 @@ export function describeEvent(ev: TraceEvent): { title: string; detail: string }
     case "self_correction": {
       const feedback = Array.isArray(p.feedback) && typeof p.feedback[0] === "string" ? clip(p.feedback[0], 100) : "";
       const answered = p.answered !== false;
+      const escalatedTo = p.escalated === true ? (typeof p.model === "string" ? p.model : "a stronger model") : null;
       return {
-        title: `${stage} · self-correction ${String(p.attempt ?? "?")}/${String(p.of ?? "?")}`,
+        title: escalatedTo
+          ? `${stage} · escalated to ${escalatedTo}`
+          : `${stage} · self-correction ${String(p.attempt ?? "?")}/${String(p.of ?? "?")}`,
         detail: answered ? feedback : typeof p.note === "string" ? clip(p.note) : "no corrected answer",
       };
     }
