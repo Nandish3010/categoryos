@@ -16,7 +16,7 @@ from app.main import app
 from app.metrics import apply_levers, build_base
 from app.taxonomy import classify
 
-client = TestClient(app)
+client = TestClient(app, headers={"X-Acting-As": "meera"})  # the demo head; a request naming nobody acts as the least-privileged role
 EXAMPLES = Path(__file__).resolve().parents[2] / "config" / "examples"
 
 
@@ -260,8 +260,8 @@ def test_pet_segments_still_classify_by_species():
 
 def test_get_policy_shape():
     body = client.get("/api/policy").json()
-    assert set(body) == {"policy", "defaults", "overridden_paths", "hash", "editable", "schema_hints"}
-    assert body["editable"] is True and body["overridden_paths"] == [] and body["policy"] == body["defaults"]
+    assert set(body) == {"policy", "defaults", "overridden_paths", "hash", "editable", "schema_hints", "scope", "acting"}
+    assert body["scope"] == "global" and body["acting"]["id"] == "meera" and body["editable"] is True and body["overridden_paths"] == [] and body["policy"] == body["defaults"]
     assert client.get("/api/mode").json()["policy_hash"] == body["hash"]
 
 
@@ -287,11 +287,14 @@ def test_put_invalid_is_422_with_path():
     assert body["code"] == "policy_invalid" and body["path"] == "research.demand_min" and body["problem"] and body["cause"] and body["fix"]
 
 
-def test_replay_is_read_only(monkeypatch):
+def test_replay_edits_land_in_the_visitors_sandbox_not_the_recorded_playbook(monkeypatch):
     monkeypatch.setattr(settings, "model_mode", "replay")
-    assert client.get("/api/policy").json()["editable"] is False
-    for res in (client.put("/api/policy", json={"research": {"demand_min": 0.5}}), client.post("/api/policy/reset", json={})):
-        assert res.status_code == 403 and res.json()["code"] == "policy_read_only"
+    body = client.get("/api/policy").json()
+    assert body["scope"] == "visitor" and body["editable"] is True
+    res = client.put("/api/policy", json={"research": {"demand_min": 0.5}})
+    assert res.status_code == 200 and res.json()["policy"]["research"]["demand_min"] == 0.5
+    assert policy.get().research.demand_min == 0.4 and not policy.local_path().exists()  # recorded runs keep their playbook
+    assert client.post("/api/policy/reset", json={}).json()["overridden_paths"] == []
 
 
 def test_demo_key_required_for_writes_only_when_configured(monkeypatch):

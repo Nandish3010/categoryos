@@ -9,6 +9,7 @@ config/policy.local.yaml (overrides written by the UI). Nothing vertical-specifi
 
 import hashlib
 import json
+import math
 import os
 import re
 import string
@@ -61,7 +62,7 @@ def F(default: Any = ..., label: str | None = None, help: str = "", *, unit: str
 
 
 class M(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
 
 
 def _compile_all(patterns: list[str]) -> list[str]:
@@ -1097,6 +1098,72 @@ class InventoryHealth(M):
     liquidate: InvLiquidate = Field(default_factory=InvLiquidate, json_schema_extra={"label": "Liquidation promo", "help": "Discount depth, price floor and lift.", "used_in": _INV})
 
 
+ROLES = ("head", "manager", "analyst")
+Role = Literal["head", "manager", "analyst"]
+_ID = re.compile(r"^[a-z][a-z0-9_-]{1,30}$")
+_GOV = ["governance"]
+
+
+class Member(M):
+    name: str = F(label="Name", help="Synthetic demo names only.")
+    role: Role = F("analyst", "Role", "head: change anything and approve. manager: own sections, within limits. analyst: propose only.", options=list(ROLES))
+
+
+class RoleRule(M):
+    label: str = F(label="Role title")
+    can_apply: bool = F(False, "Can apply changes", "False means the role can write a rule and see the preview but not apply it.", used_in=_GOV)
+    can_approve: bool = F(False, "Can approve", "May approve or reject a change that is waiting for approval (never one of their own).", used_in=_GOV)
+    sections: list[str] = F(label="May change", help="Playbook sections (or dotted paths) this role may change; * means all. Changing governance is always head-only.", used_in=_GOV)
+
+
+class Limit(M):
+    role: Role = F("manager", "Applies to", options=list(ROLES))
+    path: str = F(label="Section or path", help="The limit covers every numeric setting at or under this path.")
+    max_abs_change: float = F(label="Largest change", help="A single change larger than this needs approval.", min=0, max=1000000, step=0.5)
+    unit: str = F("", "Unit", help="Only settings in this unit count (pp and % are treated alike); empty means any unit.")
+
+
+class Governance(M):
+    members: dict[str, Member] = F(label="Team", help="Who can act on the playbook. The key is the member id. This is a demo identity picker, not authentication.", used_in=_GOV)
+    roles: dict[str, RoleRule] = F(label="Roles", help="What each role may do.", used_in=_GOV)
+    limits: dict[str, Limit] = F({}, label="Limits", help="Numeric limits per change; a larger change becomes a request for approval.", used_in=_GOV)
+
+    @model_validator(mode="after")
+    def _check(self) -> "Governance":
+        if set(self.roles) != set(ROLES):
+            raise ValueError(f"roles must be exactly {list(ROLES)}")
+        bad = [m for m in self.members if not _ID.match(m)]
+        if bad:
+            raise ValueError(f"member id(s) {bad} must be lowercase letters, digits, - or _ (2 to 31 characters)")
+        known = set(Policy.model_fields)
+        for role, rule in self.roles.items():
+            for sec in rule.sections:
+                if sec != "*" and sec.split(".")[0] not in known:
+                    raise ValueError(f"roles.{role}.sections: {sec!r} is not a playbook section")
+        for key, lim in self.limits.items():
+            if lim.path.split(".")[0] not in known or lim.path.split(".")[0] == "governance":
+                raise ValueError(f"limits.{key}.path: {lim.path!r} is not a playbook section a limit can cover")
+        if not any(self.roles[m.role].can_apply and self.roles[m.role].can_approve for m in self.members.values()):
+            raise ValueError("at least one team member needs a role that can apply and approve changes, or nobody could ever approve")
+        return self
+
+
+def _default_governance() -> Governance:
+    """The seed team (synthetic names). config/policy.yaml carries the same data; this keeps starter playbooks without a governance section valid."""
+    return Governance(
+        members={"meera": Member(name="Meera", role="head"), "arjun": Member(name="Arjun", role="manager"), "priya": Member(name="Priya", role="analyst")},
+        roles={
+            "head": RoleRule(label="Head of category", can_apply=True, can_approve=True, sections=["*"]),
+            "manager": RoleRule(
+                label="Category manager", can_apply=True, can_approve=False,
+                sections=["margins", "negotiation", "promotions", "price_watch", "inventory_health", "price_requests"],
+            ),
+            "analyst": RoleRule(label="Category analyst", can_apply=False, can_approve=False, sections=[]),
+        },
+        limits={"manager_margins": Limit(role="manager", path="margins", max_abs_change=2, unit="pp")},
+    )
+
+
 class Policy(M):
     version: int = F(1, "Version")
     business: Business = F(label="Business", help="Wording injected into every model prompt.", used_in=STAGES_ALL)
@@ -1132,6 +1199,10 @@ class Policy(M):
         json_schema_extra={"label": "Inventory health (Run)", "help": "Cover band, stock-out risk, ageing, MOQ overbuy, return to vendor and liquidation.", "used_in": ["ops_inventory_health"]},
     )
     impact: Impact = F(label="Impact", help="How the impact meter turns recorded review time into saved hours.", used_in=["impact"])
+    governance: Governance = Field(
+        default_factory=_default_governance,
+        json_schema_extra={"label": "Team and permissions", "help": "Who may change which rules, and how large a change may be before it needs approval. Demo identities, not authentication.", "used_in": _GOV},
+    )
 
     price_requests: PriceRequests = Field(
         default_factory=lambda: PriceRequests(
@@ -1273,6 +1344,13 @@ def _ignore_local() -> bool:
 
 
 def _digest(policy: Policy) -> str:
+    """The playbook hash the engine's caches, metrics hashes and recorded runs key on. Governance (who may change a rule) does not
+    change any number, so it is left out: editing the team never invalidates an approval or a golden run."""
+    return hashlib.sha256(json.dumps(policy.model_dump(mode="json", exclude={"governance"}), sort_keys=True).encode()).hexdigest()[:16]
+
+
+def full_digest(policy: Policy) -> str:
+    """Every field, governance included: the change log's before/after hash."""
     return hashlib.sha256(json.dumps(policy.model_dump(mode="json"), sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -1397,26 +1475,53 @@ def _write(overrides: dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
-def save_overrides(partial: dict[str, Any]) -> Loaded:
-    """Apply a nested partial to the effective playbook, validate the result BEFORE writing, store only the diff vs defaults."""
+def effective_with(overrides: dict[str, Any]) -> Policy:
+    """The playbook that defaults plus these overrides give (validated). Used for a visitor's sandbox playbook."""
+    defaults_raw = _read_yaml(defaults_path())
+    return _validate(merge(defaults_raw, overrides) if overrides else defaults_raw)
+
+
+def _non_finite(v: Any, path: str = "") -> str | None:
+    """Dotted path of the first NaN or infinity anywhere in a partial, else None."""
+    if isinstance(v, float) and not math.isfinite(v):
+        return path or "playbook"
+    items = v.items() if isinstance(v, dict) else enumerate(v) if isinstance(v, list) else ()
+    for k, x in items:
+        found = _non_finite(x, f"{path}.{k}" if path else str(k))
+        if found:
+            return found
+    return None
+
+
+def plan_partial(partial: dict[str, Any], base: dict[str, Any]) -> tuple[Policy, dict[str, Any]]:
+    """Dry run of a save: apply a nested partial to the playbook that ``base`` overrides give. Returns (the validated playbook it
+    would produce, the overrides to store: only the diff vs defaults). Writes nothing."""
     if not isinstance(partial, dict):
         raise PolicyInvalid("The request body must be an object", cause="Expected a partial playbook", fix='Send e.g. {"research": {"demand_min": 0.5}}')
+    bad = _non_finite(partial)
+    if bad:
+        raise PolicyInvalid(f"{bad}: not a finite number", cause="NaN and infinity are not valid playbook values, so nothing was saved", fix="Enter an ordinary number", errors=[{"path": bad, "message": "not a finite number"}])
     defaults_raw = _read_yaml(defaults_path())
-    eff = _apply_partial(merge(defaults_raw, load().overrides), partial)
-    _validate(eff)
+    eff = _apply_partial(merge(defaults_raw, base), partial)
+    policy = _validate(eff)
     over = _diff(eff, defaults_raw)
-    _write({} if over is _SAME else over)
+    return policy, ({} if over is _SAME else over)
+
+
+def save_overrides(partial: dict[str, Any]) -> Loaded:
+    """Apply a nested partial to the effective playbook, validate the result BEFORE writing, store only the diff vs defaults."""
+    _, over = plan_partial(partial, load().overrides)
+    _write(over)
     _invalidate()
     return load()
 
 
-def reset(section: str | None = None) -> Loaded:
-    """Reset everything, or one section / dotted path, to the committed defaults."""
-    cur = load()
+def plan_reset(section: str | None, base: dict[str, Any]) -> tuple[Policy, dict[str, Any]]:
+    """Dry run of a reset of everything, or one section / dotted path: (the playbook it would produce, the overrides to store)."""
+    over = json.loads(json.dumps(base))
     if section is None:
-        _write({})
+        over = {}
     else:
-        over = json.loads(json.dumps(cur.overrides))
         parts = section.split(".")
         node = over
         chain = []
@@ -1431,14 +1536,27 @@ def reset(section: str | None = None) -> Loaded:
             for parent, key in reversed(chain):
                 if not parent[key]:
                     del parent[key]
-        _validate(merge(_read_yaml(defaults_path()), over))
-        _write(over)
+    defaults_raw = _read_yaml(defaults_path())
+    return _validate(merge(defaults_raw, over) if over else defaults_raw), over
+
+
+def reset(section: str | None = None) -> Loaded:
+    """Reset everything, or one section / dotted path, to the committed defaults."""
+    _, over = plan_reset(section, load().overrides)
+    _write(over)
     _invalidate()
     return load()
 
 
-def overridden_paths() -> list[str]:
-    cur = load()
+def commit_overrides(over: dict[str, Any]) -> Loaded:
+    """Write already-validated overrides (from plan_partial / plan_reset) and drop the caches."""
+    _write(over)
+    _invalidate()
+    return load()
+
+
+def overridden_paths(overrides: dict[str, Any] | None = None) -> list[str]:
+    overrides = load().overrides if overrides is None else overrides
     out: list[str] = []
 
     def walk(o: Any, path: str) -> None:
@@ -1448,7 +1566,7 @@ def overridden_paths() -> list[str]:
         else:
             out.append(path)
 
-    walk(cur.overrides, "")
+    walk(overrides, "")
     return sorted(p for p in out if p)
 
 
@@ -1623,14 +1741,20 @@ def schema_hints() -> dict[str, dict[str, Any]]:
     return hints
 
 
-def snapshot() -> dict[str, Any]:
-    """Everything GET /api/policy returns."""
-    cur = load()
+def snapshot(overrides: dict[str, Any] | None = None, *, editable: bool | None = None) -> dict[str, Any]:
+    """Everything GET /api/policy returns. With ``overrides`` it is that (visitor sandbox) playbook instead of the global one."""
+    if overrides is None:
+        cur = load()
+        policy, defaults, over, hash_ = cur.policy, cur.defaults, cur.overrides, cur.hash
+    else:
+        defaults = load().defaults
+        policy, over = effective_with(overrides), overrides
+        hash_ = _digest(policy)
     return {
-        "policy": cur.policy.model_dump(mode="json"),
-        "defaults": cur.defaults.model_dump(mode="json"),
-        "overridden_paths": overridden_paths(),
-        "hash": cur.hash,
-        "editable": settings.effective_mode != "replay",
+        "policy": policy.model_dump(mode="json"),
+        "defaults": defaults.model_dump(mode="json"),
+        "overridden_paths": overridden_paths(over),
+        "hash": hash_,
+        "editable": settings.effective_mode != "replay" if editable is None else editable,
         "schema_hints": schema_hints(),
     }

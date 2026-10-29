@@ -296,6 +296,10 @@ class PolicyResetBody(BaseModel):
     section: str | None = None
 
 
+class ProposeBody(BaseModel):
+    prompt: str = Field(min_length=3, max_length=500)  # a plain-English playbook rule
+
+
 class RejectBody(BaseModel):
     run_id: str
     reason: str

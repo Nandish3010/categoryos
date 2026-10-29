@@ -831,9 +831,19 @@ const KNOWN_DICTS: Record<string, { addable: boolean; keyLabel: string; template
   "margins.brands": { addable: true, keyLabel: "Brand", template: { target_offset_pp: 0, note: "" } },
 };
 
+/** A cell of a dict table (governance.roles.manager.can_apply) has no hint of its own: borrow its column's. */
+function columnHint(hints: Record<string, SchemaHint>, path: string): SchemaHint | undefined {
+  const parts = path.split(".");
+  for (let n = parts.length - 2; n > 0; n--) {
+    const col = hints[parts.slice(0, n).join(".")]?.columns?.find((c) => c.key === parts[parts.length - 1]);
+    if (col) return col;
+  }
+  return undefined;
+}
+
 export function Node({ path, ctx, name }: { path: string; ctx: Ctx; name: string }) {
   const value = getPath(ctx.draft, path);
-  const hint = ctx.hints[path];
+  const hint = ctx.hints[path] ?? columnHint(ctx.hints, path);
   const label = hint?.label ?? humanize(name);
   const shell = (children: ReactNode, wide = false) => (
     <FieldShell path={path} label={label} help={hint?.help} unit={hint?.unit} usedIn={hint?.used_in} ctx={ctx} wide={wide}>

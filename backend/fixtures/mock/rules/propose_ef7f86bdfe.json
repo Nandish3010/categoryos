@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "parser_version": "1.0",
+  "stage": "rules",
+  "task": "propose_ef7f86bdfe",
+  "model": "hand-written (the expected translation, not a model output)",
+  "prompt": "Let managers change margins by up to 3 points at a time",
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "content": "{\"edits\": [{\"path\": \"governance.limits.manager_margins.max_abs_change\", \"op\": \"set\", \"number\": 3, \"boolean\": null, \"choice\": null}], \"unmapped_reason\": null}"
+}

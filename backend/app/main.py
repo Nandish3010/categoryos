@@ -34,7 +34,6 @@ from app.errors import (
     CategoryOSError,
     DemoKeyRequired,
     LeverOutOfRange,
-    PolicyReadOnly,
 )
 from app.llm import any_live, resolve_mode
 from app.metrics import apply_levers, build_base
@@ -43,12 +42,12 @@ from app.ops.catalog_qc.api import router as catalog_qc_router
 from app.ops.inventory_health.api import router as inventory_health_router
 from app.ops.pricewatch.api import router as price_watch_router
 from app.ops.promotions.api import router as promotions_router
+from app.rules_api import router as rules_router
 from app.schemas import (
     ApproveBody,
     EndCallBody,
     LeverResponse,
     OverrideBody,
-    PolicyResetBody,
     RejectBody,
     ReplanBody,
     StageResult,
@@ -88,6 +87,7 @@ app.include_router(catalog_qc_router)  # Run: catalog QC / fix queue for existin
 app.include_router(promotions_router)  # Run: promotions and event planner
 app.include_router(price_watch_router)  # Run: competitor price monitor
 app.include_router(inventory_health_router)  # Run: weekly inventory health review
+app.include_router(rules_router)  # Playbook: rules written as prompts, roles, change log
 
 origins = ["http://localhost:3000"]
 if settings.frontend_origin:
@@ -98,7 +98,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_methods=["*"],
-    allow_headers=["X-Demo-Key", "Last-Event-ID", "Content-Type"],
+    allow_headers=["X-Demo-Key", "X-Acting-As", "X-Visitor-Id", "Last-Event-ID", "Content-Type"],
 )
 
 
@@ -218,31 +218,7 @@ async def get_public_live(request: Request) -> dict[str, Any]:
 
 
 # ---------- playbook ----------
-
-
-async def require_policy_write(request: Request, x_demo_key: str | None = Header(default=None)) -> None:
-    """Writes are refused in replay; a demo key is required only when one is configured."""
-    if settings.effective_mode == "replay":
-        raise PolicyReadOnly()
-    if settings.demo_key:
-        await require_demo_key(request, x_demo_key)
-
-
-@app.get("/api/policy")
-async def get_policy() -> dict[str, Any]:
-    return policy.snapshot()
-
-
-@app.put("/api/policy", dependencies=[Depends(require_policy_write)])
-async def put_policy(body: dict[str, Any]) -> dict[str, Any]:
-    policy.save_overrides(body)
-    return policy.snapshot()
-
-
-@app.post("/api/policy/reset", dependencies=[Depends(require_policy_write)])
-async def reset_policy(body: PolicyResetBody | None = None) -> dict[str, Any]:
-    policy.reset(body.section if body else None)
-    return policy.snapshot()
+# GET/PUT /api/policy, reset, propose and the change log: app/rules_api.py
 
 
 @app.get("/api/ledger", dependencies=[Depends(require_demo_key)])

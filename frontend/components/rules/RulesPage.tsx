@@ -15,15 +15,20 @@ import {
   touches,
   type PolicyResponse,
 } from "@/lib/policy";
+import { sentences } from "@/lib/rules";
 import { useAsync } from "@/lib/useAsync";
 import { BackendBanner } from "../BackendBanner";
 import { Banner } from "../Banner";
 import { Tag } from "../Chip";
 import { PanelHeader } from "../PanelHeader";
 import { Skeleton } from "../Skeleton";
+import { ActingAs } from "./ActingAs";
+import { ChangeLog } from "./ChangeLog";
 import { Node, type Ctx } from "./fields";
+import { WriteRule } from "./WriteRule";
 
 export const SAVED_TOAST = "Playbook saved — new runs and the lever use these rules";
+export const PENDING_TOAST = "Sent to the head for approval — nothing changed yet";
 export const READ_ONLY_TEXT = "Public demo: the playbook is read-only. Run locally to edit.";
 
 type SectionId = (typeof SECTIONS)[number]["id"];
@@ -71,6 +76,9 @@ function RulesEditor({
   const [errors, setErrors] = useState<FieldError[]>([]);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [tab, setTab] = useState<"playbook" | "log">("playbook");
+  const [acting, setActing] = useState<string | null>(null);
+  const [logKey, setLogKey] = useState(0);
 
   const adopt = useCallback((r: PolicyResponse) => {
     setServer(r);
@@ -132,9 +140,11 @@ function RulesEditor({
       const r = await savePolicy(partial);
       adopt(r);
       invalidateLeverBounds();
-      setToast(SAVED_TOAST);
+      setToast(r.change?.status === "pending_approval" ? PENDING_TOAST : SAVED_TOAST);
+      setLogKey((k) => k + 1);
     } catch (e) {
       handleError(e);
+      setLogKey((k) => k + 1); // a refused edit is logged too
     } finally {
       setSaving(false);
     }
@@ -146,7 +156,8 @@ function RulesEditor({
       const r = await resetPolicy(id);
       adopt(r);
       invalidateLeverBounds();
-      setToast(`${SECTIONS.find((s) => s.id === id)?.label ?? id} reset to defaults`);
+      setToast(r.change?.status === "pending_approval" ? PENDING_TOAST : `${SECTIONS.find((s) => s.id === id)?.label ?? id} reset to defaults`);
+      setLogKey((k) => k + 1);
     } catch (e) {
       handleError(e);
     } finally {
@@ -161,7 +172,8 @@ function RulesEditor({
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 pb-28 md:px-6">
-      <header className="mb-4">
+      <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div>
         <Link href="/" className="inline-flex min-h-8 items-center gap-1 text-sm text-text-dim hover:text-text">
           <ArrowLeft size={16} aria-hidden="true" />
           Vendors
@@ -180,11 +192,20 @@ function RulesEditor({
           </a>
           .
         </p>
+        </div>
+        <ActingAs policy={server?.policy} value={acting} onChange={setActing} />
       </header>
 
       {error ? (
         <div className="mb-4">
           <BackendBanner error={error} cached={server != null} retrying />
+        </div>
+      ) : null}
+      {server?.scope === "visitor" ? (
+        <div className="mb-4">
+          <Banner tone="info" title="Public demo: your changes go to your own sandbox playbook">
+            Nobody else sees them and the recorded runs keep the original playbook. They are kept for about a day.
+          </Banner>
         </div>
       ) : null}
       {server && readOnly ? (
@@ -195,11 +216,60 @@ function RulesEditor({
       {topErrors.map((e, i) => (
         <div key={i} className="mb-4">
           <Banner tone="bad" title={e.body.problem}>
-            {[e.body.cause, e.body.fix].filter(Boolean).join(" ")}
+            {sentences(e.body.cause, e.body.fix)}
           </Banner>
         </div>
       ))}
 
+      <div role="tablist" aria-label="Playbook view" className="mb-4 flex gap-1 border-b border-border">
+        {(
+          [
+            ["playbook", "Playbook"],
+            ["log", "Change log"],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={`-mb-px min-h-11 border-b-2 px-3 text-sm ${tab === id ? "border-accent font-medium text-text" : "border-transparent text-text-dim hover:text-text"}`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "log" ? (
+        <ChangeLog
+          refreshKey={logKey}
+          actingId={acting}
+          onChanged={(r) => {
+            if (r) {
+              adopt(r);
+              invalidateLeverBounds();
+            }
+            setLogKey((k) => k + 1);
+          }}
+        />
+      ) : null}
+
+      {tab === "playbook" && server && !readOnly ? (
+        <WriteRule
+          acting={server.acting}
+          disabled={saving}
+          onApplied={(r) => {
+            adopt(r);
+            invalidateLeverBounds();
+            setToast(r.change.status === "pending_approval" ? PENDING_TOAST : SAVED_TOAST);
+            setLogKey((k) => k + 1);
+          }}
+          onLogged={() => setLogKey((k) => k + 1)}
+        />
+      ) : null}
+
+      {tab === "playbook" ? (
       <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
         <nav aria-label="Playbook sections" className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
           {SECTIONS.map((s) => {
@@ -240,6 +310,7 @@ function RulesEditor({
           {ctx && sectionValue !== undefined ? (
             <fieldset disabled={ctx.disabled} className="min-w-0 p-4">
               <legend className="sr-only">{section.label}</legend>
+              {!readOnly ? <p className="mb-2 text-xs text-text-dim">Edits made here are checked against your role and logged in the change log.</p> : null}
               {server ? (
                 <div className="mb-2 flex flex-wrap items-center gap-1">
                   <span className="text-xs text-text-dim">Used in</span>
@@ -269,8 +340,9 @@ function RulesEditor({
           )}
         </section>
       </div>
+      ) : null}
 
-      {!readOnly && paths.length > 0 ? (
+      {tab === "playbook" && !readOnly && paths.length > 0 ? (
         <div
           role="region"
           aria-label="Unsaved changes"
