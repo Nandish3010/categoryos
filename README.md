@@ -6,6 +6,8 @@ Built for the Meta Global AI Developer Hackathon (indie track), Oct 26 - Nov 4, 
 
 > **Status.** The four vendor runs the public site replays were **recorded live on 2026-10-27** against the Meta models (Muse Spark, Muse Image, SAM 3.1). `make dev` and the tests still run in **mock** mode (the real pipeline against hand-written model fixtures). The eval numbers below are deterministic verifier results on synthetic data, not model results. All vendors, SKUs, prices and documents are synthetic.
 
+Plugging a real company's data in: [docs/pitch/enterprise-integration.md](docs/pitch/enterprise-integration.md) (what exists vs what needs an adapter).
+
 ## What it does
 
 **Onboard** a new vendor: **screen** (documents, claims, prompt-injection check) → **decide** (a verdict per SKU from rules over market data, with live margin and MOQ levers) → **negotiate** (gap table against the application, a deal evaluator for conditional offers, a live-call copilot) → **catalog** (listing copy, packshots, compliance flags) → **launch** (marketing, joint business plan, PO). Bring your own vendor at `/try` with a SKU sheet.
