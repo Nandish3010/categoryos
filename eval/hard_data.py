@@ -9,8 +9,10 @@ Everything is generated from a seed (no model, no network); the generator and it
 ``tests/test_hard_eval.py`` checks the committed files equal a fresh run. Every task has ground truth and, where a wrong
 reading is predictable, the ``decoy`` value that reading produces (the mock stand-ins use it; live runs do not).
 
-Ground truth is what a careful reader takes from the file. The verifier only re-reads the cell (or checks the quote) the
-answer cites, so a few categories can pass it with a wrong answer; those show up as silent errors in the report."""
+Ground truth is what a careful reader takes from the file. The verifier re-reads the cell (or checks the quote) the answer
+cites, plus the row-plausibility, AI-addressed-line and later-correction checks. What it still cannot tell is a figure read
+from the wrong but real cell (the old cost beside the revised one, ``revised_conflict``); that passes with a wrong answer
+and shows up as a silent error in the report."""
 
 import csv
 import io
