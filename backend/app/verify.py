@@ -271,6 +271,21 @@ def _injected(claim: Claim, text: str) -> str | None:
     return None
 
 
+def _retracted(claim: Claim, text: str) -> str | None:
+    """The cited turn itself takes the claimed number back ("not 25", "ignore the 90", "the 22 was last quarter's", "earlier mail (18)")."""
+    n = re.escape(f"{claim.value * 100 if claim.unit == 'pct' else claim.value:g}")
+    after = r"(?:\s*(?:%|percent|days?))?"
+    back = re.compile(
+        rf"\bnot\s+{n}{after}(?!\d)|\bignore\s+(?:the\s+)?{n}{after}(?!\d)|\bthe\s+{n}{after}\s+was\b|\bearlier\b[^()]*\(\s*{n}{after}\s*\)|\binstead of\s+{n}{after}(?!\d)",
+        re.IGNORECASE,
+    )
+    text = _squash(text)
+    if not (hit := back.search(text)):
+        return None
+    sentence = next((m.group() for m in re.finditer(r"[^.!?]*[.!?]?(?:\s|$)", text) if m.start() <= hit.start() < m.end() and m.group().strip()), hit.group())
+    return f'this turn takes {claim.value * 100 if claim.unit == "pct" else claim.value:g} back ("{_trim(sentence.strip())}"); report the figure it gives instead'
+
+
 def _superseded_by(claim: Claim, cited_turn_no: int, turns: list[dict]) -> str | None:
     """A later turn on the same subject and term that states a different number revises the cited figure."""
     ev = claim.evidence
@@ -313,6 +328,8 @@ def check_quote_claim(claim: Claim, text: str, where: str, turns: list[dict] | N
         return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
     if reason := _injected(claim, text):
         return _finish(claim, "rejected", reason)
+    if reason := _retracted(claim, text):
+        return _finish(claim, "rejected", reason.replace("this turn", f"turn {ev.row}", 1) if ev.row is not None else reason)
     if turns is not None and ev.row is not None and (reason := _superseded_by(claim, ev.row, turns)):
         return _finish(claim, "rejected", reason)
     return _finish(claim, "verified", None, claim.value)

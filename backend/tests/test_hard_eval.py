@@ -148,3 +148,14 @@ def test_every_call_truth_quoting_the_whole_turn_verifies_and_the_email_decoys_a
             bad = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(hard_eval._model_units(t, t.decoy), turn=turn, quote=text[turn]))])[0]
             assert bad.status == "rejected", (t.category, t.code)
             assert ("later in the thread" if t.category == "conflict_turns" else "addressed to an AI") in bad.reason
+        if t.category == "conflict_turns" and f"{t.decoy * (100 if t.field == 'margin' else 1):g}" in text[t.turn]:  # the correcting turn itself states the old figure only to take it back
+            back = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(hard_eval._model_units(t, t.decoy), turn=t.turn, quote=text[t.turn]))])[0]
+            assert back.status == "rejected" and "takes" in back.reason, (t.code, back.reason)
+
+
+def test_no_two_task_bearing_email_units_share_a_brand(world):
+    calls = [t for t in world.tasks if t.channel == "call" and t.category in ("spelled", "conflict_turns", "injection_call")]
+    assert len({t.code for t in calls}) == len(calls) == 18
+    for t in calls:
+        turns = {x["turn"] for x in world.turns if t.code in x["text"]}
+        assert turns <= {t.turn, t.decoy_turn}, (t.code, turns)

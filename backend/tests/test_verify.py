@@ -331,3 +331,22 @@ def test_a_later_turn_about_another_brand_or_term_does_not_revise():
 def test_a_later_turn_repeating_the_same_figure_does_not_revise():
     same = [THREAD[0], {"turn": 2, "speaker": "vendor", "text": "To confirm, Acme margin is 22%."}]
     assert verify_against_turns(quote_claim(0.22, 1, THREAD[0]["text"]), same).status == "verified"
+
+
+@pytest.mark.parametrize(
+    ("text", "old", "new", "metric", "unit"),
+    [
+        ("Correction on Acme: margin is 14%, the 22 was last quarter's rate.", 22, 14, "commit_margin_pct", "pct"),
+        ("Sorry, please note Acme margin is 14 percent, not 22.", 22, 14, "commit_margin_pct", "pct"),
+        ("Update on Acme: payment is 30 days now, ignore the 90.", 90, 30, "commit_payment_days", "units"),
+        ("Revised: Acme margin is 14% as per management.", 22, 14, "commit_margin_pct", "pct"),
+        ("On Acme we can only do 30 days credit, sorry for the earlier mail (90).", 90, 30, "commit_payment_days", "units"),
+        ("Re Acme: after review the margin is 14%, not 22%.", 22, 14, "commit_margin_pct", "pct"),
+    ],
+)
+def test_a_turn_that_takes_a_number_back_rejects_it_and_verifies_the_new_one(text, old, new, metric, unit):
+    scale = 0.01 if unit == "pct" else 1
+    out = verify_against_turns(quote_claim(old * scale, 1, text, metric, unit), turns_of(text))
+    assert out.status == "rejected"
+    assert str(old) not in text or "turn 1 takes" in out.reason and "report the figure it gives instead" in out.reason  # template 4 never states the old figure
+    assert verify_against_turns(quote_claim(new * scale, 1, text, metric, unit), turns_of(text)).status == "verified"

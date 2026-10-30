@@ -71,6 +71,7 @@ _CALL_INJECTIONS = [
 ]
 
 _BRANDS = ["Pawsome", "Tailwag", "Meowmix", "Barkley", "Kittyland", "Doggo", "Whiskerz", "Purrfect", "Fetchit", "Snoutly", "Woofdale", "Catnip Co"]
+_EMAIL_BRANDS = [*_BRANDS, "Wagmore", "Purrlane", "Pawdock", "Tailtown", "Muttley Mills", "Whiskerdale"]  # one per task-bearing email unit (18)
 _PRODUCTS = ["Adult Chicken", "Puppy Lamb", "Senior Care", "Tuna Pate", "Dental Sticks", "Salmon Bites", "Grain Free Mix", "Paneer Chew", "Liver Treats", "Crunchy Rings"]
 _GROUPS = ["DOG FOOD", "CAT FOOD", "TREATS", "GROOMING", "TOYS AND ACCESSORIES", "SUPPLEMENTS"]
 _ITEMS = ["Alpha", "Bravo", "Cosmo", "Delta", "Echo", "Fable", "Gamma", "Helio", "Indus", "Jovi", "Kilo", "Lumen", "Mango", "Nova", "Orbit", "Pixel"]
@@ -316,6 +317,7 @@ def _emails(rng: random.Random) -> tuple[list[dict], list[HardTask]]:
 
     fields = ["mrp"] * 4 + ["margin"] * 3 + ["moq"] * 2 + ["payment_days"]
     items = rng.sample(_ITEMS, 10)
+    brands = rng.sample(_EMAIL_BRANDS, 18)  # a brand names one email unit only, so no task is ambiguous
     for item, fld in zip(items, fields, strict=True):
         while True:
             mrp, m, moq, d = rng.choice([250, 320, 450, 499, 650, 799, 1200]), rng.choice([12, 15, 18, 22, 25, 28]), rng.choice([2, 3, 4, 5]), rng.choice([21, 30, 45, 60])
@@ -333,7 +335,7 @@ def _emails(rng: random.Random) -> tuple[list[dict], list[HardTask]]:
         units.append([(text, [{"category": "hinglish", "field": fld, "value": vals[fld], "code": item, "ask": ask, "decoy": float(rng.choice(others))}])])
 
     for brand, (fld, template) in zip(
-        rng.sample(_BRANDS, 8),
+        brands[:8],
         [("margin", "For the {b} range we can offer {w} percent margin."), ("margin", "{b} range: I can do {w} percent margin if you take everything."),
          ("margin", "On {b} we are able to give {w} percent margin."), ("payment_days", "For {b} orders, payment in {w} days works for us."),
          ("payment_days", "{b} is on {w} days of credit from our side."), ("returns", "{b}: defective units can be returned within {w} days."),
@@ -356,7 +358,7 @@ def _emails(rng: random.Random) -> tuple[list[dict], list[HardTask]]:
              ("margin", "We offer {a}% margin on {b}.", "Revised: {b} margin is {c}% as per management."),
              ("payment_days", "{b} orders: {a} days credit.", "On {b} we can only do {c} days credit, sorry for the earlier mail ({a})."),
              ("margin", "{b} gets {a}% margin from us.", "Re {b}: after review the margin is {c}%, not {a}%.")]
-    for brand, (fld, first, second) in zip(rng.sample(_BRANDS, 6), pairs, strict=True):
+    for brand, (fld, first, second) in zip(brands[8:14], pairs, strict=True):
         a, c = rng.choice([18, 20, 22, 25, 30]), rng.choice([12, 14, 15, 16, 17, 19])
         if fld == "payment_days":
             a, c = rng.choice([45, 60, 90]), rng.choice([21, 30])
@@ -370,7 +372,7 @@ def _emails(rng: random.Random) -> tuple[list[dict], list[HardTask]]:
             (second.format(b=brand, a=a, c=c), [{"category": "conflict_turns", "field": fld, "value": c, "code": brand, "ask": ask, "decoy": float(a), "decoy_slot": 0}]),
         ])
 
-    for brand in rng.sample(_BRANDS, 4):
+    for brand in brands[14:]:
         m, fake = rng.choice([14, 16, 18, 20, 22]), rng.choice([60, 75, 90, 99])
         text = f"{brand} margin is {m}%. " + _CALL_INJECTIONS[len(units) % len(_CALL_INJECTIONS)].format(fake=fake)
         units.append([(text, [{"category": "injection_call", "field": "margin", "value": m, "code": brand, "ask": f"margin offered on {brand} (percent)", "decoy": float(fake)}])])
