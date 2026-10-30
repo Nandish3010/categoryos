@@ -221,9 +221,101 @@ def _quote_text(rel_file: str, row: int) -> tuple[str, str] | str:
     return match.group(1), str(extra[row - 1])
 
 
-def check_quote_claim(claim: Claim, text: str, where: str) -> Claim:
+_BRACKETED = re.compile(r"\[[^\]]*\]|\([^)]*\)|<<.*?>>", re.DOTALL)
+_AI_LINE = re.compile(r"ignore|disregard|instruction|override|say nothing|assistant|\bbots?\b|system|\bAI\b", re.IGNORECASE)
+_BENIGN_IGNORE = re.compile(r"\b(?:ignore|disregard)\s+(?:the\s+|that\s+|my\s+|our\s+)?(?:\d|earlier\b|previous (?:mail|email|figure|number)|old\b)", re.IGNORECASE)  # "ignore the 90": a correction
+_REVISES = re.compile(r"correct|revis|updat|sorry|apolog|\bnot\b|instead|actually|\bnow\b|earlier|previous|last (?:quarter|month|week|year)|\bwas\b|changed|amend|ignore|disregard|rather|only do|no longer", re.IGNORECASE)
+_TERM_GROUPS = {
+    "margin": re.compile(r"margin", re.IGNORECASE),
+    "payment": re.compile(r"payment|credit|days", re.IGNORECASE),
+    "returns": re.compile(r"return", re.IGNORECASE),
+    "moq": re.compile(r"\bmoq\b|minimum order", re.IGNORECASE),
+}
+_METRIC_GROUP = {"margin": "margin", "payment": "payment", "return": "returns", "moq": "moq"}
+_NOT_SUBJECT = frozenset(
+    ["a", "an", "and", "as", "at", "best", "bhai", "boss", "by", "correction", "dear", "final", "ji", "hey", "hi", "namaste", "sir", "for", "hello", "i", "if", "in", "is", "it", "kindly", "margin", "minimum", "moq", "mrp", "note", "of", "on", "or", "order", "orders", "our", "payment", "pay", "percent", "please", "ps", "re", "regards", "return", "returns", "revised", "rs", "sales", "sorry", "thanks", "the", "this", "to", "update", "we", "while", "with", "within"]
+)
+
+
+def _segments(text: str) -> list[str]:
+    """Sentences of ``text``; a bracketed / parenthesised / <<...>> run is a segment of its own."""
+    text = _squash(text)
+    rest = _BRACKETED.sub(" ", text)
+    return [*_BRACKETED.findall(text), *(s.strip() for s in re.split(r"(?<=[.!?])\s+", rest) if s.strip())]
+
+
+def _is_claimed(claim: Claim, n: float) -> bool:
+    """Is the stated number ``n`` the claimed one (percentages are claimed as fractions, stated as percent)?"""
+    value = claim.value * 100 if claim.unit == "pct" else claim.value
+    tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
+    return abs(n - value) <= max(tol, 1e-9)
+
+
+def _states(claim: Claim, text: str) -> bool:
+    return any(_is_claimed(claim, n) for n in numbers_in(text))
+
+
+def _trim(text: str, n: int = 120) -> str:
+    return text if len(text) <= n else text[: n - 3] + "..."
+
+
+def _to_ai(segment: str) -> bool:
+    return bool(_AI_LINE.search(_BENIGN_IGNORE.sub(" ", segment)))
+
+
+def _injected(claim: Claim, text: str) -> str | None:
+    """The claimed number comes only from a line addressed to an AI (an override), not from the vendor's offer."""
+    lines = [s for s in _segments(text) if _states(claim, s)]
+    if lines and all(_to_ai(s) for s in lines):
+        return f'the number comes from a line addressed to an AI ("{_trim(lines[0])}"), not from the vendor\'s offer; report the figure the vendor actually states'
+    return None
+
+
+def _retracted(claim: Claim, text: str) -> str | None:
+    """The cited turn itself takes the claimed number back ("not 25", "ignore the 90", "the 22 was last quarter's", "earlier mail (18)")."""
+    n = re.escape(f"{claim.value * 100 if claim.unit == 'pct' else claim.value:g}")
+    after = r"(?:\s*(?:%|percent|days?))?"
+    back = re.compile(
+        rf"\bnot\s+{n}{after}(?!\d)|\bignore\s+(?:the\s+)?{n}{after}(?!\d)|\bthe\s+{n}{after}\s+was\b|\bearlier\b[^()]*\(\s*{n}{after}\s*\)|\binstead of\s+{n}{after}(?!\d)",
+        re.IGNORECASE,
+    )
+    text = _squash(text)
+    if not (hit := back.search(text)):
+        return None
+    sentence = next((m.group() for m in re.finditer(r"[^.!?]*[.!?]?(?:\s|$)", text) if m.start() <= hit.start() < m.end() and m.group().strip()), hit.group())
+    return f'this turn takes {claim.value * 100 if claim.unit == "pct" else claim.value:g} back ("{_trim(sentence.strip())}"); report the figure it gives instead'
+
+
+def _superseded_by(claim: Claim, cited_turn_no: int, turns: list[dict]) -> str | None:
+    """A later turn on the same subject and term that states a different number revises the cited figure."""
+    ev = claim.evidence
+    cited = next((str(t.get("text", "")) for t in turns if t.get("turn") == cited_turn_no), "")
+    own = [s for s in _segments(cited) if _states(claim, s) and not _to_ai(s)] or [_squash(ev.raw_value or "")]
+    groups = {g for k, g in _METRIC_GROUP.items() if k in claim.metric}
+    if not groups and claim.metric.startswith("commit_"):
+        groups = {g for g, rx in _TERM_GROUPS.items() if any(rx.search(s) for s in own)}
+    if "returns" in groups and "payment" in groups:
+        groups.discard("payment")  # "returned within 30 days" is a returns window, not payment terms
+    code = (claim.sku_key or "").partition(":")[2]
+    subject = {w for s in own for w in re.findall(r"\b[A-Z][A-Za-z]+\b", s) if w.lower() not in _NOT_SUBJECT} | ({code} if code else set())
+    if not groups or not subject:
+        return None
+    named = re.compile(r"\b(?:" + "|".join(re.escape(w) for w in subject) + r")\b", re.IGNORECASE)
+    for turn in sorted(turns, key=lambda t: t.get("turn", 0)):
+        if turn.get("turn", 0) <= cited_turn_no or not named.search(str(turn.get("text", ""))):
+            continue
+        for seg in _segments(str(turn.get("text", ""))):
+            if _to_ai(seg) or not _REVISES.search(seg) or not any(_TERM_GROUPS[g].search(seg) for g in groups):
+                continue
+            if any(abs(n - (claim.value * 100 if claim.unit == "pct" else claim.value)) > _SAME_READ for n in numbers_in(seg)):
+                return f'turn {turn["turn"]}, later in the thread, revises this ("{_trim(seg)}"); report the final figure'
+    return None
+
+
+def check_quote_claim(claim: Claim, text: str, where: str, turns: list[dict] | None = None) -> Claim:
     """The quote must appear verbatim in ``text`` (a transcript turn or application term), and the claimed number must be
-    one of the numbers stated in the quote. ``where`` names the source in the rejection reason."""
+    one of the numbers stated in the quote. Then the number must come from the vendor's offer, not a line addressed to an
+    AI, and (``turns``: the whole transcript, when it is available) no later turn may revise it. ``where`` names the source."""
     ev = claim.evidence
     assert ev is not None and ev.raw_value
     quote = _squash(ev.raw_value)
@@ -231,10 +323,15 @@ def check_quote_claim(claim: Claim, text: str, where: str) -> Claim:
         return _finish(claim, "rejected", f"the quote does not appear verbatim in {where}")
     stated = numbers_in(quote)
     value = claim.value * 100 if claim.unit == "pct" else claim.value
-    tol = policy.tol("pct") * 100 if claim.unit == "pct" else policy.tol(claim.unit)
-    if not any(abs(n - value) <= max(tol, 1e-9) for n in stated):
+    if not _states(claim, quote):
         shown = ", ".join(f"{n:g}" for n in stated) or "none"
         return _finish(claim, "rejected", f"the quote states {shown}; the commitment says {value:g}", stated[0] if stated else None)
+    if reason := _injected(claim, text):
+        return _finish(claim, "rejected", reason)
+    if reason := _retracted(claim, text):
+        return _finish(claim, "rejected", reason.replace("this turn", f"turn {ev.row}", 1) if ev.row is not None else reason)
+    if turns is not None and ev.row is not None and (reason := _superseded_by(claim, ev.row, turns)):
+        return _finish(claim, "rejected", reason)
     return _finish(claim, "verified", None, claim.value)
 
 
@@ -250,7 +347,8 @@ def _verify_commitment(claim: Claim, rel_file: str) -> Claim:
     if isinstance(found, str):
         return _finish(claim, "rejected", found)
     is_call = bool(_TRANSCRIPT.match(rel_file))
-    return check_quote_claim(claim, found[1], f"{'turn' if is_call else 'term'} {ev.row} of the {'canonical transcript' if is_call else 'application'}")
+    where = f"{'turn' if is_call else 'term'} {ev.row} of the {'canonical transcript' if is_call else 'application'}"
+    return check_quote_claim(claim, found[1], where, load_transcript(found[0]) if is_call else None)
 
 
 def verify_against_turns(claim: Claim, turns: list[dict]) -> Claim:
@@ -264,7 +362,7 @@ def verify_against_turns(claim: Claim, turns: list[dict]) -> Claim:
     turn = next((t for t in turns if t.get("turn") == ev.row), None)
     if turn is None:
         return _finish(claim, "rejected", f"the call has no turn {ev.row} yet")
-    return check_quote_claim(claim, str(turn.get("text", "")), f"turn {ev.row} of the call")
+    return check_quote_claim(claim, str(turn.get("text", "")), f"turn {ev.row} of the call", turns)
 
 
 def check_row_owner(claim: Claim, code: str | None, expected_row: int | None) -> Claim:

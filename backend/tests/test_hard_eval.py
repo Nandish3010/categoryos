@@ -53,8 +53,9 @@ def test_every_ground_truth_answer_is_accepted_by_the_real_verifier(world):
 
 
 def test_predictable_wrong_readings_are_caught_except_where_the_verifier_cannot_tell(world):
-    """Decoys: paise, unit, multipack, injection and swapped-column slips are rejected (the row plausibility check catches a
-    cost not below its MRP). A figure read from the wrong but real cell (the old cost) or the wrong number inside the right quote passes the verifier: those are the silent errors."""
+    """Decoys: paise, unit, multipack, injection, swapped-column, superseded-email and email-injection slips are rejected (the
+    row plausibility check catches a cost not below its MRP; the quote checks catch an AI-addressed line and a figure a later
+    email revises). A figure read from the wrong but real cell (the old cost) passes the verifier: that is the silent error."""
     agent = hard_eval.MockAgent(hard_eval.MODELS[0], world, 42)
     by_id = {hard_eval.claim_id(t): t for t in world.tasks}
     verdict: dict[str, set[str]] = {}
@@ -69,10 +70,9 @@ def test_predictable_wrong_readings_are_caught_except_where_the_verifier_cannot_
         claim = hard_eval.verify(by_id, [hard_eval.build_claim(t, ans)])[0]
         assert not hard_eval.is_right(t, claim) or claim.status != "verified"
         verdict.setdefault(t.category, set()).add(claim.status)
-    for caught in ("paise_trap", "unit_mix", "multipack", "injection_sheet", "spelled", "swapped_block"):
+    for caught in ("paise_trap", "unit_mix", "multipack", "injection_sheet", "spelled", "swapped_block", "conflict_turns", "injection_call"):
         assert verdict[caught] == {"rejected"}, caught
-    for silent in ("revised_conflict", "conflict_turns", "injection_call"):
-        assert "verified" in verdict[silent], silent
+    assert "verified" in verdict["revised_conflict"]
 
 
 def test_a_wrong_row_is_caught_by_the_row_owner_rule(world):
@@ -133,3 +133,29 @@ def test_the_swapped_block_truth_verifies_and_the_decoy_is_rejected(world):
         assert ok.status == "verified" and hard_eval.is_right(t, ok)
         bad = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(t.decoy, t.row, t.decoy_header))])[0]
         assert bad.status == "rejected" and "look swapped" in bad.reason
+
+
+def test_every_call_truth_quoting_the_whole_turn_verifies_and_the_email_decoys_are_rejected(world):
+    by_id = {hard_eval.claim_id(x): x for x in world.tasks}
+    text = {x["turn"]: x["text"] for x in world.turns}
+    calls = [t for t in world.tasks if t.channel == "call"]
+    assert {t.category for t in calls} >= {"spelled", "hinglish", "conflict_turns", "injection_call"}
+    for t in calls:
+        ok = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(hard_eval._model_units(t, t.truth), turn=t.turn, quote=text[t.turn]))])[0]
+        assert ok.status == "verified", (t.category, t.code, ok.reason)
+        if t.category in ("conflict_turns", "injection_call"):
+            turn = t.decoy_turn or t.turn
+            bad = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(hard_eval._model_units(t, t.decoy), turn=turn, quote=text[turn]))])[0]
+            assert bad.status == "rejected", (t.category, t.code)
+            assert ("later in the thread" if t.category == "conflict_turns" else "addressed to an AI") in bad.reason
+        if t.category == "conflict_turns" and f"{t.decoy * (100 if t.field == 'margin' else 1):g}" in text[t.turn]:  # the correcting turn itself states the old figure only to take it back
+            back = hard_eval.verify(by_id, [hard_eval.build_claim(t, hard_eval.Answer(hard_eval._model_units(t, t.decoy), turn=t.turn, quote=text[t.turn]))])[0]
+            assert back.status == "rejected" and "takes" in back.reason, (t.code, back.reason)
+
+
+def test_no_two_task_bearing_email_units_share_a_brand(world):
+    calls = [t for t in world.tasks if t.channel == "call" and t.category in ("spelled", "conflict_turns", "injection_call")]
+    assert len({t.code for t in calls}) == len(calls) == 18
+    for t in calls:
+        turns = {x["turn"] for x in world.turns if t.code in x["text"]}
+        assert turns <= {t.turn, t.decoy_turn}, (t.code, turns)
